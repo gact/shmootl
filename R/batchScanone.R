@@ -1,0 +1,238 @@
+# Start of batchScanone.R ######################################################
+
+# batchPermScanone -------------------------------------------------------------
+#' Run \code{qtl::scanone} on a batch of permuted \code{cross} objects.
+#' 
+#' @param cross An \pkg{R/qtl} \code{cross} object.
+#' @param pheno.col Phenotype columns for which QTL analysis should be run. 
+#' If no phenotypes are specified, all are used.
+#' @template param-n.cluster
+#' @param iseed Seed for random number generator.
+#' @param n.perm Number of permutations.
+#' @param perm.pheno Permute phenotype data.
+#' @param perm.geno Permute genotype data.
+#' @param ... Additional keyword arguments passed to \code{scanone}.
+#'     
+#' @return A \code{scanoneperm} matrix containing the results of \code{scanone}
+#' for all permutations.
+#'  
+#' @export
+#' @family scan utilities
+#' @rdname batchPermScanone
+batchPermScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, 
+    n.perm=1000, perm.pheno=TRUE, perm.geno=FALSE, ...) {
+    
+    stopifnot( isSinglePositiveWholeNumber(n.perm) )
+    stopifnot( allKwargs(...) )
+    
+    # Get phenotype column indices.
+    pheno.col <- getPhenoColIndices(cross, pheno.col)
+    
+    # Set batch scan arguments.
+    args <- list(x=1:n.perm, scanfunction=nodePermScanone, cross=cross, 
+        pheno.col=pheno.col, n.cluster=n.cluster, iseed=iseed, 
+        perm.pheno=perm.pheno, perm.geno=perm.geno)
+    
+    # Run permutation batch scan.
+    scanone.perms <- do.call(batchScan, c(args, list(...)))
+    
+    # Combine permutation results.
+    combined.result <- do.call(rbind, scanone.perms)
+    
+    # Set class of combined result.
+    class(combined.result) <- c('scanoneperm', 'matrix')
+    
+    return(combined.result)
+}
+
+# batchPhenoScanone ------------------------------------------------------------
+#' Run \code{qtl::scanone} on a batch of phenotypes.
+#' 
+#' @param cross An \pkg{R/qtl} \code{cross} object.
+#' @param pheno.col Phenotype columns for which QTL analysis should be run. 
+#' If no phenotypes are specified, all are used.
+#' @template param-n.cluster
+#' @param iseed Seed for random number generator.
+#' @param ... Additional keyword arguments passed to \code{scanone}.
+#'     
+#' @return A \code{scanone} object containing the results of \code{scanone} 
+#' for the given phenotypes.
+#' 
+#' @export
+#' @family scan utilities
+#' @rdname batchPhenoScanone
+batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, 
+    ...) {
+    
+    stopifnot( allKwargs(...) )
+
+    # Get phenotype column indices.
+    pheno.col <- getPhenoColIndices(cross, pheno.col)
+
+    # Set batch scan arguments.
+    args <- list(x=pheno.col, scanfunction=nodePhenoScanone, cross=cross, 
+        n.cluster=n.cluster, iseed=iseed)
+    
+    # Run per-phenotype batch scan.
+    scanone.results <- do.call(batchScan, c(args, list(...)))
+    
+    # Combine per-phenotype scan results.  
+    combined.result <- do.call(cbind, scanone.results)
+    lodcol.indices = getDatColIndices(combined.result)
+    colnames(combined.result)[lodcol.indices] <- inferLodColNames(cross, pheno.col)
+    
+    # Set attributes of combined result from those of first result.
+    for ( a in const$scan.attributes[['scanone']] ) {
+        attr(combined.result, a) <- attr(scanone.results[[1]], a)
+    }
+    
+    return(combined.result)
+}
+
+# nodePermScanone --------------------------------------------------------------
+#' Run \code{qtl::scanone} on a single permuted \code{cross} object.
+#' 
+#' @param perm.id Permutation index.
+#' @param cross An \pkg{R/qtl} \code{cross} object.
+#' @param pheno.col Phenotype columns for which QTL analysis should be run. 
+#' If no phenotypes are specified, all are used.
+#' @param perm.pheno Permute phenotype data.
+#' @param perm.geno Permute genotype data.
+#' @param ... Additional keyword arguments passed to \code{scanone}.
+#'     
+#' @return A \code{scanoneperm} matrix containing the result of \code{scanone} 
+#' for a single permutation.
+#' 
+#' @export
+#' @family scan utilities
+#' @rdname nodePermScanone
+nodePermScanone <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE, 
+    perm.geno=FALSE, ...) {
+    
+    stopifnot( isSinglePositiveWholeNumber(perm.id) )
+    stopifnot( allKwargs(...) )
+
+    kwargs <- list(...)
+    
+    # Get phenotype column indices.
+    pheno.col <- getPhenoColIndices(cross, pheno.col)
+    
+    # Get list of known qtl::scanone arguments.
+    known.args <- const$scan.args[['qtl::scanone']]
+
+    # Set vector of qtl::scanone arguments that would cause problems here.
+    unsupported.args <- c('batchsize', 'n.cluster', 'n.perm', 'perm.strata', 
+        'perm.Xsp', 'verbose')
+    
+    unknown <- names(kwargs)[ ! names(kwargs) %in% known.args ]
+    if ( length(unknown) > 0 ) {
+        stop("unknown qtl::scanone arguments passed to nodePermScanone - '", toString(unknown), "'")
+    }
+
+    unsupported <- names(kwargs)[ names(kwargs) %in% unsupported.args ]
+    if ( length(unsupported) > 0 ) {
+        stop("unsupported qtl::scanone arguments passed to nodePermScanone - '", toString(unsupported), "'")
+    }
+    
+    # Generate permutation indices for cross object.
+    perm.indices <- permIndices(cross)
+    
+    # Permute cross data.
+    cross <- permCross(cross, perm.indices=perm.indices, perm.pheno=perm.pheno, 
+        perm.geno=perm.geno)
+    
+    # If permuting phenotypes, permute any corresponding data in the same way.
+    if (perm.pheno) {
+        
+        if ( ! is.null(kwargs[['addcovar']]) ) {
+            kwargs[['addcovar']] <- kwargs[['addcovar']][perm.indices, ]
+        }
+        
+        if ( ! is.null(kwargs[['intcovar']]) ) {
+            kwargs[['intcovar']] <- kwargs[['intcovar']][perm.indices, ]
+        }
+        
+        if ( ! is.null(kwargs[['weights']]) ) {
+            kwargs[['weights']] <- kwargs[['weights']][perm.indices]
+        }        
+        
+        if ( ! is.null(kwargs[['ind.noqtl']]) ) {
+            kwargs[['ind.noqtl']] <- kwargs[['ind.noqtl']][perm.indices]
+        }
+    }
+    
+    # Set scan arguments.
+    args <- list(cross=cross, pheno.col=pheno.col)
+    
+    # Run permutation scan.
+    scanone.result <- do.call(qtl::scanone, c(args, kwargs))
+    
+    # Get LOD column indices.
+    lodcol.indices = getDatColIndices(scanone.result)
+    
+    # Get max LOD value for each LOD column.
+    perm.result <- apply(scanone.result[, lodcol.indices, drop=FALSE], 2, max)
+    
+    # Create scanone permutation result.
+    perm.result <- matrix(perm.result, nrow=1, byrow=TRUE,
+        dimnames=list(perm.id, names(perm.result)))
+    
+    # Set class of permutation result.
+    class(perm.result) <- c('scanoneperm', 'matrix')
+    
+    return(perm.result)
+}
+
+# nodePhenoScanone -------------------------------------------------------------
+#' Run \code{qtl::scanone} on a single phenotype of a \code{cross} object.
+#'  
+#' @param pheno.col Phenotype column for which QTL analysis should be run.
+#' @param cross An \pkg{R/qtl} \code{cross} object.
+#' @param ... Additional keyword arguments passed to \code{scanone}.
+#'     
+#' @return A \code{scanone} object containing the result of \code{scanone}
+#' for a single phenotype. 
+#' 
+#' @export
+#' @family scan utilities
+#' @rdname nodePhenoScanone
+nodePhenoScanone <- function(pheno.col, cross, ...) {
+    
+    stopifnot( allKwargs(...) )
+    
+    kwargs <- list(...)
+    
+    # Get phenotype column indices.
+    pheno.col <- getPhenoColIndices(cross, pheno.col)
+    
+    if ( length(pheno.col) != 1 ) {
+        stop("nodePhenoScanone cannot process multiple phenotypes")
+    } 
+    
+    # Get list of known qtl::scanone arguments.
+    known.args <- const$scan.args[['qtl::scanone']]
+    
+    # Set vector of qtl::scanone arguments that would cause problems here.
+    unsupported.args <- c('batchsize', 'n.cluster', 'n.perm', 'perm.strata', 
+        'perm.Xsp', 'verbose')
+    
+    unknown <- names(kwargs)[ ! names(kwargs) %in% known.args ]
+    if ( length(unknown) > 0 ) {
+        stop("unknown scanone arguments passed to nodePhenoScanone - '", toString(unknown), "'")
+    }
+    
+    unsupported <- names(kwargs)[ names(kwargs) %in% unsupported.args ]
+    if ( length(unsupported) > 0 ) {
+        stop("unsupported scanone arguments passed to nodePhenoScanone - '", toString(unsupported), "'")
+    }
+    
+    # Set scan arguments.
+    args <- list(cross=cross, pheno.col=pheno.col)
+    
+    # Run single-phenotype scan.
+    scanone.result <- do.call(qtl::scanone, c(args, kwargs))
+    
+    return(scanone.result)
+}
+
+# End of batchScanone.R ########################################################

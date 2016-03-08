@@ -1,0 +1,59 @@
+Package: shmootl
+Version: 0.1.0
+Date: 2016-03-08
+Title: QTL Analysis Utilities for Yeast
+Authors@R: c(person("Thomas", "Walsh", role=c("aut", "cre"), email="tw164@le.ac.uk") )
+Author: Thomas Walsh
+Maintainer: Thomas Walsh <tw164@le.ac.uk>
+Depends:
+    R (>= 3.0.2)
+Description: This package contains pipelines and utilities for QTL analysis of
+    yeast cross data. Pipelines can be run from the command line or from within the
+    R environment. Utility functions are available from within R.
+LazyData: true
+License: GPL-3
+URL: https://github.com/gact/shmootl
+Imports:
+    argparser,
+    BiocGenerics,
+    Biostrings,
+    GenomeInfoDb,
+    IRanges,
+    methods,
+    parallel,
+    qtl,
+    rhdf5,
+    VariantAnnotation
+RoxygenNote: 5.0.1
+Collate:
+    'CrossInfo-class.R'
+    'H5Stack-class.R'
+    'batchScanone.R'
+    'batchScanoneF.R'
+    'batchScantwo.R'
+    'batchScantwoF.R'
+    'chr.R'
+    'compareCrossInfo.R'
+    'util.R'
+    'const.R'
+    'cross.R'
+    'csv.R'
+    'geno.R'
+    'genome.R'
+    'getLODProfile.R'
+    'getLODValues.R'
+    'getQTLIntervals.R'
+    'getQTLPeaks.R'
+    'hdf5.R'
+    'map.R'
+    'pipeline.R'
+    'run.R'
+    'run_scanone.R'
+    'scan.R'
+    'seq.R'
+    'shmootl.R'
+    'subsetByLoci.R'
+    'subsetByLocusID.R'
+    'subsetBySeq.R'
+    'vcf.R'
+    'zzz.R'
