@@ -307,6 +307,32 @@ getMissingValueFromClassS3 <- function(class.vector) {
     return(missing.value)
 }
 
+# getSpecialAttributeNames -----------------------------------------------------
+#' Get special attributes for the given object.
+#' 
+#' @param x R object.
+#'     
+#' @return Vector of special attribute names.
+#' 
+#' @keywords internal
+#' @rdname getSpecialAttributeNames
+getSpecialAttributeNames <- function(x) {
+    
+    default.specials <- const$special.attributes[['default']]
+    
+    attrset.names <- names(const$special.attributes)
+    
+    class.specials <- NULL
+    for ( class.name in class(x) ) {
+        if ( class.name %in% attrset.names ) {
+            class.specials <- const$special.attributes[[class.name]]
+            break
+        }
+    }
+    
+    return( union(class.specials, default.specials) )
+}
+
 # hasNames ---------------------------------------------------------------------
 #' Test if object has names.
 #' 
@@ -940,7 +966,7 @@ makePseudomarkerIDs <- function(loc) {
 #' Get non-reserved object attributes. 
 #' 
 #' @details As with R base function \code{mostattributes}, this provides access
-#' to non-reserved attributes, but with simpler behaviour.
+#' to non-reserved attributes.
 #' 
 #' @param x R object.
 #' 
@@ -949,15 +975,15 @@ makePseudomarkerIDs <- function(loc) {
 #' @keywords internal
 #' @rdname otherattributes
 otherattributes <- function(x) {
-    return( attributes(x)[ ! names(attributes(x)) 
-        %in% const$special.attributes ] )
+    special.attributes <- getSpecialAttributeNames(x)
+    return( attributes(x)[ ! names(attributes(x)) %in% special.attributes ] )
 }
 
 # `otherattributes<-` ----------------------------------------------------------
 #' Set non-reserved object attributes. 
 #' 
 #' @details As with R base function \code{mostattributes}, this provides access
-#' to non-reserved attributes, but with simpler behaviour.
+#' to non-reserved attributes.
 #' 
 #' @param x R object.
 #' @param value List of attributes to set.
@@ -970,8 +996,9 @@ otherattributes <- function(x) {
     
     stopifnot( hasNames(value) )
     
-    other.names <- names(value)[ ! names(value) %in% const$special.attributes ]
+    special.attributes <- getSpecialAttributeNames(x)
     
+    other.names <- names(value)[ ! names(value) %in% special.attributes ]
     for ( other.name in other.names ) {
         attr(x, other.name) <- value[[other.name]]
     }

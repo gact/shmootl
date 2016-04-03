@@ -19,8 +19,14 @@ with(const, {
         'fix.empty.names', 'stringsAsFactors')
     
     # Special R object attributes.
-    special.attributes <- c('class', 'comment', 'dim', 'dimnames', 
-        'names', 'row.names', 'tsp')
+    special.attributes <- list(
+        default = c('class', 'comment', 'dim', 'dimnames', 'names', 
+            'row.names', 'tsp'),
+        DNAStringSet = c('pool', 'ranges', 'elementType', 
+            'elementMetadata', 'metadata', 'class'),
+        QualityScaledDNAStringSet = c('pool', 'ranges', 'elementType', 
+            'elementMetadata', 'metadata', 'quality', 'class')
+    )
     
     # Phenotypes not used in yeast QTL analysis.
     disallowed.phenotypes <- c('pgm', 'sex')
