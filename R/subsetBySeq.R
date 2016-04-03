@@ -70,14 +70,22 @@ subsetBySeq.DNAStringSet <- function(x, sequences=NULL) {
 
     if ( ! is.null(sequences) ) {
         
-        indices <- matchSeqRowIndices(x@metadata[['loci']], sequences, 
+        others <- otherattributes(x)
+        meta <- x@metadata
+        elem.meta <-x@elementMetadata
+        
+        indices <- matchSeqRowIndices(meta[['loci']], sequences, 
             simplify=TRUE)
         
-        x@metadata[['loci']] <- x@metadata[['loci']][indices, ]
+        meta[['loci']] <- meta[['loci']][indices, ]
         
-        for ( i in 1:length(x) ) {
-            x[[i]] <- x[[i]][indices] 
-        }
+        bases <- lapply(Biostrings::as.list(x), function(b) b[indices])
+        
+        x <- Biostrings::DNAStringSet(bases)
+        
+        x@elementMetadata <- elem.meta
+        x@metadata <- meta
+        otherattributes(x) <- others         
     }
     
     return(x)
@@ -91,16 +99,27 @@ subsetBySeq.QualityScaledDNAStringSet <- function(x, sequences=NULL) {
     stopifnot( 'mapframe' %in% class(x@metadata[['loci']]) )
     
     if ( ! is.null(sequences) ) {
-    
-        indices <- matchSeqRowIndices(x@metadata[['loci']], sequences, 
+
+        others <- otherattributes(x)
+        meta <- x@metadata
+        elem.meta <-x@elementMetadata
+        
+        indices <- matchSeqRowIndices(meta[['loci']], sequences, 
             simplify=TRUE)
         
-        x@metadata[['loci']] <- x@metadata[['loci']][indices, ]
+        meta[['loci']] <- meta[['loci']][indices, ]
+
+        bases <- lapply(Biostrings::as.list(x), function(b) b[indices])
+        quals <- lapply(Biostrings::as.list(x@quality), function(q) q[indices])
         
-        for ( i in 1:length(x) ) {
-            x[[i]] <- x[[i]][indices] 
-            x@quality[[i]] <- x@quality[[i]][indices]
-        }
+        x <- Biostrings::QualityScaledDNAStringSet( 
+            Biostrings::DNAStringSet(bases), 
+            Biostrings::PhredQuality( Biostrings::BStringSet(quals) )
+        )
+        
+        x@elementMetadata <- elem.meta
+        x@metadata <- meta
+        otherattributes(x) <- others        
     }
     
     return(x)

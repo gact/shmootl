@@ -105,13 +105,21 @@ subsetByLoci.DNAStringSet <- function(x, loc=NULL) {
     
     if ( ! is.null(loc) ) {
     
-        indices <- matchLocusRowIndices(x@metadata[['loci']], loc)
-
-        x@metadata[['loci']] <- x@metadata[['loci']][indices, ]
+        others <- otherattributes(x)
+        meta <- x@metadata
+        elem.meta <-x@elementMetadata
         
-        for ( i in 1:length(x) ) {
-            x[[i]] <- x[[i]][indices] 
-        }
+        indices <- matchLocusRowIndices(meta[['loci']], loc)
+
+        meta[['loci']] <- meta[['loci']][indices, ]
+        
+        bases <- lapply(Biostrings::as.list(x), function(b) b[indices])
+        
+        x <- Biostrings::DNAStringSet(bases)
+    
+        x@elementMetadata <- elem.meta
+        x@metadata <- meta
+        otherattributes(x) <- others    
     }
     
     return(x)
@@ -125,15 +133,26 @@ subsetByLoci.QualityScaledDNAStringSet <- function(x, loc=NULL) {
     stopifnot( 'mapframe' %in% class(x@metadata[['loci']]) )
     
     if ( ! is.null(loc) ) {
-        
-        indices <- matchLocusRowIndices(x@metadata[['loci']], loc)
 
-        x@metadata[['loci']] <- x@metadata[['loci']][indices, ]
-            
-        for ( i in 1:length(x) ) {
-            x[[i]] <- x[[i]][indices] 
-            x@quality[[i]] <- x@quality[[i]][indices]
-        }
+        others <- otherattributes(x)
+        meta <- x@metadata
+        elem.meta <-x@elementMetadata
+
+        indices <- matchLocusRowIndices(meta[['loci']], loc)
+
+        meta[['loci']] <- meta[['loci']][indices, ]
+
+        bases <- lapply(Biostrings::as.list(x), function(b) b[indices])
+        quals <- lapply(Biostrings::as.list(x@quality), function(q) q[indices])
+
+        x <- Biostrings::QualityScaledDNAStringSet( 
+            Biostrings::DNAStringSet(bases), 
+            Biostrings::PhredQuality( Biostrings::BStringSet(quals) )
+        )
+
+        x@elementMetadata <- elem.meta
+        x@metadata <- meta
+        otherattributes(x) <- others
     }
     
     return(x)
