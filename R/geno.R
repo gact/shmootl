@@ -36,8 +36,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
         stop("cannot make raw genotype matrix - no locus IDs found")
     }
 
-    loc.ids <- rownames(x@metadata[['loci']])
-    
+    # Get sample IDs.
     sample.ids <- names(x)
     
     dup.samples <- sample.ids[ duplicated(sample.ids) ]
@@ -50,42 +49,53 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
         stop("invalid sample IDs - '", toString(invalid.ids), "'")
     }
     
-    num.samples <- length(x)
+    # Get locus IDs.
+    loc.ids <- rownames(x@metadata[['loci']])
+    
+    # Get number of loci, check consistent.
     num.loci <- unique( Biostrings::width(x) )
     stopifnot( length(num.loci) == 1 )
     stopifnot( length(loc.ids) == num.loci )
     
-    orig.dat <- Biostrings::as.matrix(x)
-    colnames(orig.dat) <- loc.ids
+    # Convert sample genotype data to matrix.
+    x <- Biostrings::as.matrix(x)
+    colnames(x) <- loc.ids
     
-    geno.matrix <- matrix(nrow=num.samples, ncol=num.loci, 
+    # Init raw genotype matrix.
+    geno.matrix <- matrix(nrow=length(sample.ids), ncol=num.loci, 
         dimnames=list(sample.ids, loc.ids))
     
+    # Init number of alleles.
     num.alleles <- 0
     
     for ( col in 1:num.loci ) {
         
-        geno.symbols <- orig.dat[, col]
+        # Get sample symbols and alleles for this locus.
+        geno.numbers <- rep(NA_integer_, length(sample.ids))
         
-        geno.numbers <- rep(NA_integer_, num.samples)
+        # Get sample symbols and alleles for this locus.
+        sample.symbols <- x[, col]
+        sample.alleles <- sort( unique( sample.symbols[ sample.symbols != '.' ] ) )
         
-        locus.alleles <- sort( unique( geno.symbols[ geno.symbols != '.' ] ) )
-        
-        if ( length(locus.alleles) > num.alleles ) {
-            num.alleles <- length(locus.alleles)
+        # Update number of alleles as needed.
+        if ( length(sample.alleles) > num.alleles ) {
+            num.alleles <- length(sample.alleles)
         }
         
-        for ( i in 1:length(locus.alleles) ) {
-            geno.numbers[ geno.symbols == locus.alleles[i] ] <- i
+        # Assign locus genotypes in alphabetical order of symbol.
+        for ( i in 1:length(sample.alleles) ) {
+            geno.numbers[ sample.symbols == sample.alleles[i] ] <- i
         }
         
+        # Set genotype numbers for this locus.
         geno.matrix[, col] <- geno.numbers
     }
         
     if ( num.alleles != 2 ) { 
         stop("unsupported number of raw genotypes - '", num.alleles, "'")
     } 
-        
+    
+    # Set allele symbols.
     attr(geno.matrix, 'alleles') <- make.names(1:num.alleles)
 
     return(geno.matrix)
