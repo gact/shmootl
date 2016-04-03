@@ -783,7 +783,6 @@ loadChrInfo <- function() {
     chrinfo <- read.csv(filepath, quote='', stringsAsFactors=FALSE, 
         strip.white=TRUE, na.strings='', colClasses=column.classes)
     
-    chrinfo$isCircular <- as.logical(chrinfo$isCircular)
     return(chrinfo)
 }
 
