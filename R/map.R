@@ -387,8 +387,10 @@ convertMapUnit.data.frame <- function(x, map.unit) {
                 # Convert map positions from one map type to another, if needed.
                 if ( from.basic.unit != to.basic.unit ) {
                     
-                    glen <- const$chrinfo$maplengths[ map2res[map.seq] ]
-                    plen <- const$chrinfo$seqlengths[ map2res[map.seq] ]
+                    genome <- genomeOpt()
+                    i <- which( const$seqinfo[[genome]]$seqids == map2res[map.seq] )
+                    glen <- const$seqinfo[[genome]]$maplengths[i]
+                    plen <- const$seqinfo[[genome]]$seqlengths[i]
                     
                     if ( from.basic.unit == 'cM' && to.basic.unit == 'bp' ) {
                         x[indices, poscol.index] <- as.integer( 
@@ -455,8 +457,10 @@ convertMapUnit.map <- function(x, map.unit) {
             # Convert map positions from one map type to another, if needed.
             if ( from.basic.unit != to.basic.unit ) {
                 
-                glen <- const$chrinfo$maplengths[ map2res[map.seq] ]
-                plen <- const$chrinfo$seqlengths[ map2res[map.seq] ]
+                genome <- genomeOpt()
+                i <- which( const$seqinfo[[genome]]$seqids == map2res[map.seq] )
+                glen <- const$seqinfo[[genome]]$maplengths[i]
+                plen <- const$seqinfo[[genome]]$seqlengths[i]
                 
                 if ( from.basic.unit == 'cM' && to.basic.unit == 'bp' ) {
                     x[[map.seq]] <- as.integer( round( (x[[map.seq]] * plen) / glen ) )
