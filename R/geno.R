@@ -1,6 +1,163 @@
 # Start of geno.R ##############################################################
 
-# TODO: function makeFounderGenoMatrix(); must use common loci.
+# makeFounderGenoMatrix (S3) ---------------------------------------------------
+#' Make founder genotype matrix from genotype data.
+#' 
+#' Given input genotype data for cross segregant samples and their founder 
+#' strains, this function assigns a symbol to each locus according to the 
+#' inferred founder allele. 
+#' 
+#' @param x Sample genotype data.
+#' @param founder.geno Founder genotype data.
+#'   
+#' @return A genotype matrix, with genotypes encoded as integers and their
+#' corresponding allele symbols in the attribute \code{'alleles'}.
+#' 
+#' @importFrom Biostrings DNAStringSet
+#' @importFrom Biostrings QualityScaledDNAStringSet
+#' @keywords internal
+#' @rdname makeFounderGenoMatrix
+makeFounderGenoMatrix <- function(x, founder.geno) {
+    UseMethod('makeFounderGenoMatrix', x)
+}
+
+# makeFounderGenoMatrix.DNAStringSet -------------------------------------------
+#' @rdname makeFounderGenoMatrix
+makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
+    
+    stopifnot( 'DNAStringSet' %in% class(founder.geno) || 
+        'QualityScaledDNAStringSet' %in% class(founder.geno) )
+    stopifnot( 'loci' %in% names(x@metadata) )
+    stopifnot( 'mapframe' %in% class(x@metadata[['loci']]) )
+    stopifnot( 'loci' %in% names(founder.geno@metadata) )
+    stopifnot( 'mapframe' %in% class(founder.geno@metadata[['loci']]) )
+    
+    if ( ! hasRownames(x@metadata[['loci']]) ) {
+        stop("cannot make founder genotype matrix - no sample locus IDs found")
+    }
+   
+    if ( ! hasRownames(founder.geno@metadata[['loci']]) ) {
+        stop("cannot make founder genotype matrix - no founder locus IDs found")
+    } 
+    
+    # Get sample IDs.
+    sample.ids <- names(x)
+    
+    dup.samples <- sample.ids[ duplicated(sample.ids) ]
+    if ( length(dup.samples) > 0 ) {
+        stop("duplicate sample IDs - '", toString(dup.samples), "'")
+    }
+    
+    invalid.ids <- sample.ids[ ! isValidID(sample.ids) ]
+    if ( length(invalid.ids) > 0 ) {
+        stop("invalid sample IDs - '", toString(invalid.ids), "'")
+    }
+    
+    # Get founder IDs.
+    founder.ids <- names(founder.geno)
+    
+    if ( length(founder.ids) != 2 ) { 
+        stop("unsupported number of founder genotypes - '", length(founder.ids), "'")
+    } 
+    
+    dup.founders <- sample.ids[ duplicated(founder.ids) ]
+    if ( length(dup.founders) > 0 ) {
+        stop("duplicate founder IDs - '", toString(dup.founders), "'")
+    }
+    
+    invalid.ids <- founder.ids[ ! isValidID(founder.ids) ]
+    if ( length(invalid.ids) > 0 ) {
+        stop("invalid founder IDs - '", toString(invalid.ids), "'")
+    }
+    
+    clashing.ids <- intersect(sample.ids, founder.ids)
+    if ( length(clashing.ids) > 0 ) {
+        stop("sample/founder ID clash - '", toString(clashing.ids), "'")
+    }   
+    
+    # Get genotype loci common to samples and founders.
+    loc.list <- list(x@metadata[['loci']], founder.geno@metadata[['loci']])
+    intersection <- do.call(intersectLoci, loc.list)
+    
+    # Keep only common loci.
+    founder.geno <- subsetByLoci(founder.geno, intersection)
+    x <- subsetByLoci(x, intersection)
+    
+    # Get common locus IDs.
+    loc.ids <- rownames(x@metadata[['loci']])
+    
+    # Convert sample genotype data to matrix.
+    x <- Biostrings::as.matrix(x)
+    colnames(x) <- loc.ids
+    
+    # Convert founder genotype data to matrix.
+    founder.geno <- Biostrings::as.matrix(founder.geno)
+    colnames(founder.geno) <- loc.ids
+    
+    # Init founder genotype matrix.
+    geno.matrix <- matrix(nrow=length(sample.ids), ncol=length(loc.ids), 
+        dimnames=list(sample.ids, loc.ids))
+    
+    for ( col in 1:length(loc.ids) ) {
+        
+        # Init genotype numbers for this locus.
+        geno.numbers <- rep(NA_integer_, length(sample.ids))
+        
+        # Get sample symbols and alleles for this locus.
+        sample.symbols <- x[, col]
+        sample.alleles <- sort( unique(sample.symbols[ sample.symbols != '.' ]) )
+        
+        # Get founder symbols and alleles for this locus.
+        founder.symbols <- founder.geno[, col]
+        founder.alleles <- sort( unique(founder.symbols[ founder.symbols != '.' ]) )
+        
+        # Assign locus genotypes from matching founder.
+        if ( length(founder.alleles) == 2 ) { # TODO: support polyallelic markers.
+            if ( length(sample.alleles) > 1 ) {
+                if ( all( sample.alleles %in% founder.alleles ) ) {
+                    for ( i in 1:length(founder.symbols) ) {
+                        geno.numbers[ sample.symbols == founder.symbols[i] ] <- i
+                    }
+                }
+            }
+        }
+        
+        # Set genotype numbers for this locus.
+        geno.matrix[, col] <- geno.numbers
+    }
+    
+    # Remove null loci.
+    geno.matrix <- geno.matrix[, ! apply(geno.matrix, 2, allNA) ]
+    
+    if ( ncol(geno.matrix) == 0 ) {
+        stop("cannot make founder genotype matrix - no diallelic loci found")
+    }
+    
+    # Set allele symbols from founders.
+    attr(geno.matrix, 'alleles') <- founder.ids
+    
+    return(geno.matrix)
+}
+
+# makeFounderGenoMatrix.QualityScaledDNAStringSet ------------------------------
+#' @rdname makeFounderGenoMatrix
+makeFounderGenoMatrix.QualityScaledDNAStringSet <- function(x, founder.geno) {
+    return( makeFounderGenoMatrix.DNAStringSet(x, founder.geno) )
+}
+
+# makeFounderGenoMatrix (S4) ---------------------------------------------------
+#' @rdname makeFounderGenoMatrix
+setGeneric('makeFounderGenoMatrix', makeFounderGenoMatrix)
+
+# DNAStringSet::makeFounderGenoMatrix ------------------------------------------
+#' @rdname makeFounderGenoMatrix
+setMethod('makeFounderGenoMatrix', signature='DNAStringSet', 
+    definition=makeFounderGenoMatrix.DNAStringSet)
+
+# QualityScaledDNAStringSet::makeFounderGenoMatrix -----------------------------
+#' @rdname makeFounderGenoMatrix
+setMethod('makeFounderGenoMatrix', signature='QualityScaledDNAStringSet', 
+    definition=makeFounderGenoMatrix.DNAStringSet)
 
 # makeRawGenoMatrix (S3) -------------------------------------------------------
 #' Make raw genotype matrix from genotype data.
@@ -35,7 +192,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
     if ( ! hasRownames(x@metadata[['loci']]) ) {
         stop("cannot make raw genotype matrix - no locus IDs found")
     }
-    
+
     # Get sample IDs.
     sample.ids <- names(x)
     
@@ -94,7 +251,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
     
     # Set allele symbols.
     attr(geno.matrix, 'alleles') <- make.names( 1:max(geno.matrix, na.rm=TRUE) )
-    
+
     return(geno.matrix)
 }
 
@@ -138,14 +295,16 @@ makeGeno <- function(sample.geno, founder.geno=NULL) {
 #' @rdname makeGeno
 makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     
-    geno.map <- makeMap(sample.geno)
-    
     if ( ! is.null(founder.geno) ) {
-        # TODO: geno.matrix <- makeFounderGenoMatrix(sample.geno, founder.geno=founder.geno)
-        stop("cannot make founder genotype data (yet)")
+        geno.matrix <- makeFounderGenoMatrix(sample.geno, founder.geno)
     } else {
         geno.matrix <- makeRawGenoMatrix(sample.geno)
     }
+    
+    sample.geno <- subsetByLocusID(sample.geno, 
+        function(loc.id) loc.id %in% colnames(geno.matrix))
+    
+    geno.map <- makeMap(sample.geno)
     
     cross.geno <- list()
     
