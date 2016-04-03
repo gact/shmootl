@@ -52,8 +52,10 @@ hasGenoQualVCF <- function(file) {
 #' @param ... Input VCF file paths.
 #' @param samples Vector of samples for which SNP genotypes should be obtained. If
 #' not specified, genotypes are returned for all available samples.
-#' @param require.complete Remove variants that are not completely genotyped 
+#' @param require.all Remove variants that are not completely genotyped 
 #' with respect to the given samples.
+#' @param require.any Remove variants that do not have at least one genotype
+#' call among the given samples.
 #' @param require.polymorphic Remove variants that do not have at least two 
 #' different genotype calls among the given samples. 
 #' 
@@ -67,14 +69,14 @@ hasGenoQualVCF <- function(file) {
 #' @importFrom IRanges ranges
 #' @keywords internal
 #' @rdname readSnpsVCF
-readSnpsVCF <- function(..., samples=NULL, require.complete=FALSE, 
+readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
     require.polymorphic=FALSE) {
     
     infiles <- list(...)
     stopifnot( length(infiles) > 0 )
-    stopifnot( isBOOL(require.complete) )
+    stopifnot( isBOOL(require.all) )
     stopifnot( isBOOL(require.polymorphic) )
-    
+
     # Set NA string to the 'not available' 
     # character of `Biostrings::DNA_ALPHABET`.
     na.string <- '.'
@@ -284,7 +286,7 @@ readSnpsVCF <- function(..., samples=NULL, require.complete=FALSE,
     stopifnot( num.snps > 0 )
     
     # If filters specified, filter SNP variants.
-    if ( require.complete || require.polymorphic ) {
+    if ( require.all || require.any || require.polymorphic ) {
         
         mask <- rep(TRUE, num.snps)
         
@@ -292,29 +294,31 @@ readSnpsVCF <- function(..., samples=NULL, require.complete=FALSE,
             
             gt <- sapply(result, function(x) as.character(x[i]))
             
-            if (require.complete) {
+            if (require.all) {
                 if ( any( gt == na.string ) ) {
+                    mask[i] <- FALSE
+                    next
+                }
+            } 
+            
+            if (require.any) {
+                if ( all( gt == na.string ) ) {
                     mask[i] <- FALSE
                     next
                 }
             }
             
             if (require.polymorphic) {
-                if ( length( unique( gt[ gt != na.string ]) ) > 1 ) {
+                if ( length( unique( gt[ gt != na.string ]) ) == 1 ) {
                     mask[i] <- FALSE
                     next
                 }
             }
         }
         
-        # Apply filter mask.
-        result@metadata[['loci']] <- result@metadata[['loci']][mask, ]
-        for ( i in 1:length(result) ) {
-            result[[i]] <- result[[i]][mask] 
-            if ( 'QualityScaledDNAStringSet' %in% class(result) ) {
-                result@quality[[i]] <- result@quality[[i]][mask]
-            }
-        }
+        # Apply filter.
+        loc <- result@metadata[['loci']][mask, ]
+        result <- subsetByLoci(result, loc)
     }
 
     return(result)
@@ -350,7 +354,7 @@ readGenoVCF <- function(..., samples, founders=NULL) {
     
     # TODO: optimise.
     
-    sample.geno <- readSnpsVCF(..., samples=samples, 
+    sample.geno <- readSnpsVCF(..., samples=samples, require.any=TRUE,
         require.polymorphic=TRUE)
     
     if ( ! is.null(founders) ) {
@@ -361,7 +365,7 @@ readGenoVCF <- function(..., samples, founders=NULL) {
         }
         
         founder.geno <- readSnpsVCF(..., samples=founders, 
-            require.complete=TRUE, require.polymorphic=TRUE)
+            require.all=TRUE, require.polymorphic=TRUE)
         
     } else {
         
