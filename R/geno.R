@@ -32,7 +32,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
     stopifnot( 'loci' %in% names(x@metadata) )
     stopifnot( 'mapframe' %in% class(x@metadata[['loci']]) )
     
-    if ( ! hasRownames(x) ) {
+    if ( ! hasRownames(x@metadata[['loci']]) ) {
         stop("cannot make raw genotype matrix - no locus IDs found")
     }
 
