@@ -28,10 +28,10 @@ Set non-reserved object attributes.
 }
 \details{
 As with R base function \code{mostattributes}, this provides access
-to non-reserved attributes, but with simpler behaviour.
+to non-reserved attributes.
 
 As with R base function \code{mostattributes}, this provides access
-to non-reserved attributes, but with simpler behaviour.
+to non-reserved attributes.
 }
 \keyword{internal}
 

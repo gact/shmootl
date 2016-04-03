@@ -4,7 +4,7 @@
 \alias{readSnpsVCF}
 \title{Read SNP genotypes from VCF files.}
 \usage{
-readSnpsVCF(..., samples = NULL, require.complete = FALSE,
+readSnpsVCF(..., samples = NULL, require.all = FALSE, require.any = FALSE,
   require.polymorphic = FALSE)
 }
 \arguments{
@@ -13,8 +13,11 @@ readSnpsVCF(..., samples = NULL, require.complete = FALSE,
 \item{samples}{Vector of samples for which SNP genotypes should be obtained. If
 not specified, genotypes are returned for all available samples.}
 
-\item{require.complete}{Remove variants that are not completely genotyped 
+\item{require.all}{Remove variants that are not completely genotyped 
 with respect to the given samples.}
+
+\item{require.any}{Remove variants that do not have at least one genotype
+call among the given samples.}
 
 \item{require.polymorphic}{Remove variants that do not have at least two 
 different genotype calls among the given samples.}
