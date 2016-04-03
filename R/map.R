@@ -163,7 +163,7 @@ as.map.data.frame <- function(from, map.unit=NULL) {
         class(seq.pos) <- 'A' # NB: assumes no 'X' chromosomes.
         
         # Set map positions for sequence.
-        to[[seq]] <- seq.pos
+        to[[norm.map.seq]] <- seq.pos
     }
     
     to <- setMapUnit(to, map.unit)
