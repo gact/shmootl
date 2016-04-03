@@ -35,7 +35,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
     if ( ! hasRownames(x@metadata[['loci']]) ) {
         stop("cannot make raw genotype matrix - no locus IDs found")
     }
-
+    
     # Get sample IDs.
     sample.ids <- names(x)
     
@@ -65,39 +65,36 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
     geno.matrix <- matrix(nrow=length(sample.ids), ncol=num.loci, 
         dimnames=list(sample.ids, loc.ids))
     
-    # Init number of alleles.
-    num.alleles <- 0
-    
     for ( col in 1:num.loci ) {
         
-        # Get sample symbols and alleles for this locus.
+        # Init genotype numbers for this locus.
         geno.numbers <- rep(NA_integer_, length(sample.ids))
         
         # Get sample symbols and alleles for this locus.
         sample.symbols <- x[, col]
         sample.alleles <- sort( unique( sample.symbols[ sample.symbols != '.' ] ) )
         
-        # Update number of alleles as needed.
-        if ( length(sample.alleles) > num.alleles ) {
-            num.alleles <- length(sample.alleles)
-        }
-        
         # Assign locus genotypes in alphabetical order of symbol.
-        for ( i in 1:length(sample.alleles) ) {
-            geno.numbers[ sample.symbols == sample.alleles[i] ] <- i
+        if ( length(sample.alleles) == 2 ) { # TODO: support polyallelic markers.
+            for ( i in 1:length(sample.alleles) ) {
+                geno.numbers[ sample.symbols == sample.alleles[i] ] <- i
+            }
         }
         
         # Set genotype numbers for this locus.
         geno.matrix[, col] <- geno.numbers
     }
-        
-    if ( num.alleles != 2 ) { 
-        stop("unsupported number of raw genotypes - '", num.alleles, "'")
-    } 
+    
+    # Remove null loci.
+    geno.matrix <- geno.matrix[, ! apply(geno.matrix, 2, allNA) ]
+    
+    if ( ncol(geno.matrix) == 0 ) {
+        stop("cannot make raw genotype matrix - no diallelic loci found")
+    }
     
     # Set allele symbols.
-    attr(geno.matrix, 'alleles') <- make.names(1:num.alleles)
-
+    attr(geno.matrix, 'alleles') <- make.names( 1:max(geno.matrix, na.rm=TRUE) )
+    
     return(geno.matrix)
 }
 
