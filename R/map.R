@@ -168,6 +168,8 @@ as.map.data.frame <- function(from, map.unit=NULL) {
     
     to <- setMapUnit(to, map.unit)
     
+    class(to) <- 'map'
+    
     return(to)
 }
 
@@ -213,6 +215,8 @@ as.map.list <- function(from, map.unit=NULL) {
     }
     
     to <- setMapUnit(to, map.unit)
+    
+    class(to) <- 'map'
     
     return(to)
 }
