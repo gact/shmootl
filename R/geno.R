@@ -411,12 +411,17 @@ makeGenoTable.list <- function(x, chr=NULL, digits=NULL, include.mapunit=TRUE) {
     
     map.unit <- 'cM'
     
-    if ( ! 'alleles' %in% names( attributes(x) ) ) {
-        stop("no alleles found in cross geno object")
+    # Get CrossInfo object.
+    cross.info <- attr(x, 'info')
+    
+    if ( is.null(cross.info) ) {
+        stop("no CrossInfo found in cross geno object")
     }
     
-    # Get alleles from geno object.
-    alleles <- attr(x, 'alleles')
+    # Get relevant CrossInfo.
+    alleles <- getAlleles(cross.info)
+    locus.ids <- getMarkers(cross.info)
+    samples <- getSamples(cross.info)
 
     # Get specified sequences.
     chr <- subsetBySeq(names(x), chr)
@@ -448,15 +453,13 @@ makeGenoTable.list <- function(x, chr=NULL, digits=NULL, include.mapunit=TRUE) {
         geno.matrix[ geno.matrix == i ] <- alleles[i]
     }
     
-    # Prepare map.
-    map.table <- setColumnFromRownames(map.table)
+    # Prepare map matrix.
+    map.table <- insertColumn(map.table, col.index=1, 
+        col.name='loc', data=locus.ids)
     map.matrix <- t(map.table)
-    rownames(map.matrix) <- NULL
-    map.matrix <- insertColumn(map.matrix, 1, data=c('id', '', ''))
     
     # Prepare genotype matrix.
-    geno.matrix <- setColumnFromRownames(geno.matrix)
-    colnames(geno.matrix) <- NULL
+    dimnames(geno.matrix) <- list(samples, NULL)
     
     # Bind map and genotype matrices into one table.
     geno.table <- as.data.frame(rbind(map.matrix, geno.matrix), 
