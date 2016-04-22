@@ -96,7 +96,7 @@ makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
     
     # Init founder genotype matrix.
     geno.matrix <- matrix(nrow=length(sample.ids), ncol=length(loc.ids), 
-        dimnames=list(sample.ids, loc.ids))
+        dimnames=list(NULL, loc.ids))
     
     for ( col in getIndices(loc.ids) ) {
         
@@ -221,7 +221,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
     
     # Init raw genotype matrix.
     geno.matrix <- matrix(nrow=length(sample.ids), ncol=num.loci, 
-        dimnames=list(sample.ids, loc.ids))
+        dimnames=list(NULL, loc.ids))
     
     for ( col in 1:num.loci ) {
         
@@ -296,25 +296,50 @@ makeGeno <- function(sample.geno, founder.geno=NULL) {
 #' @rdname makeGeno
 makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     
+    # If founder genotypes available, get founder genotype matrix..
     if ( ! is.null(founder.geno) ) {
         geno.matrix <- makeFounderGenoMatrix(sample.geno, founder.geno)
-    } else {
+    } else { # ..otherwise get raw genotype matrix.
         geno.matrix <- makeRawGenoMatrix(sample.geno)
     }
     
+    # Subset sample genotype data to contain only loci in the genotype matrix.
     sample.geno <- subsetByLocusID(sample.geno, 
         function(loc.id) loc.id %in% colnames(geno.matrix))
     
+    # Get locus info.
+    locus.ids <- colnames(geno.matrix)
+    locus.names <- make.names(locus.ids)
+    
+    # Ensure data has syntactially valid locus IDs. The original
+    # locus IDs will be stored separately in the CrossInfo object.
+    rownames(sample.geno@metadata[['loci']]) <- locus.names
+    colnames(geno.matrix) <- locus.names
+    
+    # Make a map from sample genotype loci.
+    # NB: resolves and sorts sequence IDs.
     geno.map <- makeMap(sample.geno)
     
-    cross.geno <- list()
-    
-    attr(cross.geno, 'alleles') <- attr(geno.matrix, 'alleles')
+    # Get allele symbols from genotype matrix.
+    alleles <- attr(geno.matrix, 'alleles')
     attr(geno.matrix, 'alleles') <- NULL
     
-    locus.seqs <- pullLocusSeq(sample.geno@metadata[['loci']])
+    # Get sequences of map loci.
+    locus.seqs <- pullLocusSeq(geno.map)
     
+    # Get map sequences.
     geno.seqs <- unique(locus.seqs)
+    
+    # Create CrossInfo object.
+    cross.info <- methods::new('CrossInfo')
+    cross.info <- setMarkers(cross.info, markers=locus.ids)
+    cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
+    cross.info <- setAlleles(cross.info, alleles)
+    cross.info <- setSamples(cross.info, names(sample.geno))
+    cross.info <- setSequences(cross.info, geno.seqs)
+    
+    # Init cross genotype object.
+    cross.geno <- list()
     
     for ( geno.seq in geno.seqs ) {
    
@@ -329,6 +354,8 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
         cross.geno[[geno.seq]] <- list(data=seq.dat, map=seq.map)
         class(cross.geno[[geno.seq]]) <- 'A' # NB: assumes no 'X' chromosomes.
     }
+    
+    attr(cross.geno, 'info') <- cross.info
     
     return(cross.geno)
 }
