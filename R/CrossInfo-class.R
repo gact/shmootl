@@ -3,9 +3,12 @@
 # CrossInfo --------------------------------------------------------------------
 #' An S4 class to hold yeast cross information.
 #' 
+#' A CrossInfo object holds yeast cross information for a specific \code{cross}
+#' object. The contents of its slots should match its corresponding object.
+#'
 #' @slot seq A character vector of sequence identifiers, with the name
 #' of each element being the name of the given sequence. These must be
-#' unique. 
+#' unique.
 #' 
 #' @slot pheno A vector of cross phenotypes, with the name of each element being 
 #' the syntactically valid name of the phenotype ID (as produced by the 
@@ -1346,14 +1349,10 @@ setMethod('validateAlleles', signature='CrossInfo',
       
     stopifnot( is.character(cross.info@alleles) )
       
-    if ( length(cross.info@alleles) == 0 ) {
-        stop("no alleles found")
-    }
-      
     if ( anyNA(cross.info@alleles) ) {
         stop("incomplete allele info")
     }  
-      
+    
     dup.geno <- cross.info@alleles[ duplicated(cross.info@alleles) ]
     if ( length(dup.geno) > 0 ) {
         stop("duplicate alleles - '", toString(dup.geno), "'")
@@ -1363,7 +1362,7 @@ setMethod('validateAlleles', signature='CrossInfo',
     if ( length(err.geno) > 0 ) {
         stop("invalid allele values - '", toString(err.geno), "'")
     }
-      
+    
     return(TRUE)
 })
 
@@ -1390,10 +1389,6 @@ setMethod('validateMarkers', signature='CrossInfo',
     
     stopifnot( is.data.frame(cross.info@markers) )
     
-    if ( nrow(cross.info@markers) == 0 ) {
-        stop("no marker info")
-    }
-    
     if ( anyNA(cross.info@markers) ) {
         stop("incomplete marker info")
     }    
@@ -1412,6 +1407,11 @@ setMethod('validateMarkers', signature='CrossInfo',
     
     if ( headings[1] != 'marker' ) {
         stop("marker ID column not found")
+    }
+    
+    if ( nrow(cross.info@markers) == 0 ) {
+        ih <- headings[ headings != 'marker' ]
+        stop("headings invalid in CrossInfo object with zero markers - '", toString(ih), "'")
     }
     
     marker.ids <- cross.info@markers$marker
@@ -1477,14 +1477,10 @@ setMethod('validatePhenotypes', signature='CrossInfo',
     definition = function(cross.info) { 
               
     stopifnot( is.character(cross.info@pheno) )
-      
-    if ( length(cross.info@pheno) == 0 ) {
-        stop("no phenotypes found")
-    }
     
     if ( anyNA(cross.info@pheno) ) {
         stop("incomplete phenotype info")
-    }  
+    }
 
     dup.pheno <- cross.info@pheno[ duplicated(cross.info@pheno) ]
     if ( length(dup.pheno) > 0 ) {
@@ -1539,12 +1535,6 @@ setMethod('validateSamples', signature='CrossInfo',
     definition = function(cross.info) {
     
     stopifnot( is.data.frame(cross.info@samples) )
-
-    num.samples <- nrow(cross.info@samples)
-    
-    if ( num.samples == 0 ) {
-        stop("no samples found")
-    }
     
     if ( anyNA(cross.info@samples) ) {
         stop("incomplete sample info")
@@ -1561,12 +1551,17 @@ setMethod('validateSamples', signature='CrossInfo',
     if ( length(dh) > 0 ) {
         stop("duplicate sample headings - '", toString(dh), "'")
     }   
-
+    
     if ( headings[1] != 'sample.index' ) {
         stop("sample indices not found")
     }
-            
-    if ( any(cross.info@samples$sample.index != 1:num.samples) ) {
+    
+    if ( nrow(cross.info@samples) == 0 ) {
+        ih <- headings[ headings != 'sample.index' ]
+        stop("headings invalid in CrossInfo object with zero samples - '", toString(ih), "'")
+    }
+    
+    if ( any( cross.info@samples$sample.index != getRowIndices(cross.info@samples) ) ) {
         stop("invalid sample indices")
     }
     
@@ -1594,21 +1589,24 @@ setMethod('validateSamples', signature='CrossInfo',
         
         strain.indices <- cross.info@samples$strain.index
         
-        strain.start.valid <- strain.indices[1] == 1
-        strain.steps.valid <- all( diff(strain.indices) %in% 0:1 )
-        
-        if ( ! ( strain.start.valid && strain.steps.valid ) ) {
-            stop("invalid strain indices")
-        }
-        
-        if ( 'sample.id' %in% headings ) {
+        if ( length(strain.indices) > 0 ) {
             
-            strain.runs <- rle(strain.indices)
-          
-            if ( ! ( length(strain.runs$lengths) == length(sample.runs$lengths) && 
-                all(strain.runs$lengths == sample.runs$lengths) ) ) {
-                stop("mismatch between sample IDs and strain indices")
-            } 
+            strain.start.valid <- strain.indices[1] == 1
+            strain.steps.valid <- all( diff(strain.indices) %in% 0:1 )
+            
+            if ( ! ( strain.start.valid && strain.steps.valid ) ) {
+                stop("invalid strain indices")
+            }
+            
+            if ( 'sample.id' %in% headings ) {
+                
+                strain.runs <- rle(strain.indices)
+                
+                if ( ! ( length(strain.runs$lengths) == length(sample.runs$lengths) && 
+                    all(strain.runs$lengths == sample.runs$lengths) ) ) {
+                    stop("mismatch between sample IDs and strain indices")
+                } 
+            }
         }
     }
 
@@ -1616,19 +1614,22 @@ setMethod('validateSamples', signature='CrossInfo',
         
         tetrad.indices <- cross.info@samples$tetrad.index
         
-        if ( ! 'strain.index' %in% headings ) {
-            strain.indices <- 1:num.samples
-        }
+        if ( length(tetrad.indices) > 0 ) {
         
-        exemplar.sindices <- sapply(unique(strain.indices), match, strain.indices)
-        exemplar.tindices <- tetrad.indices[ exemplar.sindices ]
-        
-        tetrad.start.valid <- tetrad.indices[1] == 1
-        tetrad.steps.valid <- all( diff(tetrad.indices) %in% 0:1 )
-        tetrad.sizes.valid <- all( table(exemplar.tindices) <= 4 )
-        
-        if ( ! ( tetrad.start.valid && tetrad.steps.valid && tetrad.sizes.valid ) ) {
-            stop("invalid tetrad indices")
+            if ( ! 'strain.index' %in% headings ) {
+                strain.indices <- getRowIndices(cross.info@samples)
+            }
+            
+            exemplar.sindices <- sapply(unique(strain.indices), match, strain.indices)
+            exemplar.tindices <- tetrad.indices[ exemplar.sindices ]
+            
+            tetrad.start.valid <- tetrad.indices[1] == 1
+            tetrad.steps.valid <- all( diff(tetrad.indices) %in% 0:1 )
+            tetrad.sizes.valid <- all( table(exemplar.tindices) <= 4 )
+            
+            if ( ! ( tetrad.start.valid && tetrad.steps.valid && tetrad.sizes.valid ) ) {
+                stop("invalid tetrad indices")
+            }
         }
     }
     
@@ -1657,10 +1658,6 @@ setMethod('validateSequences', signature='CrossInfo',
     definition = function(cross.info) { 
       
     stopifnot( is.character(cross.info@seq) )
-      
-    if ( length(cross.info@seq) == 0 ) {
-        stop("no sequences found")
-    }
       
     if ( anyNA(cross.info@seq) ) {
         stop("incomplete sequences info")

@@ -6,7 +6,8 @@
 \alias{CrossInfo-class}
 \title{An S4 class to hold yeast cross information.}
 \description{
-An S4 class to hold yeast cross information.
+A CrossInfo object holds yeast cross information for a specific \code{cross}
+object. The contents of its slots should match its corresponding object.
 }
 \section{Slots}{
 
