@@ -67,7 +67,7 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, include.mapunit=TR
     
     # Prepare map matrix.
     map.table <- insertColumn(map.table, col.index=1, 
-        col.name='loc', data=locus.ids)
+        col.name='id', data=locus.ids)
     rownames(map.table) <- NULL
     map.matrix <- t(map.table)
     

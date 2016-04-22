@@ -423,8 +423,8 @@ writeGenoCSV <- function(geno, outfile, chr=NULL, digits=NULL,
     # Move sample IDs into first column of geno table.
     geno.table <- setColumnFromRownames(geno.table)
     
-    # Set ID column heading.
-    geno.table[1:3, 1] <- c('id', '', '')
+    # Blank map rows of ID column.
+    geno.table[2:3, 1] <- c('', '')
     
     # Write cross geno data to CSV file.
     write.table(geno.table, file=outfile, na=missing.value, sep=',', 
