@@ -1,5 +1,85 @@
 # Start of geno.R ##############################################################
 
+# as.data.frame.geno -----------------------------------------------------------
+#' Coerce \code{geno} object to \code{data.frame}.
+#' 
+#' @param x A \code{geno} object.
+#' @param chr Vector of sequences for which genotype data should be included in 
+#' the genotype \code{data.frame}. If none are specified, a genotype 
+#' \code{data.frame} is returned for all available sequences.
+#' @param digits If specified, round genetic map positions to the specified 
+#' number of digits.
+#' @param include.mapunit Include map unit information in map positions.
+#' 
+#' @return A \code{data.frame} corresponding to the input \code{geno} object.
+#' 
+#' @keywords internal
+#' @method as.data.frame geno
+#' @rdname as.data.frame.geno
+as.data.frame.geno <- function(x, chr=NULL, digits=NULL, include.mapunit=TRUE) {
+    
+    stopifnot( isBOOL(include.mapunit) )
+    
+    map.unit <- 'cM'
+    
+    # Get CrossInfo object.
+    cross.info <- attr(x, 'info')
+    
+    if ( is.null(cross.info) ) {
+        stop("no CrossInfo found in cross geno object")
+    }
+    
+    # Get relevant CrossInfo.
+    alleles <- getAlleles(cross.info)
+    locus.ids <- getMarkers(cross.info)
+    samples <- getSamples(cross.info)
+    
+    # Get specified sequences.
+    chr <- subsetBySeq(names(x), chr)
+    stopifnot( length(chr) > 0 )
+    
+    # Subset geno object by the specified chromosomes.
+    x <- x[chr]
+    
+    # Pull map from geno object.
+    map.table <- as.mapframe( lapply(x, function(obj) 
+        obj$map), map.unit=map.unit )
+    
+    # If digits specified, round map positions.
+    if ( ! is.null(digits) ) {
+        stopifnot( isSinglePositiveWholeNumber(digits) )
+        map.table$pos <- round(map.table$pos, digits=digits)
+    }
+    
+    # If including map unit, add map unit info to map table.
+    if (include.mapunit) {
+        map.table <- setPosColDataMapUnit(map.table, map.unit)
+    }
+    
+    # Pull genotype matrix from geno object.
+    geno.matrix <- do.call(cbind, lapply(x, function(obj) obj$data))
+    
+    # Replace encoded genotypes with actual genotype values.
+    for ( i in getIndices(alleles) ) {
+        geno.matrix[ geno.matrix == i ] <- alleles[i]
+    }
+    
+    # Prepare map matrix.
+    map.table <- insertColumn(map.table, col.index=1, 
+        col.name='loc', data=locus.ids)
+    rownames(map.table) <- NULL
+    map.matrix <- t(map.table)
+    
+    # Prepare genotype matrix.
+    dimnames(geno.matrix) <- list(samples, NULL)
+    
+    # Bind map and genotype matrices into one data frame.
+    geno.frame <- as.data.frame(rbind(map.matrix, geno.matrix), 
+        stringsAsFactors=FALSE)
+    
+    return(geno.frame)
+}
+
 # makeFounderGenoMatrix (S3) ---------------------------------------------------
 #' Make founder genotype matrix from genotype data.
 #' 
@@ -381,91 +461,5 @@ setMethod('makeGeno', signature='DNAStringSet',
 #' @rdname makeGeno
 setMethod('makeGeno', signature='QualityScaledDNAStringSet', 
     definition=makeGeno.DNAStringSet)
-
-# makeGenoTable (S3) -----------------------------------------------------------
-#' Make genotype table from genotype data.
-#' 
-#' @param x An \pkg{R/qtl} \code{cross} \code{geno} object.
-#' @param chr Vector of sequences for which genotype data should be included in 
-#' the genotype table. If none are specified, a genotype table is returned for 
-#' all available sequences.
-#' @param digits If specified, round genetic map positions to the specified 
-#' number of digits.
-#' @param include.mapunit Include map unit information in map positions.
-#' 
-#' @return A \code{data.frame} containing a genotype table.
-#' 
-#' @keywords internal
-#' @rdname makeGenoTable
-makeGenoTable <- function(x, chr=NULL, digits=NULL, include.mapunit=TRUE) {
-    UseMethod('makeGenoTable', x)
-}
-
-# makeGenoTable.list -----------------------------------------------------------
-#' @rdname makeGenoTable
-makeGenoTable.list <- function(x, chr=NULL, digits=NULL, include.mapunit=TRUE) {
-    
-    # TODO: validateGeno(x)
-    
-    stopifnot( isBOOL(include.mapunit) )
-    
-    map.unit <- 'cM'
-    
-    # Get CrossInfo object.
-    cross.info <- attr(x, 'info')
-    
-    if ( is.null(cross.info) ) {
-        stop("no CrossInfo found in cross geno object")
-    }
-    
-    # Get relevant CrossInfo.
-    alleles <- getAlleles(cross.info)
-    locus.ids <- getMarkers(cross.info)
-    samples <- getSamples(cross.info)
-
-    # Get specified sequences.
-    chr <- subsetBySeq(names(x), chr)
-    stopifnot( length(chr) > 0 )
-    
-    # Subset geno object by the specified chromosomes.
-    x <- x[chr]
-    
-    # Pull map from geno object.
-    map.table <- as.mapframe( lapply(x, function(obj) 
-        obj$map), map.unit=map.unit )
-    
-    # If digits specified, round map positions.
-    if ( ! is.null(digits) ) {
-        stopifnot( isSinglePositiveWholeNumber(digits) )
-        map.table$pos <- round(map.table$pos, digits=digits)
-    }
-    
-    # If including map unit, add map unit info to map table.
-    if (include.mapunit) {
-        map.table <- setPosColDataMapUnit(map.table, map.unit)
-    }
-    
-    # Pull genotype matrix from geno object.
-    geno.matrix <- do.call(cbind, lapply(x, function(obj) obj$data))
-    
-    # Replace encoded genotypes with actual genotype values.
-    for ( i in getIndices(alleles) ) {
-        geno.matrix[ geno.matrix == i ] <- alleles[i]
-    }
-    
-    # Prepare map matrix.
-    map.table <- insertColumn(map.table, col.index=1, 
-        col.name='loc', data=locus.ids)
-    map.matrix <- t(map.table)
-    
-    # Prepare genotype matrix.
-    dimnames(geno.matrix) <- list(samples, NULL)
-    
-    # Bind map and genotype matrices into one table.
-    geno.table <- as.data.frame(rbind(map.matrix, geno.matrix), 
-        stringsAsFactors=FALSE)
-    
-    return(geno.table)
-}
 
 # End of geno.R ################################################################
