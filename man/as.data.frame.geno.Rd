@@ -4,11 +4,13 @@
 \alias{as.data.frame.geno}
 \title{Coerce \code{geno} object to \code{data.frame}.}
 \usage{
-\method{as.data.frame}{geno}(x, chr = NULL, digits = NULL,
+\method{as.data.frame}{geno}(x, ..., chr = NULL, digits = NULL,
   include.mapunit = TRUE)
 }
 \arguments{
 \item{x}{A \code{geno} object.}
+
+\item{...}{Unused arguments.}
 
 \item{chr}{Vector of sequences for which genotype data should be included in 
 the genotype \code{data.frame}. If none are specified, a genotype 

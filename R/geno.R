@@ -4,6 +4,7 @@
 #' Coerce \code{geno} object to \code{data.frame}.
 #' 
 #' @param x A \code{geno} object.
+#' @param ... Unused arguments.
 #' @param chr Vector of sequences for which genotype data should be included in 
 #' the genotype \code{data.frame}. If none are specified, a genotype 
 #' \code{data.frame} is returned for all available sequences.
@@ -16,7 +17,7 @@
 #' @keywords internal
 #' @method as.data.frame geno
 #' @rdname as.data.frame.geno
-as.data.frame.geno <- function(x, chr=NULL, digits=NULL, include.mapunit=TRUE) {
+as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, include.mapunit=TRUE) {
     
     stopifnot( isBOOL(include.mapunit) )
     
