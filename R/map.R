@@ -290,7 +290,7 @@ as.mapframe.data.frame <- function(from, map.unit=NULL) {
     
     # Ensure sequence and positions columns are leftmost.
     if ( seqcol.index != 1 || poscol.index != 2 ) {
-        column.indices <- 1:ncol(from)
+        column.indices <- getColIndices(from)
         other.indices <- column.indices[ -c(seqcol.index, poscol.index) ]
         from[, column.indices] <- from[, c( seqcol.index, poscol.index, other.indices)]
     }
@@ -583,7 +583,7 @@ findFlanking.map <- function(x, loc, expandtomarkers=FALSE) {
         # If expanding to markers, create mask in which
         # markers and sequence endpoints are TRUE..
         loc.mask <- isMarkerID( names(seq.pos) ) | 
-            1:length(seq.pos) %in% c(1, length(seq.pos))
+            getIndices(seq.pos) %in% c(1, length(seq.pos))
     } else {
         # ..otherwise create mask with all TRUE.
         loc.mask <- rep_len( TRUE, length(seq.pos) )
@@ -689,7 +689,7 @@ findFlankingRowIndices <- function(x, loc, expandtomarkers=FALSE) {
         # If expanding to markers and mapframe has locus IDs, create
         # a mask in which markers and sequence endpoints are TRUE..
         loc.mask <- isMarkerID(rownames(x)[indices]) | 
-            1:length(seq.pos) %in% c( 1, length(seq.pos) )
+            getIndices(seq.pos) %in% c( 1, length(seq.pos) )
     } else {
         # ..otherwise create mask with all TRUE.
         loc.mask <- rep_len( TRUE, length(seq.pos) )
@@ -732,7 +732,7 @@ findLoci <- function(x, loc) {
         dimnames=list(NULL, c('chr', 'pos')) ) )
     
     # Find closest locus to each map position.
-    for ( i in 1:nrow(loc) ) {
+    for ( i in getRowIndices(loc) ) {
         
         # Get loci flanking this map position.
         flanking <- findFlanking(x, loc[i, ])
@@ -763,7 +763,7 @@ findLocusRowIndices <- function(x, loc) {
     prox.indices <- integer( nrow(loc) )
     
     # Find row indices of closest locus to each specified map position.
-    for ( i in 1:nrow(loc) ) {
+    for ( i in getRowIndices(loc) ) {
         
         # Get row indices of flanking loci.
         row.indices <- findFlankingRowIndices(x, loc[i, ])
@@ -848,7 +848,7 @@ getDatColIndices <- function(x, datcolumns=NULL, strict=FALSE) {
     stopif( anyDuplicated( colnames(x) ) )
     stopifnot( isBOOL(strict) )
     
-    column.indices <- 1:ncol(x)
+    column.indices <- getColIndices(x)
     seqcol.indices <- getSeqColIndex(x)
     poscol.indices <- getPosColIndex(x)
     datcol.indices <- column.indices[ column.indices != seqcol.indices & 
@@ -862,7 +862,7 @@ getDatColIndices <- function(x, datcolumns=NULL, strict=FALSE) {
             
             if ( isWholeNumber(datcolumns) ) {
                 
-                available.datcolumns <- 1:length(datcol.indices)
+                available.datcolumns <- getIndices(datcol.indices)
                 
                 exrange <- datcolumns[ ! inRange( datcolumns, range(available.datcolumns) ) ]
                 if ( length(exrange) > 0 ) {
@@ -1623,7 +1623,7 @@ matchSeqRowIndices <- function(x, sequences, simplify=FALSE) {
         x.seqs <- pullLocusSeq(x)
         
         index.list <- vector('list', length(sequences))
-        for ( i in 1:length(sequences) ) {
+        for ( i in getIndices(sequences) ) {
             index.list[[i]] <- which( x.seqs == norm.seqs[i] )
         }
         
@@ -1678,7 +1678,7 @@ orderMap.map <- function(x) {
     x <- subsetMap( x, sortSeq( names(x) ) )
     
     # Sort map positions.
-    for ( i in 1:length(x) ) {
+    for ( i in getIndices(x) ) {
         x[[i]] <- sort.int(x[[i]]) 
     }
     
@@ -1729,7 +1729,7 @@ pullLocusSeq.list <- function(x) {
 # pullLocusSeq.map -------------------------------------------------------------
 #' @rdname pullLocusSeq
 pullLocusSeq.map <- function(x) {
-    return( unlist( lapply( 1:length(x), function(i) 
+    return( unlist( lapply( getIndices(x), function(i) 
         rep_len(names(x)[i], length(x[[i]])) ) ) )
 }
 

@@ -86,7 +86,7 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     status <- logical( length(phenotypes) )
     
     # Output results of single QTL analysis for each phenotype.
-    for ( i in 1:length(phenotypes) ) {
+    for ( i in getIndices(phenotypes) ) {
         
         # Output scan result for this phenotype.
         pheno.result <- qtl:::subset.scanone(scanone.result, lodcolumn=i)

@@ -158,7 +158,7 @@ setMethod('getMarkerIndices', signature='CrossInfo',
 
     } else {
         
-        indices <- 1:nrow(cross.info@markers)
+        indices <- getRowIndices(cross.info@markers)
     }
     
     return(indices) 
@@ -403,7 +403,7 @@ setMethod('getPhenotypeIndices', signature='CrossInfo',
     
     } else {
         
-        indices <- 1:length(cross.info@pheno)
+        indices <- getIndices(cross.info@pheno)
     }
         
     return(indices)
@@ -762,7 +762,7 @@ setMethod('getSeqIndices', signature='CrossInfo',
       
     } else {
       
-        indices <- 1:length(cross.info@seq)
+        indices <- getIndices(cross.info@seq)
     }
   
     return(indices) 
@@ -1177,7 +1177,7 @@ setMethod('setSamples', signature='CrossInfo', definition =
                   
     stopif( missing(samples) )
     
-    indices <- 1:length(samples)
+    indices <- getIndices(samples)
         
     if ( is.character(samples) ) {
       

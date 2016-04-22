@@ -98,7 +98,7 @@ makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
     geno.matrix <- matrix(nrow=length(sample.ids), ncol=length(loc.ids), 
         dimnames=list(sample.ids, loc.ids))
     
-    for ( col in 1:length(loc.ids) ) {
+    for ( col in getIndices(loc.ids) ) {
         
         # Init genotype numbers for this locus.
         geno.numbers <- rep(NA_integer_, length(sample.ids))
@@ -115,7 +115,7 @@ makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
         if ( length(founder.alleles) == 2 ) { # TODO: support polyallelic markers.
             if ( length(sample.alleles) > 1 ) {
                 if ( all( sample.alleles %in% founder.alleles ) ) {
-                    for ( i in 1:length(founder.symbols) ) {
+                    for ( i in getIndices(founder.symbols) ) {
                         geno.numbers[ sample.symbols == founder.symbols[i] ] <- i
                     }
                 }
@@ -212,6 +212,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
     # Get number of loci, check consistent.
     num.loci <- unique( Biostrings::width(x) )
     stopifnot( length(num.loci) == 1 )
+    stopifnot( length(num.loci) > 0 )
     stopifnot( length(loc.ids) == num.loci )
     
     # Convert sample genotype data to matrix.
@@ -233,7 +234,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
         
         # Assign locus genotypes in alphabetical order of symbol.
         if ( length(sample.alleles) == 2 ) { # TODO: support polyallelic markers.
-            for ( i in 1:length(sample.alleles) ) {
+            for ( i in getIndices(sample.alleles) ) {
                 geno.numbers[ sample.symbols == sample.alleles[i] ] <- i
             }
         }
@@ -414,7 +415,7 @@ makeGenoTable.list <- function(x, chr=NULL, digits=NULL, include.mapunit=TRUE) {
     geno.matrix <- do.call(cbind, lapply(x, function(obj) obj$data))
     
     # Replace encoded genotypes with actual genotype values.
-    for ( i in 1:length(alleles) ) {
+    for ( i in getIndices(alleles) ) {
         geno.matrix[ geno.matrix == i ] <- alleles[i]
     }
     

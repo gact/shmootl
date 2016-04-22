@@ -39,7 +39,7 @@ subsetByLocusID.data.frame <- function(x, predicate) {
 subsetByLocusID.map <- function(x, predicate) {
     
     # Extract filtered map data for each sequence.
-    for ( i in 1:length(x) ) {
+    for ( i in getIndices(x) ) {
         x[[i]] <- x[[i]][ sapply(names(x[[i]]), predicate) ]
     }
     

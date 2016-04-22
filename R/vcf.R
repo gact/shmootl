@@ -94,7 +94,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
         stopifnot( is.character(samples) )
         stopifnot( length(samples) > 0 )
         
-        for ( i in 1:length(infiles) ) {
+        for ( i in getIndices(infiles) ) {
             sample.list[[i]] <- sample.list[[i]][ sample.list[[i]] %in% samples ]
         }
         
@@ -142,7 +142,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
     snps <- vector('list', length(infiles))
     
     # Read SNP genotypes from each input VCF file.
-    for ( i in 1:length(infiles) ) {
+    for ( i in getIndices(infiles) ) {
         
         file.samples <- sample.list[[i]]
         infile <- infiles[[i]]
@@ -193,14 +193,14 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
         allele.codes <- sapply(indices, function(i) var.gt[i, ] + 1)
         
         # Get base call for each sample genotype.
-        base.matrix <- sapply(1:length(indices), function(i) 
+        base.matrix <- sapply(getIndices(indices), function(i) 
             allele.values[[i]][ allele.codes[, i] ])
         
         # Replace NA values.
         base.matrix[ is.na(base.matrix) ] <- na.string
         
         # Get base call string for each sample.
-        bases <- sapply(1:length(file.samples), function(s) 
+        bases <- sapply(getIndices(file.samples), function(s) 
             paste0(base.matrix[s, ], collapse='') )
         
         # If genotype qualities available, create  
@@ -215,19 +215,19 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
             
             # Calculate a Phred quality for each sample genotype  
             # from combined variant/genotype quality scores.
-            qual.matrix <- sapply(1:length(indices), function(i) 
+            qual.matrix <- sapply(getIndices(indices), function(i) 
                 -10 * log10( variant.error.probs[i] + genotype.error.probs[i, ] ) )
             
             # Replace NA values with minimum quality score.
             qual.matrix[ is.na(qual.matrix) ] <- const$qual$phred$range[1]
             
             # Clamp quality scores within Phred range, add Phred offset.
-            qual.matrix <- sapply(1:length(file.samples), function(s) 
+            qual.matrix <- sapply(getIndices(file.samples), function(s) 
                 clamp(qual.matrix[s, ], const$qual$phred$range) + 
                 const$qual$phred$offset )
             
             # Convert Phred quality scores to ASCII characters.
-            quals <- sapply(1:length(file.samples), function(s) 
+            quals <- sapply(getIndices(file.samples), function(s) 
                 intToUtf8( round(qual.matrix[, s]) ) )
             
             snps[[i]] <- Biostrings::QualityScaledDNAStringSet( 
@@ -262,7 +262,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
         }
         
         # Keep only common loci.
-        for ( i in 1:length(snps) ) {
+        for ( i in getIndices(snps) ) {
             snps[[i]] <- subsetByLoci(snps[[i]], intersection)
         }
         

@@ -107,7 +107,7 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
     raw.intervals <- matrix( nrow=length(peak.indices), ncol=3, 
         dimnames=list(NULL, names(ci)) )
 
-    for ( i in 1:length(peak.indices) ) {
+    for ( i in getIndices(peak.indices) ) {
         
         # Init interval indices to peak index.
         l <- u <- peak.index <- peak.indices[i]
@@ -175,7 +175,7 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
         }
         
         # Expand each interval to next flanking marker or sequence endpoint.
-        for ( r in 1:nrow(merged.intervals) ) {
+        for ( r in getRowIndices(merged.intervals) ) {
             
             # Get interval limit indices.
             l <- merged.intervals[r, 'low']
@@ -205,7 +205,7 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
     # Create list of interval mapframes.
     intervals <- list()
     
-    for ( r in 1:nrow(merged.intervals) ) {
+    for ( r in getRowIndices(merged.intervals) ) {
         
         merged.interval <- merged.intervals[r, ]
         
@@ -288,7 +288,7 @@ getQTLIntervals.qtl <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
     
     # Get QTL intervals corresponding to QTL peaks.
     intervals <- list( length(qtl.peaks) )
-    for ( i in 1:length(qtl.peaks) ) {
+    for ( i in getIndices(qtl.peaks) ) {
         lod.profile <- getLODProfile(x, qtl.index=qtl.indices[i])
         interval.result <- getQTLIntervals(lod.profile, drop=drop, 
             expandtomarkers=expandtomarkers, qtl.peaks=qtl.peaks[[i]])

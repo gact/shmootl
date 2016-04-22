@@ -133,7 +133,7 @@ with(const, {
     seqinfo <- loadSeqInfo()
     
     # Get mapping of sequence aliases to standard names.
-    alias2chrom <- unlist( lapply(1:nrow(chrinfo), function(i) {
+    alias2chrom <- unlist( lapply(getRowIndices(chrinfo), function(i) {
         aliasmap <- character()
         if ( ! is.na(chrinfo$aliases[i]) ) {
             for ( alias in strsplit(chrinfo$aliases[i], paste0('[^', 

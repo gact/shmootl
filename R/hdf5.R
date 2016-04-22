@@ -68,7 +68,7 @@ h5writeAttributes <- function(x, h5obj) {
             
             stopifnot( 'dim' %in% names(attr.list) )
             
-            exp.keys <- paste0( 'dimnames.', c('names', 1:length(attr.list[['dim']]) ) )
+            exp.keys <- paste0( 'dimnames.', c('names', getIndices(attr.list[['dim']]) ) )
          
             if ( any( exp.keys %in% names(attr.list) ) ) {
                 stop("cannot split 'dimnames' without overwriting existing attributes")
@@ -99,7 +99,7 @@ h5writeAttributes <- function(x, h5obj) {
         }
         
         # Write attributes.
-        for ( i in 1:length(attr.list) ) {
+        for ( i in getIndices(attr.list) ) {
             rhdf5::h5writeAttribute(h5obj=h5obj, name=names(attr.list)[i], 
                 attr=attr.list[[i]])
         }
@@ -230,7 +230,7 @@ makeGroupObjectNames <- function(group.names=NULL, group.size=NULL) {
             stopifnot( group.size == length(group.names) )
         }
         
-        group.indices <- 1:length(group.names)
+        group.indices <- getIndices(group.names)
         
         m <- regexec(const$pattern$h5element, group.names)
         matches <- regmatches(group.names, m)
@@ -249,7 +249,7 @@ makeGroupObjectNames <- function(group.names=NULL, group.size=NULL) {
         
     } else if ( ! is.null(group.size) ) {
         
-        stopifnot( isSingleWholeNumber(group.size) )
+        stopifnot( isSinglePositiveWholeNumber(group.size) )
         
         indices <- 1:group.size
         
@@ -367,7 +367,7 @@ readDatasetHDF5.default <- function(infile, h5name) {
         
         dataset.dimnames <- vector( 'list', length(dims) )
         
-        for ( i in 1:length(dims) ) {
+        for ( i in getIndices(dims) ) {
             
             attr.key <- paste0('dimnames.', i)
             
@@ -540,7 +540,7 @@ readDatasetHDF5.scantwoperm <- function(infile, h5name) {
     
     class(result) <- c('scantwoperm', 'list')
     
-    for ( i in 1:length(result) ) {
+    for ( i in getIndices(result) ) {
         
         colnames(result[[i]]) <- attr(result, 'phenotypes')
     }
@@ -823,7 +823,7 @@ writeDatasetHDF5.list <- function(dataset, outfile, h5name) {
     child.names <- makeGroupObjectNames( group.names=names(dataset), 
         group.size=length(dataset) )
     
-    for ( i in 1:length(dataset) ) {
+    for ( i in getIndices(dataset) ) {
         
         child.h5name <- joinH5ObjectNameParts( c(h5name, child.names[i]) )
         

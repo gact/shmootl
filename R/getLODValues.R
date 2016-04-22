@@ -42,7 +42,7 @@ getLODValues <- function(x, loc, lodcolumn=NULL) {
     lod.values <- numeric( nrow(loc) )
     
     # Find LOD value at each specified map position.
-    for ( i in 1:nrow(loc) ) {
+    for ( i in getRowIndices(loc) ) {
         
         # Get row indices of flanking loci.
         row.indices <- findFlankingRowIndices(x, loc[i, ])

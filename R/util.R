@@ -79,7 +79,7 @@ coerceDataFrame <- function(x, classes) {
     
     stopif( any( is.null(coercions) ) )
     
-    for ( i in 1:ncol(x) ) {
+    for ( i in getColIndices(x) ) {
         x[[i]] <- coercions[[i]](x[[i]])
     }
     
@@ -221,6 +221,22 @@ getCoercionFromClassS3 <- function(class.vector) {
     return(coercion)
 }
 
+# getColIndices ----------------------------------------------------------------
+#' Get column indices of object.
+#' 
+#' @param x An object with columns.
+#'     
+#' @return Integer vector of all column indices. Returns an empty integer vector
+#' if the object has zero columns.
+#'    
+#' @keywords internal
+#' @rdname getColIndices
+getColIndices <- function(x) {
+    num.cols <- ncol(x)
+    stopifnot( isSingleNonNegativeWholeNumber(num.cols) )
+    return( if ( num.cols > 0 ) { 1:num.cols } else { integer() } )
+}
+
 # getFilePrefix ----------------------------------------------------------------
 #' Get file prefixes.
 #' 
@@ -240,7 +256,7 @@ getFilePrefix <- function(x) {
     m <- regexec(const$pattern$file.with.ext, x)
     matches <- regmatches(x, m)
     
-    prefixes <- sapply(1:length(x), function(i) if ( length(matches[[i]]) > 0 ) 
+    prefixes <- sapply(getIndices(x), function(i) if ( length(matches[[i]]) > 0 ) 
     { matches[[i]][2] } else { x[i] } )
     
     return(prefixes)
@@ -265,11 +281,27 @@ getFileExtension <- function(x) {
     m <- regexec(const$pattern$file.with.ext, x)
     matches <- regmatches(x, m)
     
-    extensions <- sapply(1:length(x), function(i) if ( length(matches[[i]]) > 0 ) 
+    extensions <- sapply(getIndices(x), function(i) if ( length(matches[[i]]) > 0 ) 
     { matches[[i]][3] } else { '' } )
     
     return(extensions)
 }
+
+# getIndices -------------------------------------------------------------------
+#' Get indices of object.
+#' 
+#' @param x An object with length.
+#'     
+#' @return Integer vector of all object indices. Returns an empty integer vector
+#' if the object does not have length.
+#'    
+#' @keywords internal
+#' @rdname getIndices
+getIndices <- function(x) {
+    object.length <- length(x)
+    stopifnot( isSingleNonNegativeWholeNumber(object.length) )
+    return( if ( object.length > 0 ) { 1:object.length } else { integer() } )
+} 
 
 # getMissingValueFromClassS3 ---------------------------------------------------
 #' Get missing value for the given class.
@@ -305,6 +337,22 @@ getMissingValueFromClassS3 <- function(class.vector) {
     }
     
     return(missing.value)
+}
+
+# getRowIndices ----------------------------------------------------------------
+#' Get row indices of object.
+#' 
+#' @param x An object with rows.
+#'     
+#' @return Integer vector of all row indices. Returns an empty integer vector if
+#' the object has zero rows.
+#'    
+#' @keywords internal
+#' @rdname getRowIndices
+getRowIndices <- function(x) {
+    num.rows <- nrow(x)
+    stopifnot( isSingleNonNegativeWholeNumber(num.rows) )
+    return( if ( num.rows > 0 ) { 1:num.rows } else { integer() } )
 }
 
 # getSpecialAttributeNames -----------------------------------------------------
@@ -361,7 +409,7 @@ hasRownames <- function(x) {
     
     if ( is.data.frame(x) ) {
         row.names <- attr(x, 'row.names')
-        rowname.status <- ! is.null(row.names) && ! all( row.names == 1:nrow(x) )
+        rowname.status <- ! is.null(row.names) && ! all( row.names == getRowIndices(x) )
     } else if ( ! is.null( rownames(x) ) ) {
         rowname.status <- TRUE
     } 
@@ -414,7 +462,7 @@ inferStepSize <- function(steps, tol=.Machine$double.eps^0.5) {
     
     # Merge similar step values.
     merged.freq <- integer( length=length(size.groups) )
-    for ( i in 1:length(size.groups) ) {
+    for ( i in getIndices(size.groups) ) {
         g <- unlist(size.groups[i])
         merged.freq[i] <- sum(step.freq[g])
         names(merged.freq)[i] <- names( sort(step.freq[g], decreasing=TRUE) )[1]
