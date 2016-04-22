@@ -28,7 +28,7 @@ makeGeno(sample.geno, founder.geno = NULL)
 \item{founder.geno}{Founder genotype data.}
 }
 \value{
-An \pkg{R/qtl} \code{cross} \code{geno} object.
+A \code{geno} object.
 }
 \description{
 Make an \pkg{R/qtl} \code{cross} \code{geno} object.

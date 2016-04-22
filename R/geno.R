@@ -252,7 +252,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
     
     # Set allele symbols.
     attr(geno.matrix, 'alleles') <- make.names( 1:max(geno.matrix, na.rm=TRUE) )
-
+    
     return(geno.matrix)
 }
 
@@ -282,7 +282,7 @@ setMethod('makeRawGenoMatrix', signature='QualityScaledDNAStringSet',
 #' @param sample.geno Sample genotype data.
 #' @param founder.geno Founder genotype data.
 #' 
-#' @return An \pkg{R/qtl} \code{cross} \code{geno} object.
+#' @return A \code{geno} object.
 #' 
 #' @importFrom Biostrings DNAStringSet
 #' @importFrom Biostrings QualityScaledDNAStringSet
@@ -356,6 +356,8 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     }
     
     attr(cross.geno, 'info') <- cross.info
+    
+    class(cross.geno) <- c('geno', 'list')
     
     return(cross.geno)
 }
