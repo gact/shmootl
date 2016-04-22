@@ -43,17 +43,20 @@ compareCrossInfo.CrossInfo <- function (cross.info, cross) {
     
     cross.map <- qtl::pull.map(cross)
     cross.markers <- pullLocusIDs(cross.map)
-    cross.locus.seqs <- pullLocusSeq(cross.map)
-    
     obj.markers <- getMarkerNames(cross.info)
-    obj.locus.seqs <- getMarkerSeqs(cross.info)
     
     if ( any(obj.markers != cross.markers) ) {
         errors <- c(errors, "marker mismatch")
     }
     
-    if ( any(obj.locus.seqs != cross.locus.seqs) ) {
-        errors <- c(errors, "sequence mismatch")
+    if ( length(obj.markers) > 0 ) {
+        
+        cross.locus.seqs <- pullLocusSeq(cross.map)
+        obj.locus.seqs <- getMarkerSeqs(cross.info)
+        
+        if ( any(obj.locus.seqs != cross.locus.seqs) ) {
+            errors <- c(errors, "marker sequence mismatch")
+        }
     }
     
     pheno.col <- getPhenoColIndices(cross)
@@ -65,14 +68,13 @@ compareCrossInfo.CrossInfo <- function (cross.info, cross) {
     }
     
     id.col <- getIdColIndex(cross)
-    if ( xor( hasSampleIDs(cross.info), ! is.null(id.col) ) ) {
-        errors <- c(errors, "sample ID presence/absence mismatch")
+    
+    if ( getNumSamples(cross.info) != nrow(cross$pheno) ) {
+        errors <- c(errors, "sample count mismatch")
     }
     
-    cross.alleles <- pull.alleles(cross)
-    obj.alleles <- cross.info@alleles
-    if ( any(cross.alleles != obj.alleles) ) {
-        errors <- c(errors, "genotype/allele mismatch")
+    if ( xor( hasSampleIDs(cross.info), ! is.null(id.col) ) ) {
+        errors <- c(errors, "sample ID presence/absence mismatch")
     }
     
     if ( hasSampleIDs(cross.info) ) {
@@ -85,6 +87,13 @@ compareCrossInfo.CrossInfo <- function (cross.info, cross) {
         }
     }
     
+    cross.alleles <- pull.alleles(cross)
+    obj.alleles <- cross.info@alleles
+    if ( length(obj.alleles) != length(cross.alleles) ||
+         any(obj.alleles != cross.alleles) ) {
+        errors <- c(errors, "genotype/allele mismatch")
+    }
+
     return( if ( length(errors) == 0 ) {TRUE} else {errors} )
 }
 

@@ -154,7 +154,7 @@ getPhenoColIndices <- function(cross, pheno.col=NULL) {
             indices <- vector('integer', length(pheno.col))
             pheno.names <- names(cross$pheno)
             
-            for ( i in 1:length(pheno.col) ) {
+            for ( i in getIndices(pheno.col) ) {
                 
                 p <- pheno.col[i]
                 
@@ -196,7 +196,7 @@ getPhenoColIndices <- function(cross, pheno.col=NULL) {
         
     } else {
         
-        indices <- 1:ncol(cross$pheno)
+        indices <- getColIndices(cross$pheno)
         indices <- indices[ ! indices %in% reserved.indices ]
     }
     
@@ -291,6 +291,8 @@ inferStrainIndices.cross <- function(x) {
     } else {
         sample.ids <- pull.ind(x)
     }
+    
+    stopifnot( length(sample.ids) > 0 )
     
     # If cross has sample IDs, infer strain indices from these, then 
     # check genotypes are identical in the inferred strain replicates..
@@ -444,6 +446,8 @@ inferTetradIndices.cross <- function(x) {
         sample.ids <- pull.ind(x)
     }
     
+    stopifnot( length(sample.ids) > 0 )
+    
     # Set minimum fraction of tetradic genotypes required to infer tetrad indices.
     threshold <- 0.95
     
@@ -576,6 +580,8 @@ inferTimeStep <- function(cross, allow.gaps=TRUE, tol=1e-5) {
         phenotypes <- colnames(cross$pheno)[pheno.col]
         times <- makeNumbers(phenotypes)
     }
+    
+    stopifnot( length(phenotypes) > 0 )
     
     # One time point cannot form a series.
     if ( length(times) == 1 ) {
@@ -771,7 +777,9 @@ padTimeSeries <- function(cross, tol=1e-5) {
         times <- makeNumbers(phenotypes)
         sample.ids <- pull.ind(cross)
     }
-
+    
+    stopifnot( length(sample.ids) > 0 )
+    
     # Time step is the mode of time differences.
     time.step <- inferTimeStep(cross, tol=tol)
     

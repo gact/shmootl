@@ -56,9 +56,11 @@ readCrossCSV <- function(infile, missing.value='-', error.prob=0.0001,
     
     # Set phenotype columns from those with blank sequence row.   
     pheno.cols <- which( seq.is.blank )
+    stopifnot( length(pheno.cols) > 0 )
     
     # Set marker columns from those with nonempty sequence row.   
     geno.cols <- which( ! seq.is.blank )
+    stopifnot( length(geno.cols) > 0 )
     
     # Verify that phenotype columns form a contiguous block at left of table.
     if ( pheno.cols[1] != 1 || any(diff(pheno.cols) != 1) ) {
@@ -91,6 +93,8 @@ readCrossCSV <- function(infile, missing.value='-', error.prob=0.0001,
     while ( allNA( cross.table[last.data.row, ] ) ) {
         last.data.row <- last.data.row - 1
     }
+    
+    stopifnot( last.data.row >= first.data.row )
     
     # Get vector of data row indices.
     dat.rows <- first.data.row : last.data.row
@@ -311,6 +315,11 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
         markers <- marker.names <- qtl::markernames(cross, chr)
         sample.ids <- pull.ind(cross)
     }
+    
+    stopifnot( length(phenotypes) > 0 )
+    stopifnot( length(alleles) > 0 )
+    stopifnot( length(markers) > 0 )
+    stopifnot( length(sample.ids) > 0 )
 
     # Get phenotypes, map, genotypes.
     pheno.table <- qtl::pull.pheno(cross, pheno.col)
