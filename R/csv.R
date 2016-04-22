@@ -417,7 +417,7 @@ writeGenoCSV <- function(geno, outfile, chr=NULL, digits=NULL,
     stopifnot( isSingleChar(missing.value) )
     
     # Convert geno data to a data frame for output.
-    geno.table <- makeGenoTable(geno, chr=chr, digits=digits, 
+    geno.table <- as.data.frame(geno, chr=chr, digits=digits, 
         include.mapunit=include.mapunit)
     
     # Move sample IDs into first column of geno table.
