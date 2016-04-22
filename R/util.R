@@ -675,6 +675,22 @@ isSingleNonNegativeNumber <- function(n) {
     return( length(n) == 1 && is.numeric(n) && is.finite(n) && n >= 0 )
 }
 
+# isSingleNonNegativeWholeNumber -----------------------------------------------
+#' Test for a single non-negative whole number.
+#' 
+#' @param n Test object.
+#' @param tol Numeric tolerance.
+#'      
+#' @return TRUE if the object is a single non-negative whole number; 
+#' FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isSingleNonNegativeWholeNumber
+isSingleNonNegativeWholeNumber <- function(n, tol=.Machine$double.eps^0.5) {
+    return( length(n) == 1 && is.numeric(n) && is.finite(n) && 
+                n >= 0 && abs(n - round(n)) < abs(tol) )
+}
+
 # isSinglePositiveNumber -------------------------------------------------------
 #' Test for a single positive number.
 #' 
