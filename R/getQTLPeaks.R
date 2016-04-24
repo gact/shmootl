@@ -77,12 +77,7 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL) {
 
     # Get list of vectors, each containing the row 
     # indices of the loci in a significant region.
-    lod.runs <- rle(lod.mask)
-    J <- cumsum(lod.runs$lengths)
-    I <- c( 1, sapply(J[1:(length(J)-1)], function(j) j + 1) )
-    I <- I[ ! is.na(lod.runs$values) ]
-    J <- J[ ! is.na(lod.runs$values) ]
-    significant.rows <- mapply(function(i, j) i:j, I, J, SIMPLIFY=FALSE)
+    significant.rows <- getRunIndexList(lod.mask, na.rm=TRUE)
    
     # Return NULL if no significant regions found.
     if ( length(significant.rows) == 0 ) {
