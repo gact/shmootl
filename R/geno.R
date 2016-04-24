@@ -407,12 +407,6 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     
     # Get locus info.
     locus.ids <- colnames(geno.matrix)
-    locus.names <- make.names(locus.ids)
-    
-    # Ensure data has syntactially valid locus IDs. The original
-    # locus IDs will be stored separately in the CrossInfo object.
-    rownames(sample.geno@metadata[['loci']]) <- locus.names
-    colnames(geno.matrix) <- locus.names
     
     # Make a map from sample genotype loci.
     # NB: resolves and sorts sequence IDs.
