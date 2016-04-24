@@ -32,7 +32,7 @@ corresponding allele symbols in the attribute \code{'alleles'}.
 Given input sample genotype data, this function assigns an arbitrary symbol 
 at each locus according to the observed raw SNP genotype. So for example, if
 the SNVs at a given locus are 'A' and 'C', samples are assigned the genotypes 
-'X1' and 'X2', respectively. The mapping of SNV to genotype is performed 
+'1' and '2', respectively. The mapping of SNV to genotype is performed
 independently for each locus, so a given raw genotype does not have the same
 meaning across loci.
 }

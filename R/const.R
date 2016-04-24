@@ -60,6 +60,14 @@ with(const, {
     id.charset <- printable.ascii[ ! printable.ascii %in% reserved.characters ]
     id.charset <- c( ']', id.charset[ id.charset != ']' ] )
     
+    # Genotype symbols ---------------------------------------------------------
+    
+    # Character set for raw alleles.
+    raw.allele.charset <- as.character(1:9)
+    
+    # Character set for founder alleles.
+    founder.allele.charset <- c(LETTERS, letters)
+    
     # Defaults -----------------------------------------------------------------
     
     default = list(

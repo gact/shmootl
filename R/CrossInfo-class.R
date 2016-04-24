@@ -1358,7 +1358,7 @@ setMethod('validateAlleles', signature='CrossInfo',
         stop("duplicate alleles - '", toString(dup.geno), "'")
     }
     
-    err.geno <- cross.info@alleles[ ! grepl('^[[:alnum:]]+$', cross.info@alleles) ]
+    err.geno <- cross.info@alleles[ ! isValidAllele(cross.info@alleles) ]
     if ( length(err.geno) > 0 ) {
         stop("invalid allele values - '", toString(err.geno), "'")
     }

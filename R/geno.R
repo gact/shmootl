@@ -161,6 +161,12 @@ makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
         stop("sample/founder ID clash - '", toString(clashing.ids), "'")
     }   
     
+    if ( length(founder.ids) > length(const$founder.allele.charset) ) {
+        stop("number of founders (", length(founder.ids),
+            ") exceeds number of available allele symbols (",
+            length(const$founder.allele.charset), ")")
+    }
+    
     # Get genotype loci common to samples and founders.
     loc.list <- list(x@metadata[['loci']], founder.geno@metadata[['loci']])
     intersection <- do.call(intersectLoci, loc.list)
@@ -189,20 +195,20 @@ makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
         # Init genotype numbers for this locus.
         geno.numbers <- rep(NA_integer_, length(sample.ids))
         
-        # Get sample symbols and alleles for this locus.
+        # Get sample symbols and genotypes for this locus.
         sample.symbols <- x[, col]
-        sample.alleles <- unique(sample.symbols[ sample.symbols != '.' ])
+        sample.genotypes <- unique(sample.symbols[ sample.symbols != '.' ])
         
-        # Get founder symbols and alleles for this locus.
+        # Get founder symbols and genotypes for this locus.
         founder.symbols <- founder.geno[, col]
-        founder.alleles <- unique(founder.symbols[ founder.symbols != '.' ])
+        founder.genotypes <- unique(founder.symbols[ founder.symbols != '.' ])
         
         # Assign locus genotypes from matching founder.
-        if ( length(founder.alleles) == 2 ) { # TODO: support polyallelic markers.
-            if ( length(sample.alleles) > 1 ) {
-                if ( all( sample.alleles %in% founder.alleles ) ) {
-                    for ( i in getIndices(founder.alleles) ) {
-                        geno.numbers[ sample.symbols == founder.alleles[i] ] <- i
+        if ( length(founder.genotypes) == 2 ) { # TODO: support polyallelic markers.
+            if ( length(sample.genotypes) > 1 ) {
+                if ( all( sample.genotypes %in% founder.genotypes ) ) {
+                    for ( i in getIndices(founder.genotypes) ) {
+                        geno.numbers[ sample.symbols == founder.genotypes[i] ] <- i
                     }
                 }
             }
@@ -219,8 +225,9 @@ makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
         stop("cannot make founder genotype matrix - no diallelic loci found")
     }
     
-    # Set allele symbols from founders.
-    attr(geno.matrix, 'alleles') <- founder.ids
+    # Set allele symbols for founders.
+    attr(geno.matrix, 'alleles') <- const$founder.allele.charset[
+        getIndices(founder.ids) ]
     
     return(geno.matrix)
 }
@@ -251,14 +258,14 @@ setMethod('makeFounderGenoMatrix', signature='QualityScaledDNAStringSet',
 #' Given input sample genotype data, this function assigns an arbitrary symbol 
 #' at each locus according to the observed raw SNP genotype. So for example, if
 #' the SNVs at a given locus are 'A' and 'C', samples are assigned the genotypes 
-#' 'X1' and 'X2', respectively. The mapping of SNV to genotype is performed 
+#' '1' and '2', respectively. The mapping of SNV to genotype is performed
 #' independently for each locus, so a given raw genotype does not have the same
 #' meaning across loci.
 #' 
 #' @param x Sample genotype data.
 #'   
 #' @return A genotype matrix, with genotypes encoded as integers and their
-#' corresponding allele symbols in the attribute \code{'alleles'}. 
+#' corresponding allele symbols in the attribute \code{'alleles'}.
 #' 
 #' @importFrom Biostrings DNAStringSet
 #' @importFrom Biostrings QualityScaledDNAStringSet
@@ -316,12 +323,17 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
         
         # Get sample symbols and alleles for this locus.
         sample.symbols <- x[, col]
-        sample.alleles <- unique( sample.symbols[ sample.symbols != '.' ] )
+        sample.genotypes <- unique( sample.symbols[ sample.symbols != '.' ] )
+        
+        # Skip loci with more raw genotypes than can be represented.
+        if ( length(sample.genotypes) > length(const$raw.allele.charset) ) {
+            next
+        }
         
         # Assign locus genotypes in alphabetical order of symbol.
-        if ( length(sample.alleles) == 2 ) { # TODO: support polyallelic markers.
-            for ( i in getIndices(sample.alleles) ) {
-                geno.numbers[ sample.symbols == sample.alleles[i] ] <- i
+        if ( length(sample.genotypes) == 2 ) { # TODO: support polyallelic markers.
+            for ( i in getIndices(sample.genotypes) ) {
+                geno.numbers[ sample.symbols == sample.genotypes[i] ] <- i
             }
         }
         
@@ -337,7 +349,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
     }
     
     # Set allele symbols.
-    attr(geno.matrix, 'alleles') <- make.names( 1:max(geno.matrix, na.rm=TRUE) )
+    attr(geno.matrix, 'alleles') <- as.character( 1:max(geno.matrix, na.rm=TRUE) )
     
     return(geno.matrix)
 }

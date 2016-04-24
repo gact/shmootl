@@ -615,6 +615,32 @@ isFALSE <- function(x) {
     return( identical(FALSE, x) )
 }
 
+# isFounderAllele --------------------------------------------------------------
+#' Test if symbol is a valid founder allele.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if symbol is a valid founder allele; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isFounderAllele
+isFounderAllele <- function(x) {
+    return( x %in% const$founder.allele.charset )
+}
+
+# isFounderGenotype ------------------------------------------------------------
+#' Test if symbol is a valid founder genotype.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if symbol is a valid founder genotype; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isFounderGenotype
+isFounderGenotype <- function(x) {
+    return( grepl("^[", const$founder.allele.charset, "]+$", x) )
+}
+
 # isMarkerID -------------------------------------------------------------------
 #' Test for marker IDs.
 #'  
@@ -694,6 +720,32 @@ isProbability <- function(n) {
 #' @rdname isPseudomarkerID
 isPseudomarkerID <- function(loc.ids) {
     return( isValidID(loc.ids) & grepl(const$pattern$pseudomarker.id, loc.ids) )
+}
+
+# isRawAllele ------------------------------------------------------------------
+#' Test if symbol is a valid raw allele.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if symbol is a valid raw allele; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isRawAllele
+isRawAllele <- function(x) {
+    return( x %in% const$raw.allele.charset )
+}
+
+# isRawGenotype ----------------------------------------------------------------
+#' Test if symbol is a valid raw genotype.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if symbol is a valid raw genotype; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isRawGenotype
+isRawGenotype <- function(x) {
+    return( grepl("^[", const$raw.allele.charset, "]$", x) )
 }
 
 # isSingleChar -----------------------------------------------------------------
@@ -810,6 +862,32 @@ isSingleString <- function(x) {
 isSingleWholeNumber <- function(n, tol=.Machine$double.eps^0.5) {
     return( length(n) == 1 && is.numeric(n) && is.finite(n) && 
         abs(n - round(n)) < abs(tol) )
+}
+
+# isValidAllele ----------------------------------------------------------------
+#' Test if symbol is a valid allele.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if symbol is a valid allele; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isValidAllele
+isValidAllele <- function(x) {
+    return( isRawAllele(x) | isFounderAllele(x) )
+}
+
+# isValidGenotype --------------------------------------------------------------
+#' Test if symbol is a valid genotype.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if symbol is a valid genotype; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isValidGenotype
+isValidGenotype <- function(x) {
+    return( isRawGenotype(x) | isFounderGenotype(x) )
 }
 
 # isValidID --------------------------------------------------------------------

@@ -334,7 +334,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
 #' If no founder samples are specified, this function assigns an arbitrary symbol 
 #' at each locus according to the observed raw SNP genotype. So for example, if
 #' the SNVs at a given locus are 'A' and 'C', samples are assigned the genotypes 
-#' 'X1' and 'X2', respectively. The mapping of SNV to genotype is performed 
+#' '1' and '2', respectively. The mapping of SNV to genotype is performed
 #' independently for each locus, so a given raw genotype does not have the same
 #' meaning across loci.
 #' 
