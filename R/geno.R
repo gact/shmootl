@@ -36,6 +36,7 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, missing.value='-',
     # Get relevant CrossInfo.
     alleles <- getAlleles(cross.info)
     locus.ids <- getMarkers(cross.info)
+    locus.names <- make.names(locus.ids)
     samples <- getSamples(cross.info)
     
     # Get specified sequences.
@@ -46,7 +47,7 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, missing.value='-',
     x <- x[chr]
     
     # Pull map from geno object.
-    map.table <- as.mapframe( lapply(x, function(obj) 
+    map.table <- as.mapframe( lapply(x, function(obj)
         obj$map), map.unit=map.unit )
     
     # If digits specified, round map positions.
@@ -73,11 +74,11 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, missing.value='-',
     # Prepare map matrix.
     map.table <- insertColumn(map.table, col.index=1, 
         col.name='id', data=locus.ids)
-    rownames(map.table) <- NULL
+    rownames(map.table) <- locus.names
     map.matrix <- t(map.table)
     
     # Prepare genotype matrix.
-    dimnames(geno.matrix) <- list(samples, NULL)
+    dimnames(geno.matrix) <- list(samples, locus.names)
     
     # Bind map and genotype matrices into one data frame.
     geno.frame <- as.data.frame(rbind(map.matrix, geno.matrix), 
