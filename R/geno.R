@@ -186,11 +186,11 @@ makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
         
         # Get sample symbols and alleles for this locus.
         sample.symbols <- x[, col]
-        sample.alleles <- sort( unique(sample.symbols[ sample.symbols != '.' ]) )
+        sample.alleles <- unique(sample.symbols[ sample.symbols != '.' ])
         
         # Get founder symbols and alleles for this locus.
         founder.symbols <- founder.geno[, col]
-        founder.alleles <- sort( unique(founder.symbols[ founder.symbols != '.' ]) )
+        founder.alleles <- unique(founder.symbols[ founder.symbols != '.' ])
         
         # Assign locus genotypes from matching founder.
         if ( length(founder.alleles) == 2 ) { # TODO: support polyallelic markers.
@@ -311,7 +311,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
         
         # Get sample symbols and alleles for this locus.
         sample.symbols <- x[, col]
-        sample.alleles <- sort( unique( sample.symbols[ sample.symbols != '.' ] ) )
+        sample.alleles <- unique( sample.symbols[ sample.symbols != '.' ] )
         
         # Assign locus genotypes in alphabetical order of symbol.
         if ( length(sample.alleles) == 2 ) { # TODO: support polyallelic markers.
