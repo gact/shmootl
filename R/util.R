@@ -355,6 +355,80 @@ getRowIndices <- function(x) {
     return( if ( num.rows > 0 ) { 1:num.rows } else { integer() } )
 }
 
+# getRunIndexList --------------------------------------------------------------
+#' Get index list of successive runs in a vector.
+#' 
+#' @param x A vector.
+#'     
+#' @return List of integer vectors, each containing indices for a run of
+#' repeated values in the input vector. Each list element takes its name
+#' from the corresponding repeated value. Returns an empty list if the
+#' input vector is of length zero.
+#'    
+#' @keywords internal
+#' @rdname getRunIndexList
+getRunIndexList <- function(x, na.rm=FALSE) {
+    
+    stopifnot( is.vector(x) )
+    stopifnot( isBOOL(na.rm) )
+    
+    if ( length(x) > 0 ) {
+        
+        # Get run-length encoding of vector.
+        runs <- rle(x)
+        
+        # Get number of runs in RLE.
+        num.runs <- unique( lengths(runs) )
+        
+        # Get last index of each run.
+        J <- cumsum(runs$lengths)
+        
+        # Get first index of each run.
+        if ( num.runs > 1 ) {
+            I <- c( 1, sapply(J[1:(length(J)-1)], function(j) j + 1) )
+        } else {
+            I <- 1
+        }
+        
+        # Remove NA values if specified.
+        if (na.rm) {
+            I <- I[ ! is.na(runs$values) ]
+            J <- J[ ! is.na(runs$values) ]
+        }
+        
+        # Set index list from run index ranges.
+        index.list <- mapply(function(i, j) i:j, I, J, SIMPLIFY=FALSE)
+        
+        # Set names of index list from run values.
+        names(index.list) <- runs$values
+        
+    } else {
+        
+        index.list <- list()
+    }
+    
+    return(index.list)
+}
+
+# getRunIndices ----------------------------------------------------------------
+#' Get indices of successive runs in a run-length encoding.
+#' 
+#' @param x An \code{rle} object.
+#' 
+#' @return Integer vector of all run indices in the given run-length encoding,
+#' which can be used to index into the \code{lengths} and \code{values} of the
+#' given \code{rle} object. Returns an empty integer vector if the run-length
+#' encoding has zero runs.
+#' 
+#' @keywords internal
+#' @rdname getRunIndices
+getRunIndices <- function(x) {
+    stopifnot( 'rle' %in% class(x) )
+    num.runs <- union( length(x$lengths), length(x$values) )
+    stopifnot( isSingleNonNegativeWholeNumber(num.runs) )
+    return( if ( num.runs > 0 ) { 1:num.runs } else { integer() } )
+}
+
 # getSpecialAttributeNames -----------------------------------------------------
 #' Get special attributes for the given object.
 #' 
