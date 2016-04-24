@@ -34,6 +34,14 @@ with(const, {
     # Reserved phenotypes.
     reserved.phenotypes <- c(disallowed.phenotypes, 'id')
     
+    # Required mapframe column names.
+    mapframe.colnames <- c('chr', 'pos')
+    
+    # Required column names for a 'packed' mapframe-like dataframe that has
+    # been taken from input or prepared for output. Such a dataframe can be
+    # converted to a mapframe by moving the 'id' column to its row names.
+    maptable.colnames <- c('id', 'chr', 'pos')
+    
     # Tetrad sample labels (for alphanumeric tetrad sample IDs).
     tetrad.sample.labels <- c('A', 'B', 'C', 'D')
     

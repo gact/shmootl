@@ -712,7 +712,9 @@ isFounderAllele <- function(x) {
 #' @keywords internal
 #' @rdname isFounderGenotype
 isFounderGenotype <- function(x) {
-    return( grepl("^[", const$founder.allele.charset, "]+$", x) )
+    char.class <- paste0(const$founder.allele.charset, collapse='')
+    pattern <- paste0("^[", char.class, "]+$", collapse='')
+    return( grepl(pattern, x) )
 }
 
 # isMarkerID -------------------------------------------------------------------
@@ -819,7 +821,9 @@ isRawAllele <- function(x) {
 #' @keywords internal
 #' @rdname isRawGenotype
 isRawGenotype <- function(x) {
-    return( grepl("^[", const$raw.allele.charset, "]$", x) )
+    char.class <- paste0(const$raw.allele.charset, collapse='')
+    pattern <- paste0("^[", char.class, "]$", collapse='')
+    return( grepl(pattern, x) )
 }
 
 # isSingleChar -----------------------------------------------------------------
