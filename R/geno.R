@@ -196,8 +196,8 @@ makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
         if ( length(founder.alleles) == 2 ) { # TODO: support polyallelic markers.
             if ( length(sample.alleles) > 1 ) {
                 if ( all( sample.alleles %in% founder.alleles ) ) {
-                    for ( i in getIndices(founder.symbols) ) {
-                        geno.numbers[ sample.symbols == founder.symbols[i] ] <- i
+                    for ( i in getIndices(founder.alleles) ) {
+                        geno.numbers[ sample.symbols == founder.alleles[i] ] <- i
                     }
                 }
             }
