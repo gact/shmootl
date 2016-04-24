@@ -10,8 +10,6 @@
 #' \code{data.frame} is returned for all available sequences.
 #' @param digits If specified, round genetic map positions to the specified 
 #' number of digits.
-#' @param missing.value Missing data value. This can be any single character
-#' that is not a possible phenotype or genotype value.
 #' @param include.mapunit Include map unit information in map positions.
 #' 
 #' @return A \code{data.frame} corresponding to the input \code{geno} object.
@@ -19,7 +17,7 @@
 #' @keywords internal
 #' @method as.data.frame geno
 #' @rdname as.data.frame.geno
-as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, missing.value='-',
+as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
     include.mapunit=TRUE) {
     
     stopifnot( isBOOL(include.mapunit) )
@@ -69,8 +67,6 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, missing.value='-',
         geno.matrix[ geno.matrix == i ] <- alleles[i]
     }
     
-    geno.matrix[ is.na(geno.matrix) ] <- missing.value
-    
     # Prepare map matrix.
     map.table <- insertColumn(map.table, col.index=1, 
         col.name='id', data=locus.ids)
@@ -91,21 +87,19 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, missing.value='-',
 #' Coerce to \code{geno} object.
 #' 
 #' @param from Object containing genotype data.
-#' @param missing.value Missing data value. This can be any single character
-#' that is not a possible phenotype or genotype value.
 #' 
 #' @return An \code{geno} object corresponding to the input object.
 #' 
 #' @keywords internal
 #' @rdname as.geno
-as.geno <- function(from, missing.value='-') {
+as.geno <- function(from) {
     UseMethod('as.geno', from)
 }
 
 # as.geno.data.frame -----------------------------------------------------------
 #' @method as.geno data.frame
 #' @rdname as.geno
-as.geno.data.frame <- function(from, missing.value='-') {
+as.geno.data.frame <- function(from) {
     
     cross.type <- 'bc' # TODO: support other cross types
     
@@ -130,7 +124,7 @@ as.geno.data.frame <- function(from, missing.value='-') {
         
         # Get set of invalid values in mapline.
         invalid.values <- mapline.values[ ! ( isValidGenotype(mapline.values) |
-            mapline.values == missing.value ) ]
+            is.na(mapline.values) ) ]
         
         # Check mapline contains only valid genotypes and missing values.
         if ( length(invalid.values) > 0 ) {
@@ -173,8 +167,7 @@ as.geno.data.frame <- function(from, missing.value='-') {
     # Decompose symbols into different types.
     founder.symbols <- symbols[ isFounderGenotype(symbols) ]
     rawgeno.symbols <- symbols[ isRawGenotype(symbols) ]
-    invalid.values <- symbols[ ! ( isValidGenotype(symbols) |
-        symbols == missing.value ) ]
+    invalid.values <- symbols[ ! ( isValidGenotype(symbols) | is.na(symbols) ) ]
     
     # Check for invalid values.
     if ( length(invalid.values) > 0 ) {
@@ -183,7 +176,7 @@ as.geno.data.frame <- function(from, missing.value='-') {
     
     # Check for map positions that resemble raw genotypes.
     if ( ! map.positions.found && length(rawgeno.symbols) > 0 &&
-         ! all( mapline.values %in% c('1', missing.value) ) ) {
+         ! all( is.na(mapline.values) | mapline.values == '1' ) ) {
         stop("cross geno map positions must include centiMorgan units (e.g. '47 cM')")
     }
     
@@ -206,7 +199,6 @@ as.geno.data.frame <- function(from, missing.value='-') {
     for ( i in getIndices(genotypes) ) {
         geno.matrix[ geno.matrix == genotypes[i] ] <- i
     }
-    geno.matrix[ geno.matrix == missing.value ] <- NA
     geno.matrix <- apply(geno.matrix, 2, as.numeric)
     
     # If rownames present, set vector of sample IDs from these..
