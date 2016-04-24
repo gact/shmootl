@@ -13,11 +13,11 @@ getPosColNameMapUnit(x)
 \method{getPosColNameMapUnit}{character}(x)
 }
 \arguments{
-\item{x}{A \code{mapframe} or equivalent \code{data.frame}, 
+\item{x}{A \code{mapframe} or equivalent \code{data.frame},
 or a position column heading.}
 }
 \value{
-Map unit indicated by the position column heading. Returns NA if map 
+Map unit indicated by the position column heading. Returns NA if map
 unit information not found in position column heading.
 }
 \description{

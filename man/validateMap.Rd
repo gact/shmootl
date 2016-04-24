@@ -16,7 +16,7 @@ validateMap(x, ...)
 \item{x}{A \code{map} or equivalent \code{list}.}
 }
 \value{
-TRUE if object is a valid \code{map} or equivalent \code{list}; 
+TRUE if object is a valid \code{map} or equivalent \code{list};
 otherwise, returns first error.
 }
 \description{

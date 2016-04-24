@@ -27,7 +27,7 @@ setMapUnit(x, map.unit)
 Input object with the specified map unit.
 }
 \description{
-Set the map unit of the object. For a \code{data.frame}, the position column 
+Set the map unit of the object. For a \code{data.frame}, the position column
 may be updated to reflect the new map unit.
 }
 \section{Map Units}{

@@ -12,7 +12,7 @@ matchLocusRowIndices(x, loc)
 \item{loc}{Locus \code{mapframe} specifying map positions.}
 }
 \value{
-Vector of row indices with respect to the target \code{mapframe}, 
+Vector of row indices with respect to the target \code{mapframe},
 for which a matching locus exists in the locus mapframe.
 }
 \description{

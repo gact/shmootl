@@ -10,7 +10,7 @@ isGeneticMapframe(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if object is a \code{mapframe} whose pos column contains 
+TRUE if object is a \code{mapframe} whose pos column contains
 genetic map positions; FALSE otherwise.
 }
 \description{

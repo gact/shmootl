@@ -15,7 +15,7 @@ subsetMap(x, ...)
 Subsetted \code{map} object.
 }
 \description{
-\pkg{R/qtl} implements a \code{subset.map} method, but this method strips 
+\pkg{R/qtl} implements a \code{subset.map} method, but this method strips
 some attributes from the \code{map} object. This function transfers any
 stripped attributes to the subsetted \code{map} object.
 }

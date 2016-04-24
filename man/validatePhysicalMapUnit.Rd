@@ -10,7 +10,7 @@ validatePhysicalMapUnit(x)
 \item{x}{Map unit, or object with a \code{'map.unit'} attribute.}
 }
 \value{
-TRUE if map unit is a valid physical map unit; 
+TRUE if map unit is a valid physical map unit;
 otherwise, returns error.
 }
 \description{

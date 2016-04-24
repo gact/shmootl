@@ -9,7 +9,7 @@ mapframe(map.unit = NULL, ...)
 \arguments{
 \item{map.unit}{Map unit for the new \code{mapframe}.}
 
-\item{...}{Further arguments. These are passed to the \code{data.frame} 
+\item{...}{Further arguments. These are passed to the \code{data.frame}
 constructor. All arguments should be passed as keyword arguments.}
 }
 \value{

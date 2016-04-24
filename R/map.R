@@ -3,14 +3,14 @@
 # Map Utilities ----------------------------------------------------------------
 #' Genetic and physical map utilities.
 #' 
-#' These utilities include functions for \pkg{R/qtl} \code{map} objects, 
-#' \pkg{shmootl} \code{mapframe} objects. A \code{mapframe} can be created 
+#' These utilities include functions for \pkg{R/qtl} \code{map} objects,
+#' \pkg{shmootl} \code{mapframe} objects. A \code{mapframe} can be created
 #' in a similar manner to a \code{data.frame} with \code{\link{mapframe}}.
 #' All arguments are passed to the \code{data.frame} constructor, except for
 #' an addition \code{map.unit} parameter, which can be used to set the map unit
 #' of the new \code{mapframe}. The function \code{\link{gmapframe}} creates a
 #' genetic \code{mapframe} with map unit set automatically to \code{'cM'}.
-#' Coercion functions exist to convert a \code{map} to a \code{mapframe} 
+#' Coercion functions exist to convert a \code{map} to a \code{mapframe}
 #' (\code{\link{as.mapframe}}), and vice versa (\code{\link{as.map}}).
 #' 
 #' @template map
@@ -87,22 +87,22 @@ as.data.frame.mapframe <- function(x, ...) {
 #' 
 #' @param from Object containing map data.
 #' @param ... Further arguments (see below).
-#' @param map.unit Explicitly sets \code{'map.unit'}. This must be specified if 
+#' @param map.unit Explicitly sets \code{'map.unit'}. This must be specified if
 #' an object does not have an existing \code{'map.unit'} attribute.
-#'     
+#' 
 #' @return An \pkg{R/qtl} \code{map} corresponding to the input object.
 #' 
 #' @export
 #' @family map utilities
 #' @rdname as.map
-as.map <- function(from, ...) {  
+as.map <- function(from, ...) {
     UseMethod('as.map', from)
 }
 
 # as.map.data.frame ------------------------------------------------------------
 #' @method as.map data.frame
 #' @rdname as.map
-as.map.data.frame <- function(from, map.unit=NULL) {   
+as.map.data.frame <- function(from, map.unit=NULL) {
 
     if ( nrow(from) == 0 ) {
         stop("cannot create map from empty data frame")
@@ -134,7 +134,7 @@ as.map.data.frame <- function(from, map.unit=NULL) {
     norm.map.seqs <- sortSeq( unique(norm.from.seqs) )
     
     if ( length(norm.map.seqs) < const$min.spm  ) {
-        stop("cannot create map from data frame - too few sequences (min=", 
+        stop("cannot create map from data frame - too few sequences (min=",
             const$min.spm, ")")
     }
     
@@ -153,7 +153,7 @@ as.map.data.frame <- function(from, map.unit=NULL) {
             stop("cannot create map from data frame - sequence has too few loci - '", seq, "'")
         }
         
-        # Set map position names from locus IDs. 
+        # Set map position names from locus IDs.
         names(seq.pos) <- from.ids[indices]
         
         # Sort map positions in numeric order.
@@ -176,7 +176,7 @@ as.map.data.frame <- function(from, map.unit=NULL) {
 # as.map.list ------------------------------------------------------------------
 #' @method as.map list
 #' @rdname as.map
-as.map.list <- function(from, map.unit=NULL) {  
+as.map.list <- function(from, map.unit=NULL) {
 
     # If map unit specified, update that of object..
     if ( ! is.null(map.unit) ) {
@@ -224,7 +224,7 @@ as.map.list <- function(from, map.unit=NULL) {
 # as.map.mapframe --------------------------------------------------------------
 #' @method as.map mapframe
 #' @rdname as.map
-as.map.mapframe <- function(from) {  
+as.map.mapframe <- function(from) {
     return( as.map.data.frame(from) )
 }
 
@@ -240,22 +240,22 @@ as.map.scanone <- function(from) {
 #' 
 #' @param from Object containing map data.
 #' @param ... Further arguments (see below).
-#' @param map.unit Explicitly sets \code{'map.unit'}. This must be specified if 
+#' @param map.unit Explicitly sets \code{'map.unit'}. This must be specified if
 #' an object does not have an existing \code{'map.unit'} attribute.
-#'      
+#' 
 #' @return A \code{mapframe} corresponding to the input object.
 #' 
 #' @export
 #' @family map utilities
 #' @rdname as.mapframe
-as.mapframe <- function(from, ...) {  
+as.mapframe <- function(from, ...) {
     UseMethod('as.mapframe', from)
 }
 
 # as.mapframe.data.frame -------------------------------------------------------
 #' @method as.mapframe data.frame
 #' @rdname as.mapframe
-as.mapframe.data.frame <- function(from, map.unit=NULL) {    
+as.mapframe.data.frame <- function(from, map.unit=NULL) {
     
     # If map unit specified, update that of object..
     if ( ! is.null(map.unit) ) {
@@ -305,8 +305,8 @@ as.mapframe.data.frame <- function(from, map.unit=NULL) {
 # as.mapframe.list -------------------------------------------------------------
 #' @method as.mapframe list
 #' @rdname as.mapframe
-as.mapframe.list <- function(from, map.unit=NULL) { 
-    return( as.mapframe( as.map(from, map.unit=map.unit) ) )  
+as.mapframe.list <- function(from, map.unit=NULL) {
+    return( as.mapframe( as.map(from, map.unit=map.unit) ) )
 }
 
 # as.mapframe.map --------------------------------------------------------------
@@ -325,12 +325,12 @@ as.mapframe.scanone <- function(from) {
 
 # convertMapUnit ---------------------------------------------------------------
 #' Convert map unit and rescale map positions.
-#'  
+#' 
 #' @template mapunits
-#'  
+#' 
 #' @param x Object containing map data.
 #' @param map.unit New map unit.
-#'     
+#' 
 #' @return Input object with converted map unit and rescaled map positions.
 #' 
 #' @keywords internal
@@ -397,7 +397,7 @@ convertMapUnit.data.frame <- function(x, map.unit) {
                     plen <- const$seqinfo[[genome]]$seqlengths[i]
                     
                     if ( from.basic.unit == 'cM' && to.basic.unit == 'bp' ) {
-                        x[indices, poscol.index] <- as.integer( 
+                        x[indices, poscol.index] <- as.integer(
                             round( (x[indices, poscol.index] * plen) / glen ) )
                     } else if ( from.basic.unit == 'bp' && to.basic.unit == 'cM' ) {
                         x[indices, poscol.index] <- (x[indices, poscol.index] * glen) / plen
@@ -492,7 +492,7 @@ convertMapUnit.map <- function(x, map.unit) {
 #' Extract marker loci.
 #' 
 #' @param x Object containing map data.
-#'     
+#' 
 #' @return Input object with pseudomarkers removed.
 #' 
 #' @export
@@ -506,7 +506,7 @@ extractMarkers <- function(x) {
 #' Extract pseudomarker loci.
 #' 
 #' @param x Object containing map data.
-#'     
+#' 
 #' @return Input object with markers removed.
 #' 
 #' @export
@@ -521,10 +521,10 @@ extractPseudomarkers <- function(x) {
 #' 
 #' @param x Object containing map data.
 #' @param loc Locus \code{mapframe} specifying map positions.
-#' @param expandtomarkers Expand the flanking interval to the nearest flanking 
+#' @param expandtomarkers Expand the flanking interval to the nearest flanking
 #' markers, or to the respective terminal loci.
-#'      
-#' @return A \code{mapframe} containing two loci marking respectively the 
+#' 
+#' @return A \code{mapframe} containing two loci marking respectively the
 #' lower and upper limit of the flanking interval.
 #' 
 #' @export
@@ -532,7 +532,7 @@ extractPseudomarkers <- function(x) {
 #' @rdname findFlanking
 findFlanking <- function(x, loc, expandtomarkers=FALSE) {
     UseMethod('findFlanking', x)
-} 
+}
 
 # findFlanking.map -------------------------------------------------------------
 #' @export
@@ -579,10 +579,10 @@ findFlanking.map <- function(x, loc, expandtomarkers=FALSE) {
         stop("locus positions out of range - ", toString(exrange), "'")
     }
 
-    if (expandtomarkers) { 
+    if (expandtomarkers) {
         # If expanding to markers, create mask in which
         # markers and sequence endpoints are TRUE..
-        loc.mask <- isMarkerID( names(seq.pos) ) | 
+        loc.mask <- isMarkerID( names(seq.pos) ) |
             getIndices(seq.pos) %in% c(1, length(seq.pos))
     } else {
         # ..otherwise create mask with all TRUE.
@@ -610,7 +610,7 @@ findFlanking.map <- function(x, loc, expandtomarkers=FALSE) {
     flank.pos[2] <- upper.flanking[U]
     flank.ids[2] <- names(upper.flanking)[U]
     
-    return( mapframe(chr=flank.seq, pos=flank.pos, 
+    return( mapframe(chr=flank.seq, pos=flank.pos,
         row.names=flank.ids, map.unit=map.unit) )
 }
 
@@ -619,7 +619,7 @@ findFlanking.map <- function(x, loc, expandtomarkers=FALSE) {
 #' @rdname findFlanking
 findFlanking.mapframe <- function(x, loc, expandtomarkers=FALSE) {
     row.indices <- findFlankingRowIndices(x, loc, expandtomarkers=expandtomarkers)
-    return( mapframe(chr=as.character(x$chr[row.indices]), pos=x$pos[row.indices], 
+    return( mapframe(chr=as.character(x$chr[row.indices]), pos=x$pos[row.indices],
         row.names=rownames(x)[row.indices], map.unit=getMapUnit(x)) )
 }
 
@@ -635,9 +635,9 @@ findFlanking.scanone <- function(x, loc, expandtomarkers=FALSE) {
 #' 
 #' @param x A \code{mapframe} or \code{scanone} object.
 #' @param loc Locus \code{mapframe} specifying map positions.
-#' @param expandtomarkers Expand the flanking interval to the nearest flanking 
+#' @param expandtomarkers Expand the flanking interval to the nearest flanking
 #' markers, or to the respective terminal loci.
-#'      
+#' 
 #' @return Vector containing the row indices of flanking loci.
 #' 
 #' @keywords internal
@@ -685,10 +685,10 @@ findFlankingRowIndices <- function(x, loc, expandtomarkers=FALSE) {
         stop("locus positions out of range - ", toString(exrange), "'")
     }
     
-    if ( expandtomarkers && hasRownames(x) ) { 
+    if ( expandtomarkers && hasRownames(x) ) {
         # If expanding to markers and mapframe has locus IDs, create
         # a mask in which markers and sequence endpoints are TRUE..
-        loc.mask <- isMarkerID(rownames(x)[indices]) | 
+        loc.mask <- isMarkerID(rownames(x)[indices]) |
             getIndices(seq.pos) %in% c( 1, length(seq.pos) )
     } else {
         # ..otherwise create mask with all TRUE.
@@ -718,7 +718,7 @@ findFlankingRowIndices <- function(x, loc, expandtomarkers=FALSE) {
 #' @param x Object containing map data.
 #' @param loc Locus \code{mapframe} specifying map positions.
 #' 
-#' @return A \code{mapframe} whose rows each contain the closest locus to the 
+#' @return A \code{mapframe} whose rows each contain the closest locus to the
 #' map position specified in the corresponding row of the locus \code{mapframe}.
 #' 
 #' @export
@@ -728,7 +728,7 @@ findLoci <- function(x, loc) {
     
     stopifnot( 'mapframe' %in% class(loc) )
     
-    prox.loci <- data.frame( matrix( ncol=2, nrow=nrow(loc), 
+    prox.loci <- data.frame( matrix( ncol=2, nrow=nrow(loc),
         dimnames=list(NULL, c('chr', 'pos')) ) )
     
     # Find closest locus to each map position.
@@ -749,9 +749,9 @@ findLoci <- function(x, loc) {
 #' 
 #' @param x A \code{mapframe} object.
 #' @param loc Locus \code{mapframe} specifying map positions.
-#'      
+#' 
 #' @return Vector of row indices, each element of which indicates the row of the
-#' target \code{mapframe} object containing the closest locus to the map position 
+#' target \code{mapframe} object containing the closest locus to the map position
 #' specified in the corresponding row of the locus \code{mapframe}.
 #' 
 #' @keywords internal
@@ -781,7 +781,7 @@ findLocusRowIndices <- function(x, loc) {
 #' @param x Object containing map data.
 #' @param loc Locus \code{mapframe} specifying map positions.
 #' 
-#' @return A \code{mapframe} whose rows each contain the closest marker to the 
+#' @return A \code{mapframe} whose rows each contain the closest marker to the
 #' map position specified in the corresponding row of the locus \code{mapframe}.
 #' 
 #' @export
@@ -789,23 +789,23 @@ findLocusRowIndices <- function(x, loc) {
 #' @rdname findMarkers
 findMarkers <- function(x, loc) {
     findLoci(extractMarkers(x), loc)
-} 
+}
 
 # getSeqColIndex ---------------------------------------------------------------
 #' Get sequence column index.
 #' 
-#' Get sequence column index for a \code{mapframe} or equivalent 
-#' \code{data.frame}. The sequence column is taken to be the column 
-#' whose heading is 'chr'. An error is raised if there is not exactly 
+#' Get sequence column index for a \code{mapframe} or equivalent
+#' \code{data.frame}. The sequence column is taken to be the column
+#' whose heading is 'chr'. An error is raised if there is not exactly
 #' one sequence column.
 #' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame}.
-#'     
-#' @return Sequence column index. 
+#' 
+#' @return Sequence column index.
 #' 
 #' @keywords internal
 #' @rdname getSeqColIndex
-getSeqColIndex <- function(x) {  
+getSeqColIndex <- function(x) {
     
     stopifnot( is.data.frame(x) )
     stopif( anyDuplicated( colnames(x) ) )
@@ -828,21 +828,21 @@ getSeqColIndex <- function(x) {
 #' 
 #' Get data column indices for a \code{mapframe} or equivalent \code{data.frame}.
 #' Data columns are taken to be any columns that aren't a sequence or position
-#' column. 
+#' column.
 #' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame}.
-#' @param datcolumns Optional parameter indicating which data columns to 
-#' consider. This must be either a character vector of data column names 
-#' or a numeric vector of indices \emph{with respect to the set of data 
+#' @param datcolumns Optional parameter indicating which data columns to
+#' consider. This must be either a character vector of data column names
+#' or a numeric vector of indices \emph{with respect to the set of data
 #' columns}. If no data columns are specified, all are considered.
-#' @param strict Option indicating that the specified data columns must 
+#' @param strict Option indicating that the specified data columns must
 #' be in the same order as they are in the \code{mapframe} object.
 #' 
 #' @return Vector of data column indices.
 #' 
 #' @keywords internal
 #' @rdname getDatColIndices
-getDatColIndices <- function(x, datcolumns=NULL, strict=FALSE) {  
+getDatColIndices <- function(x, datcolumns=NULL, strict=FALSE) {
     
     stopifnot( is.data.frame(x) )
     stopif( anyDuplicated( colnames(x) ) )
@@ -851,7 +851,7 @@ getDatColIndices <- function(x, datcolumns=NULL, strict=FALSE) {
     column.indices <- getColIndices(x)
     seqcol.indices <- getSeqColIndex(x)
     poscol.indices <- getPosColIndex(x)
-    datcol.indices <- column.indices[ column.indices != seqcol.indices & 
+    datcol.indices <- column.indices[ column.indices != seqcol.indices &
         column.indices != poscol.indices ]
     
     if ( ! is.null(datcol.indices) ) {
@@ -892,7 +892,7 @@ getDatColIndices <- function(x, datcolumns=NULL, strict=FALSE) {
                     stop("data columns not specified in strictly increasing order")
                 }
             }
-        } 
+        }
         
     } else {
         
@@ -906,8 +906,8 @@ getDatColIndices <- function(x, datcolumns=NULL, strict=FALSE) {
 #' Get steps between loci.
 #' 
 #' @param x Object containing map data.
-#'      
-#' @return List of vectors, each giving the steps between markers on a given 
+#' 
+#' @return List of vectors, each giving the steps between markers on a given
 #' sequence.
 #' 
 #' @export
@@ -932,7 +932,7 @@ getMapSteps.mapframe <- function(x) {
     map.seqs <- unique(x.seqs)
     
     # Get map steps.
-    map.steps <- lapply(map.seqs, function(map.seq) 
+    map.steps <- lapply(map.seqs, function(map.seq)
         diff(x.pos[ x.seqs == map.seq ]) )
     names(map.steps) <- map.seqs
     
@@ -956,15 +956,15 @@ getMapSteps.scanone <- function(x) {
 # getMapUnit -------------------------------------------------------------------
 #' Get map unit.
 #' 
-#' Get the map unit of the object. In most cases, this is taken from the 
-#' \code{'map.unit'} attribute of the object. For a \code{data.frame}, the 
+#' Get the map unit of the object. In most cases, this is taken from the
+#' \code{'map.unit'} attribute of the object. For a \code{data.frame}, the
 #' position column is also checked for map unit information; an error is
 #' raised if \code{data.frame} map unit information is inconsistent.
 #' 
 #' @template mapunits
 #'  
 #' @param x Object containing map data.
-#'      
+#' 
 #' @return Map unit. Returns NA if map unit information not found.
 #' 
 #' @export
@@ -984,7 +984,7 @@ getMapUnit.data.frame <- function(x) {
     existing.mapunit <- getMapUnit.default(x)
     heading.mapunit <- getPosColNameMapUnit(x)
     positions.mapunit <- getPosColDataMapUnit(x)
-        
+    
     for ( cue in list(existing.mapunit, heading.mapunit, positions.mapunit) ) {
         if ( ! is.null(cue) && ! is.na(cue) ) {
             if ( is.na(map.unit) ) {
@@ -1040,32 +1040,21 @@ getMapUnit.scanone <- function(x) {
     return('cM')
 }
 
-# getPosColDataMapUnit ---------------------------------------------------------
-#' Get map unit from position column values.
+# getMapUnitSuffix -------------------------------------------------------------
+#' Get map unit suffix from a vector of map positions.
 #' 
 #' @template mapunits
 #' 
-#' @param x A \code{mapframe} or equivalent \code{data.frame}, 
-#' or a vector of map positions.
+#' @param x A character vector of map positions.
 #' 
-#' @return Map unit indicated by the position column data. Returns NA if map 
-#' unit information not found in position column data.
+#' @return Map unit indicated by the map positions. Returns NA if the map
+#' position vector does not contain map unit suffixes.
 #' 
 #' @keywords internal
-#' @rdname getPosColDataMapUnit
-getPosColDataMapUnit <- function(x) {
-    UseMethod('getPosColDataMapUnit', x)
-}
-
-# getPosColDataMapUnit.data.frame ----------------------------------------------
-#' @rdname getPosColDataMapUnit
-getPosColDataMapUnit.data.frame <- function(x) {
-    return( getPosColDataMapUnit(x[, getPosColIndex(x)]) )
-}
-
-# getPosColDataMapUnit.character -----------------------------------------------
-#' @rdname getPosColDataMapUnit
-getPosColDataMapUnit.character <- function(x) {
+#' @rdname getMapUnitSuffix
+getMapUnitSuffix <- function(x) {
+    
+    stopifnot( is.character(x) )
     
     map.unit <- NA_character_
     map.type <- NULL
@@ -1074,20 +1063,20 @@ getPosColDataMapUnit.character <- function(x) {
         
         positions <- stripWhite( unname(x) )
         
-        # Create genetic pos matrix, in which rows correspond to  
+        # Create genetic pos matrix, in which rows correspond to
         # loci and columns correspond to genetic map patterns.
-        pos.matrix <- vapply( const$pattern$gmap, function(p) 
-            sapply(positions, grepl, pattern=p, ignore.case=TRUE), 
+        pos.matrix <- vapply( const$pattern$gmap, function(p)
+            sapply(positions, grepl, pattern=p, ignore.case=TRUE),
             logical( length(positions) ) )
         
         # If genetic pos matrix was simplified to a vector (as
         # for a single map position), restore to a matrix.
         if ( ! is.matrix(pos.matrix) ) {
-            pos.matrix <- matrix(pos.matrix, nrow=length(positions), 
+            pos.matrix <- matrix(pos.matrix, nrow=length(positions),
                 dimnames=list(positions, const$pattern$gmap) )
         }
         
-        # For each locus, get column indices of 
+        # For each locus, get column indices of
         # first matching genetic map pattern.
         unit.indices <- unique( sapply(getIndices(positions), function(i)
             match(TRUE, pos.matrix[i, ]) ) )
@@ -1097,7 +1086,7 @@ getPosColDataMapUnit.character <- function(x) {
             if ( ! is.na(unit.indices) ) {
                 map.type <- 'gmap'
             }
-            
+        
         } else {
             
             stop("map positions have inconsistent/incomplete map unit information")
@@ -1105,20 +1094,20 @@ getPosColDataMapUnit.character <- function(x) {
         
         if ( is.null(map.type) ) {
             
-            # Create physical pos matrix, in which rows correspond to  
+            # Create physical pos matrix, in which rows correspond to
             # loci and columns correspond to physical map patterns.
-            pos.matrix <- vapply( const$pattern$pmap, function(p) 
-                sapply(positions, grepl, pattern=p, ignore.case=TRUE), 
+            pos.matrix <- vapply( const$pattern$pmap, function(p)
+                sapply(positions, grepl, pattern=p, ignore.case=TRUE),
                 logical( length(positions) ) )
             
-            # If physical pos matrix was simplified to a vector 
+            # If physical pos matrix was simplified to a vector
             # (as for a single map position), restore to a matrix.
             if ( ! is.matrix(pos.matrix) ) {
-                pos.matrix <- matrix(pos.matrix, nrow=length(positions), 
+                pos.matrix <- matrix(pos.matrix, nrow=length(positions),
                     dimnames=list(positions, const$pattern$pmap) )
             }
             
-            # For each locus, get column indices of first matching genetic 
+            # For each locus, get column indices of first matching genetic
             # map pattern. NB: must check in order (Mb > kb > bp).
             unit.indices <- unique( sapply(getIndices(positions), function(i)
                 match(TRUE, pos.matrix[i, ])) )
@@ -1137,10 +1126,39 @@ getPosColDataMapUnit.character <- function(x) {
         # Update map unit, if identified.
         if ( ! is.null(map.type) ) {
             map.unit <- rownames(const$map.info[[map.type]])[ unit.indices[1] ]
-        } 
+        }
     }
     
     return(map.unit)
+}
+
+# getPosColDataMapUnit ---------------------------------------------------------
+#' Get map unit from position column values.
+#' 
+#' @template mapunits
+#' 
+#' @param x A \code{mapframe} or equivalent \code{data.frame},
+#' or a vector of map positions.
+#' 
+#' @return Map unit indicated by the position column data. Returns NA if map
+#' unit information not found in position column data.
+#' 
+#' @keywords internal
+#' @rdname getPosColDataMapUnit
+getPosColDataMapUnit <- function(x) {
+    UseMethod('getPosColDataMapUnit', x)
+}
+
+# getPosColDataMapUnit.data.frame ----------------------------------------------
+#' @rdname getPosColDataMapUnit
+getPosColDataMapUnit.data.frame <- function(x) {
+    return( getMapUnitSuffix( as.character(x[, getPosColIndex(x)]) ) )
+}
+
+# getPosColDataMapUnit.character -----------------------------------------------
+#' @rdname getPosColDataMapUnit
+getPosColDataMapUnit.character <- function(x) {
+    return( getMapUnitSuffix(x) )
 }
 
 # getPosColDataMapUnit.numeric -------------------------------------------------
@@ -1153,23 +1171,23 @@ getPosColDataMapUnit.numeric <- function(x) {
 #' Get \code{mapframe} position column index.
 #' 
 #' Get position column index for a \code{mapframe} or equivalent \code{data.frame}.
-#' The position column is taken to be the leftmost column whose heading contains 
+#' The position column is taken to be the leftmost column whose heading contains
 #' the word 'pos'. This can also be in uppercase (i.e. 'POS'), but can't be part
 #' of a larger word, such as 'position'. An error is raised if a position column
 #' cannot be found.
 #' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame}.
-#'     
-#' @return Position column index. 
+#' 
+#' @return Position column index.
 #' 
 #' @keywords internal
 #' @rdname getPosColIndex
-getPosColIndex <- function(x) {  
+getPosColIndex <- function(x) {
     
     stopifnot( is.data.frame(x) )
     stopif( anyDuplicated( colnames(x) ) )
     
-    poscol.indices <- which( grepl(const$pattern$poscol, colnames(x), 
+    poscol.indices <- which( grepl(const$pattern$poscol, colnames(x),
         ignore.case=TRUE) )
     
     if ( length(poscol.indices) == 0 ) {
@@ -1184,10 +1202,10 @@ getPosColIndex <- function(x) {
 #' 
 #' @template mapunits
 #' 
-#' @param x A \code{mapframe} or equivalent \code{data.frame}, 
+#' @param x A \code{mapframe} or equivalent \code{data.frame},
 #' or a position column heading.
 #' 
-#' @return Map unit indicated by the position column heading. Returns NA if map 
+#' @return Map unit indicated by the position column heading. Returns NA if map
 #' unit information not found in position column heading.
 #' 
 #' @keywords internal
@@ -1231,7 +1249,7 @@ getPosColNameMapUnit.character <- function(x) {
 #' 
 #' @template mapframe
 #' 
-#' @param ... Further arguments. These are passed to the \code{data.frame} 
+#' @param ... Further arguments. These are passed to the \code{data.frame}
 #' constructor. All arguments should be passed as keyword arguments.
 #' 
 #' @return A new \code{mapframe} with genetic map positions.
@@ -1248,8 +1266,8 @@ gmapframe <- function(...) {
 #' 
 #' @param x Object containing map data.
 #' @param tol Tolerance for step equality.
-#'      
-#' @return Inferred map step. Returns \code{NULL} if map step could not be 
+#' 
+#' @return Inferred map step. Returns \code{NULL} if map step could not be
 #' inferred.
 #' 
 #' @export
@@ -1265,8 +1283,8 @@ inferMapStep <- function(x, tol=1e-5) {
 #' Test if object is in map order.
 #' 
 #' @param x Object containing map data.
-#'     
-#' @return TRUE if map data of object is ordered by sequence, then map  
+#' 
+#' @return TRUE if map data of object is ordered by sequence, then map
 #' position; FALSE otherwise.
 #' 
 #' @export
@@ -1293,7 +1311,7 @@ inMapOrder.data.frame <- function(x) {
         map.seqs <- unique(x.seqs)
         
         for ( map.seq in map.seqs ) {
-            if ( is.unsorted(x.pos[ x.seqs == map.seq ]) ) { 
+            if ( is.unsorted(x.pos[ x.seqs == map.seq ]) ) {
                 return(FALSE)
             }
         }
@@ -1322,7 +1340,7 @@ inMapOrder.map <- function(x) {
 #' Find intersection set of loci.
 #' 
 #' @param ... One or more objects containing map data.
-#'      
+#' 
 #' @return Locus \code{mapframe} with loci common to all input objects.
 #' 
 #' @keywords internal
@@ -1371,7 +1389,7 @@ isGeneticMap <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if object is a \code{mapframe} whose pos column contains 
+#' @return TRUE if object is a \code{mapframe} whose pos column contains
 #' genetic map positions; FALSE otherwise.
 #' 
 #' @keywords internal
@@ -1432,7 +1450,7 @@ isPhysicalMap <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if object is a \code{mapframe} whose pos column contains 
+#' @return TRUE if object is a \code{mapframe} whose pos column contains
 #' physical map positions; FALSE otherwise.
 #' 
 #' @keywords internal
@@ -1474,7 +1492,7 @@ isPhysicalMapUnit <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if object is a known genetic or physical map unit; 
+#' @return TRUE if object is a known genetic or physical map unit;
 #' FALSE otherwise.
 #' 
 #' @keywords internal
@@ -1527,13 +1545,13 @@ setGeneric('makeMap', makeMap)
 # DNAStringSet::makeMap --------------------------------------------------------
 #' @export
 #' @rdname makeMap
-setMethod('makeMap', signature='DNAStringSet', 
+setMethod('makeMap', signature='DNAStringSet',
     definition=makeMap.DNAStringSet)
 
 # QualityScaledDNAStringSet::makeMap -------------------------------------------
 #' @export
 #' @rdname makeMap
-setMethod('makeMap', signature='QualityScaledDNAStringSet', 
+setMethod('makeMap', signature='QualityScaledDNAStringSet',
     definition=makeMap.DNAStringSet)
 
 # mapframe ---------------------------------------------------------------------
@@ -1542,7 +1560,7 @@ setMethod('makeMap', signature='QualityScaledDNAStringSet',
 #' @template mapframe
 #' 
 #' @param map.unit Map unit for the new \code{mapframe}.
-#' @param ... Further arguments. These are passed to the \code{data.frame} 
+#' @param ... Further arguments. These are passed to the \code{data.frame}
 #' constructor. All arguments should be passed as keyword arguments.
 #' 
 #' @return A new \code{mapframe}.
@@ -1577,8 +1595,8 @@ mapframe <- function(map.unit=NULL, ...) {
 #' 
 #' @param x Object containing map data.
 #' @param loc Locus \code{mapframe} specifying map positions.
-#'     
-#' @return Locus mapframe of those loci specified that were found in the target 
+#' 
+#' @return Locus mapframe of those loci specified that were found in the target
 #' object.
 #' 
 #' @keywords internal
@@ -1594,8 +1612,8 @@ matchLoci <- function(x, loc) {
 #' 
 #' @param x A \code{mapframe} or \code{scanone} object.
 #' @param loc Locus \code{mapframe} specifying map positions.
-#'      
-#' @return Vector of row indices with respect to the target \code{mapframe}, 
+#' 
+#' @return Vector of row indices with respect to the target \code{mapframe},
 #' for which a matching locus exists in the locus mapframe.
 #' 
 #' @keywords internal
@@ -1638,18 +1656,18 @@ matchLocusRowIndices <- function(x, loc) {
     i <- j <- 1
     while ( i <= nrow(x) ) {
         
-        while ( ( loc.seqs[j] < x.seqs[i] || ( loc.seqs[j] == x.seqs[i] && 
+        while ( ( loc.seqs[j] < x.seqs[i] || ( loc.seqs[j] == x.seqs[i] &&
             loc.pos[j] < x.pos[i] ) ) && j < nrow(loc) ) {
             j <- j + 1
         }
         
-        while ( ( x.seqs[i] < loc.seqs[j] || ( x.seqs[i] == loc.seqs[j] && 
+        while ( ( x.seqs[i] < loc.seqs[j] || ( x.seqs[i] == loc.seqs[j] &&
             x.pos[i] < loc.pos[j] ) ) && i < nrow(x) ) {
             i <- i + 1
         }
         
         # If closest locus is within numeric tolerance, set row index.
-        if ( x.seqs[i] == loc.seqs[j] && 
+        if ( x.seqs[i] == loc.seqs[j] &&
             abs(x.pos[i] - loc.pos[j]) <= .Machine$double.eps^0.5 ) {
             indices[i] <- i
         }
@@ -1665,8 +1683,8 @@ matchLocusRowIndices <- function(x, loc) {
 #' 
 #' @param x A \code{mapframe} object.
 #' @param sequences Sequences for which row indices should be returned.
-#'      
-#' @return Vector of row indices corresponding to the specified sequences. An 
+#' 
+#' @return Vector of row indices corresponding to the specified sequences. An
 #' empty vector is returned if no sequences match the input \code{mapframe}.
 #' 
 #' @keywords internal
@@ -1704,7 +1722,7 @@ matchSeqRowIndices <- function(x, sequences, simplify=FALSE) {
 #' Put object in map order.
 #' 
 #' @param x Object containing map data.
-#'     
+#' 
 #' @return Input object ordered by sequence, then map position.
 #' 
 #' @export
@@ -1731,14 +1749,14 @@ orderMap.data.frame <- function(x) {
 # orderMap.map -----------------------------------------------------------------
 #' @export
 #' @rdname orderMap
-orderMap.map <- function(x) {  
+orderMap.map <- function(x) {
     
     # Sort map sequences.
     x <- subsetMap( x, sortSeq( names(x) ) )
     
     # Sort map positions.
     for ( i in getIndices(x) ) {
-        x[[i]] <- sort.int(x[[i]]) 
+        x[[i]] <- sort.int(x[[i]])
     }
     
     return(x)
@@ -1748,7 +1766,7 @@ orderMap.map <- function(x) {
 #' Pull loci from object.
 #' 
 #' @param x Object containing map data.
-#'     
+#' 
 #' @return Locus mapframe of individual loci.
 #' 
 #' @keywords internal
@@ -1764,7 +1782,7 @@ pullLoci <- function(x) {
 #' Pull sequence labels for individual loci.
 #' 
 #' @param x Object containing map data.
-#'     
+#' 
 #' @return Character vector of sequence labels associated with individual loci.
 #' 
 #' @keywords internal
@@ -1783,12 +1801,12 @@ pullLocusSeq.data.frame <- function(x) {
 #' @rdname pullLocusSeq
 pullLocusSeq.list <- function(x) {
     return( pullLocusSeq.map(x) )
-} 
+}
 
 # pullLocusSeq.map -------------------------------------------------------------
 #' @rdname pullLocusSeq
 pullLocusSeq.map <- function(x) {
-    return( unlist( lapply( getIndices(x), function(i) 
+    return( unlist( lapply( getIndices(x), function(i)
         rep_len(names(x)[i], length(x[[i]])) ) ) )
 }
 
@@ -1796,7 +1814,7 @@ pullLocusSeq.map <- function(x) {
 #' Pull individual locus IDs.
 #' 
 #' @param x Object containing map data.
-#'     
+#' 
 #' @return Character vector of individual locus IDs.
 #' 
 #' @keywords internal
@@ -1815,19 +1833,19 @@ pullLocusIDs.data.frame <- function(x) {
 #' @rdname pullLocusIDs
 pullLocusIDs.list <- function(x) {
     return( pullLocusIDs.map(x) )
-} 
+}
   
 # pullLocusIDs.map -------------------------------------------------------------
 #' @rdname pullLocusIDs
 pullLocusIDs.map <- function(x) {
     return( unlist( lapply(x, function(loci) names(loci)), use.names=FALSE ) )
-} 
+}
 
 # pullLocusPos -----------------------------------------------------------------
 #' Pull individual locus positions.
 #' 
 #' @param x Object containing map data.
-#'     
+#' 
 #' @return Numeric vector of individual locus positions.
 #' 
 #' @keywords internal
@@ -1861,7 +1879,7 @@ pullLocusPos.list <- function(x) {
 #' @rdname pullLocusPos
 pullLocusPos.map <- function(x) {
     return( unlist( lapply(x, function(loci) unname(loci) ) ) )
-} 
+}
 
 # pullLocusPos.mapframe --------------------------------------------------------
 #' @rdname pullLocusPos
@@ -1872,7 +1890,7 @@ pullLocusPos.mapframe <- function(x) {
 # setMapUnit -------------------------------------------------------------------
 #' Set map unit.
 #' 
-#' Set the map unit of the object. For a \code{data.frame}, the position column 
+#' Set the map unit of the object. For a \code{data.frame}, the position column
 #' may be updated to reflect the new map unit.
 #' 
 #' @template mapunits
@@ -1896,7 +1914,7 @@ setMapUnit <- function(x, map.unit) {
 setMapUnit.list <- function(x, map.unit) {
     attr(x, 'map.unit') <- map.unit
     return(x)
-}  
+}
 
 # setMapUnit.map ---------------------------------------------------------------
 #' @export
@@ -1908,17 +1926,17 @@ setMapUnit.map <- function(x, map.unit) {
     } else {
         validateGeneticMapUnit(map.unit)
     }
-        
+    
     existing.mapunit <- getMapUnit(x)
-        
+    
     if ( ! is.na(existing.mapunit) ) {
         x <- convertMapUnit(x, map.unit)
     } else {
         attr(x, 'map.unit') <- map.unit
     }
-   
+    
     return(x)
-}  
+}
 
 # setMapUnit.data.frame --------------------------------------------------------
 #' @export
@@ -1932,11 +1950,11 @@ setMapUnit.data.frame <- function(x, map.unit) {
     if ( ! is.na(heading.mapunit) ) {
         setPosColNameMapUnit(x, NULL)
     }
-       
+    
     if ( ! is.na(positions.mapunit) ) {
         setPosColDataMapUnit(x, NULL)
     }
-        
+    
     if ( ! is.na(existing.mapunit) ) {
         x <- convertMapUnit(x, map.unit)
     } else {
@@ -1972,17 +1990,17 @@ setMapUnit.mapframe <- function(x, map.unit) {
 
 # setPosColDataMapUnit ---------------------------------------------------------
 #' Set map unit of position column data.
-#'  
+#' 
 #' @template mapunits
-#'  
-#' @param x A \code{mapframe} or equivalent \code{data.frame}, 
+#' 
+#' @param x A \code{mapframe} or equivalent \code{data.frame},
 #' or a vector of map positions.
-#' @param map.unit Map unit. Set to \code{NULL} to remove map unit information 
+#' @param map.unit Map unit. Set to \code{NULL} to remove map unit information
 #' from position column data.
 #' 
-#' @return Input object with the specified map unit appended to position column 
+#' @return Input object with the specified map unit appended to position column
 #' data.
-#'  
+#' 
 #' @keywords internal
 #' @rdname setPosColDataMapUnit
 setPosColDataMapUnit <- function(x, map.unit) {
@@ -2002,7 +2020,7 @@ setPosColDataMapUnit.data.frame <- function(x, map.unit) {
     
     existing.mapunit <- getMapUnit(x)
     
-    if ( ! is.null(map.unit) && ! is.na(existing.mapunit) && 
+    if ( ! is.null(map.unit) && ! is.na(existing.mapunit) &&
         map.unit != existing.mapunit ) {
         stop("pos column data map-unit mismatch")
     }
@@ -2024,7 +2042,7 @@ setPosColDataMapUnit.character <- function(x, map.unit) {
         map.type <- const$known.map.types[existing.mapunit]
         u <- which( rownames(const$map.info[[map.type]]) == existing.mapunit )
         mapunit.pattern <- const$map.info[[map.type]]$pattern[u]
-        res <- suppressWarnings( as.numeric( 
+        res <- suppressWarnings( as.numeric(
             sub(mapunit.pattern, '', x, ignore.case=TRUE) ) )
     } else {
         res <- suppressWarnings( as.numeric(x) )
@@ -2048,18 +2066,18 @@ setPosColDataMapUnit.character <- function(x, map.unit) {
 setPosColDataMapUnit.numeric <- function(x, map.unit) {
     return( setPosColDataMapUnit( as.character(x), map.unit) )
 }
-    
+
 # setPosColNameMapUnit ---------------------------------------------------------
 #' Set map unit of position column heading.
-#'  
+#' 
 #' @template mapunits
-#'  
-#' @param x A \code{mapframe} or equivalent \code{data.frame}, 
+#' 
+#' @param x A \code{mapframe} or equivalent \code{data.frame},
 #' or a position column heading.
-#' @param map.unit Map unit. Set to \code{NULL} to remove map unit information 
+#' @param map.unit Map unit. Set to \code{NULL} to remove map unit information
 #' from position column heading.
 #' 
-#' @return Input object with the specified map unit added to position column 
+#' @return Input object with the specified map unit added to position column
 #' heading.
 #' 
 #' @keywords internal
@@ -2079,7 +2097,7 @@ setPosColNameMapUnit.data.frame <- function(x, map.unit) {
 
     existing.mapunit <- getMapUnit(x)
     
-    if ( ! is.null(map.unit) && ! is.na(existing.mapunit) && 
+    if ( ! is.null(map.unit) && ! is.na(existing.mapunit) &&
          map.unit != existing.mapunit ) {
         stop("pos column heading map unit mismatch")
     }
@@ -2111,9 +2129,9 @@ setPosColNameMapUnit.character <- function(x, map.unit) {
         
     } else if ( ! is.na(existing.mapunit) ) {
         
-        # Compose pattern allowing for text before and after map 
+        # Compose pattern allowing for text before and after map
         # unit, all possible enclosing brackets, and any whitespace.
-        pattern <- paste0('^(.*?)[[:space:]]*[[({<]?[[:space:]]*', 
+        pattern <- paste0('^(.*?)[[:space:]]*[[({<]?[[:space:]]*',
             existing.mapunit, '[[:space:]]*[])}>]?[[:space:]]*(.*?)$')
         
         # Match pattern, get any flanking text.
@@ -2136,15 +2154,15 @@ setPosColNameMapUnit.character <- function(x, map.unit) {
 # subsetMap --------------------------------------------------------------------
 #' Subset \pkg{shmootl} \code{map} object.
 #' 
-#' \pkg{R/qtl} implements a \code{subset.map} method, but this method strips 
+#' \pkg{R/qtl} implements a \code{subset.map} method, but this method strips
 #' some attributes from the \code{map} object. This function transfers any
 #' stripped attributes to the subsetted \code{map} object.
-#'  
+#' 
 #' @param x A \code{map} object.
 #' @param ... Arguments passed to \code{subset}.
 #' 
 #' @return Subsetted \code{map} object.
-#'  
+#' 
 #' @keywords internal
 #' @rdname subsetMap
 subsetMap <- function(x, ...) {
@@ -2157,19 +2175,19 @@ subsetMap <- function(x, ...) {
 
 # validateMap ------------------------------------------------------------------
 #' Validate \code{map} object.
-#'  
+#' 
 #' @template map
 #' 
 #' @param x A \code{map} or equivalent \code{list}.
 #' 
-#' @return TRUE if object is a valid \code{map} or equivalent \code{list}; 
+#' @return TRUE if object is a valid \code{map} or equivalent \code{list};
 #' otherwise, returns first error.
-#'  
+#' 
 #' @keywords internal
 #' @rdname validateMap
-validateMap <- function(x, ...) {  
+validateMap <- function(x, ...) {
     UseMethod('validateMap', x)
-} 
+}
 
 # validateMap.list -------------------------------------------------------------
 #' @rdname validateMap
@@ -2183,7 +2201,7 @@ validateMap.list <- function(x) {
     
     if ( is.null(map.seqs) ) {
         stop("map-like object has no sequence labels")
-    }    
+    }
     
     tryCatch({
         norm.map.seqs <- normSeq(map.seqs) # NB: validates sequence labels.
@@ -2201,25 +2219,25 @@ validateMap.list <- function(x) {
     
     empty.seqs <- map.seqs[ is.na(x) ]
     if ( length(empty.seqs) > 0 ) {
-        stop("map-like object has empty sequences - '", 
+        stop("map-like object has empty sequences - '",
             toString(empty.seqs), "'")
     }
     
     nonnum.seqs <- map.seqs[ ! sapply(x, is.numeric) ]
     if ( length(nonnum.seqs) > 0 ) {
-        stop("map-like object has non-numeric sequence vectors - '", 
+        stop("map-like object has non-numeric sequence vectors - '",
             toString(nonnum.seqs), "'")
-    }    
+    }
     
     short.seqs <- map.seqs[ lengths(x) < const$min.lps ]
     if ( length(short.seqs) > 0 ) {
-        stop("map-like object has too few loci in sequences - '", 
+        stop("map-like object has too few loci in sequences - '",
             toString(short.seqs), "'")
     }
     
     absent.ids <- map.seqs[ ! sapply(x, hasNames) ]
     if ( length(absent.ids) > 0 ) {
-        stop("locus IDs not found for sequences - '", 
+        stop("locus IDs not found for sequences - '",
             toString(absent.ids), "'")
     }
     
@@ -2228,7 +2246,7 @@ validateMap.list <- function(x) {
     if ( ! all( isValidID(x.ids) ) ) {
         stop("map-like object has invalid locus IDs")
     }
-        
+    
     if ( anyDuplicated(x.ids) ) {
         stop("map-like object has duplicate locus IDs")
     }
@@ -2244,7 +2262,7 @@ validateMap.list <- function(x) {
     if ( isPhysicalMap(x) ) {
         subzero <- unique( x.pos[ x.pos < 0 ] )
         if ( length(subzero) > 0 ) {
-            stop("map-like object has invalid physical map positions - '", 
+            stop("map-like object has invalid physical map positions - '",
                 toString(subzero), "'")
         }
     }
@@ -2266,7 +2284,7 @@ validateMap.map <- function(x, package=c('qtl', 'shmootl')) {
     
     if ( is.null(map.seqs) ) {
         stop("map has no sequence labels")
-    }    
+    }
     
     if ( package == 'qtl' ) {
     
@@ -2275,7 +2293,7 @@ validateMap.map <- function(x, package=c('qtl', 'shmootl')) {
         }, error=function(e) {
             stop("qtl map has invalid sequence labels")
         })
-        
+    
     } else {
         
         invalid <- map.seqs[ ! isNormSeq(map.seqs) ]
@@ -2297,7 +2315,7 @@ validateMap.map <- function(x, package=c('qtl', 'shmootl')) {
     nonnum.seqs <- map.seqs[ ! sapply(x, is.numeric) ]
     if ( length(nonnum.seqs) > 0 ) {
         stop("map has non-numeric sequence vectors - '", toString(nonnum.seqs), "'")
-    }    
+    }
     
     short.seqs <- map.seqs[ lengths(x) < const$min.lps ]
     if ( length(short.seqs) > 0 ) {
@@ -2330,7 +2348,7 @@ validateMap.map <- function(x, package=c('qtl', 'shmootl')) {
     if ( isPhysicalMap(x) ) {
         subzero <- unique( x.pos[ x.pos < 0 ] )
         if ( length(subzero) > 0 ) {
-            stop("map has invalid physical map positions - '", 
+            stop("map has invalid physical map positions - '",
                  toString(subzero), "'")
         }
     }
@@ -2349,7 +2367,7 @@ validateMap.map <- function(x, package=c('qtl', 'shmootl')) {
         
         if ( ! all( sapply(x, class) == 'A' ) ) { # NB: assumes no 'X' chromosomes.
             stop("shmootl map sequences must be of class 'A'")
-        } 
+        }
         
         if ( is.na( getMapUnit(x) ) ) {
             stop("shmootl map must have map unit info")
@@ -2366,14 +2384,14 @@ validateMap.map <- function(x, package=c('qtl', 'shmootl')) {
 #' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame}.
 #' 
-#' @return TRUE if object is a valid \code{mapframe} or equivalent 
+#' @return TRUE if object is a valid \code{mapframe} or equivalent
 #' \code{data.frame}; otherwise, returns first error.
 #' 
 #' @keywords internal
 #' @rdname validateMapframe
-validateMapframe <- function(x, ...) {  
+validateMapframe <- function(x, ...) {
     UseMethod('validateMapframe', x)
-} 
+}
 
 # validateMapframe.data.frame --------------------------------------------------
 #' @rdname validateMapframe
@@ -2411,14 +2429,14 @@ validateMapframe.data.frame <- function(x) {
             x.pos <- pullLocusPos(x) # NB: validates map positions.
         }, error=function(e) {
             stop("mapframe-like object has invalid map positions")
-        })    
+        })
 
         validateMapUnit(x)
 
         if ( isPhysicalMapframe(x) ) {
             subzero <- unique( x.pos[ x.pos < 0 ] )
             if ( length(subzero) > 0 ) {
-                stop("mapframe-like object has invalid physical map positions - '", 
+                stop("mapframe-like object has invalid physical map positions - '",
                      toString(subzero), "'")
             }
         }
@@ -2460,7 +2478,7 @@ validateMapframe.mapframe <- function(x) {
         map.seqs <- unique( pullLocusSeq(x) )
         invalid <- map.seqs[ ! isNormSeq(map.seqs) ]
         if ( length(invalid) > 0 ) {
-            stop("mapframe has invalid sequence labels - '", 
+            stop("mapframe has invalid sequence labels - '",
                 toString(invalid), "'")
         }
         
@@ -2474,7 +2492,7 @@ validateMapframe.mapframe <- function(x) {
         if ( isPhysicalMapframe(x) ) {
             subzero <- unique( x.pos[ x.pos < 0 ] )
             if ( length(subzero) > 0 ) {
-                stop("mapframe has invalid physical map positions - '", 
+                stop("mapframe has invalid physical map positions - '",
                      toString(subzero), "'")
             }
         }
@@ -2482,7 +2500,7 @@ validateMapframe.mapframe <- function(x) {
         if ( ! inMapOrder(x) ) {
             stop("mapframe must be ordered by sequence and position")
         }
-    }    
+    }
    
     if ( is.na( getMapUnit(x) ) ) {
         stop("mapframe must have map unit info")
@@ -2497,15 +2515,15 @@ validateMapframe.mapframe <- function(x) {
 #' @template mapunits
 #' 
 #' @param x Map unit, or object with a \code{'map.unit'} attribute.
-#' @param map.type Map type for which map unit should be validated. If not 
+#' @param map.type Map type for which map unit should be validated. If not
 #' specified, map unit is validated for all map types.
 #' 
-#' @return TRUE if the specified map unit is a valid map unit for the given 
+#' @return TRUE if the specified map unit is a valid map unit for the given
 #' map type(s); otherwise, returns error.
 #' 
 #' @keywords internal
 #' @rdname validateMapUnit
-validateMapUnit <- function(x, map.type=NULL) {  
+validateMapUnit <- function(x, map.type=NULL) {
     UseMethod('validateMapUnit', x)
 }
 
@@ -2550,28 +2568,28 @@ validateMapUnit.default <- function(x, map.type=NULL) {
 
 # validateGeneticMapUnit -------------------------------------------------------
 #' Validate genetic map unit.
-#'  
+#' 
 #' @template mapunits
-#'  
+#' 
 #' @param x Map unit, or object with a \code{'map.unit'} attribute.
 #' 
-#' @return TRUE if map unit is a valid genetic map unit; 
+#' @return TRUE if map unit is a valid genetic map unit;
 #' otherwise, returns error.
 #' 
 #' @keywords internal
 #' @rdname validateGeneticMapUnit
-validateGeneticMapUnit <- function(x) {  
+validateGeneticMapUnit <- function(x) {
     return( validateMapUnit(x, map.type='gmap') )
 }
 
 # validatePhysicalMapUnit ------------------------------------------------------
 #' Validate physical map unit.
-#'  
+#' 
 #' @template mapunits
-#'  
+#' 
 #' @param x Map unit, or object with a \code{'map.unit'} attribute.
 #' 
-#' @return TRUE if map unit is a valid physical map unit; 
+#' @return TRUE if map unit is a valid physical map unit;
 #' otherwise, returns error.
 #' 
 #' @keywords internal

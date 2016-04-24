@@ -12,7 +12,7 @@ findMarkers(x, loc)
 \item{loc}{Locus \code{mapframe} specifying map positions.}
 }
 \value{
-A \code{mapframe} whose rows each contain the closest marker to the 
+A \code{mapframe} whose rows each contain the closest marker to the
 map position specified in the corresponding row of the locus \code{mapframe}.
 }
 \description{

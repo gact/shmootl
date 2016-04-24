@@ -20,11 +20,11 @@ findFlanking(x, loc, expandtomarkers = FALSE)
 
 \item{loc}{Locus \code{mapframe} specifying map positions.}
 
-\item{expandtomarkers}{Expand the flanking interval to the nearest flanking 
+\item{expandtomarkers}{Expand the flanking interval to the nearest flanking
 markers, or to the respective terminal loci.}
 }
 \value{
-A \code{mapframe} containing two loci marking respectively the 
+A \code{mapframe} containing two loci marking respectively the
 lower and upper limit of the flanking interval.
 }
 \description{

@@ -28,8 +28,8 @@ getMapUnit(x)
 Map unit. Returns NA if map unit information not found.
 }
 \description{
-Get the map unit of the object. In most cases, this is taken from the 
-\code{'map.unit'} attribute of the object. For a \code{data.frame}, the 
+Get the map unit of the object. In most cases, this is taken from the
+\code{'map.unit'} attribute of the object. For a \code{data.frame}, the
 position column is also checked for map unit information; an error is
 raised if \code{data.frame} map unit information is inconsistent.
 }

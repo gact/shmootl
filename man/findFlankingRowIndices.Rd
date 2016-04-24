@@ -11,7 +11,7 @@ findFlankingRowIndices(x, loc, expandtomarkers = FALSE)
 
 \item{loc}{Locus \code{mapframe} specifying map positions.}
 
-\item{expandtomarkers}{Expand the flanking interval to the nearest flanking 
+\item{expandtomarkers}{Expand the flanking interval to the nearest flanking
 markers, or to the respective terminal loci.}
 }
 \value{

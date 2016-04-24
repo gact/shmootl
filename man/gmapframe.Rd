@@ -7,7 +7,7 @@
 gmapframe(...)
 }
 \arguments{
-\item{...}{Further arguments. These are passed to the \code{data.frame} 
+\item{...}{Further arguments. These are passed to the \code{data.frame}
 constructor. All arguments should be passed as keyword arguments.}
 }
 \value{

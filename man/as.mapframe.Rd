@@ -23,7 +23,7 @@ as.mapframe(from, ...)
 
 \item{...}{Further arguments (see below).}
 
-\item{map.unit}{Explicitly sets \code{'map.unit'}. This must be specified if 
+\item{map.unit}{Explicitly sets \code{'map.unit'}. This must be specified if
 an object does not have an existing \code{'map.unit'} attribute.}
 }
 \value{

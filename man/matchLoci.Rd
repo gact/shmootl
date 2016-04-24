@@ -12,7 +12,7 @@ matchLoci(x, loc)
 \item{loc}{Locus \code{mapframe} specifying map positions.}
 }
 \value{
-Locus mapframe of those loci specified that were found in the target 
+Locus mapframe of those loci specified that were found in the target
 object.
 }
 \description{

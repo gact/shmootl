@@ -6,14 +6,14 @@
 \alias{Map Utilities-package}
 \title{Genetic and physical map utilities.}
 \description{
-These utilities include functions for \pkg{R/qtl} \code{map} objects, 
-\pkg{shmootl} \code{mapframe} objects. A \code{mapframe} can be created 
+These utilities include functions for \pkg{R/qtl} \code{map} objects,
+\pkg{shmootl} \code{mapframe} objects. A \code{mapframe} can be created
 in a similar manner to a \code{data.frame} with \code{\link{mapframe}}.
 All arguments are passed to the \code{data.frame} constructor, except for
 an addition \code{map.unit} parameter, which can be used to set the map unit
 of the new \code{mapframe}. The function \code{\link{gmapframe}} creates a
 genetic \code{mapframe} with map unit set automatically to \code{'cM'}.
-Coercion functions exist to convert a \code{map} to a \code{mapframe} 
+Coercion functions exist to convert a \code{map} to a \code{mapframe}
 (\code{\link{as.mapframe}}), and vice versa (\code{\link{as.map}}).
 }
 \section{Map}{

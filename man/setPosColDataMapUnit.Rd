@@ -16,14 +16,14 @@ setPosColDataMapUnit(x, map.unit)
 \method{setPosColDataMapUnit}{numeric}(x, map.unit)
 }
 \arguments{
-\item{x}{A \code{mapframe} or equivalent \code{data.frame}, 
+\item{x}{A \code{mapframe} or equivalent \code{data.frame},
 or a vector of map positions.}
 
-\item{map.unit}{Map unit. Set to \code{NULL} to remove map unit information 
+\item{map.unit}{Map unit. Set to \code{NULL} to remove map unit information
 from position column data.}
 }
 \value{
-Input object with the specified map unit appended to position column 
+Input object with the specified map unit appended to position column
 data.
 }
 \description{

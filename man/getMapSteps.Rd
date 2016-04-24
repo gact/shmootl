@@ -19,7 +19,7 @@ getMapSteps(x)
 \item{x}{Object containing map data.}
 }
 \value{
-List of vectors, each giving the steps between markers on a given 
+List of vectors, each giving the steps between markers on a given
 sequence.
 }
 \description{

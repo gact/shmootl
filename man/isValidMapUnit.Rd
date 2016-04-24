@@ -10,7 +10,7 @@ isValidMapUnit(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if object is a known genetic or physical map unit; 
+TRUE if object is a known genetic or physical map unit;
 FALSE otherwise.
 }
 \description{

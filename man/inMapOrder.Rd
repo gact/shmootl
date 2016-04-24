@@ -16,7 +16,7 @@ inMapOrder(x)
 \item{x}{Object containing map data.}
 }
 \value{
-TRUE if map data of object is ordered by sequence, then map  
+TRUE if map data of object is ordered by sequence, then map
 position; FALSE otherwise.
 }
 \description{

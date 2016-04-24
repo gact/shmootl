@@ -12,7 +12,7 @@ matchSeqRowIndices(x, sequences, simplify = FALSE)
 \item{sequences}{Sequences for which row indices should be returned.}
 }
 \value{
-Vector of row indices corresponding to the specified sequences. An 
+Vector of row indices corresponding to the specified sequences. An
 empty vector is returned if no sequences match the input \code{mapframe}.
 }
 \description{

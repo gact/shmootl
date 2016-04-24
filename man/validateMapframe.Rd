@@ -16,7 +16,7 @@ validateMapframe(x, ...)
 \item{x}{A \code{mapframe} or equivalent \code{data.frame}.}
 }
 \value{
-TRUE if object is a valid \code{mapframe} or equivalent 
+TRUE if object is a valid \code{mapframe} or equivalent
 \code{data.frame}; otherwise, returns first error.
 }
 \description{

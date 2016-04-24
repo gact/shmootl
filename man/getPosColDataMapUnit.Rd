@@ -16,11 +16,11 @@ getPosColDataMapUnit(x)
 \method{getPosColDataMapUnit}{numeric}(x)
 }
 \arguments{
-\item{x}{A \code{mapframe} or equivalent \code{data.frame}, 
+\item{x}{A \code{mapframe} or equivalent \code{data.frame},
 or a vector of map positions.}
 }
 \value{
-Map unit indicated by the position column data. Returns NA if map 
+Map unit indicated by the position column data. Returns NA if map
 unit information not found in position column data.
 }
 \description{

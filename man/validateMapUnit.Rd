@@ -15,11 +15,11 @@ validateMapUnit(x, map.type = NULL)
 \arguments{
 \item{x}{Map unit, or object with a \code{'map.unit'} attribute.}
 
-\item{map.type}{Map type for which map unit should be validated. If not 
+\item{map.type}{Map type for which map unit should be validated. If not
 specified, map unit is validated for all map types.}
 }
 \value{
-TRUE if the specified map unit is a valid map unit for the given 
+TRUE if the specified map unit is a valid map unit for the given
 map type(s); otherwise, returns error.
 }
 \description{

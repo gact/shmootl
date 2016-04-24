@@ -13,14 +13,14 @@ setPosColNameMapUnit(x, map.unit)
 \method{setPosColNameMapUnit}{character}(x, map.unit)
 }
 \arguments{
-\item{x}{A \code{mapframe} or equivalent \code{data.frame}, 
+\item{x}{A \code{mapframe} or equivalent \code{data.frame},
 or a position column heading.}
 
-\item{map.unit}{Map unit. Set to \code{NULL} to remove map unit information 
+\item{map.unit}{Map unit. Set to \code{NULL} to remove map unit information
 from position column heading.}
 }
 \value{
-Input object with the specified map unit added to position column 
+Input object with the specified map unit added to position column
 heading.
 }
 \description{

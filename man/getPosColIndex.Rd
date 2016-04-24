@@ -14,7 +14,7 @@ Position column index.
 }
 \description{
 Get position column index for a \code{mapframe} or equivalent \code{data.frame}.
-The position column is taken to be the leftmost column whose heading contains 
+The position column is taken to be the leftmost column whose heading contains
 the word 'pos'. This can also be in uppercase (i.e. 'POS'), but can't be part
 of a larger word, such as 'position'. An error is raised if a position column
 cannot be found.

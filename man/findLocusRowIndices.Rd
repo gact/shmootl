@@ -13,7 +13,7 @@ findLocusRowIndices(x, loc)
 }
 \value{
 Vector of row indices, each element of which indicates the row of the
-target \code{mapframe} object containing the closest locus to the map position 
+target \code{mapframe} object containing the closest locus to the map position
 specified in the corresponding row of the locus \code{mapframe}.
 }
 \description{

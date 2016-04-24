@@ -12,7 +12,7 @@ inferMapStep(x, tol = 1e-05)
 \item{tol}{Tolerance for step equality.}
 }
 \value{
-Inferred map step. Returns \code{NULL} if map step could not be 
+Inferred map step. Returns \code{NULL} if map step could not be
 inferred.
 }
 \description{
