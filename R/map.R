@@ -1508,6 +1508,137 @@ isValidMapUnit <- function(x) {
     return(TRUE)
 }
 
+# makeDummyMap -----------------------------------------------------------------
+#' Make a dummy map.
+#' 
+#' Make a dummy map from the given combination of locus sequences, map unit, and
+#' map step size. If locus IDs are specified, the locus IDs of the dummy map
+#' will be set from these. Otherwise, locus IDs are set to pseudomarker IDs or
+#' default marker IDs, according to whether map units are for a genetic or
+#' physical map, respectively.
+#' 
+#' Locus sequences and locus IDs are assumed to be ordered. As in R/qtl, any
+#' sequence with too few loci is extended, to ensure that all sequences have
+#' enough loci.
+#' 
+#' @param locus.seqs Sequences corresponding to individual loci.
+#' @param locus.ids Individual locus IDs.
+#' @param map.unit Map unit.
+#' @param step Map step size.
+#' 
+#' @keywords internal
+#' @rdname makeDummyMap
+makeDummyMap <- function(locus.seqs, locus.ids=NULL, map.unit='cM', step=5) {
+    
+    stopifnot( is.character(locus.seqs) )
+    stopifnot( length(locus.seqs) > 0 )
+    stopifnot( isValidMapUnit(map.unit) )
+    stopifnot( isSinglePositiveNumber(step) )
+    
+    # Get normalised locus sequences.
+    norm.locus.seqs <- normSeq(locus.seqs)
+    
+    # Test if map unit is for a genetic map.
+    is.gmap <- isGeneticMapUnit(map.unit)
+    
+    # Get run-length encoding of normalised locus sequences.
+    runs <- rle(norm.locus.seqs)
+    
+    # Check for any sequence label that is
+    # not grouped together in a single run.
+    if ( anyDuplicated(runs$values) ) {
+        stop("map sequences are not ordered")
+    }
+    
+    # Get dummy-map sequences.
+    map.seqs <- runs$values
+    
+    # Get index list for locus sequences.
+    # NB: groups indices by sequence.
+    index.list <- getRunIndexList(norm.locus.seqs)
+    
+    # Generate dummy locus positions.
+    locus.pos <- unlist( lapply( unname(index.list), function(indices)
+        seq(0, length=length(indices), by=step)) )
+    
+    # Create dummy mapframe.
+    dummy <- mapframe(chr=norm.locus.seqs, pos=locus.pos, map.unit=map.unit)
+    
+    # If locus IDs specified, set from those..
+    if ( ! is.null(locus.ids) ) {
+        
+        stopifnot( is.character(locus.ids) )
+        stopifnot( length(locus.ids) == length(locus.seqs) )
+        
+        rownames(dummy) <- locus.ids
+        
+    } else { # ..otherwise generate default locus IDs.
+        
+        if (is.gmap) {
+            rownames(dummy) <- makePseudomarkerIDs(dummy)
+        } else {
+            rownames(dummy) <- makeDefaultMarkerIDs(dummy)
+        }
+    }
+    
+    # Check dummy mapframe for short sequences.
+    short.seqs <- map.seqs[ sapply(getRunIndices(runs),
+        function(i) runs$lengths[i] < const$min.lps) ]
+    
+    # If dummy mapframe contains short sequences,
+    # extend these until they have enough loci.
+    if ( length(short.seqs) > 0 ) {
+        
+        short.flank.seqs <- character()
+        short.flank.pos <- character()
+        
+        # Get flanking locus sequences and
+        # positions for each short sequence.
+        for ( short.seq in short.seqs ) {
+            
+            # Get loci in this sequence.
+            loc <- dummy[ dummy$chr == short.seq, ]
+            
+            # Calculate shortfall in number of loci.
+            shortfall <- const$min.lps - nrow(loc)
+            
+            # Get number of flanking steps needed to get enough loci.
+            num.steps <- (shortfall + 1) %/% 2
+            
+            # Generate sequence of flanking positions in each direction.
+            lower.flank.pos <- seq(from=loc$pos[1] - step, by=-step,
+                length.out=num.steps)
+            upper.flank.pos <- seq(from=loc$pos[ nrow(loc) ] + step,
+                by=step, length.out=num.steps)
+            
+            # Set flanking locus info for this sequence.
+            flank.pos <- c(lower.flank.pos, upper.flank.pos)
+            flank.seqs <- rep(loc$chr[1], length(flank.pos))
+            
+            # Append to flanking locus info for all short sequences.
+            short.flank.seqs <- c(short.flank.seqs, flank.seqs)
+            short.flank.pos <- c(short.flank.pos, flank.pos)
+        }
+        
+        # Create mapframe of flanking loci.
+        flanking <- mapframe(chr=short.flank.seqs, pos=short.flank.pos,
+            map.unit=map.unit)
+        
+        # Generate default locus IDs.
+        if (is.gmap) {
+            rownames(flanking) <- makePseudomarkerIDs(flanking)
+        } else {
+            rownames(flanking) <- makeDefaultMarkerIDs(flanking)
+        }
+        
+        dummy <- rbind(dummy, flanking)
+        
+        dummy <- orderMap(dummy)
+    }
+    
+    return( as.map(dummy) )
+}
+
 # makeMap (S3) -----------------------------------------------------------------
 #' Make map from genotype data.
 #' 
