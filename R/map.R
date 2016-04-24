@@ -1089,8 +1089,8 @@ getPosColDataMapUnit.character <- function(x) {
         
         # For each locus, get column indices of 
         # first matching genetic map pattern.
-        unit.indices <- unique( sapply(positions, function(pos) 
-            match(TRUE, pos.matrix[pos, ]) ) )
+        unit.indices <- unique( sapply(getIndices(positions), function(i)
+            match(TRUE, pos.matrix[i, ]) ) )
         
         if ( length(unit.indices) == 1 ) {
             
@@ -1120,8 +1120,8 @@ getPosColDataMapUnit.character <- function(x) {
             
             # For each locus, get column indices of first matching genetic 
             # map pattern. NB: must check in order (Mb > kb > bp).
-            unit.indices <- unique( sapply(positions, function(pos) 
-                match(TRUE, pos.matrix[pos])) )
+            unit.indices <- unique( sapply(getIndices(positions), function(i)
+                match(TRUE, pos.matrix[i, ])) )
             
             if ( length(unit.indices) == 1 ) {
                 
