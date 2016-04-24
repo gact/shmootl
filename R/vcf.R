@@ -11,7 +11,7 @@
 #' @rdname getSamplesVCF
 getSamplesVCF <- function(file) {
     stopifnot( isSingleString(file) )
-    stopifnot( all( file.exists(file) ) )
+    stopifnot( file.exists(file) )
     header <- VariantAnnotation::scanVcfHeader(file)
     return( VariantAnnotation::samples(header) )
 }
