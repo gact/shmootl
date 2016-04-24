@@ -1388,6 +1388,24 @@ isGeneticMapframe <- function(x) {
     return(FALSE)
 }
 
+# isGeneticMapUnit -------------------------------------------------------------
+#' Test if object is a known genetic map unit.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if object is a known genetic map unit; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isGeneticMapUnit
+isGeneticMapUnit <- function(x) {
+    tryCatch({
+        validateMapUnit(x, map.type='gmap')
+    }, error=function(e) {
+        return(FALSE)
+    })
+    return(TRUE)
+}
+
 # isPhysicalMap ----------------------------------------------------------------
 #' Test if object is a physical \code{map}.
 #' 
@@ -1429,6 +1447,47 @@ isPhysicalMapframe <- function(x) {
     }
     
     return(FALSE)
+}
+
+# isPhysicalMapUnit ------------------------------------------------------------
+#' Test if object is a known physical map unit.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if object is a known physical map unit; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isPhysicalMapUnit
+isPhysicalMapUnit <- function(x) {
+    
+    tryCatch({
+        validateMapUnit(x, map.type='pmap')
+    }, error=function(e) {
+        return(FALSE)
+    })
+    
+    return(TRUE)
+}
+
+# isValidMapUnit ---------------------------------------------------------------
+#' Test if object is a known map unit.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if object is a known genetic or physical map unit; 
+#' FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isValidMapUnit
+isValidMapUnit <- function(x) {
+    
+    tryCatch({
+        validateMapUnit(x)
+    }, error=function(e) {
+        return(FALSE)
+    })
+    
+    return(TRUE)
 }
 
 # makeMap (S3) -----------------------------------------------------------------
