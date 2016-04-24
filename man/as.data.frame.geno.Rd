@@ -5,7 +5,7 @@
 \title{Coerce \code{geno} object to \code{data.frame}.}
 \usage{
 \method{as.data.frame}{geno}(x, ..., chr = NULL, digits = NULL,
-  include.mapunit = TRUE)
+  missing.value = "-", include.mapunit = TRUE)
 }
 \arguments{
 \item{x}{A \code{geno} object.}
@@ -18,6 +18,9 @@ the genotype \code{data.frame}. If none are specified, a genotype
 
 \item{digits}{If specified, round genetic map positions to the specified 
 number of digits.}
+
+\item{missing.value}{Missing data value. This can be any single character
+that is not a possible phenotype or genotype value.}
 
 \item{include.mapunit}{Include map unit information in map positions.}
 }

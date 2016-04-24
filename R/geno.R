@@ -10,6 +10,8 @@
 #' \code{data.frame} is returned for all available sequences.
 #' @param digits If specified, round genetic map positions to the specified 
 #' number of digits.
+#' @param missing.value Missing data value. This can be any single character
+#' that is not a possible phenotype or genotype value.
 #' @param include.mapunit Include map unit information in map positions.
 #' 
 #' @return A \code{data.frame} corresponding to the input \code{geno} object.
@@ -17,7 +19,8 @@
 #' @keywords internal
 #' @method as.data.frame geno
 #' @rdname as.data.frame.geno
-as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, include.mapunit=TRUE) {
+as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, missing.value='-',
+    include.mapunit=TRUE) {
     
     stopifnot( isBOOL(include.mapunit) )
     
@@ -64,6 +67,8 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL, include.mapunit=TR
     for ( i in getIndices(alleles) ) {
         geno.matrix[ geno.matrix == i ] <- alleles[i]
     }
+    
+    geno.matrix[ is.na(geno.matrix) ] <- missing.value
     
     # Prepare map matrix.
     map.table <- insertColumn(map.table, col.index=1, 
