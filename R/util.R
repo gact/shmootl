@@ -101,7 +101,7 @@ deleteColumn <- function(x, col.index=NULL, col.name=NULL) {
     
     stopifnot( is.data.frame(x) || is.matrix(x) )
     
-    if ( xor( is.null(col.index), is.null(col.name) ) ) {
+    if ( ! xor( is.null(col.index), is.null(col.name) ) ) {
         stop("deleteColumn takes either a column index or column name, but not both")
     }
     
