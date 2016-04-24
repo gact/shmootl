@@ -394,6 +394,8 @@ makeGeno <- function(sample.geno, founder.geno=NULL) {
 #' @rdname makeGeno
 makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     
+    cross.type <- 'bc' # TODO: support other cross types
+    
     # If founder genotypes available, get founder genotype matrix..
     if ( ! is.null(founder.geno) ) {
         geno.matrix <- makeFounderGenoMatrix(sample.geno, founder.geno)
@@ -449,7 +451,7 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     
     attr(cross.geno, 'info') <- cross.info
     
-    class(cross.geno) <- c('geno', 'list')
+    class(cross.geno) <- c(cross.type, 'geno', 'list')
     
     return(cross.geno)
 }
