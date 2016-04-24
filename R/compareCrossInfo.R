@@ -1,47 +1,41 @@
 # Start of compareCrossInfo.R ##################################################
 
 # compareCrossInfo -------------------------------------------------------------
-#' Compare \code{cross} and \code{CrossInfo} objects.
+#' Compare object with associated \code{CrossInfo}.
 #'
-#' @description Test concordance of an \pkg{R/qtl} \code{cross} and a CrossInfo 
-#' object. If an \pkg{R/qtl} \code{cross} is the first argument, it should have 
-#' attribute \code{'info'} containing a \code{CrossInfo} object. If a 
-#' \code{CrossInfo} object is the first argument, the second argument should be 
-#' the \pkg{R/qtl} \code{cross} object with which it is being compared.
+#' @description Test concordance of an object with its associated 
+#' \code{CrossInfo} object. If no \code{CrossInfo} object is specified,
+#' it will be extracted from the test object.
 #' 
-#' @param ... Arguments (see below).
+#' @param x Test object to be compared.
 #' @template param-CrossInfo
-#' @param cross An \pkg{R/qtl} \code{cross} object.
 #' 
-#' @return TRUE if \code{CrossInfo} and \pkg{R/qtl} \code{cross} objects are 
-#' concordant; otherwise returns a character vector of mismatch errors.
+#' @return TRUE if \code{CrossInfo} and test objects are concordant; otherwise 
+#' returns a character vector of mismatch errors.
 #' 
 #' @include CrossInfo-class.R
 #' @keywords internal
 #' @rdname compareCrossInfo
 #' @seealso \code{\linkS4class{CrossInfo}}
-compareCrossInfo <- function (...) {
-    UseMethod('compareCrossInfo', list(...)[[1]])
+compareCrossInfo <- function (x, cross.info=NULL) {
+    UseMethod('compareCrossInfo', x)
 }
 
 # compareCrossInfo.cross -------------------------------------------------------
 #' @rdname compareCrossInfo
-compareCrossInfo.cross <- function(cross) {
-    cross.info <- attr(cross, 'info')
-    stopifnot( 'CrossInfo' %in% class(cross.info) )
-    return( compareCrossInfo(cross.info, cross) )
-}
-
-# compareCrossInfo.CrossInfo ---------------------------------------------------
-#' @rdname compareCrossInfo
-compareCrossInfo.CrossInfo <- function (cross.info, cross) {
+compareCrossInfo.cross <- function(x, cross.info=NULL) {
     
-    stopifnot( 'cross' %in% class(cross) )
+    # If CrossInfo object not specified, 
+    # extract it from the cross itself.
+    if ( is.null(cross.info) ) {
+        cross.info <- attr(x, 'info')
+    }
+    
     validObject(cross.info)
     
     errors <- vector('character')
     
-    cross.map <- qtl::pull.map(cross)
+    cross.map <- qtl::pull.map(x)
     cross.markers <- pullLocusIDs(cross.map)
     obj.markers <- getMarkerNames(cross.info)
     
@@ -59,17 +53,17 @@ compareCrossInfo.CrossInfo <- function (cross.info, cross) {
         }
     }
     
-    pheno.col <- getPhenoColIndices(cross)
-    cross.phenames <- colnames(cross$pheno)[pheno.col]
+    pheno.col <- getPhenoColIndices(x)
+    cross.phenames <- colnames(x$pheno)[pheno.col]
     obj.phenames <- getPhenotypeNames(cross.info)
     
     if ( any(obj.phenames != cross.phenames) ) {
         errors <- c(errors, "phenotype mismatch")
     }
     
-    id.col <- getIdColIndex(cross)
+    id.col <- getIdColIndex(x)
     
-    if ( getNumSamples(cross.info) != nrow(cross$pheno) ) {
+    if ( getNumSamples(cross.info) != nrow(x$pheno) ) {
         errors <- c(errors, "sample count mismatch")
     }
     
@@ -79,7 +73,7 @@ compareCrossInfo.CrossInfo <- function (cross.info, cross) {
     
     if ( hasSampleIDs(cross.info) ) {
         
-        cross.samples <- as.character(cross$pheno[, id.col])
+        cross.samples <- as.character(x$pheno[, id.col])
         obj.samples <- getSamples(cross.info)
         
         if ( any(obj.samples != cross.samples) ) {
@@ -87,23 +81,14 @@ compareCrossInfo.CrossInfo <- function (cross.info, cross) {
         }
     }
     
-    cross.alleles <- pull.alleles(cross)
+    cross.alleles <- pull.alleles(x)
     obj.alleles <- cross.info@alleles
     if ( length(obj.alleles) != length(cross.alleles) ||
          any(obj.alleles != cross.alleles) ) {
         errors <- c(errors, "genotype/allele mismatch")
     }
-
+    
     return( if ( length(errors) == 0 ) {TRUE} else {errors} )
 }
-
-# compareCrossInfo (S4) --------------------------------------------------------
-#' @rdname compareCrossInfo
-setGeneric('compareCrossInfo', compareCrossInfo)
-
-# CrossInfo::compareCrossInfo --------------------------------------------------
-#' @rdname compareCrossInfo
-setMethod('compareCrossInfo', signature='CrossInfo', 
-    definition = compareCrossInfo.CrossInfo)
 
 # End of compareCrossInfo.R ####################################################

@@ -286,7 +286,7 @@ inferStrainIndices.cross <- function(x) {
     # Get cross sample IDs.
     cross.info <- attr(x, 'info')
     if ( ! is.null(cross.info) ) {
-        compareCrossInfo(cross.info, x)
+        compareCrossInfo(x, cross.info)
         sample.ids <- getSamples(cross.info)
     } else {
         sample.ids <- pull.ind(x)
@@ -440,7 +440,7 @@ inferTetradIndices.cross <- function(x) {
     # Get cross sample IDs.
     cross.info <- attr(x, 'info')
     if ( ! is.null(cross.info) ) {
-        compareCrossInfo(cross.info, x)
+        compareCrossInfo(x, cross.info)
         sample.ids <- getSamples(cross.info)
     } else {
         sample.ids <- pull.ind(x)
@@ -572,7 +572,7 @@ inferTimeStep <- function(cross, allow.gaps=TRUE, tol=1e-5) {
     # Get time-series phenotypes.
     cross.info <- attr(cross, 'info')
     if ( ! is.null(cross.info) ) {
-        compareCrossInfo(cross.info, cross)
+        compareCrossInfo(cross, cross.info)
         phenotypes <- getPhenotypes(cross.info)
         times <- as.numeric(phenotypes)
     } else {
@@ -659,7 +659,7 @@ interpTimeSeries <- function(cross, tol=1e-5) {
     # Get time-series phenotypes.
     cross.info <- attr(cross, 'info')
     if ( ! is.null(cross.info) ) {
-        compareCrossInfo(cross.info, cross)
+        compareCrossInfo(cross, cross.info)
         phenotypes <- getPhenotypes(cross.info)
         times <- as.numeric(phenotypes)
     } else {
@@ -768,7 +768,7 @@ padTimeSeries <- function(cross, tol=1e-5) {
     # Get phenotypes and sample IDs.
     cross.info <- attr(cross, 'info')
     if ( ! is.null(cross.info) ) {
-        compareCrossInfo(cross.info, cross)
+        compareCrossInfo(cross, cross.info)
         phenotypes <- getPhenotypes(cross.info)
         times <- as.numeric(phenotypes)
         sample.ids <- getSamples(cross.info)
@@ -890,7 +890,7 @@ permIndices <- function(cross) {
     cross.info <- attr(cross, 'info')
     
     if ( ! is.null(cross.info) ) {
-        compareCrossInfo(cross.info, cross)
+        compareCrossInfo(cross, cross.info)
         replicate.indices <- getStrainIndices(cross.info)
         tetrad.indices <- getTetradIndices(cross.info)
     } else {

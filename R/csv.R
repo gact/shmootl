@@ -303,7 +303,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
 
     # Take cross info from CrossInfo, if available..
     if ( ! is.null(cross.info) ) {
-        compareCrossInfo(cross.info, cross)
+        compareCrossInfo(cross, cross.info)
         phenotypes <- getPhenotypes(cross.info)
         alleles <- getAlleles(cross.info)
         markers <- getSeqMarkers(cross.info, normSeq(chr), simplify=TRUE)
