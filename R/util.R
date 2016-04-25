@@ -822,7 +822,7 @@ isRawAllele <- function(x) {
 #' @rdname isRawGenotype
 isRawGenotype <- function(x) {
     char.class <- paste0(const$raw.allele.charset, collapse='')
-    pattern <- paste0("^[", char.class, "]$", collapse='')
+    pattern <- paste0("^[", char.class, "]+$", collapse='')
     return( grepl(pattern, x) )
 }
 
