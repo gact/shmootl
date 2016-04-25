@@ -5,7 +5,7 @@
 \title{Write yeast \code{cross} to a CSV file.}
 \usage{
 writeCrossCSV(cross, outfile, chr = NULL, digits = NULL,
-  missing.value = "-", include.mapunit = TRUE)
+  include.mapunit = TRUE)
 }
 \arguments{
 \item{cross}{An \pkg{R/qtl} \code{cross} object.}
@@ -18,9 +18,6 @@ sequences.}
 
 \item{digits}{If specified, round genetic map positions and numeric phenotype 
 values to the specified number of digits.}
-
-\item{missing.value}{Missing data value. This can be any single character that 
-is not a possible phenotype or genotype value.}
 
 \item{include.mapunit}{Include map unit information in map positions.}
 }

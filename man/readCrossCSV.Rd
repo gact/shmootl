@@ -4,14 +4,11 @@
 \alias{readCrossCSV}
 \title{Read yeast \code{cross} from a CSV file.}
 \usage{
-readCrossCSV(infile, missing.value = "-", error.prob = 1e-04,
-  map.function = c("haldane", "kosambi", "c-f", "morgan"))
+readCrossCSV(infile, error.prob = 1e-04, map.function = c("haldane",
+  "kosambi", "c-f", "morgan"))
 }
 \arguments{
 \item{infile}{Input CSV file path.}
-
-\item{missing.value}{Missing data value. This can be any single character 
-that is not a possible phenotype or genotype value.}
 
 \item{error.prob}{Genotyping error rate (ignored unless estimating genetic map).}
 

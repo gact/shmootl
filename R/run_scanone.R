@@ -15,7 +15,6 @@
 #' @param method method of QTL analysis
 #' @param n.perm number of permutations
 #' @param n.cluster number of threads
-#' @param missing.value missing data value
 #' @param alpha significance level for LOD threshold
 #' @param step step size for genotype probabilities
 #' @param error.prob genotyping error rate 
@@ -23,11 +22,10 @@
 #' 
 #' @export
 #' @rdname run_scanone
-run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal', 
-    'binary', '2part', 'np'), method=c('em', 'imp', 'hk', 'ehk', 'mr', 'mr-imp', 
-    'mr-argmax'), n.perm=1000L, n.cluster=1L, missing.value='-', alpha=0.05, 
-    step=0, error.prob=0.0001, map.function=c('haldane', 'kosambi', 'c-f', 
-    'morgan')) {
+run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
+    'binary', '2part', 'np'), method=c('em', 'imp', 'hk', 'ehk', 'mr', 'mr-imp',
+    'mr-argmax'), n.perm=1000L, n.cluster=1L, alpha=0.05, step=0,
+    error.prob=0.0001, map.function=c('haldane', 'kosambi', 'c-f', 'morgan')) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
@@ -47,8 +45,8 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     pct.alpha <- paste0(alpha * 100, '%')
     
     # Read cross input file.
-    cross <- readCrossCSV(infile, missing.value=missing.value, 
-        error.prob=error.prob, map.function=map.function)
+    cross <- readCrossCSV(infile, error.prob=error.prob,
+        map.function=map.function)
     
     # Get cross info.
     cross.info <- attr(cross, 'info')

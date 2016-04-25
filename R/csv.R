@@ -21,8 +21,6 @@ NULL
 #' \code{CrossInfo}. 
 #' 
 #' @param infile Input CSV file path.
-#' @param missing.value Missing data value. This can be any single character 
-#' that is not a possible phenotype or genotype value.
 #' @param error.prob Genotyping error rate (ignored unless estimating genetic map).
 #' @param map.function Genetic map function (ignored unless estimating genetic map).
 #'  
@@ -33,12 +31,11 @@ NULL
 #' @family csv utilities
 #' @importFrom methods new
 #' @rdname readCrossCSV
-readCrossCSV <- function(infile, missing.value='-', error.prob=0.0001, 
+readCrossCSV <- function(infile, error.prob=0.0001,
     map.function=c('haldane', 'kosambi', 'c-f', 'morgan')) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
-    stopifnot( isSingleChar(missing.value) )
     error.prob <- as.numeric(error.prob)
     stopifnot( isSingleProbability(error.prob) )
     
@@ -48,7 +45,7 @@ readCrossCSV <- function(infile, missing.value='-', error.prob=0.0001,
     # check them soon. Don't allow headers, we want to see them as 
     # they are. Replace any whitespace/empty cells with NA values.
     cross.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='', 
-        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=missing.value)
+        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
     
     # Get logical vector indicating which columns are blank 
     # in the first row after the initial heading row.
@@ -114,7 +111,7 @@ readCrossCSV <- function(infile, missing.value='-', error.prob=0.0001,
     }
     
     # Get putative genotypes: genotype symbols that are not 'missing data' symbols.
-    genotypes <- alleles <- geno.symbols[ ! geno.symbols %in% missing.value ]
+    genotypes <- alleles <- geno.symbols[ ! geno.symbols %in% const$missing.value ]
     
     # Verify that there are exactly two genotypes.
     # TODO: handle cross with more than two genotypes.
@@ -192,7 +189,7 @@ readCrossCSV <- function(infile, missing.value='-', error.prob=0.0001,
     
     # Read adjusted cross data.
     cross <- qtl::read.cross('csv', '', temp.file, genotypes=genotypes, 
-        alleles=alleles, na.strings=missing.value, error.prob=error.prob, 
+        alleles=alleles, na.strings=const$missing.value, error.prob=error.prob,
         map.function=map.function)
     
     # Infer strain indices..keep if there are replicate samples.
@@ -216,22 +213,19 @@ readCrossCSV <- function(infile, missing.value='-', error.prob=0.0001,
 #' Read yeast genotype data from a CSV file.
 #' 
 #' @param infile Input CSV file path.
-#' @param missing.value Missing data value. This can be any single character 
-#' that is not a possible genotype value.
 #' 
 #' @export
 #' @family csv utilities
 #' @rdname readGenoCSV
-readGenoCSV <- function(infile, missing.value='-') {
+readGenoCSV <- function(infile) {
     
     stopifnot( isSingleString(infile) )
-    stopifnot( isSingleChar(missing.value) )
     
     # Read genotype input data as CSV file. Don't check names now, will
     # check them soon. Don't allow headers, we want to see them as
     # they are. Replace any whitespace/empty cells with NA values.
     geno.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='', 
-        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=missing.value)
+        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
     
     # Make geno table column names from first row of input table.
     colnames(geno.table) <- make.names(geno.table[1, ])
@@ -323,18 +317,15 @@ readMapframeCSV <- function(infile) {
 #' sequences.
 #' @param digits If specified, round genetic map positions and numeric phenotype 
 #' values to the specified number of digits.
-#' @param missing.value Missing data value. This can be any single character that 
-#' is not a possible phenotype or genotype value.
 #' @param include.mapunit Include map unit information in map positions.
 #'  
 #' @export
 #' @family csv utilities
 #' @rdname writeCrossCSV
 writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL, 
-    missing.value='-', include.mapunit=TRUE) {
+    include.mapunit=TRUE) {
     
     stopifnot( isSingleString(outfile) )
-    stopifnot( isSingleChar(missing.value) )
     stopifnot( isBOOL(include.mapunit) )
     
     map.unit <- 'cM'
@@ -388,7 +379,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     }
     
     # Replace missing genotype data with missing value symbol.
-    geno.table[ is.na(geno.table) ] <- missing.value
+    geno.table[ is.na(geno.table) ] <- const$missing.value
     
     # If writing map unit, add map unit info to map table.
     if (include.mapunit) {
@@ -435,7 +426,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     } 
     
     # Write cross data to file.
-    write.table(output.table, file=outfile, na=missing.value, sep=',', 
+    write.table(output.table, file=outfile, na=const$missing.value, sep=',',
         quote=FALSE, row.names=FALSE, col.names=FALSE)
     
     return( invisible() )
@@ -451,18 +442,15 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
 #' available sequences.
 #' @param digits If specified, round genetic map positions to the specified 
 #' number of digits.
-#' @param missing.value Missing data value. This can be any single character 
-#' that is not a possible genotype value.
 #' @param include.mapunit Include map unit information in map positions.
 #'  
 #' @export
 #' @family csv utilities
 #' @rdname writeGenoCSV
 writeGenoCSV <- function(geno, outfile, chr=NULL, digits=NULL, 
-    missing.value='-', include.mapunit=TRUE) {
+    include.mapunit=TRUE) {
         
     stopifnot( isSingleString(outfile) )
-    stopifnot( isSingleChar(missing.value) )
     
     # Convert geno data to a data frame for output.
     geno.table <- as.data.frame(geno, chr=chr, digits=digits, 
@@ -475,7 +463,7 @@ writeGenoCSV <- function(geno, outfile, chr=NULL, digits=NULL,
     geno.table[2:3, 1] <- c('', '')
     
     # Write cross geno data to CSV file.
-    write.table(geno.table, file=outfile, na=missing.value, sep=',', 
+    write.table(geno.table, file=outfile, na=const$missing.value, sep=',',
         quote=FALSE, row.names=FALSE, col.names=FALSE)
     
     return( invisible() )

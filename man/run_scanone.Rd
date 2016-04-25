@@ -6,9 +6,9 @@
 \usage{
 run_scanone(infile, outfile, chr = NA, pheno = NA, model = c("normal",
   "binary", "2part", "np"), method = c("em", "imp", "hk", "ehk", "mr",
-  "mr-imp", "mr-argmax"), n.perm = 1000L, n.cluster = 1L,
-  missing.value = "-", alpha = 0.05, step = 0, error.prob = 1e-04,
-  map.function = c("haldane", "kosambi", "c-f", "morgan"))
+  "mr-imp", "mr-argmax"), n.perm = 1000L, n.cluster = 1L, alpha = 0.05,
+  step = 0, error.prob = 1e-04, map.function = c("haldane", "kosambi",
+  "c-f", "morgan"))
 }
 \arguments{
 \item{infile}{input cross file}
@@ -26,8 +26,6 @@ run_scanone(infile, outfile, chr = NA, pheno = NA, model = c("normal",
 \item{n.perm}{number of permutations}
 
 \item{n.cluster}{number of threads}
-
-\item{missing.value}{missing data value}
 
 \item{alpha}{significance level for LOD threshold}
 

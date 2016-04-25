@@ -981,6 +981,19 @@ isValidID <- function(x) {
     return( is.character(x) & nzchar(x) & grepl(const$pattern$item.id, x) )
 }
 
+# isValidMissingValue ----------------------------------------------------------
+#' Test if object is a valid missing value.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if object is a valid missing value; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isValidMissingValue
+isValidMissingValue <- function(x) {
+    return( x == const$missing.value )
+}
+
 # isValidName ------------------------------------------------------------------
 #' Test for syntactically valid names.
 #'   

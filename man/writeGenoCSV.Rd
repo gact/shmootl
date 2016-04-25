@@ -5,7 +5,7 @@
 \title{Write yeast genotype data to a CSV file.}
 \usage{
 writeGenoCSV(geno, outfile, chr = NULL, digits = NULL,
-  missing.value = "-", include.mapunit = TRUE)
+  include.mapunit = TRUE)
 }
 \arguments{
 \item{geno}{An \pkg{R/qtl} \code{cross} \code{geno} object.}
@@ -18,9 +18,6 @@ available sequences.}
 
 \item{digits}{If specified, round genetic map positions to the specified 
 number of digits.}
-
-\item{missing.value}{Missing data value. This can be any single character 
-that is not a possible genotype value.}
 
 \item{include.mapunit}{Include map unit information in map positions.}
 }

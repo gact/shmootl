@@ -4,13 +4,10 @@
 \alias{readGenoCSV}
 \title{Read yeast genotype data from a CSV file.}
 \usage{
-readGenoCSV(infile, missing.value = "-")
+readGenoCSV(infile)
 }
 \arguments{
 \item{infile}{Input CSV file path.}
-
-\item{missing.value}{Missing data value. This can be any single character 
-that is not a possible genotype value.}
 }
 \description{
 Read yeast genotype data from a CSV file.
