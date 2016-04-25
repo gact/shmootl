@@ -139,11 +139,11 @@ compareCrossInfo.geno <- function(x, cross.info=NULL) {
     geno.sample.count <- unique( unlist( lapply(x,
         function(obj) nrow(obj$data)) ) )
     
-    if ( length(sample.count) > 1 ) {
+    if ( length(geno.sample.count) > 1 ) {
         stop("cross geno has inconsistent sample count")
     }
     
-    if ( getNumSamples(cross.info) != sample.count ) {
+    if ( getNumSamples(cross.info) != geno.sample.count ) {
         errors <- c(errors, "sample count mismatch")
     }
     
