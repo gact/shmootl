@@ -3,11 +3,14 @@
 \name{compareCrossInfo}
 \alias{compareCrossInfo}
 \alias{compareCrossInfo.cross}
+\alias{compareCrossInfo.geno}
 \title{Compare object with associated \code{CrossInfo}.}
 \usage{
 compareCrossInfo(x, cross.info = NULL)
 
 \method{compareCrossInfo}{cross}(x, cross.info = NULL)
+
+\method{compareCrossInfo}{geno}(x, cross.info = NULL)
 }
 \arguments{
 \item{x}{Test object to be compared.}

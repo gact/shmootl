@@ -27,9 +27,7 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
     # Get CrossInfo object.
     cross.info <- attr(x, 'info')
     
-    if ( is.null(cross.info) ) {
-        stop("no CrossInfo found in cross geno object")
-    }
+    compareCrossInfo(x, cross.info)
     
     # Get relevant CrossInfo.
     alleles <- getAlleles(cross.info)

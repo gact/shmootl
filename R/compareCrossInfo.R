@@ -95,4 +95,61 @@ compareCrossInfo.cross <- function(x, cross.info=NULL) {
     return( if ( length(errors) == 0 ) {TRUE} else {errors} )
 }
 
+# compareCrossInfo.geno --------------------------------------------------------
+#' @rdname compareCrossInfo
+compareCrossInfo.geno <- function(x, cross.info=NULL) {
+    
+    map.unit <- 'cM'
+    
+    # If CrossInfo object not specified,
+    # extract it from the geno object.
+    if ( is.null(cross.info) ) {
+        cross.info <- attr(x, 'info')
+    }
+    
+    if ( is.null(cross.info) ) {
+        stop("CrossInfo not found in geno object")
+    }
+    
+    validObject(cross.info)
+    
+    errors <- vector('character')
+    
+    # Pull map from geno object.
+    geno.map <- as.map( lapply(x, function(obj)
+        obj$map), map.unit=map.unit )
+    
+    geno.markers <- pullLocusIDs(geno.map)
+    obj.markers <- getMarkers(cross.info)
+    
+    if ( any(obj.markers != geno.markers) ) {
+        errors <- c(errors, "marker mismatch")
+    }
+    
+    if ( length(obj.markers) > 0 ) {
+        
+        geno.locus.seqs <- pullLocusSeq(geno.map)
+        obj.locus.seqs <- getMarkerSeqs(cross.info)
+        
+        if ( any(obj.locus.seqs != geno.locus.seqs) ) {
+            errors <- c(errors, "marker sequence mismatch")
+        }
+    }
+    
+    geno.sample.count <- unique( unlist( lapply(x,
+        function(obj) nrow(obj$data)) ) )
+    
+    if ( length(sample.count) > 1 ) {
+        stop("cross geno has inconsistent sample count")
+    }
+    
+    if ( getNumSamples(cross.info) != sample.count ) {
+        errors <- c(errors, "sample count mismatch")
+    }
+    
+    # TODO: check counts of alleles, genotypes
+    
+    return( if ( length(errors) == 0 ) {TRUE} else {errors} )
+}
+
 # End of compareCrossInfo.R ####################################################
