@@ -227,6 +227,11 @@ as.geno.data.frame <- function(from) {
     # Get map sequences.
     geno.seqs <- unique(locus.seqs)
     
+    if ( length(geno.seqs) < const$min.spm  ) {
+        stop("cannot coerce data frame to cross geno - too few sequences (min=",
+             const$min.spm, ")")
+    }
+    
     # Create CrossInfo object.
     cross.info <- methods::new('CrossInfo')
     cross.info <- setMarkers(cross.info, markers=locus.ids)
@@ -246,6 +251,11 @@ as.geno.data.frame <- function(from) {
         # Get map info for this sequence.
         seq.map <- geno.map[[geno.seq]]
         class(seq.map) <- 'numeric'
+        
+        if ( length(seq.map) < const$min.lps ) {
+            stop("cannot coerce data frame to cross geno - sequence has too few loci - '",
+                geno.seq, "'")
+        }
         
         # Assign geno data and map for this sequence.
         cross.geno[[geno.seq]] <- list(data=seq.dat, map=seq.map)
@@ -597,6 +607,11 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     # Get map sequences.
     geno.seqs <- unique(locus.seqs)
     
+    if ( length(geno.seqs) < const$min.spm  ) {
+        stop("cannot make cross geno - too few sequences (min=",
+            const$min.spm, ")")
+    }
+    
     # Create CrossInfo object.
     cross.info <- methods::new('CrossInfo')
     cross.info <- setMarkers(cross.info, markers=locus.ids)
@@ -616,6 +631,11 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
         # Get map info for this sequence.
         seq.map <- geno.map[[geno.seq]]
         class(seq.map) <- 'numeric'
+        
+        if ( length(seq.map) < const$min.lps ) {
+            stop("cannot make cross geno - sequence has too few loci - '",
+                geno.seq, "'")
+        }
         
         # Assign geno data and map for this sequence.
         cross.geno[[geno.seq]] <- list(data=seq.dat, map=seq.map)
