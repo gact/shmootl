@@ -10,7 +10,7 @@
 #' @param x Test object to be compared.
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if \code{CrossInfo} and test objects are concordant; otherwise 
+#' @return TRUE if \code{CrossInfo} and test object are concordant; otherwise
 #' returns a character vector of mismatch errors.
 #' 
 #' @include CrossInfo-class.R
@@ -29,6 +29,10 @@ compareCrossInfo.cross <- function(x, cross.info=NULL) {
     # extract it from the cross itself.
     if ( is.null(cross.info) ) {
         cross.info <- attr(x, 'info')
+    }
+    
+    if ( is.null(cross.info) ) {
+        stop("CrossInfo not found in cross object")
     }
     
     validObject(cross.info)

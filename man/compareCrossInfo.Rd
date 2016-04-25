@@ -15,7 +15,7 @@ compareCrossInfo(x, cross.info = NULL)
 \item{cross.info}{A \code{\link{CrossInfo}} object.}
 }
 \value{
-TRUE if \code{CrossInfo} and test objects are concordant; otherwise 
+TRUE if \code{CrossInfo} and test object are concordant; otherwise
 returns a character vector of mismatch errors.
 }
 \description{
