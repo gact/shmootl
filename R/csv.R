@@ -212,6 +212,54 @@ readCrossCSV <- function(infile, missing.value='-', error.prob=0.0001,
     return(cross)
 }
 
+# readGenoCSV ------------------------------------------------------------------
+#' Read yeast genotype data from a CSV file.
+#' 
+#' @param infile Input CSV file path.
+#' @param missing.value Missing data value. This can be any single character 
+#' that is not a possible genotype value.
+#' 
+#' @export
+#' @family csv utilities
+#' @rdname readGenoCSV
+readGenoCSV <- function(infile, missing.value='-') {
+    
+    stopifnot( isSingleString(infile) )
+    stopifnot( isSingleChar(missing.value) )
+    
+    # Read genotype input data as CSV file. Don't check names now, will
+    # check them soon. Don't allow headers, we want to see them as
+    # they are. Replace any whitespace/empty cells with NA values.
+    geno.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='', 
+        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=missing.value)
+    
+    # Make geno table column names from first row of input table.
+    colnames(geno.table) <- make.names(geno.table[1, ])
+    
+    # Check for ID heading in first column.
+    id.col <- min( which( tolower( colnames(geno.table) ) == 'id' ) )
+    if ( id.col != 1 ) {
+        stop("ID column not found in genotype data file - '", infile, "'")
+    }
+    
+    # Fill second row of ID column, checking for map blank.
+    if ( geno.table[2, 'id'] == '' ) {
+        geno.table[2, 'id'] <- const$maptable.colnames[2]
+    } else {
+        stop("second row of ID column must be blank")
+    }
+    
+    # Fill third row of ID column, if blank.
+    if ( geno.table[3, 'id'] == '' ) {
+        geno.table[3, 'id'] <- const$maptable.colnames[3]
+    }
+    
+    # Move sample IDs from first column of geno table.
+    geno.table <- setRownamesFromColumn(geno.table, col.name='id')
+    
+    return( as.geno(geno.table) )
+}
+
 # readMapCSV -------------------------------------------------------------------
 #' Read \code{map} from a CSV file.
 #' 

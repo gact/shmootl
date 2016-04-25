@@ -27,8 +27,8 @@ an \pkg{R/qtl} \code{cross} object with an attribute \code{'info'} of type
 \code{CrossInfo}.
 }
 \seealso{
-Other csv utilities: \code{\link{readMapCSV}},
-  \code{\link{readMapframeCSV}},
+Other csv utilities: \code{\link{readGenoCSV}},
+  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
   \code{\link{writeCrossCSV}}, \code{\link{writeGenoCSV}},
   \code{\link{writeMapCSV}}, \code{\link{writeMapframeCSV}}
 }

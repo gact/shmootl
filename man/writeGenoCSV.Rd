@@ -29,7 +29,8 @@ Write yeast genotype data to a CSV file.
 }
 \seealso{
 Other csv utilities: \code{\link{readCrossCSV}},
-  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
+  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
+  \code{\link{readMapframeCSV}},
   \code{\link{writeCrossCSV}}, \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}}
 }
