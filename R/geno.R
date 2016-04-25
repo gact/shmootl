@@ -265,7 +265,7 @@ as.geno.data.frame <- function(from) {
     
     attr(cross.geno, 'info') <- cross.info
     
-    class(cross.geno) <- c(crosstype, 'geno', 'list')
+    class(cross.geno) <- c('geno', 'list')
     
     return(cross.geno)
 }
@@ -646,7 +646,7 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     
     attr(cross.geno, 'info') <- cross.info
     
-    class(cross.geno) <- c(crosstype, 'geno', 'list')
+    class(cross.geno) <- c('geno', 'list')
     
     return(cross.geno)
 }
