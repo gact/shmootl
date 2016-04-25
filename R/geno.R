@@ -99,7 +99,7 @@ as.geno <- function(from) {
 #' @rdname as.geno
 as.geno.data.frame <- function(from) {
     
-    cross.type <- 'bc' # TODO: support other cross types
+    crosstype <- 'bc' # TODO: support other cross types
     
     # Set putative map positions from third row.
     putative.positions <- as.character(from[3, ])
@@ -238,6 +238,7 @@ as.geno.data.frame <- function(from) {
     cross.info <- setSequences(cross.info, geno.seqs)
     cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
     cross.info <- setAlleles(cross.info, alleles)
+    cross.info <- setCrossType(cross.info, crosstype)
     cross.info <- setSamples(cross.info, samples)
     
     # Init cross genotype object.
@@ -264,7 +265,7 @@ as.geno.data.frame <- function(from) {
     
     attr(cross.geno, 'info') <- cross.info
     
-    class(cross.geno) <- c(cross.type, 'geno', 'list')
+    class(cross.geno) <- c(crosstype, 'geno', 'list')
     
     return(cross.geno)
 }
@@ -577,7 +578,7 @@ makeGeno <- function(sample.geno, founder.geno=NULL) {
 #' @rdname makeGeno
 makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     
-    cross.type <- 'bc' # TODO: support other cross types
+    crosstype <- 'bc' # TODO: support other cross types
     
     # If founder genotypes available, get founder genotype matrix..
     if ( ! is.null(founder.geno) ) {
@@ -617,6 +618,7 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     cross.info <- setMarkers(cross.info, markers=locus.ids)
     cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
     cross.info <- setAlleles(cross.info, alleles)
+    cross.info <- setCrossType(cross.info, crosstype)
     cross.info <- setSamples(cross.info, names(sample.geno))
     cross.info <- setSequences(cross.info, geno.seqs)
     
@@ -644,7 +646,7 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     
     attr(cross.geno, 'info') <- cross.info
     
-    class(cross.geno) <- c(cross.type, 'geno', 'list')
+    class(cross.geno) <- c(crosstype, 'geno', 'list')
     
     return(cross.geno)
 }

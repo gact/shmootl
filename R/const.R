@@ -42,6 +42,9 @@ with(const, {
     # converted to a mapframe by moving the 'id' column to its row names.
     maptable.colnames <- c('id', 'chr', 'pos')
     
+    # Cross types handled by shmootl.
+    supported.crosstypes <- c('bc') # TODO: support other cross types
+    
     # Tetrad sample labels (for alphanumeric tetrad sample IDs).
     tetrad.sample.labels <- c('A', 'B', 'C', 'D')
     

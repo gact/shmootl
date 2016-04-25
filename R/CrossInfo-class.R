@@ -60,7 +60,8 @@ CrossInfo <- setClass('CrossInfo',
         pheno = 'character', 
         markers = 'data.frame',
         samples = 'data.frame',
-        alleles = 'character'
+        alleles = 'character',
+        crosstype = 'character'
     ),
     
     prototype=list( 
@@ -70,7 +71,8 @@ CrossInfo <- setClass('CrossInfo',
             stringsAsFactors=FALSE),
         samples = data.frame(sample.index=integer(), 
             stringsAsFactors=FALSE),
-        alleles = character()
+        alleles = character(),
+        crosstype = NA_character_
     )
 )
 
@@ -95,6 +97,29 @@ setGeneric('getAlleles', function(cross.info) {
 setMethod('getAlleles', signature='CrossInfo', 
     definition = function(cross.info) { 
         return(cross.info@alleles)
+})
+
+# getCrossType -----------------------------------------------------------------
+#' Get cross type.
+#' 
+#' @template param-CrossInfo
+#'  
+#' @return Cross type name.
+#' 
+#' @docType methods
+#' @export
+#' @keywords internal
+#' @rdname getCrossType-methods
+setGeneric('getCrossType', function(cross.info) {
+    standardGeneric('getCrossType') })
+
+# CrossInfo::getCrossType --------------------------------------------------------
+#' @aliases getCrossType,CrossInfo-method
+#' @export
+#' @rdname getCrossType-methods
+setMethod('getCrossType', signature='CrossInfo',
+    definition = function(cross.info) {
+        return(cross.info@crosstype)
 })
 
 # getMarkerIndices -------------------------------------------------------------
@@ -1050,6 +1075,32 @@ setMethod('setAlleles', signature='CrossInfo',
     return(cross.info)
 })
 
+# setCrossType -----------------------------------------------------------------
+#' Set cross type.
+#' 
+#' @template param-CrossInfo
+#' @param crosstype Cross type name.
+#' 
+#' @return Input \code{CrossInfo} object with the given cross type name.
+#' 
+#' @docType methods
+#' @export
+#' @keywords internal
+#' @rdname setCrossType-methods
+setGeneric('setCrossType', function(cross.info, crosstype) {
+    standardGeneric('setCrossType') })
+
+# CrossInfo::setCrossType ------------------------------------------------------
+#' @aliases setCrossType,CrossInfo-method
+#' @export
+#' @rdname setCrossType-methods
+setMethod('setCrossType', signature='CrossInfo',
+    definition = function(cross.info, crosstype) {
+    cross.info@crosstype <- crosstype
+    validateCrossType(cross.info)
+    return(cross.info)
+})
+
 # setMarkers -------------------------------------------------------------------
 #' Set markers.
 #' 
@@ -1363,6 +1414,38 @@ setMethod('validateAlleles', signature='CrossInfo',
         stop("invalid allele values - '", toString(err.geno), "'")
     }
     
+    return(TRUE)
+})
+
+# validateCrossType ------------------------------------------------------------
+#' Validate cross type information.
+#' 
+#' @template param-CrossInfo
+#' 
+#' @return TRUE if cross type is valid; otherwise, returns first error.
+#' 
+#' @docType methods
+#' @export
+#' @keywords internal
+#' @rdname validateCrossType-methods
+setGeneric('validateCrossType', function(cross.info) {
+    standardGeneric('validateCrossType') })
+
+# CrossInfo::validateCrossType -------------------------------------------------
+#' @aliases validateCrossType,CrossInfo-method
+#' @export
+#' @rdname validateCrossType-methods
+setMethod('validateCrossType', signature='CrossInfo',
+    definition = function(cross.info) {
+      
+    stopifnot( is.character(cross.info@crosstype) )
+    stopifnot( length(cross.info@crosstype) == 1 )
+    
+    if ( ! is.na(cross.info@crosstype) && ! cross.info@crosstype %in%
+        const$supported.crosstypes ) {
+        stop("unsupported cross type - '", cross.info@crosstype, "'")
+    }
+
     return(TRUE)
 })
 
@@ -1699,7 +1782,7 @@ setValidity('CrossInfo', function(object) {
 
     errors <- vector('character')
     
-    validators <- c(validateAlleles, validateSequences,
+    validators <- c(validateAlleles, validateCrossType, validateSequences,
         validateMarkers, validatePhenotypes, validateSamples)
     
     for ( validator in validators ) {
