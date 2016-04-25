@@ -37,7 +37,7 @@ compareCrossInfo.cross <- function(x, cross.info=NULL) {
     
     cross.map <- qtl::pull.map(x)
     cross.markers <- pullLocusIDs(cross.map)
-    obj.markers <- getMarkerNames(cross.info)
+    obj.markers <- getMarkers(cross.info)
     
     if ( any(obj.markers != cross.markers) ) {
         errors <- c(errors, "marker mismatch")
