@@ -12,14 +12,14 @@ getQTLIntervals(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...)
 
 \method{getQTLIntervals}{mapframe}(x, chr = NULL, drop = 1.5,
   expandtomarkers = FALSE, threshold = NULL, lodcolumn = NULL,
-  qtl.peaks = NULL)
+  qtl.peaks = NULL, ...)
 
 \method{getQTLIntervals}{qtl}(x, chr = NULL, drop = 1.5,
-  expandtomarkers = FALSE, qtl.indices = NULL)
+  expandtomarkers = FALSE, qtl.indices = NULL, ...)
 
-\method{getQTLIntervals}{scanone}(x, chr = NULL, threshold = NULL,
-  drop = 1.5, expandtomarkers = FALSE, lodcolumn = NULL,
-  qtl.peaks = NULL)
+\method{getQTLIntervals}{scanone}(x, chr = NULL, drop = 1.5,
+  expandtomarkers = FALSE, threshold = NULL, lodcolumn = NULL,
+  qtl.peaks = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{scanone} or \code{qtl} object.}

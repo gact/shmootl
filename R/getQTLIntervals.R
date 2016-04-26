@@ -37,9 +37,10 @@ getQTLIntervals <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...) {
 }
 
 # getQTLIntervals.mapframe -----------------------------------------------------
+#' @export
 #' @rdname getQTLIntervals
 getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, 
-    threshold=NULL, lodcolumn=NULL, qtl.peaks=NULL) { 
+    threshold=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
 
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
@@ -259,9 +260,10 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
 }
 
 # getQTLIntervals.qtl ----------------------------------------------------------
+#' @export
 #' @rdname getQTLIntervals
 getQTLIntervals.qtl <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, 
-    qtl.indices=NULL) {
+    qtl.indices=NULL, ...) {
     
     # NB: if you're thinking of assuming QTL-object 
     # sequences are in order, DON'T!
@@ -304,9 +306,10 @@ getQTLIntervals.qtl <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
 }
 
 # getQTLIntervals.scanone ------------------------------------------------------
+#' @export
 #' @rdname getQTLIntervals
-getQTLIntervals.scanone <- function(x, chr=NULL, threshold=NULL, drop=1.5, 
-    expandtomarkers=FALSE, lodcolumn=NULL, qtl.peaks=NULL) { 
+getQTLIntervals.scanone <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
+    threshold=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
     return( getQTLIntervals(as.mapframe(x), chr=chr, threshold=threshold, drop=drop, 
         expandtomarkers=expandtomarkers, lodcolumn=lodcolumn, qtl.peaks=qtl.peaks) )
 }

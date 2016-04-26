@@ -23,8 +23,9 @@ getLODProfile <- function(x, ...) {
 }
 
 # getLODProfile.data.frame -----------------------------------------------------
+#' @export
 #' @rdname getLODProfile
-getLODProfile.data.frame <- function(x, lodcolumn=NULL) {
+getLODProfile.data.frame <- function(x, lodcolumn=NULL, ...) {
     
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
@@ -48,8 +49,9 @@ getLODProfile.data.frame <- function(x, lodcolumn=NULL) {
 }
 
 # getLODProfile.qtl ------------------------------------------------------------
+#' @export
 #' @rdname getLODProfile
-getLODProfile.qtl <- function(x, qtl.index=NULL) {
+getLODProfile.qtl <- function(x, qtl.index=NULL, ...) {
 
     stopifnot( 'lodprofile' %in% names( attributes(x) ) )
     

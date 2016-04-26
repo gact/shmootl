@@ -8,7 +8,7 @@
 \alias{as.mapframe.scanone}
 \title{Coerce object to \code{mapframe}.}
 \usage{
-as.mapframe(from, ...)
+as.mapframe(from, map.unit = NULL)
 
 \method{as.mapframe}{data.frame}(from, map.unit = NULL)
 
@@ -16,12 +16,10 @@ as.mapframe(from, ...)
 
 \method{as.mapframe}{map}(from, map.unit = NULL)
 
-\method{as.mapframe}{scanone}(from)
+\method{as.mapframe}{scanone}(from, map.unit = NULL)
 }
 \arguments{
 \item{from}{Object containing map data.}
-
-\item{...}{Further arguments (see below).}
 
 \item{map.unit}{Explicitly sets \code{'map.unit'}. This must be specified if
 an object does not have an existing \code{'map.unit'} attribute.}

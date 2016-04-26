@@ -9,9 +9,9 @@
 ## Generic method.
 getLODProfile(x, ...)
 
-\method{getLODProfile}{data.frame}(x, lodcolumn = NULL)
+\method{getLODProfile}{data.frame}(x, lodcolumn = NULL, ...)
 
-\method{getLODProfile}{qtl}(x, qtl.index = NULL)
+\method{getLODProfile}{qtl}(x, qtl.index = NULL, ...)
 }
 \arguments{
 \item{x}{Object containing LOD profile data.}

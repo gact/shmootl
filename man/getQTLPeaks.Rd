@@ -11,12 +11,12 @@
 getQTLPeaks(x, chr=NULL, ...)
 
 \method{getQTLPeaks}{mapframe}(x, chr = NULL, threshold = NULL,
-  lodcolumn = NULL)
+  lodcolumn = NULL, ...)
 
-\method{getQTLPeaks}{qtl}(x, chr = NULL, qtl.indices = NULL)
+\method{getQTLPeaks}{qtl}(x, chr = NULL, qtl.indices = NULL, ...)
 
 \method{getQTLPeaks}{scanone}(x, chr = NULL, threshold = NULL,
-  lodcolumn = NULL)
+  lodcolumn = NULL, ...)
 }
 \arguments{
 \item{x}{An \pkg{R/qtl} \code{scanone} or \code{qtl} object.}

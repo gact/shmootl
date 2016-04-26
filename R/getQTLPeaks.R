@@ -28,8 +28,9 @@ getQTLPeaks <- function(x, chr=NULL, ...) {
 }
 
 # getQTLPeaks.mapframe ---------------------------------------------------------
+#' @export
 #' @rdname getQTLPeaks
-getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL) {
+getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ...) {
     
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
@@ -116,8 +117,9 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL) {
 }
 
 # getQTLPeaks.qtl --------------------------------------------------------------
+#' @export
 #' @rdname getQTLPeaks
-getQTLPeaks.qtl <- function(x, chr=NULL, qtl.indices=NULL) {
+getQTLPeaks.qtl <- function(x, chr=NULL, qtl.indices=NULL, ...) {
     
     # NB: if you're thinking of assuming QTL-object 
     # sequences are in order, DON'T!
@@ -146,8 +148,9 @@ getQTLPeaks.qtl <- function(x, chr=NULL, qtl.indices=NULL) {
 }
 
 # getQTLPeaks.scanone ----------------------------------------------------------
+#' @export
 #' @rdname getQTLPeaks
-getQTLPeaks.scanone <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL) {
+getQTLPeaks.scanone <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ...) {
     return( getQTLPeaks(as.mapframe(x), chr=chr, threshold=threshold, 
         lodcolumn=lodcolumn) )
 }

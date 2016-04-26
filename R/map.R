@@ -86,7 +86,6 @@ as.data.frame.mapframe <- function(x, ...) {
 #' Coerce object to \code{map}.
 #' 
 #' @param from Object containing map data.
-#' @param ... Further arguments (see below).
 #' @param map.unit Explicitly sets \code{'map.unit'}. This must be specified if
 #' an object does not have an existing \code{'map.unit'} attribute.
 #' 
@@ -95,11 +94,12 @@ as.data.frame.mapframe <- function(x, ...) {
 #' @export
 #' @family map utilities
 #' @rdname as.map
-as.map <- function(from, ...) {
+as.map <- function(from, map.unit=NULL) {
     UseMethod('as.map', from)
 }
 
 # as.map.data.frame ------------------------------------------------------------
+#' @export
 #' @method as.map data.frame
 #' @rdname as.map
 as.map.data.frame <- function(from, map.unit=NULL) {
@@ -174,6 +174,7 @@ as.map.data.frame <- function(from, map.unit=NULL) {
 }
 
 # as.map.list ------------------------------------------------------------------
+#' @export
 #' @method as.map list
 #' @rdname as.map
 as.map.list <- function(from, map.unit=NULL) {
@@ -222,16 +223,19 @@ as.map.list <- function(from, map.unit=NULL) {
 }
 
 # as.map.mapframe --------------------------------------------------------------
+#' @export
 #' @method as.map mapframe
 #' @rdname as.map
-as.map.mapframe <- function(from) {
-    return( as.map.data.frame(from) )
+as.map.mapframe <- function(from, map.unit=NULL) {
+    return( as.map.data.frame(from, map.unit=map.unit) )
 }
 
 # as.map.scanone ---------------------------------------------------------------
+#' @export
 #' @method as.map scanone
 #' @rdname as.map
-as.map.scanone <- function(from) {
+as.map.scanone <- function(from, map.unit=NULL) {
+    stopifnot( map.unit == 'cM' )
     return( as.map.data.frame(from, map.unit='cM') )
 }
 
@@ -239,7 +243,6 @@ as.map.scanone <- function(from) {
 #' Coerce object to \code{mapframe}.
 #' 
 #' @param from Object containing map data.
-#' @param ... Further arguments (see below).
 #' @param map.unit Explicitly sets \code{'map.unit'}. This must be specified if
 #' an object does not have an existing \code{'map.unit'} attribute.
 #' 
@@ -248,11 +251,12 @@ as.map.scanone <- function(from) {
 #' @export
 #' @family map utilities
 #' @rdname as.mapframe
-as.mapframe <- function(from, ...) {
+as.mapframe <- function(from, map.unit=NULL) {
     UseMethod('as.mapframe', from)
 }
 
 # as.mapframe.data.frame -------------------------------------------------------
+#' @export
 #' @method as.mapframe data.frame
 #' @rdname as.mapframe
 as.mapframe.data.frame <- function(from, map.unit=NULL) {
@@ -303,6 +307,7 @@ as.mapframe.data.frame <- function(from, map.unit=NULL) {
 }
 
 # as.mapframe.list -------------------------------------------------------------
+#' @export
 #' @method as.mapframe list
 #' @rdname as.mapframe
 as.mapframe.list <- function(from, map.unit=NULL) {
@@ -310,16 +315,19 @@ as.mapframe.list <- function(from, map.unit=NULL) {
 }
 
 # as.mapframe.map --------------------------------------------------------------
+#' @export
 #' @method as.mapframe map
 #' @rdname as.mapframe
 as.mapframe.map <- function(from, map.unit=NULL) {
-    return( as.mapframe( as.data.frame(from), map.unit=map.unit) )
+    return( as.mapframe( as.data.frame(from), map.unit=map.unit ) )
 }
 
 # as.mapframe.scanone ----------------------------------------------------------
+#' @export
 #' @method as.mapframe scanone
 #' @rdname as.mapframe
-as.mapframe.scanone <- function(from) {
+as.mapframe.scanone <- function(from, map.unit=NULL) {
+    stopifnot( map.unit == 'cM' )
     return( as.mapframe.data.frame(from, map.unit='cM') )
 }
 
