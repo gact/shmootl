@@ -34,6 +34,8 @@ NULL
 readCrossCSV <- function(infile, error.prob=0.0001,
     map.function=c('haldane', 'kosambi', 'c-f', 'morgan')) {
     
+    crosstype <- 'bc' # TODO: support other cross types
+    
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     error.prob <- as.numeric(error.prob)
@@ -149,6 +151,7 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
     cross.info <- setPhenotypes(cross.info, phenotypes)
     cross.info <- setAlleles(cross.info, alleles)
+    cross.info <- setCrossType(cross.info, crosstype)
     cross.info <- setSamples(cross.info, samples)
     
     # Get normalised marker sequences, replace these in original table.
