@@ -147,8 +147,6 @@ compareCrossInfo.geno <- function(x, cross.info=NULL) {
         errors <- c(errors, "sample count mismatch")
     }
     
-    # TODO: check counts of alleles, genotypes
-    
     return( if ( length(errors) == 0 ) {TRUE} else {errors} )
 }
 
