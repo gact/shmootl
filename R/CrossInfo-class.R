@@ -49,6 +49,8 @@
 #' 
 #' @slot alleles A vector of cross allele symbols. 
 #'  
+#' @slot crosstype Cross type.
+#'  
 #' @docType class
 #' @export
 #' @keywords internal

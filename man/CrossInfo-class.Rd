@@ -54,6 +54,8 @@ a tetrad. In any case, samples from the same tetrad must be in consecutive
 rows of the cross data.}
 
 \item{\code{alleles}}{A vector of cross allele symbols.}
+
+\item{\code{crosstype}}{Cross type.}
 }}
 \keyword{internal}
 
