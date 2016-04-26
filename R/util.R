@@ -377,6 +377,9 @@ getRunIndexList <- function(x, na.rm=FALSE) {
         # Get run-length encoding of vector.
         runs <- rle(x)
         
+        # Set run names from RLE values.
+        run.names <- runs$values
+        
         # Get number of runs in RLE.
         num.runs <- unique( lengths(runs) )
         
@@ -390,17 +393,19 @@ getRunIndexList <- function(x, na.rm=FALSE) {
             I <- 1
         }
         
-        # Remove NA values if specified.
+        # Remove NA values, if specified.
         if (na.rm) {
-            I <- I[ ! is.na(runs$values) ]
-            J <- J[ ! is.na(runs$values) ]
+            mask <- ! is.na(runs$values)
+            run.names <- run.names[mask]
+            I <- I[mask]
+            J <- J[mask]
         }
         
         # Set index list from run index ranges.
         index.list <- mapply(function(i, j) i:j, I, J, SIMPLIFY=FALSE)
         
         # Set names of index list from run values.
-        names(index.list) <- runs$values
+        names(index.list) <- run.names
         
     } else {
         
