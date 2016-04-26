@@ -1390,30 +1390,37 @@ setMethod('setTetradIndices', signature='CrossInfo', definition =
 #' @export
 #' @keywords internal
 #' @rdname validateAlleles-methods
-setGeneric('validateAlleles', function(cross.info) { 
+setGeneric('validateAlleles', function(cross.info) {
     standardGeneric('validateAlleles') })
 
 # CrossInfo::validateAlleles ---------------------------------------------------
 #' @aliases validateAlleles,CrossInfo-method
 #' @export
 #' @rdname validateAlleles-methods
-setMethod('validateAlleles', signature='CrossInfo', 
+setMethod('validateAlleles', signature='CrossInfo',
     definition = function(cross.info) { 
-      
+    
     stopifnot( is.character(cross.info@alleles) )
-      
+    
     if ( anyNA(cross.info@alleles) ) {
         stop("incomplete allele info")
-    }  
-    
-    dup.geno <- cross.info@alleles[ duplicated(cross.info@alleles) ]
-    if ( length(dup.geno) > 0 ) {
-        stop("duplicate alleles - '", toString(dup.geno), "'")
     }
     
-    err.geno <- cross.info@alleles[ ! isValidAllele(cross.info@alleles) ]
-    if ( length(err.geno) > 0 ) {
-        stop("invalid allele values - '", toString(err.geno), "'")
+    dup.alleles <- cross.info@alleles[ duplicated(cross.info@alleles) ]
+    if ( length(dup.alleles) > 0 ) {
+        stop("duplicate alleles - '", toString(dup.alleles), "'")
+    }
+    
+    valid.founder <- isFounderAllele(cross.info@alleles)
+    valid.raw <- isRawAllele(cross.info@alleles)
+    
+    err.alleles <- cross.info@alleles[ ! ( valid.founder | valid.raw ) ]
+    if ( length(err.alleles) > 0 ) {
+        stop("invalid allele values - '", toString(err.alleles), "'")
+    }
+    
+    if ( any(valid.founder) && any(valid.raw) ) {
+        stop("alleles can be of raw or founder type, but not both")
     }
     
     return(TRUE)
