@@ -30,7 +30,7 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
     compareCrossInfo(x, cross.info)
     
     # Get relevant CrossInfo.
-    alleles <- getAlleles(cross.info)
+    genotypes <- getGenotypes(cross.info)
     locus.ids <- getMarkers(cross.info)
     locus.names <- make.names(locus.ids)
     samples <- getSamples(cross.info)
@@ -61,8 +61,8 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
     geno.matrix <- do.call(cbind, lapply(x, function(obj) obj$data))
     
     # Replace encoded genotypes with actual genotype values.
-    for ( i in getIndices(alleles) ) {
-        geno.matrix[ geno.matrix == i ] <- alleles[i]
+    for ( i in getIndices(genotypes) ) {
+        geno.matrix[ geno.matrix == i ] <- genotypes[i]
     }
     
     # Prepare map matrix.
@@ -189,6 +189,18 @@ as.geno.data.frame <- function(from) {
         stop("cross geno has no genotype data")
     }
     
+    # Verify that genotypes are haploid.
+    # TODO: handle other ploidies.
+    if ( any( nchar(genotypes) > 1 ) ) {
+        stop("unsupported genotype ploidy")
+    }
+    
+    # Verify that there are exactly two genotypes.
+    # TODO: handle more than two genotypes.
+    if ( length(genotypes) != 2 ) {
+        stop("unsupported number of genotypes - '", length(genotypes), "'")
+    }
+    
     # Get allele symbols from characters in genotype symbols.
     alleles <- unique( unlist( strsplit(genotypes, '') ) )
     
@@ -238,6 +250,7 @@ as.geno.data.frame <- function(from) {
     cross.info <- setSequences(cross.info, geno.seqs)
     cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
     cross.info <- setAlleles(cross.info, alleles)
+    cross.info <- setGenotypes(cross.info, genotypes)
     cross.info <- setCrossType(cross.info, crosstype)
     cross.info <- setSamples(cross.info, samples)
     
@@ -275,13 +288,13 @@ as.geno.data.frame <- function(from) {
 #' 
 #' Given input genotype data for cross segregant samples and their founder 
 #' strains, this function assigns a symbol to each locus according to the 
-#' inferred founder allele. 
+#' inferred founder genotype.
 #' 
 #' @param x Sample genotype data.
 #' @param founder.geno Founder genotype data.
 #'   
 #' @return A genotype matrix, with genotypes encoded as integers and their
-#' corresponding allele symbols in the attribute \code{'alleles'}.
+#' corresponding genotype symbols in the attribute \code{'genotypes'}.
 #' 
 #' @importFrom Biostrings DNAStringSet
 #' @importFrom Biostrings QualityScaledDNAStringSet
@@ -347,7 +360,7 @@ makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
     
     if ( length(founder.ids) > length(const$founder.allele.charset) ) {
         stop("number of founders (", length(founder.ids),
-            ") exceeds number of available allele symbols (",
+            ") exceeds number of available symbols (",
             length(const$founder.allele.charset), ")")
     }
     
@@ -409,8 +422,9 @@ makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
         stop("cannot make founder genotype matrix - no diallelic loci found")
     }
     
-    # Set allele symbols for founders.
-    attr(geno.matrix, 'alleles') <- const$founder.allele.charset[
+    # Set genotype symbols for founders.
+    # TODO: handle other ploidies.
+    attr(geno.matrix, 'genotypes') <- const$founder.allele.charset[
         getIndices(founder.ids) ]
     
     return(geno.matrix)
@@ -449,7 +463,7 @@ setMethod('makeFounderGenoMatrix', signature='QualityScaledDNAStringSet',
 #' @param x Sample genotype data.
 #'   
 #' @return A genotype matrix, with genotypes encoded as integers and their
-#' corresponding allele symbols in the attribute \code{'alleles'}.
+#' corresponding genotype symbols in the attribute \code{'genotypes'}.
 #' 
 #' @importFrom Biostrings DNAStringSet
 #' @importFrom Biostrings QualityScaledDNAStringSet
@@ -505,7 +519,7 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
         # Init genotype numbers for this locus.
         geno.numbers <- rep(NA_integer_, length(sample.ids))
         
-        # Get sample symbols and alleles for this locus.
+        # Get sample symbols and genotypes for this locus.
         sample.symbols <- x[, col]
         sample.genotypes <- unique( sample.symbols[ sample.symbols != '.' ] )
         
@@ -532,8 +546,8 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
         stop("cannot make raw genotype matrix - no diallelic loci found")
     }
     
-    # Set allele symbols.
-    attr(geno.matrix, 'alleles') <- as.character( 1:max(geno.matrix, na.rm=TRUE) )
+    # Set genotype symbols.
+    attr(geno.matrix, 'genotypes') <- as.character( 1:max(geno.matrix, na.rm=TRUE) )
     
     return(geno.matrix)
 }
@@ -598,9 +612,24 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     # NB: resolves and sorts sequence IDs.
     geno.map <- makeMap(sample.geno)
     
-    # Get allele symbols from genotype matrix.
-    alleles <- attr(geno.matrix, 'alleles')
-    attr(geno.matrix, 'alleles') <- NULL
+    # Get genotype symbols from genotype matrix.
+    genotypes <- attr(geno.matrix, 'genotypes')
+    attr(geno.matrix, 'genotypes') <- NULL
+    
+    # Verify that genotypes are haploid.
+    # TODO: handle other ploidies.
+    if ( any( nchar(genotypes) > 1 ) ) {
+        stop("unsupported genotype ploidy")
+    }
+    
+    # Verify that there are exactly two genotypes.
+    # TODO: handle more than two genotypes.
+    if ( length(genotypes) != 2 ) {
+        stop("unsupported number of genotypes - '", length(genotypes), "'")
+    }
+    
+    # Get allele symbols from characters in genotype symbols.
+    alleles <- unique( unlist( strsplit(genotypes, '') ) )
     
     # Get sequences of map loci.
     locus.seqs <- pullLocusSeq(geno.map)
@@ -618,6 +647,7 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     cross.info <- setMarkers(cross.info, markers=locus.ids)
     cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
     cross.info <- setAlleles(cross.info, alleles)
+    cross.info <- setGenotypes(cross.info, genotypes)
     cross.info <- setCrossType(cross.info, crosstype)
     cross.info <- setSamples(cross.info, names(sample.geno))
     cross.info <- setSequences(cross.info, geno.seqs)

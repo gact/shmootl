@@ -55,6 +55,8 @@ rows of the cross data.}
 
 \item{\code{alleles}}{A vector of cross allele symbols.}
 
+\item{\code{genotypes}}{A vector of cross genotype symbols.}
+
 \item{\code{crosstype}}{Cross type.}
 }}
 \keyword{internal}

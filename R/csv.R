@@ -113,13 +113,22 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     }
     
     # Get putative genotypes: genotype symbols that are not 'missing data' symbols.
-    genotypes <- alleles <- geno.symbols[ ! geno.symbols %in% const$missing.value ]
+    genotypes <- geno.symbols[ ! geno.symbols %in% const$missing.value ]
     
+    # Verify that genotypes are haploid.
+    # TODO: handle other ploidies.
+    if ( any( nchar(genotypes) > 1 ) ) {
+        stop("unsupported genotype ploidy")
+    }
+        
     # Verify that there are exactly two genotypes.
     # TODO: handle cross with more than two genotypes.
     if ( length(genotypes) != 2 ) { 
         stop("unsupported number of genotypes - '", length(genotypes), "'")
-    } 
+    }
+    
+    # Get allele symbols from characters in genotype symbols.
+    alleles <- unique( unlist( strsplit(genotypes, '') ) )
     
     # Get phenotype names.
     phenotypes <- as.character(cross.table[1, pheno.cols])
@@ -151,6 +160,7 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
     cross.info <- setPhenotypes(cross.info, phenotypes)
     cross.info <- setAlleles(cross.info, alleles)
+    cross.info <- setGenotypes(cross.info, genotypes)
     cross.info <- setCrossType(cross.info, crosstype)
     cross.info <- setSamples(cross.info, samples)
     
@@ -346,27 +356,35 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     # Take cross info from CrossInfo, if available..
     if ( ! is.null(cross.info) ) {
         compareCrossInfo(cross, cross.info)
+        crosstype <- getCrossType(cross.info)
         phenotypes <- getPhenotypes(cross.info)
         alleles <- getAlleles(cross.info)
         markers <- getSeqMarkers(cross.info, normSeq(chr), simplify=TRUE)
         marker.names <- getMarkerNames(cross.info, markers)
         sample.ids <- getSamples(cross.info)
     } else { # ..otherwise take directly from cross.
+        crosstype <- pull.crosstype(cross)
         phenotypes <- qtl::phenames(cross)[pheno.col]
         alleles <- pull.alleles(cross)
         markers <- marker.names <- qtl::markernames(cross, chr)
         sample.ids <- pull.ind(cross)
     }
     
+    stopifnot( crosstype == 'bc' ) # TODO: support other cross types
     stopifnot( length(phenotypes) > 0 )
     stopifnot( length(alleles) > 0 )
     stopifnot( length(markers) > 0 )
     stopifnot( length(sample.ids) > 0 )
-
+    
     # Get phenotypes, map, genotypes.
     pheno.table <- qtl::pull.pheno(cross, pheno.col)
     map.table <- as.data.frame(qtl::pull.map(cross, chr), map.unit=map.unit)
     geno.table <- qtl::pull.geno(cross)[, marker.names]
+    
+    # As cross is haploid (though marked as 'bc'),
+    # we can set genotypes directly from alleles.
+    # TODO: handle other ploidies.
+    genotypes <- alleles
     
     # If digits specified, round numeric phenotype values and map positions.
     if ( ! is.null(digits) ) {
@@ -377,8 +395,8 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     }
     
     # Replace encoded genotypes with actual genotype values.
-    for ( i in getIndices(alleles) ) {
-        geno.table[ geno.table == i ] <- alleles[i]
+    for ( i in getIndices(genotypes) ) {
+        geno.table[ geno.table == i ] <- genotypes[i]
     }
     
     # Replace missing genotype data with missing value symbol.

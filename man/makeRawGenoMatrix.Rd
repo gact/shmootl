@@ -26,7 +26,7 @@ makeRawGenoMatrix(x)
 }
 \value{
 A genotype matrix, with genotypes encoded as integers and their
-corresponding allele symbols in the attribute \code{'alleles'}.
+corresponding genotype symbols in the attribute \code{'genotypes'}.
 }
 \description{
 Given input sample genotype data, this function assigns an arbitrary symbol 

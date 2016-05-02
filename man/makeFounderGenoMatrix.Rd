@@ -28,12 +28,12 @@ makeFounderGenoMatrix(x, founder.geno)
 }
 \value{
 A genotype matrix, with genotypes encoded as integers and their
-corresponding allele symbols in the attribute \code{'alleles'}.
+corresponding genotype symbols in the attribute \code{'genotypes'}.
 }
 \description{
 Given input genotype data for cross segregant samples and their founder 
 strains, this function assigns a symbol to each locus according to the 
-inferred founder allele.
+inferred founder genotype.
 }
 \keyword{internal}
 

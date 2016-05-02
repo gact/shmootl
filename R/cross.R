@@ -1021,6 +1021,21 @@ pull.chr <- function(cross) {
     return( names(cross$geno) )
 }
 
+# pull.crosstype ---------------------------------------------------------------
+#' Pull cross type from \pkg{R/qtl} \code{cross}.
+#' 
+#' @param cross An \pkg{R/qtl} \code{cross} object.
+#'     
+#' @return Cross type of the \code{cross} object.
+#' 
+#' @export
+#' @family cross utilities
+#' @rdname pull.crosstype
+pull.crosstype <- function(cross) {
+    stopifnot( 'cross' %in% class(cross)  )
+    return( class(cross)[1] )
+}
+
 # pull.ind ---------------------------------------------------------------------
 #' Pull individual IDs from \pkg{R/qtl} \code{cross}.
 #' 

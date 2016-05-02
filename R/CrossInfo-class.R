@@ -47,8 +47,10 @@
 #' a tetrad. In any case, samples from the same tetrad must be in consecutive 
 #' rows of the cross data.
 #' 
-#' @slot alleles A vector of cross allele symbols. 
-#'  
+#' @slot alleles A vector of cross allele symbols.
+#' 
+#' @slot genotypes A vector of cross genotype symbols.
+#' 
 #' @slot crosstype Cross type.
 #'  
 #' @docType class
@@ -63,6 +65,7 @@ CrossInfo <- setClass('CrossInfo',
         markers = 'data.frame',
         samples = 'data.frame',
         alleles = 'character',
+        genotypes = 'character',
         crosstype = 'character'
     ),
     
@@ -74,6 +77,7 @@ CrossInfo <- setClass('CrossInfo',
         samples = data.frame(sample.index=integer(), 
             stringsAsFactors=FALSE),
         alleles = character(),
+        genotypes = character(),
         crosstype = NA_character_
     )
 )
@@ -124,6 +128,29 @@ setMethod('getCrossType', signature='CrossInfo',
         return(cross.info@crosstype)
 })
 
+# getGenotypes -----------------------------------------------------------------
+#' Get genotype symbols.
+#' 
+#' @template param-CrossInfo
+#' 
+#' @return Character vector of genotype symbols.
+#' 
+#' @docType methods
+#' @export
+#' @keywords internal
+#' @rdname getGenotypes-methods
+setGeneric('getGenotypes', function(cross.info) {
+    standardGeneric('getGenotypes') })
+
+# CrossInfo::getGenotypes ------------------------------------------------------
+#' @aliases getGenotypes,CrossInfo-method
+#' @export
+#' @rdname getGenotypes-methods
+setMethod('getGenotypes', signature='CrossInfo',
+    definition = function(cross.info) {
+        return(cross.info@genotypes)
+})
+
 # getMarkerIndices -------------------------------------------------------------
 #' Get marker indices.
 #' 
@@ -136,7 +163,7 @@ setMethod('getCrossType', signature='CrossInfo',
 #' @export
 #' @keywords internal
 #' @rdname getMarkerIndices-methods
-setGeneric('getMarkerIndices', function(cross.info, markers=NULL) { 
+setGeneric('getMarkerIndices', function(cross.info, markers=NULL) {
   standardGeneric('getMarkerIndices') })
 
 # CrossInfo::getMarkerIndices --------------------------------------------------
@@ -1103,6 +1130,32 @@ setMethod('setCrossType', signature='CrossInfo',
     return(cross.info)
 })
 
+# setGenotypes -----------------------------------------------------------------
+#' Set genotype symbols.
+#' 
+#' @template param-CrossInfo
+#' @param alleles Vector of genotype symbols.
+#' 
+#' @return Input \code{CrossInfo} object with the given genotypes.
+#' 
+#' @docType methods
+#' @export
+#' @keywords internal
+#' @rdname setGenotypes-methods
+setGeneric('setGenotypes', function(cross.info, genotypes) {
+    standardGeneric('setGenotypes') })
+
+# CrossInfo::setGenotypes ------------------------------------------------------
+#' @aliases setGenotypes,CrossInfo-method
+#' @export
+#' @rdname setGenotypes-methods
+setMethod('setGenotypes', signature='CrossInfo',
+    definition = function(cross.info, genotypes) {
+    cross.info@genotypes <- genotypes
+    validateGenotypes(cross.info)
+    return(cross.info)
+})
+
 # setMarkers -------------------------------------------------------------------
 #' Set markers.
 #' 
@@ -1398,7 +1451,7 @@ setGeneric('validateAlleles', function(cross.info) {
 #' @export
 #' @rdname validateAlleles-methods
 setMethod('validateAlleles', signature='CrossInfo',
-    definition = function(cross.info) { 
+    definition = function(cross.info) {
     
     stopifnot( is.character(cross.info@alleles) )
     
@@ -1455,6 +1508,57 @@ setMethod('validateCrossType', signature='CrossInfo',
         stop("unsupported cross type - '", cross.info@crosstype, "'")
     }
 
+    return(TRUE)
+})
+
+# validateGenotypes ------------------------------------------------------------
+#' Validate genotype information.
+#' 
+#' @template param-CrossInfo
+#' 
+#' @return TRUE if genotypes are valid; otherwise, returns first error.
+#' 
+#' @docType methods
+#' @export
+#' @keywords internal
+#' @rdname validateGenotypes-methods
+setGeneric('validateGenotypes', function(cross.info) {
+    standardGeneric('validateGenotypes') })
+
+# CrossInfo::validateGenotypes -------------------------------------------------
+#' @aliases validateGenotypes,CrossInfo-method
+#' @export
+#' @rdname validateGenotypes-methods
+setMethod('validateGenotypes', signature='CrossInfo',
+    definition = function(cross.info) {
+    
+    stopifnot( is.character(cross.info@genotypes) )
+    
+    if ( anyNA(cross.info@genotypes) ) {
+        stop("incomplete genotype info")
+    }
+    
+    dup.geno <- cross.info@genotypes[ duplicated(cross.info@genotypes) ]
+    if ( length(dup.geno) > 0 ) {
+        stop("duplicate genotypes - '", toString(dup.geno), "'")
+    }
+    
+    valid.founder <- isFounderGenotype(cross.info@genotypes)
+    valid.raw <- isRawGenotype(cross.info@genotypes)
+    
+    err.geno <- cross.info@genotypes[ ! ( valid.founder | valid.raw ) ]
+    if ( length(err.geno) > 0 ) {
+        stop("invalid genotype values - '", toString(err.geno), "'")
+    }
+    
+    if ( any(valid.founder) && any(valid.raw) ) {
+        stop("genotypes can be of raw or founder type, but not both")
+    }
+    
+    if ( length( unique( nchar(cross.info@genotypes) ) ) != 1 ) {
+        stop("inconsistent genotype ploidy")
+    }
+    
     return(TRUE)
 })
 
@@ -1791,8 +1895,8 @@ setValidity('CrossInfo', function(object) {
 
     errors <- vector('character')
     
-    validators <- c(validateAlleles, validateCrossType, validateSequences,
-        validateMarkers, validatePhenotypes, validateSamples)
+    validators <- c(validateAlleles, validateCrossType, validateGenotypes,
+        validateSequences, validateMarkers, validatePhenotypes, validateSamples)
     
     for ( validator in validators ) {
         tryCatch({
@@ -1813,6 +1917,15 @@ setValidity('CrossInfo', function(object) {
         empties <- object@seq[ ! object@seq %in% object@markers$seq ]
         if ( length(empties) > 0 ) {
             e <- paste0("no markers found for sequences - '", toString(empties), "'")
+            errors <- c(errors, e)
+        }
+    }
+    
+    if ( length(object@alleles) > 0 || length(object@genotypes) > 0 ) {
+        gchars <- sort( unique( unlist( strsplit(object@genotypes, '') ) ) )
+        achars <- sort( object@alleles )
+        if ( length(achars) != length(gchars) || any(achars != gchars) ) {
+            e <- paste0("allele/genotype mismatch")
             errors <- c(errors, e)
         }
     }

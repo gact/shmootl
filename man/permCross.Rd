@@ -36,6 +36,7 @@ Other cross utilities: \code{\link{getIdColIndex}},
   \code{\link{inferTimeStep}},
   \code{\link{interpTimeSeries}},
   \code{\link{padTimeSeries}}, \code{\link{pull.alleles}},
-  \code{\link{pull.chr}}, \code{\link{pull.ind}}
+  \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
+  \code{\link{pull.ind}}
 }
 

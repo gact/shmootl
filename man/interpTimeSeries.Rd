@@ -26,6 +26,7 @@ Other cross utilities: \code{\link{getIdColIndex}},
   \code{\link{inferTetradIndices}},
   \code{\link{inferTimeStep}}, \code{\link{padTimeSeries}},
   \code{\link{permCross}}, \code{\link{pull.alleles}},
-  \code{\link{pull.chr}}, \code{\link{pull.ind}}
+  \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
+  \code{\link{pull.ind}}
 }
 
