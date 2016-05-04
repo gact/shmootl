@@ -1647,51 +1647,53 @@ makeDummyMap <- function(locus.seqs, locus.ids=NULL, map.unit='cM', step=5) {
     return( as.map(dummy) )
 }
 
-# makeMap (S3) -----------------------------------------------------------------
-#' Make map from genotype data.
+# makeMapFromDefaultMarkerIDs --------------------------------------------------
+#' Make map from default marker IDs.
 #' 
 #' @template map
 #' 
-#' @param x Genotype data.
+#' @param marker.ids Vector of default marker IDs.
 #' 
 #' @return An \pkg{R/qtl} \code{map} object.
 #' 
-#' @docType methods
 #' @export
-#' @importFrom Biostrings DNAStringSet
-#' @importFrom Biostrings QualityScaledDNAStringSet
 #' @keywords internal
-#' @rdname makeMap
-makeMap <- function(x) {
-    UseMethod('makeMap', x)
+#' @rdname makeMapFromDefaultMarkerIDs
+makeMapFromDefaultMarkerIDs <- function(marker.ids) {
+    return( as.map( parseDefaultMarkerIDs(marker.ids) ) )
 }
 
-# makeMap.DNAStringSet ---------------------------------------------------------
+# makeMapFromDefaultQTLNames ---------------------------------------------------
+#' Make map from default QTL names.
+#' 
+#' @template map
+#' 
+#' @param qtl.names Vector of default QTL names.
+#' 
+#' @return An \pkg{R/qtl} \code{map} object.
+#' 
 #' @export
-#' @rdname makeMap
-makeMap.DNAStringSet <- function(x) {
-    stopifnot( 'loci' %in% names(x@metadata) )
-    stopifnot( 'mapframe' %in% class(x@metadata[['loci']]) )
-    loc <- setMapUnit(x@metadata[['loci']], 'cM')
-    return( as.map(loc) )
+#' @keywords internal
+#' @rdname makeMapFromDefaultQTLNames
+makeMapFromDefaultQTLNames <- function(qtl.names) {
+    return( as.map( parseDefaultQTLNames(qtl.names) ) )
 }
 
-# makeMap (S4) -----------------------------------------------------------------
+# makeMapFromPseudomarkerIDs ---------------------------------------------------
+#' Make map from pseudomarker IDs.
+#' 
+#' @template map
+#' 
+#' @param loc.ids Vector of pseudomarker IDs.
+#' 
+#' @return An \pkg{R/qtl} \code{map} object.
+#' 
 #' @export
-#' @rdname makeMap
-setGeneric('makeMap', makeMap)
-
-# DNAStringSet::makeMap --------------------------------------------------------
-#' @export
-#' @rdname makeMap
-setMethod('makeMap', signature='DNAStringSet',
-    definition=makeMap.DNAStringSet)
-
-# QualityScaledDNAStringSet::makeMap -------------------------------------------
-#' @export
-#' @rdname makeMap
-setMethod('makeMap', signature='QualityScaledDNAStringSet',
-    definition=makeMap.DNAStringSet)
+#' @keywords internal
+#' @rdname makeMapFromPseudomarkerIDs
+makeMapFromPseudomarkerIDs <- function(loc.ids) {
+    return( as.map( parsePseudomarkerIDs(loc.ids) ) )
+}
 
 # mapframe ---------------------------------------------------------------------
 #' Create a new \code{mapframe}.

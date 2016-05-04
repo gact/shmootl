@@ -2,7 +2,7 @@
 % Please edit documentation in R/vcf.R
 \name{readSnpsVCF}
 \alias{readSnpsVCF}
-\title{Read SNP genotypes from VCF files.}
+\title{Read raw SNP genotypes from VCF files.}
 \usage{
 readSnpsVCF(..., samples = NULL, require.all = FALSE, require.any = FALSE,
   require.polymorphic = FALSE)
@@ -10,36 +10,34 @@ readSnpsVCF(..., samples = NULL, require.all = FALSE, require.any = FALSE,
 \arguments{
 \item{...}{Input VCF file paths.}
 
-\item{samples}{Vector of samples for which SNP genotypes should be obtained. If
-not specified, genotypes are returned for all available samples.}
+\item{samples}{Vector of samples for which SNP genotypes should be obtained.
+If not specified, genotypes are returned for all available samples.}
 
-\item{require.all}{Remove variants that are not completely genotyped 
+\item{require.all}{Remove variants that are not completely genotyped
 with respect to the given samples.}
 
 \item{require.any}{Remove variants that do not have at least one genotype
 call among the given samples.}
 
-\item{require.polymorphic}{Remove variants that do not have at least two 
+\item{require.polymorphic}{Remove variants that do not have at least two
 different genotype calls among the given samples.}
 }
 \value{
-A \pkg{Biostrings} \code{QualityScaledDNAStringSet} object if 
-genotype quality scores are available; otherwise a \pkg{Biostrings} 
-\code{DNAStringSet} object containing only raw SNP genotype values.
+An \code{array} object containing raw genotype data, and if available,
+genotype error probabilities.
 }
 \description{
-This function reads SNP genotype data from one or more VCF files, and returns 
-these as a sequence of raw SNP genotypes - effectively variant base calls - 
-for each sample. If all relevant input VCF files contain genotype quality (GQ) 
-scores for the samples of interest, these are used - along with variant 
-quality scores - to calculate a quality score for each SNP genotype, and 
-the result is returned as a \pkg{Biostrings} \code{QualityScaledDNAStringSet} 
-object containing raw SNP genotypes and their corresponding Phred quality 
-scores, encoded as an ASCII string. Otherwise, SNP genotypes are returned 
-as a \pkg{Biostrings} \code{DNAStringSet} object containing only raw SNP 
-genotype values. In any case, the returned object will have an attribute 
-\code{'loci'}: a \code{mapframe} of marker loci corresponding to the 
-genotyped variants.
+This function reads SNP genotype data from one or more VCF files, and returns
+these as a sequence of raw SNP genotypes - effectively variant base calls -
+for each sample. If all relevant input VCF files contain genotype quality
+(GQ) scores for the samples of interest, these are used - along with variant
+quality scores - to calculate an error probability for each SNP genotype, and
+the result is returned as an \code{array} with two slices - \code{'geno'} and
+\code{'prob'} - containing raw SNP genotypes and their corresponding error
+probabilities, respectively. Otherwise, SNP genotypes are returned as an
+\code{array} with one slice, \code{'geno'}, which contains raw SNP genotype
+values. In any case, the rows of each slice contain data for a given sample,
+while the columns of each slice contain data for a given SNP locus.
 }
 \keyword{internal}
 

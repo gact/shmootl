@@ -10,7 +10,8 @@ isValidAllele(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if symbol is a valid allele; FALSE otherwise.
+TRUE if symbol is a valid enumerated or founder allele;
+FALSE otherwise.
 }
 \description{
 Test if symbol is a valid allele.

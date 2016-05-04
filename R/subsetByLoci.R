@@ -1,6 +1,6 @@
 # Start of subsetByLoci.R ######################################################
 
-# subsetByLoci (S3) ------------------------------------------------------------
+# subsetByLoci -----------------------------------------------------------------
 #' Subset object by the specified loci.
 #' 
 #' @param x Object subsettable by loci.
@@ -8,8 +8,6 @@
 #'     
 #' @return Input object subsetted by the specified loci.
 #' 
-#' @importFrom Biostrings DNAStringSet
-#' @importFrom Biostrings QualityScaledDNAStringSet
 #' @keywords internal
 #' @rdname subsetByLoci
 subsetByLoci <- function(x, loc=NULL) {
@@ -95,81 +93,5 @@ subsetByLoci.map <- function(x, loc=NULL) {
     
     return(x)
 }
-
-# subsetByLoci.DNAStringSet ----------------------------------------------------
-#' @rdname subsetByLoci
-subsetByLoci.DNAStringSet <- function(x, loc=NULL) {
-    
-    stopifnot( 'loci' %in% names(x@metadata) )
-    stopifnot( 'mapframe' %in% class(x@metadata[['loci']]) )
-    
-    if ( ! is.null(loc) ) {
-    
-        others <- otherattributes(x)
-        meta <- x@metadata
-        elem.meta <-x@elementMetadata
-        
-        indices <- matchLocusRowIndices(meta[['loci']], loc)
-
-        meta[['loci']] <- meta[['loci']][indices, ]
-        
-        bases <- lapply(Biostrings::as.list(x), function(b) b[indices])
-        
-        x <- Biostrings::DNAStringSet(bases)
-    
-        x@elementMetadata <- elem.meta
-        x@metadata <- meta
-        otherattributes(x) <- others    
-    }
-    
-    return(x)
-}
-
-# subsetByLoci.QualityScaledDNAStringSet ---------------------------------------
-#' @rdname subsetByLoci
-subsetByLoci.QualityScaledDNAStringSet <- function(x, loc=NULL) {
-
-    stopifnot( 'loci' %in% names(x@metadata) )
-    stopifnot( 'mapframe' %in% class(x@metadata[['loci']]) )
-    
-    if ( ! is.null(loc) ) {
-
-        others <- otherattributes(x)
-        meta <- x@metadata
-        elem.meta <-x@elementMetadata
-
-        indices <- matchLocusRowIndices(meta[['loci']], loc)
-
-        meta[['loci']] <- meta[['loci']][indices, ]
-
-        bases <- lapply(Biostrings::as.list(x), function(b) b[indices])
-        quals <- lapply(Biostrings::as.list(x@quality), function(q) q[indices])
-
-        x <- Biostrings::QualityScaledDNAStringSet( 
-            Biostrings::DNAStringSet(bases), 
-            Biostrings::PhredQuality( Biostrings::BStringSet(quals) )
-        )
-
-        x@elementMetadata <- elem.meta
-        x@metadata <- meta
-        otherattributes(x) <- others
-    }
-    
-    return(x)
-}
-
-# subsetByLoci (S4) ------------------------------------------------------------
-#' @rdname subsetByLoci
-setGeneric('subsetByLoci', subsetByLoci)
-
-# DNAStringSet::subsetByLoci ---------------------------------------------------
-#' @rdname subsetByLoci
-setMethod('subsetByLoci', signature='DNAStringSet', 
-    definition = subsetByLoci.DNAStringSet)
-
-# QualityScaledDNAStringSet::subsetByLoci --------------------------------------
-#' @rdname subsetByLoci
-setMethod('subsetByLoci', signature='QualityScaledDNAStringSet', 
-    definition = subsetByLoci.QualityScaledDNAStringSet)
 
 # End of subsetByLoci.R ########################################################

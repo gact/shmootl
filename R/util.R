@@ -681,6 +681,32 @@ isDefaultQTLName <- function(ids) {
     return( isValidID(ids) & grepl(const$pattern$default.qtl.name, ids) )
 }
 
+# isEnumAllele -----------------------------------------------------------------
+#' Test if symbol is a valid enumerated allele.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if symbol is a valid enumerated allele; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isEnumAllele
+isEnumAllele <- function(x) {
+    return( x %in% const$enum.geno.charset )
+}
+
+# isEnumGenotype ---------------------------------------------------------------
+#' Test if symbol is a valid enumerated genotype.
+#' 
+#' @param x Test object.
+#' 
+#' @return TRUE if symbol is a valid enumerated genotype; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isEnumGenotype
+isEnumGenotype <- function(x) {
+    return( x %in% const$enum.geno.charset )
+}
+
 # isFALSE ----------------------------------------------------------------------
 #' Test for a single FALSE value.
 #' 
@@ -711,15 +737,32 @@ isFounderAllele <- function(x) {
 #' Test if symbol is a valid founder genotype.
 #' 
 #' @param x Test object.
+#' @param strict Return TRUE only for complete genotypes.
 #' 
 #' @return TRUE if symbol is a valid founder genotype; FALSE otherwise.
 #' 
 #' @keywords internal
 #' @rdname isFounderGenotype
-isFounderGenotype <- function(x) {
-    char.class <- paste0(const$founder.allele.charset, collapse='')
-    pattern <- paste0("^[", char.class, "]+$", collapse='')
-    return( grepl(pattern, x) )
+isFounderGenotype <- function(x, strict=FALSE) {
+    
+    allele.list <- strsplit(x, '')
+    
+    strict.charset <- const$founder.allele.charset
+    
+    if (strict) {
+        
+        result <- unlist( lapply(allele.list, function(alleles)
+            all( alleles %in% strict.charset ) ) )
+        
+    } else {
+        
+        extended.charset <- c(strict.charset, const$missing.value)
+        result <- unlist( lapply(allele.list, function(alleles)
+            all( alleles %in% extended.charset ) &&
+            any( alleles %in% strict.charset ) ) )
+    }
+    
+    return(result)
 }
 
 # isMarkerID -------------------------------------------------------------------
@@ -804,11 +847,11 @@ isPseudomarkerID <- function(loc.ids) {
 }
 
 # isRawAllele ------------------------------------------------------------------
-#' Test if symbol is a valid raw allele.
+#' Test if symbol is a valid raw SNP allele.
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if symbol is a valid raw allele; FALSE otherwise.
+#' @return TRUE if symbol is a valid raw SNP allele; FALSE otherwise.
 #' 
 #' @keywords internal
 #' @rdname isRawAllele
@@ -817,18 +860,35 @@ isRawAllele <- function(x) {
 }
 
 # isRawGenotype ----------------------------------------------------------------
-#' Test if symbol is a valid raw genotype.
+#' Test if symbol is a valid raw SNP genotype.
 #' 
 #' @param x Test object.
+#' @param strict Return TRUE only for complete genotypes.
 #' 
-#' @return TRUE if symbol is a valid raw genotype; FALSE otherwise.
+#' @return TRUE if symbol is a valid raw SNP genotype; FALSE otherwise.
 #' 
 #' @keywords internal
 #' @rdname isRawGenotype
-isRawGenotype <- function(x) {
-    char.class <- paste0(const$raw.allele.charset, collapse='')
-    pattern <- paste0("^[", char.class, "]+$", collapse='')
-    return( grepl(pattern, x) )
+isRawGenotype <- function(x, strict=FALSE) {
+    
+    allele.list <- strsplit(x, '')
+    
+    strict.charset <- const$raw.allele.charset
+    
+    if (strict) {
+    
+        result <- unlist( lapply(allele.list, function(alleles)
+            all( alleles %in% strict.charset ) ) )
+        
+    } else {
+        
+        extended.charset <- c(strict.charset, const$missing.value)
+        result <- unlist( lapply(allele.list, function(alleles)
+            all( alleles %in% extended.charset ) &&
+            any( alleles %in% strict.charset ) ) )
+    }
+    
+    return(result)
 }
 
 # isSingleChar -----------------------------------------------------------------
@@ -952,25 +1012,28 @@ isSingleWholeNumber <- function(n, tol=.Machine$double.eps^0.5) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if symbol is a valid allele; FALSE otherwise.
+#' @return TRUE if symbol is a valid enumerated or founder allele;
+#' FALSE otherwise.
 #' 
 #' @keywords internal
 #' @rdname isValidAllele
 isValidAllele <- function(x) {
-    return( isRawAllele(x) | isFounderAllele(x) )
+    return( isEnumAllele(x) | isFounderAllele(x) )
 }
 
 # isValidGenotype --------------------------------------------------------------
 #' Test if symbol is a valid genotype.
 #' 
 #' @param x Test object.
+#' @param strict Return TRUE only for complete genotypes.
 #' 
-#' @return TRUE if symbol is a valid genotype; FALSE otherwise.
+#' @return TRUE if symbol is a valid enumerated or founder genotype;
+#' FALSE otherwise.
 #' 
 #' @keywords internal
 #' @rdname isValidGenotype
-isValidGenotype <- function(x) {
-    return( isRawGenotype(x) | isFounderGenotype(x) )
+isValidGenotype <- function(x, strict=FALSE) {
+    return( isEnumGenotype(x) | isFounderGenotype(x, strict=strict) )
 }
 
 # isValidID --------------------------------------------------------------------
@@ -984,19 +1047,6 @@ isValidGenotype <- function(x) {
 #' @rdname isValidID
 isValidID <- function(x) {
     return( is.character(x) & nzchar(x) & grepl(const$pattern$item.id, x) )
-}
-
-# isValidMissingValue ----------------------------------------------------------
-#' Test if object is a valid missing value.
-#' 
-#' @param x Test object.
-#' 
-#' @return TRUE if object is a valid missing value; FALSE otherwise.
-#' 
-#' @keywords internal
-#' @rdname isValidMissingValue
-isValidMissingValue <- function(x) {
-    return( x == const$missing.value )
 }
 
 # isValidName ------------------------------------------------------------------
@@ -1244,93 +1294,77 @@ otherattributes <- function(x) {
     return(x)
 }
 
-# parsePseudomarkerID ----------------------------------------------------------
-#' Parse a pseudomarker ID.
-#'    
-#' @param loc.id Locus ID to parse.
-#' 
-#' @return Genetic \code{mapframe} with locus corresponding to the pseudomarker 
-#' ID. Returns \code{NULL} if locus ID cannot be parsed as a pseudomarker ID.
+# parseDefaultMarkerIDs --------------------------------------------------------
+#' Parse default marker IDs.
 #'  
-#' @keywords internal
-#' @rdname parsePseudomarkerID
-parsePseudomarkerID <- function(loc.id) {
+#' @param marker.ids Vector of default marker IDs.
+#' 
+#' @return Physical \code{mapframe} with loci corresponding to the specified
+#' marker IDs. Raises an error if any of the input values cannot be parsed as
+#' a default marker ID.
+#' 
+#' @export
+#' @rdname parseDefaultMarkerIDs
+parseDefaultMarkerIDs <- function(marker.ids) {
     
-    stopifnot( isSingleString(loc.id) )
-    stopifnot( isValidID(loc.id) )
+    stopifnot( all( isDefaultMarkerID(marker.ids) ) )
     
-    m <- regexec(const$pattern$pseudomarker.id, loc.id)
-    regmatch <- (regmatches(loc.id, m))[[1]]
+    m <- regexec(const$pattern$default.marker.id, marker.ids)
+    regmatch.list <- regmatches(marker.ids, m)
     
-    result <- NULL
+    marker.seqs <- sapply(regmatch.list, getElement, 2)
+    marker.pos <- sapply(regmatch.list, function(x) as.numeric(x[3]))
     
-    if ( length(regmatch) > 0 ) {
-        loc.seq <- regmatch[2]
-        loc.pos <- as.numeric(regmatch[3])
-        result <- gmapframe(chr=loc.seq, pos=loc.pos, row.names=loc.id)
-    }
-    
-    return(result)
+    return( mapframe(chr=marker.seqs, pos=marker.pos,
+        row.names=marker.ids, map.unit='bp') )
 }
 
-# parseDefaultMarkerID ---------------------------------------------------------
-#' Parse a default marker ID.
+# parseDefaultQTLNames ---------------------------------------------------------
+#' Parse default QTL names.
+#'    
+#' @param qtl.names Vector of default QTL names.
+#' 
+#' @return Genetic \code{mapframe} with loci corresponding to the specified QTL
+#' names. Raises an error if any of the input values cannot be parsed as a
+#' default QTL name.
 #'  
-#' @param marker.id Marker ID to parse.
-#' 
-#' @return Physical \code{mapframe} with locus corresponding to the specified 
-#' marker ID. Returns \code{NULL} if marker ID cannot be parsed as a default 
-#' marker ID.
-#' 
-#' @keywords internal
-#' @rdname parseDefaultMarkerID
-parseDefaultMarkerID <- function(marker.id) {
+#' @export
+#' @rdname parseDefaultQTLNames
+parseDefaultQTLNames <- function(qtl.names) {
     
-    stopifnot( isSingleString(marker.id) )
-    stopifnot( isValidID(marker.id) )
+    stopifnot( all( isDefaultQTLName(qtl.names) ) )
     
-    m <- regexec(const$pattern$default.marker.id, marker.id)
-    regmatch <- (regmatches(marker.id, m))[[1]]
+    m <- regexec(const$pattern$default.qtl.name, qtl.names)
+    regmatch.list <- regmatches(qtl.names, m)
     
-    result <- NULL
+    qtl.seqs <- sapply(regmatch.list, getElement, 2)
+    qtl.pos <- sapply(regmatch.list, function(x) as.numeric(x[3]))
     
-    if ( length(regmatch) > 0 ) {
-        marker.seq <- as.numeric(regmatch[2])
-        marker.pos <- as.numeric(regmatch[3])
-        result <- mapframe(chr=marker.seq, pos=marker.pos, 
-            row.names=marker.id, map.unit='bp')
-    }
-    
-    return(result)    
+    return( gmapframe(chr=qtl.seqs, pos=qtl.pos, row.names=qtl.names) )
 }
 
-# parseDefaultQTLName ----------------------------------------------------------
-#' Parse a default QTL name.
+# parsePseudomarkerIDs ---------------------------------------------------------
+#' Parse pseudomarker IDs.
 #'    
-#' @param qtl.name QTL name to parse.
+#' @param loc.ids Vector of pseudomarker IDs.
 #' 
-#' @return Genetic \code{mapframe} with locus corresponding to the specified QTL
-#' name. Returns \code{NULL} if QTL name cannot be parsed as a default QTL name.
+#' @return Genetic \code{mapframe} with loci corresponding to the specified
+#' pseudomarker IDs. Raises an error if any input values cannot be parsed as
+#' a pseudomarker ID.
 #'  
-#' @keywords internal
-#' @rdname parseDefaultQTLName
-parseDefaultQTLName <- function(qtl.name) {
-
-    stopifnot( isSingleString(qtl.name) ) 
-    stopifnot( isValidID(qtl.name) )
+#' @export
+#' @rdname parsePseudomarkerIDs
+parsePseudomarkerIDs <- function(loc.ids) {
     
-    m <- regexec(const$pattern$default.qtl.name, qtl.name)
-    regmatch <- (regmatches(qtl.name, m))[[1]]
-
-    result <- NULL
+    stopifnot( all( isPseudomarkerID(loc.ids) ) )
     
-    if ( length(regmatch) > 0 ) {
-        qtl.seq <- regmatch[2]
-        qtl.pos <- as.numeric(regmatch[3])
-        result <- gmapframe(chr=qtl.seq, pos=qtl.pos, row.names=qtl.name)
-    }
+    m <- regexec(const$pattern$pseudomarker.id, loc.ids)
+    regmatch.list <- regmatches(loc.ids, m)
     
-    return(result)    
+    loc.seqs <- sapply(regmatch.list, getElement, 2)
+    loc.pos <- sapply(regmatch.list, function(x) as.numeric(x[3]))
+    
+    return( gmapframe(chr=loc.seqs, pos=loc.pos, row.names=loc.ids) )
 }
 
 # requestNodes -----------------------------------------------------------------

@@ -2,7 +2,7 @@
 % Please edit documentation in R/util.R
 \name{isRawAllele}
 \alias{isRawAllele}
-\title{Test if symbol is a valid raw allele.}
+\title{Test if symbol is a valid raw SNP allele.}
 \usage{
 isRawAllele(x)
 }
@@ -10,10 +10,10 @@ isRawAllele(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if symbol is a valid raw allele; FALSE otherwise.
+TRUE if symbol is a valid raw SNP allele; FALSE otherwise.
 }
 \description{
-Test if symbol is a valid raw allele.
+Test if symbol is a valid raw SNP allele.
 }
 \keyword{internal}
 

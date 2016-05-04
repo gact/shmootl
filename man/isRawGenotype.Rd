@@ -2,18 +2,20 @@
 % Please edit documentation in R/util.R
 \name{isRawGenotype}
 \alias{isRawGenotype}
-\title{Test if symbol is a valid raw genotype.}
+\title{Test if symbol is a valid raw SNP genotype.}
 \usage{
-isRawGenotype(x)
+isRawGenotype(x, strict = FALSE)
 }
 \arguments{
 \item{x}{Test object.}
+
+\item{strict}{Return TRUE only for complete genotypes.}
 }
 \value{
-TRUE if symbol is a valid raw genotype; FALSE otherwise.
+TRUE if symbol is a valid raw SNP genotype; FALSE otherwise.
 }
 \description{
-Test if symbol is a valid raw genotype.
+Test if symbol is a valid raw SNP genotype.
 }
 \keyword{internal}
 

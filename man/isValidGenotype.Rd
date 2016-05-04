@@ -4,13 +4,16 @@
 \alias{isValidGenotype}
 \title{Test if symbol is a valid genotype.}
 \usage{
-isValidGenotype(x)
+isValidGenotype(x, strict = FALSE)
 }
 \arguments{
 \item{x}{Test object.}
+
+\item{strict}{Return TRUE only for complete genotypes.}
 }
 \value{
-TRUE if symbol is a valid genotype; FALSE otherwise.
+TRUE if symbol is a valid enumerated or founder genotype;
+FALSE otherwise.
 }
 \description{
 Test if symbol is a valid genotype.

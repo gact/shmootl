@@ -17,19 +17,18 @@ readGenoVCF(..., samples, founders = NULL)
 An \pkg{R/qtl} \code{cross} \code{geno} object.
 }
 \description{
-This function reads SNP genotype data from one or more VCF files, and returns 
-these as an \pkg{R/qtl} \code{cross} \code{geno} object. If cross samples are 
-not specified, all input samples are used.
+This function reads SNP genotype data from one or more VCF files, and returns
+these as an \pkg{R/qtl} \code{cross} \code{geno} object.
 }
 \details{
-If no founder samples are specified, this function assigns an arbitrary symbol 
-at each locus according to the observed raw SNP genotype. So for example, if
-the SNVs at a given locus are 'A' and 'C', samples are assigned the genotypes 
-'1' and '2', respectively. The mapping of SNV to genotype is performed
-independently for each locus, so a given raw genotype does not have the same
-meaning across loci.
+If no founder samples are specified, this function assigns enumerated
+genotypes at each locus according to the observed raw SNP genotype. So
+for example, if the SNVs at a given locus are 'A' and 'C', samples are
+assigned the genotypes '1' and '2', respectively. The enumeration of
+genotypes is performed independently for each locus, so a given
+enumerated genotype does not have the same meaning across loci.
 
-If founder samples are specified, this function assigns a genotype symbol 
+If founder samples are specified, this function assigns a genotype symbol
 according to the inferred founder for each genotype at each locus. In this
 case, a given genotype represents the same founder strain across markers.
 }

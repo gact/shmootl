@@ -4,10 +4,12 @@
 \alias{isFounderGenotype}
 \title{Test if symbol is a valid founder genotype.}
 \usage{
-isFounderGenotype(x)
+isFounderGenotype(x, strict = FALSE)
 }
 \arguments{
 \item{x}{Test object.}
+
+\item{strict}{Return TRUE only for complete genotypes.}
 }
 \value{
 TRUE if symbol is a valid founder genotype; FALSE otherwise.

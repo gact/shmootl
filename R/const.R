@@ -48,6 +48,9 @@ with(const, {
     # Fixed missing value in cross data files.
     missing.value <- '-'
     
+    # Missing value in VCF data.
+    vcf.missing.value <- '.'
+    
     # Tetrad sample labels (for alphanumeric tetrad sample IDs).
     tetrad.sample.labels <- c('A', 'B', 'C', 'D')
     
@@ -56,6 +59,9 @@ with(const, {
         phred = list(
             range = c(0, 93),
             offset = 33
+        ),
+        prob = list(
+            range = c(0, 1)
         )
     )
     
@@ -76,8 +82,11 @@ with(const, {
     
     # Genotype symbols ---------------------------------------------------------
     
-    # Character set for raw alleles.
-    raw.allele.charset <- as.character(1:9)
+    # Character set for raw SNP genotypes.
+    raw.allele.charset <- Biostrings::DNA_BASES
+    
+    # Character set for enumerated genotypes.
+    enum.geno.charset <- as.character(1:9)
     
     # Character set for founder alleles.
     founder.allele.charset <- c(LETTERS, letters)

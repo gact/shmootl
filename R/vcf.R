@@ -34,38 +34,36 @@ hasGenoQualVCF <- function(file) {
 }
 
 # readSnpsVCF ------------------------------------------------------------------
-#' Read SNP genotypes from VCF files.
+#' Read raw SNP genotypes from VCF files.
 #' 
-#' This function reads SNP genotype data from one or more VCF files, and returns 
-#' these as a sequence of raw SNP genotypes - effectively variant base calls - 
-#' for each sample. If all relevant input VCF files contain genotype quality (GQ) 
-#' scores for the samples of interest, these are used - along with variant 
-#' quality scores - to calculate a quality score for each SNP genotype, and 
-#' the result is returned as a \pkg{Biostrings} \code{QualityScaledDNAStringSet} 
-#' object containing raw SNP genotypes and their corresponding Phred quality 
-#' scores, encoded as an ASCII string. Otherwise, SNP genotypes are returned 
-#' as a \pkg{Biostrings} \code{DNAStringSet} object containing only raw SNP 
-#' genotype values. In any case, the returned object will have an attribute 
-#' \code{'loci'}: a \code{mapframe} of marker loci corresponding to the 
-#' genotyped variants.
+#' This function reads SNP genotype data from one or more VCF files, and returns
+#' these as a sequence of raw SNP genotypes - effectively variant base calls -
+#' for each sample. If all relevant input VCF files contain genotype quality
+#' (GQ) scores for the samples of interest, these are used - along with variant
+#' quality scores - to calculate an error probability for each SNP genotype, and
+#' the result is returned as an \code{array} with two slices - \code{'geno'} and
+#' \code{'prob'} - containing raw SNP genotypes and their corresponding error
+#' probabilities, respectively. Otherwise, SNP genotypes are returned as an
+#' \code{array} with one slice, \code{'geno'}, which contains raw SNP genotype
+#' values. In any case, the rows of each slice contain data for a given sample,
+#' while the columns of each slice contain data for a given SNP locus.
 #' 
 #' @param ... Input VCF file paths.
-#' @param samples Vector of samples for which SNP genotypes should be obtained. If
-#' not specified, genotypes are returned for all available samples.
-#' @param require.all Remove variants that are not completely genotyped 
+#' @param samples Vector of samples for which SNP genotypes should be obtained.
+#' If not specified, genotypes are returned for all available samples.
+#' @param require.all Remove variants that are not completely genotyped
 #' with respect to the given samples.
 #' @param require.any Remove variants that do not have at least one genotype
 #' call among the given samples.
-#' @param require.polymorphic Remove variants that do not have at least two 
-#' different genotype calls among the given samples. 
+#' @param require.polymorphic Remove variants that do not have at least two
+#' different genotype calls among the given samples.
 #' 
-#' @return A \pkg{Biostrings} \code{QualityScaledDNAStringSet} object if 
-#' genotype quality scores are available; otherwise a \pkg{Biostrings} 
-#' \code{DNAStringSet} object containing only raw SNP genotype values. 
+#' @return An \code{array} object containing raw genotype data, and if available,
+#' genotype error probabilities.
 #'   
-#' @importFrom BiocGenerics lengths
 #' @importFrom BiocGenerics start
 #' @importFrom GenomeInfoDb seqnames
+#' @importFrom IRanges CharacterList
 #' @importFrom IRanges ranges
 #' @keywords internal
 #' @rdname readSnpsVCF
@@ -77,10 +75,6 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
     stopifnot( isBOOL(require.all) )
     stopifnot( isBOOL(require.polymorphic) )
 
-    # Set NA string to the 'not available' 
-    # character of `Biostrings::DNA_ALPHABET`.
-    na.string <- '.'
-    
     # Set reference genome.
     # TODO: check contig info against reference genome.
     genome <- genomeOpt()
@@ -126,20 +120,26 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
     infiles <- infiles[relevant]
     
     # Get mask indicating which relevant files contain genotype qualities.
-    gq.mask <- sapply(infiles, hasGenoQualVCF)
+    gq.mask <- sapply(infiles, hasGenoQualVCF, USE.NAMES=FALSE)
     
     # If all relevant files contain genotype qualities, 
     # calculate SNP genotype quality scores..
     if ( all(gq.mask) ) {
         reading.qualities <- TRUE
+        slices <- c('geno', 'prob')
     } else { # ..otherwise return only SNP genotypes.
         reading.qualities <- FALSE
+        slices <- c('geno')
         if ( any(gq.mask) ) {
             warning("some VCF files lack GQ scores, reading genotypes only")
         }
     }
-
+    
+    # Init list of SNP data.
     snps <- vector('list', length(infiles))
+    
+    # Init list for mapping genotype strings to allele indices.
+    geno.memo <- list()
     
     # Read SNP genotypes from each input VCF file.
     for ( i in getIndices(infiles) ) {
@@ -163,114 +163,191 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
         stopifnot( length(vcf) > 0 )
         
         # Get variant data from VCF.
-        var.seqs <- normSeq( as.character(                     # reference sequence
-            GenomeInfoDb::seqnames(vcf) ) )
-        var.pos <- BiocGenerics::start( IRanges::ranges(vcf) ) # position  
-        var.ref <- as.character( VariantAnnotation::ref(vcf) ) # reference allele
-        var.alt <- lapply( IRanges::CharacterList(             # alternative alleles
+        var.seqs <- as.character( GenomeInfoDb::seqnames(vcf) ) # reference sequence
+        var.pos <- BiocGenerics::start( IRanges::ranges(vcf) )  # position
+        var.ref <- as.character( VariantAnnotation::ref(vcf) )  # reference allele
+        var.alt <- lapply( IRanges::CharacterList(              # alternative alleles
             VariantAnnotation::alt(vcf) ), as.character)
-        var.qual <- VariantAnnotation::qual(vcf)               # variant quality
-        var.geno <- VariantAnnotation::geno(vcf)               # genotype info 
-        var.gt <- var.geno$GT                                  # genotype calls
-        
-        invalid <- unique( var.gt[ ! grepl(const$pattern$vcf.haploid.geno, var.gt) ] )
-        if ( length(invalid) > 0 ) {
-            stop("invalid haploid VCF genotypes - '", toString(invalid), "'")
-        }
-        
-        # Convert genotype allele codes to integers, VCF missing values to NA.
-        var.gt <- suppressWarnings( apply(var.gt, 2, as.integer) )
+        var.qual <- VariantAnnotation::qual(vcf)                # variant quality
+        var.geno <- VariantAnnotation::geno(vcf)                # genotype info
+        geno.matrix <- t( var.geno$GT )                         # genotype calls
         
         # Set indices of SNP variants.
-        indices <- which( VariantAnnotation::isSNV(vcf) )
+        snp.indices <- which( VariantAnnotation::isSNV(vcf) )
+        num.snps <- length(snp.indices)
+        stopifnot( num.snps > 0 )
         
-        # Get variant allele values.
-        allele.values <- lapply(indices, function(i) 
-            c(var.ref[i], var.alt[[i]]) )   
+        # Filter genotype data to retain only SNP variants.
+        geno.matrix <- geno.matrix[, snp.indices, drop=FALSE]
         
-        # Get variant allele codes, converting 0-offset allele code  
-        # used in VCF format to the 1-offset allele code used in R.
-        allele.codes <- sapply(indices, function(i) var.gt[i, ] + 1)
+        # Combine REF and ALT alleles for each SNP.
+        var.alleles <- lapply(snp.indices, function(j)
+            c(var.ref[j], var.alt[[j]]))
         
-        # Get base call for each sample genotype.
-        base.matrix <- sapply(getIndices(indices), function(i) 
-            allele.values[[i]][ allele.codes[, i] ])
+        # Create dataframe with variant locus info.
+        snp.loc <- data.frame(chr=var.seqs[snp.indices],
+            pos=var.pos[snp.indices])
         
-        # Replace NA values.
-        base.matrix[ is.na(base.matrix) ] <- na.string
+        if ( ! inMapOrder(snp.loc) ) {
+            stop("unordered variants in file - '", infile, "'")
+        }
         
-        # Get base call string for each sample.
-        bases <- sapply(getIndices(file.samples), function(s) 
-            paste0(base.matrix[s, ], collapse='') )
+        # Get default marker IDs for SNPs in this file.
+        file.snps <- makeDefaultMarkerIDs( as.mapframe(snp.loc,
+            map.unit='bp') )
+        
+        # Check for multiple variants coinciding at same locus.
+        # TODO: handle coinciding variants?
+        if ( anyDuplicated(file.snps) ) {
+            stop("coinciding variants in file - '", infile, "'")
+        }
+        
+        colnames(geno.matrix) <- file.snps
+        
+        # Resolve raw genotypes for each variant as concatenated base calls.
+        for ( j in 1:num.snps ) {
+            
+            # Get vector of alleles for this variant.
+            variant.alleles <- var.alleles[[j]]
+            
+            # Get genotype strings for each sample in this variant record.
+            geno.data <- unname( geno.matrix[, j] )
+            
+            # Get mask of genotypes that may have been called.
+            # NB: this will misidentify diploid/polyploid missing values
+            # as being genotyped, but such cases are handled below.
+            called <- geno.data != const$vcf.missing.value
+            
+            # Set uncalled genotypes to missing value.
+            geno.data[ ! called ] <- const$missing.value
+            
+            if ( any(called) ) {
+                
+                # Resolve previously unseen genotype strings
+                # to their corresponding allele indices.
+                for ( unique.call in unique(geno.data[called]) ) {
+                    if ( ! unique.call %in% names(geno.memo) ) {
+                        indicesC <- unlist( strsplit(unique.call, '[/|]') )
+                        indices0 <- suppressWarnings( as.integer(indicesC) )
+                        indices1 <- indices0 + 1
+                        geno.memo[[unique.call]] <- indices1
+                    }
+                }
+                
+                # Get resolved allele indices for called genotypes.
+                allele.list <- lapply(geno.data[called], function(geno.call)
+                    geno.memo[[geno.call]])
+                
+                # Check for consistent ploidy.
+                ploidy <- unique( lengths(allele.list) )
+                if ( length(ploidy) > 1 ) {
+                    k <- snp.indices[j]
+                    stop("mixed ploidy in variant at position ", var.pos[k],
+                        " of ", var.seqs[k], " in file - '", infile, "'")
+                }
+                
+                # Create matrix of allele indices, set alleles (or missing values).
+                allele.matrix <- matrix(unlist(allele.list), ncol=ploidy, byrow=TRUE)
+                for ( a in getIndices(variant.alleles) ) {
+                    allele.matrix[ allele.matrix == a ] <- variant.alleles[a]
+                }
+                allele.matrix[ is.na(allele.matrix) ] <- const$missing.value
+                
+                # Concatenate alleles in each called genotype.
+                geno.data[called] <- apply(allele.matrix, 1, paste0, collapse='')
+            }
+            
+            geno.matrix[, j] <- geno.data
+        }
+        
+        # Get symbols from genotype matrix.
+        g.symbols <- unique( as.character(geno.matrix) )
+        
+        # Get genotype symbols.
+        genotypes <- g.symbols[ g.symbols != const$missing.value ]
+        
+        # Get characters in genotype symbols.
+        a.symbols <- unique( unlist( strsplit(genotypes, '') ) )
+        
+        # Get allele symbols.
+        alleles <- a.symbols[ a.symbols != const$missing.value ]
+        
+        unknown <- alleles[ ! isRawAllele(alleles) ]
+        if ( length(unknown) > 0 ) {
+            stop("unknown raw SNP alleles (", toString(unknown),
+                ") in file - '", infile, "'")
+        }
         
         # If genotype qualities available, create  
         # object with quality-scaled genotypes..
         if (reading.qualities) {
             
             # Set vector of variant error probabilities.
-            variant.error.probs <- 10 ^ ( -0.1 * var.qual[indices] )
+            variant.error.probs <- 10 ^ ( -0.1 * var.qual[snp.indices] )
             
             # Set matrix of genotype error probabilities.
-            genotype.error.probs <- 10 ^ ( -0.1 * var.geno$GQ[indices, ] )
+            genotype.error.probs <- 10 ^ ( -0.1 * var.geno$GQ[snp.indices, , drop=FALSE] )
             
-            # Calculate a Phred quality for each sample genotype  
-            # from combined variant/genotype quality scores.
-            qual.matrix <- sapply(getIndices(indices), function(i) 
-                -10 * log10( variant.error.probs[i] + genotype.error.probs[i, ] ) )
+            # Calculate error probability for each sample genotype
+            # from converted variant/genotype quality scores.
+            qual.matrix <- sapply( getIndices(variant.error.probs), function(i)
+                variant.error.probs[i] + genotype.error.probs[i, ])
             
-            # Replace NA values with minimum quality score.
-            qual.matrix[ is.na(qual.matrix) ] <- const$qual$phred$range[1]
+            # If qual matrix simplified, restore to matrix.
+            if ( ! is.matrix(qual.matrix) ) {
+                qual.matrix <- matrix(qual.matrix, ncol=length(variant.error.probs))
+            }
             
-            # Clamp quality scores within Phred range, add Phred offset.
-            qual.matrix <- sapply(getIndices(file.samples), function(s) 
-                clamp(qual.matrix[s, ], const$qual$phred$range) + 
-                const$qual$phred$offset )
+            # Replace NA values with maximum error probability.
+            qual.matrix[ is.na(qual.matrix) ] <- const$qual$prob$range[2]
             
-            # Convert Phred quality scores to ASCII characters.
-            quals <- sapply(getIndices(file.samples), function(s) 
-                intToUtf8( round(qual.matrix[, s]) ) )
+            # Clamp quality scores within range of error probabilities.
+            qual.matrix <- sapply(getIndices(file.snps), function(i)
+                clamp(qual.matrix[, i], const$qual$prob$range))
             
-            snps[[i]] <- Biostrings::QualityScaledDNAStringSet( 
-                Biostrings::DNAStringSet(bases), 
-                Biostrings::PhredQuality(quals) )
-            names(snps[[i]]@quality) <- file.samples
-            names(snps[[i]]) <- file.samples
+            # If qual matrix simplified, restore to matrix.
+            if ( ! is.matrix(qual.matrix) ) {
+                qual.matrix <- matrix(qual.matrix, ncol=length(file.snps))
+            }
+            
+            geno.data <- c(geno.matrix, qual.matrix)
             
         } else { # ..otherwise create object with only genotypes.
             
-            snps[[i]] <- Biostrings::DNAStringSet(bases)
-            names(snps[[i]]) <- file.samples
+            geno.data <- geno.matrix
         }
         
-        # Add marker metadata.
-        loc <- mapframe(chr=var.seqs[indices], 
-            pos=var.pos[indices], map.unit='bp')
-        rownames(loc) <- makeDefaultMarkerIDs(loc)
-        snps[[i]]@metadata[['loci']] <- loc
+        # Prep file variant data.
+        data.names <- list(file.samples, file.snps, slices)
+        data.shape <- lengths(data.names)
+        
+        # Set file variant data.
+        snps[[i]] <- array(geno.data, dim=data.shape, dimnames=data.names)
     }
     
-    # If multiple relevant files, combine SNP genotypes..
+    # If multiple relevant files, combine SNP genotypes,
+    # taking the union of all variants in input files..
     if ( length(infiles) > 1 ) {
         
-        # Get common SNP genotype loci.
-        loc.list <- lapply(snps, function(x) x@metadata[['loci']])
-        intersection <- do.call(intersectLoci, loc.list)
+        # Prep combined variant data.
+        combined.samples <- sort( unique( unlist( lapply(snps, rownames) ) ) )
+        combined.snps <- sort( unique( unlist( lapply(snps, colnames) ) ) )
+        combined.names <- list(combined.samples, combined.snps, slices)
+        combined.shape <- lengths(combined.names)
         
-        if ( nrow(intersection) == 0 ) {
-            stop("no common loci found in VCF files - ", 
-                toString(infiles), "'")
-        }
+        # Init combined variant data.
+        result <- array(const$missing.value, dim=combined.shape, dimnames=combined.names)
         
-        # Keep only common loci.
+        # Set combined variant data from each input file.
+        # NB: we previously checked for duplicate samples and coinciding
+        # variants, so we can assume that there will be no conflicts.
         for ( i in getIndices(snps) ) {
-            snps[[i]] <- subsetByLoci(snps[[i]], intersection)
-        }
-        
-        # Combine SNP genotypes.
-        result <- snps[[1]]
-        if ( length(snps) > 1 ) {
-            for ( i in 2:length(snps) ) {
-                result <- append(result, snps[[i]])
+            for ( slice in slices ) {
+                for ( sample.id in rownames(snps[[i]]) ) {
+                    for ( snp.id in colnames(snps[[i]]) ) {
+                        result[sample.id, snp.id, slice] <- snps[[i]][sample.id, snp.id, slice]
+                    }
+                }
             }
         }
         
@@ -279,10 +356,8 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
         result <- snps[[1]]
     }
     
-    # Get number of SNP variants.
-    num.snps <- unique( BiocGenerics::lengths(result) )
-    
-    stopifnot( length(num.snps) == 1 )
+    # Get combined number of SNP variants.
+    num.snps <- ncol(result)
     stopifnot( num.snps > 0 )
     
     # If filters specified, filter SNP variants.
@@ -290,55 +365,46 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
         
         mask <- rep(TRUE, num.snps)
         
-        for ( i in 1:num.snps ) {
-            
-            gt <- sapply(result, function(x) as.character(x[i]))
-            
-            if (require.all) {
-                if ( any( gt == na.string ) ) {
-                    mask[i] <- FALSE
-                    next
-                }
-            } 
-            
-            if (require.any) {
-                if ( all( gt == na.string ) ) {
-                    mask[i] <- FALSE
-                    next
-                }
-            }
-            
-            if (require.polymorphic) {
-                if ( length( unique( gt[ gt != na.string ]) ) == 1 ) {
-                    mask[i] <- FALSE
-                    next
-                }
-            }
+        if (require.all) { # Remove incomplete variants.
+            mask <- mask & sapply(1:num.snps, function(i)
+                all(result[, i, 'geno'] != const$missing.value))
         }
         
-        # Apply filter.
-        loc <- result@metadata[['loci']][mask, ]
-        result <- subsetByLoci(result, loc)
+        if (require.any) { # Remove variants without genotypes.
+            mask <- mask & sapply(1:num.snps, function(i)
+                any(result[, i, 'geno'] != const$missing.value))
+        }
+        
+        if (require.polymorphic) { # Remove monomorphic variants.
+            mask <- mask & sapply(1:num.snps, function(i) {
+                geno.data <- result[, i, 'geno']
+                g.symbols <- unique(geno.data)
+                genotypes <- g.symbols[ g.symbols != const$missing.value ]
+                return( length(genotypes) > 1 )
+            })
+        }
+        
+        # Apply filter mask.
+        result <- result[, mask, , drop=FALSE]
     }
-
+    
     return(result)
 }
 
 # readGenoVCF ------------------------------------------------------------------
 #' Read genotype data from a VCF file.
 #' 
-#' This function reads SNP genotype data from one or more VCF files, and returns 
-#' these as an \pkg{R/qtl} \code{cross} \code{geno} object. If cross samples are 
-#' not specified, all input samples are used. 
+#' This function reads SNP genotype data from one or more VCF files, and returns
+#' these as an \pkg{R/qtl} \code{cross} \code{geno} object.
 #' 
-#' If no founder samples are specified, this function assigns an arbitrary symbol 
-#' at each locus according to the observed raw SNP genotype. So for example, if
-#' the SNVs at a given locus are 'A' and 'C', samples are assigned the genotypes 
-#' '1' and '2', respectively. The mapping of SNV to genotype is performed
-#' independently for each locus, so a given raw genotype does not have the same
-#' meaning across loci.
+#' If no founder samples are specified, this function assigns enumerated
+#' genotypes at each locus according to the observed raw SNP genotype. So
+#' for example, if the SNVs at a given locus are 'A' and 'C', samples are
+#' assigned the genotypes '1' and '2', respectively. The enumeration of
+#' genotypes is performed independently for each locus, so a given
+#' enumerated genotype does not have the same meaning across loci.
 #' 
-#' If founder samples are specified, this function assigns a genotype symbol 
+#' If founder samples are specified, this function assigns a genotype symbol
 #' according to the inferred founder for each genotype at each locus. In this
 #' case, a given genotype represents the same founder strain across markers.
 #' 
@@ -354,25 +420,25 @@ readGenoVCF <- function(..., samples, founders=NULL) {
     
     # TODO: optimise.
     
-    sample.geno <- readSnpsVCF(..., samples=samples, require.any=TRUE,
+    sample.data <- readSnpsVCF(..., samples=samples, require.any=TRUE,
         require.polymorphic=TRUE)
     
     if ( ! is.null(founders) ) {
         
-        clashing.samples <- intersect(samples, founders)
-        if ( length(clashing.samples) > 0 ) {
-            stop("clashing sample IDs - ", toString(clashing.samples), "'")
+        clashing <- intersect(samples, founders)
+        if ( length(clashing) > 0 ) {
+            stop("clashing sample IDs - ", toString(clashing), "'")
         }
         
-        founder.geno <- readSnpsVCF(..., samples=founders, 
+        founder.data <- readSnpsVCF(..., samples=founders,
             require.all=TRUE, require.polymorphic=TRUE)
         
     } else {
         
-        founder.geno <- NULL
+        founder.data <- NULL
     }
     
-    geno <- makeGeno(sample.geno, founder.geno=founder.geno)
+    geno <- makeGeno(sample.data, founder.data)
     
     return(geno)
 }

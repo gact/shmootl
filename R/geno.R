@@ -121,8 +121,8 @@ as.geno.data.frame <- function(from) {
         mapline.values <- unique( as.character(putative.positions) )
         
         # Get set of invalid values in mapline.
-        invalid.values <- mapline.values[ ! ( isValidGenotype(mapline.values) |
-            is.na(mapline.values) ) ]
+        invalid.values <- mapline.values[ ! ( is.na(mapline.values) |
+            isValidGenotype(mapline.values) ) ]
         
         # Check mapline contains only valid genotypes and missing values.
         if ( length(invalid.values) > 0 ) {
@@ -164,7 +164,7 @@ as.geno.data.frame <- function(from) {
     
     # Decompose symbols into different types.
     founder.symbols <- symbols[ isFounderGenotype(symbols) ]
-    rawgeno.symbols <- symbols[ isRawGenotype(symbols) ]
+    enum.symbols <- symbols[ isEnumGenotype(symbols) ]
     invalid.values <- symbols[ ! ( isValidGenotype(symbols) | is.na(symbols) ) ]
     
     # Check for invalid values.
@@ -172,19 +172,19 @@ as.geno.data.frame <- function(from) {
         stop("invalid genotype symbols - '", toString(invalid.values), "'")
     }
     
-    # Check for map positions that resemble raw genotypes.
-    if ( ! map.positions.found && length(rawgeno.symbols) > 0 &&
+    # Check for map positions that resemble enumerated genotypes.
+    if ( ! map.positions.found && length(enum.symbols) > 0 &&
          ! all( is.na(mapline.values) | mapline.values == '1' ) ) {
         stop("cross geno map positions must include centiMorgan units (e.g. '47 cM')")
     }
     
     # Get genotype symbols.
-    if ( length(founder.symbols) > 0 && length(rawgeno.symbols) > 0 ) {
-        stop("cross geno contains both raw and founder genotypes")
+    if ( length(founder.symbols) > 0 && length(enum.symbols) > 0 ) {
+        stop("cross geno contains both enumerated and founder genotypes")
     } else if ( length(founder.symbols) > 0 ) {
         genotypes <- founder.symbols
-    } else if ( length(rawgeno.symbols) > 0 ) {
-        genotypes <- rawgeno.symbols
+    } else if ( length(enum.symbols) > 0 ) {
+        genotypes <- enum.symbols
     } else {
         stop("cross geno has no genotype data")
     }
@@ -283,267 +283,179 @@ as.geno.data.frame <- function(from) {
     return(cross.geno)
 }
 
-# makeFounderGenoMatrix (S3) ---------------------------------------------------
+# makeFounderGenoMatrix --------------------------------------------------------
 #' Make founder genotype matrix from genotype data.
 #' 
 #' Given input genotype data for cross segregant samples and their founder 
 #' strains, this function assigns a symbol to each locus according to the 
 #' inferred founder genotype.
 #' 
-#' @param x Sample genotype data.
-#' @param founder.geno Founder genotype data.
+#' @param x Raw sample genotype \code{array}.
+#' @param y Raw founder genotype \code{array}.
 #'   
-#' @return A genotype matrix, with genotypes encoded as integers and their
-#' corresponding genotype symbols in the attribute \code{'genotypes'}.
+#' @return A founder genotype matrix, with genotypes encoded as integers and
+#' their corresponding genotype symbols in the attribute \code{'genotypes'}.
 #' 
-#' @importFrom Biostrings DNAStringSet
-#' @importFrom Biostrings QualityScaledDNAStringSet
 #' @keywords internal
 #' @rdname makeFounderGenoMatrix
-makeFounderGenoMatrix <- function(x, founder.geno) {
-    UseMethod('makeFounderGenoMatrix', x)
-}
-
-# makeFounderGenoMatrix.DNAStringSet -------------------------------------------
-#' @rdname makeFounderGenoMatrix
-makeFounderGenoMatrix.DNAStringSet <- function(x, founder.geno) {
+makeFounderGenoMatrix <- function(x, y) {
     
-    stopifnot( 'DNAStringSet' %in% class(founder.geno) || 
-        'QualityScaledDNAStringSet' %in% class(founder.geno) )
-    stopifnot( 'loci' %in% names(x@metadata) )
-    stopifnot( 'mapframe' %in% class(x@metadata[['loci']]) )
-    stopifnot( 'loci' %in% names(founder.geno@metadata) )
-    stopifnot( 'mapframe' %in% class(founder.geno@metadata[['loci']]) )
+    validateRawGenoArray(x)
+    validateRawGenoArray(y)
     
-    if ( ! hasRownames(x@metadata[['loci']]) ) {
-        stop("cannot make founder genotype matrix - no sample locus IDs found")
-    }
-   
-    if ( ! hasRownames(founder.geno@metadata[['loci']]) ) {
-        stop("cannot make founder genotype matrix - no founder locus IDs found")
-    } 
+    x.names <- dimnames(x)
+    x.samples <- x.names[[1]]
+    x.snps <- x.names[[2]]
     
-    # Get sample IDs.
-    sample.ids <- names(x)
-    
-    dup.samples <- sample.ids[ duplicated(sample.ids) ]
-    if ( length(dup.samples) > 0 ) {
-        stop("duplicate sample IDs - '", toString(dup.samples), "'")
-    }
-    
-    invalid.ids <- sample.ids[ ! isValidID(sample.ids) ]
-    if ( length(invalid.ids) > 0 ) {
-        stop("invalid sample IDs - '", toString(invalid.ids), "'")
-    }
-    
-    # Get founder IDs.
-    founder.ids <- names(founder.geno)
-    
-    if ( length(founder.ids) != 2 ) { 
-        stop("unsupported number of founder genotypes - '", length(founder.ids), "'")
-    } 
-    
-    dup.founders <- sample.ids[ duplicated(founder.ids) ]
-    if ( length(dup.founders) > 0 ) {
-        stop("duplicate founder IDs - '", toString(dup.founders), "'")
-    }
-    
-    invalid.ids <- founder.ids[ ! isValidID(founder.ids) ]
-    if ( length(invalid.ids) > 0 ) {
-        stop("invalid founder IDs - '", toString(invalid.ids), "'")
-    }
-    
-    clashing.ids <- intersect(sample.ids, founder.ids)
-    if ( length(clashing.ids) > 0 ) {
-        stop("sample/founder ID clash - '", toString(clashing.ids), "'")
-    }   
-    
-    if ( length(founder.ids) > length(const$founder.allele.charset) ) {
-        stop("number of founders (", length(founder.ids),
-            ") exceeds number of available symbols (",
-            length(const$founder.allele.charset), ")")
-    }
+    y.names <- dimnames(y)
+    y.samples <- y.names[[1]]
+    y.snps <- y.names[[2]]
     
     # Get genotype loci common to samples and founders.
-    loc.list <- list(x@metadata[['loci']], founder.geno@metadata[['loci']])
-    intersection <- do.call(intersectLoci, loc.list)
+    common.snps <- intersect(x.snps, y.snps)
     
     # Keep only common loci.
-    founder.geno <- subsetByLoci(founder.geno, intersection)
-    x <- subsetByLoci(x, intersection)
+    x <- x[, common.snps, , drop=FALSE]
+    y <- y[, common.snps, , drop=FALSE]
     
-    # Get common locus IDs.
-    loc.ids <- rownames(x@metadata[['loci']])
+    # Extract raw genotype data.
+    x.geno <- as.matrix(x[, , 'geno'])
+    y.geno <- as.matrix(y[, , 'geno'])
     
-    # Convert sample genotype data to matrix.
-    x <- Biostrings::as.matrix(x)
-    colnames(x) <- loc.ids
+    # TODO: use genotype error probabilities
+    # x.prob <- as.matrix(x[, , 'prob'])
+    # mode(x.prob) <- 'numeric'
+    # y.prob <- as.matrix(y[, , 'prob'])
+    # mode(y.prob) <- 'numeric'
     
-    # Convert founder genotype data to matrix.
-    founder.geno <- Biostrings::as.matrix(founder.geno)
-    colnames(founder.geno) <- loc.ids
+    # Check no samples are marked as both founder and segregant.
+    clashing.samples <- intersect(x.samples, y.samples)
+    if ( length(clashing.samples) > 0 ) {
+        stop("segregant/founder sample ID clash - '", toString(clashing.samples), "'")
+    }   
+    
+    # TODO: handle more than two founder samples.
+    if ( length(y.samples) != 2 ) {
+        stop("unsupported number of founder genotypes - '", length(y.samples), "'")
+    } 
+    
+    # Check upper limit of founder sample count.
+    # TODO: uncomment this if not checking founder sample count elsewhere.
+    # allele.count <- length(y.samples)
+    # max.allele.count <- length(const$founder.allele.charset)
+    # if ( allele.count > max.allele.count ) {
+    #     stop("number of founders (", allele.count, ") exceeds number of "
+    #         "available symbols (", max.allele.count), ")")
+    # }
+    
+    # Verify that segregant genotypes are haploid.
+    # TODO: handle other segregant ploidies.
+    x.ploidy <- unique( nchar( unique( as.character(x.geno) ) ) )
+    if ( x.ploidy != 1 ) {
+        stop("unsupported segregant genotype ploidy - '", x.ploidy, "'")
+    }
+    
+    # Verify that founder genotypes are haploid.
+    # TODO: review issue of founder ploidy.
+    y.ploidy <- unique( nchar( unique( as.character(y.geno) ) ) )
+    if ( y.ploidy != 1 ) {
+        stop("unsupported founder genotype ploidy - '", y.ploidy, "'")
+    }
     
     # Init founder genotype matrix.
-    geno.matrix <- matrix(nrow=length(sample.ids), ncol=length(loc.ids), 
-        dimnames=list(NULL, loc.ids))
+    geno.matrix <- matrix( NA_integer_, nrow=nrow(x.geno), ncol=ncol(x.geno),
+        dimnames=dimnames(x.geno) )
     
-    for ( col in getIndices(loc.ids) ) {
+    for ( j in getColIndices(geno.matrix) ) {
         
-        # Init genotype numbers for this locus.
-        geno.numbers <- rep(NA_integer_, length(sample.ids))
-        
-        # Get sample symbols and genotypes for this locus.
-        sample.symbols <- x[, col]
-        sample.genotypes <- unique(sample.symbols[ sample.symbols != '.' ])
+        # Get segregant symbols and genotypes for this locus.
+        x.symbols <- x.geno[, j]
+        x.levels <- unique(x.symbols)
+        x.genotypes <- x.levels[ x.levels != const$missing.value ]
         
         # Get founder symbols and genotypes for this locus.
-        founder.symbols <- founder.geno[, col]
-        founder.genotypes <- unique(founder.symbols[ founder.symbols != '.' ])
+        y.symbols <- y.geno[, j]
+        y.levels <- unique(y.symbols)
+        y.genotypes <- y.levels[ y.levels != const$missing.value ]
+        y.geno.count <- length(y.genotypes)
         
         # Assign locus genotypes from matching founder.
-        if ( length(founder.genotypes) == 2 ) { # TODO: support polyallelic markers.
-            if ( length(sample.genotypes) > 1 ) {
-                if ( all( sample.genotypes %in% founder.genotypes ) ) {
-                    for ( i in getIndices(founder.genotypes) ) {
-                        geno.numbers[ sample.symbols == founder.genotypes[i] ] <- i
+        if ( y.geno.count == 2 ) { # TODO: support polyallelic markers.
+            if ( length(x.genotypes) > 1 ) {
+                if ( all( x.genotypes %in% y.genotypes ) ) {
+                    for ( i in 1:y.geno.count ) {
+                        geno.matrix[ x.symbols == y.genotypes[i], j ] <- i
                     }
                 }
             }
         }
-        
-        # Set genotype numbers for this locus.
-        geno.matrix[, col] <- geno.numbers
     }
     
     # Remove null loci.
-    geno.matrix <- geno.matrix[, ! apply(geno.matrix, 2, allNA) ]
+    geno.matrix <- geno.matrix[, ! apply(geno.matrix, 2, allNA), drop=FALSE]
     
     if ( ncol(geno.matrix) == 0 ) {
         stop("cannot make founder genotype matrix - no diallelic loci found")
     }
     
     # Set genotype symbols for founders.
-    # TODO: handle other ploidies.
+    # TODO: handle other segregant ploidies.
     attr(geno.matrix, 'genotypes') <- const$founder.allele.charset[
-        getIndices(founder.ids) ]
+        getIndices(y.samples) ]
     
     return(geno.matrix)
 }
 
-# makeFounderGenoMatrix.QualityScaledDNAStringSet ------------------------------
-#' @rdname makeFounderGenoMatrix
-makeFounderGenoMatrix.QualityScaledDNAStringSet <- function(x, founder.geno) {
-    return( makeFounderGenoMatrix.DNAStringSet(x, founder.geno) )
-}
-
-# makeFounderGenoMatrix (S4) ---------------------------------------------------
-#' @rdname makeFounderGenoMatrix
-setGeneric('makeFounderGenoMatrix', makeFounderGenoMatrix)
-
-# DNAStringSet::makeFounderGenoMatrix ------------------------------------------
-#' @rdname makeFounderGenoMatrix
-setMethod('makeFounderGenoMatrix', signature='DNAStringSet', 
-    definition=makeFounderGenoMatrix.DNAStringSet)
-
-# QualityScaledDNAStringSet::makeFounderGenoMatrix -----------------------------
-#' @rdname makeFounderGenoMatrix
-setMethod('makeFounderGenoMatrix', signature='QualityScaledDNAStringSet', 
-    definition=makeFounderGenoMatrix.DNAStringSet)
-
-# makeRawGenoMatrix (S3) -------------------------------------------------------
-#' Make raw genotype matrix from genotype data.
+# makeEnumGenoMatrix -----------------------------------------------------------
+#' Make enumerated genotype matrix from genotype data.
 #' 
-#' Given input sample genotype data, this function assigns an arbitrary symbol 
-#' at each locus according to the observed raw SNP genotype. So for example, if
-#' the SNVs at a given locus are 'A' and 'C', samples are assigned the genotypes 
-#' '1' and '2', respectively. The mapping of SNV to genotype is performed
-#' independently for each locus, so a given raw genotype does not have the same
-#' meaning across loci.
+#' Given input sample genotype data, this function creates an enumerated genotype
+#' matrix, in which each the genotype data at each locus are coded as numbers
+#' in order of occurrence. So for example, if the first sample at a locus has
+#' raw genotype 'A', and the second sample has raw genotype 'C', these will be
+#' assigned genotypes '1' and '2', respectively. The enumeration of genotypes
+#' is performed independently for each locus, so a given enumerated genotype
+#' does not have the same meaning across loci.
 #' 
-#' @param x Sample genotype data.
+#' @param x Raw sample genotype \code{array}.
 #'   
-#' @return A genotype matrix, with genotypes encoded as integers and their
-#' corresponding genotype symbols in the attribute \code{'genotypes'}.
+#' @return An enumerated genotype matrix, with genotypes encoded as integers and
+#' their corresponding genotype symbols in the attribute \code{'genotypes'}.
 #' 
-#' @importFrom Biostrings DNAStringSet
-#' @importFrom Biostrings QualityScaledDNAStringSet
 #' @keywords internal
-#' @rdname makeRawGenoMatrix
-makeRawGenoMatrix <- function(x) {
-    UseMethod('makeRawGenoMatrix', x)
-}
-
-# makeRawGenoMatrix.DNAStringSet -----------------------------------------------
-#' @rdname makeRawGenoMatrix
-makeRawGenoMatrix.DNAStringSet <- function(x) {
+#' @rdname makeEnumGenoMatrix
+makeEnumGenoMatrix <- function(x) {
     
-    stopifnot( 'loci' %in% names(x@metadata) )
-    stopifnot( 'mapframe' %in% class(x@metadata[['loci']]) )
+    validateRawGenoArray(x)
     
-    if ( ! hasRownames(x@metadata[['loci']]) ) {
-        stop("cannot make raw genotype matrix - no locus IDs found")
-    }
-
-    # Get sample IDs.
-    sample.ids <- names(x)
+    # Extract raw genotype data as matrix.
+    x.geno <- as.matrix(x[, , 'geno'])
     
-    dup.samples <- sample.ids[ duplicated(sample.ids) ]
-    if ( length(dup.samples) > 0 ) {
-        stop("duplicate sample IDs - '", toString(dup.samples), "'")
-    }
+    # Init enumerated genotype matrix.
+    geno.matrix <- matrix(NA_integer_, nrow=nrow(x.geno), ncol=ncol(x.geno),
+        dimnames=dimnames(x.geno) )
     
-    invalid.ids <- sample.ids[ ! isValidID(sample.ids) ]
-    if ( length(invalid.ids) > 0 ) {
-        stop("invalid sample IDs - '", toString(invalid.ids), "'")
-    }
-    
-    # Get locus IDs.
-    loc.ids <- rownames(x@metadata[['loci']])
-    
-    # Get number of loci, check consistent.
-    num.loci <- unique( Biostrings::width(x) )
-    stopifnot( length(num.loci) == 1 )
-    stopifnot( length(num.loci) > 0 )
-    stopifnot( length(loc.ids) == num.loci )
-    
-    # Convert sample genotype data to matrix.
-    x <- Biostrings::as.matrix(x)
-    colnames(x) <- loc.ids
-    
-    # Init raw genotype matrix.
-    geno.matrix <- matrix(nrow=length(sample.ids), ncol=num.loci, 
-        dimnames=list(NULL, loc.ids))
-    
-    for ( col in 1:num.loci ) {
-        
-        # Init genotype numbers for this locus.
-        geno.numbers <- rep(NA_integer_, length(sample.ids))
+    for ( i in getColIndices(geno.matrix) ) {
         
         # Get sample symbols and genotypes for this locus.
-        sample.symbols <- x[, col]
-        sample.genotypes <- unique( sample.symbols[ sample.symbols != '.' ] )
+        x.symbols <- x.geno[, i]
+        x.levels <- unique(x.symbols)
+        x.genotypes <- x.levels[ x.levels != const$missing.value ]
         
-        # Skip loci with more raw genotypes than can be represented.
-        if ( length(sample.genotypes) > length(const$raw.allele.charset) ) {
+        # Skip loci with more genotypes than can be represented.
+        if ( length(x.genotypes) > length(const$enum.geno.charset) ) {
             next
         }
         
-        # Assign locus genotypes in alphabetical order of symbol.
-        if ( length(sample.genotypes) == 2 ) { # TODO: support polyallelic markers.
-            for ( i in getIndices(sample.genotypes) ) {
-                geno.numbers[ sample.symbols == sample.genotypes[i] ] <- i
-            }
-        }
-        
         # Set genotype numbers for this locus.
-        geno.matrix[, col] <- geno.numbers
+        geno.matrix[, i] <- match(x.symbols, x.genotypes)
     }
     
     # Remove null loci.
-    geno.matrix <- geno.matrix[, ! apply(geno.matrix, 2, allNA) ]
+    geno.matrix <- geno.matrix[, ! apply(geno.matrix, 2, allNA), drop=FALSE]
     
     if ( ncol(geno.matrix) == 0 ) {
-        stop("cannot make raw genotype matrix - no diallelic loci found")
+        stop("cannot make enumerated genotype matrix - no diallelic loci found")
     }
     
     # Set genotype symbols.
@@ -552,75 +464,39 @@ makeRawGenoMatrix.DNAStringSet <- function(x) {
     return(geno.matrix)
 }
 
-# makeRawGenoMatrix.QualityScaledDNAStringSet ----------------------------------
-#' @rdname makeRawGenoMatrix
-makeRawGenoMatrix.QualityScaledDNAStringSet <- function(x) {
-    return( makeRawGenoMatrix.DNAStringSet(x) )
-}
-
-# makeRawGenoMatrix (S4) -------------------------------------------------------
-#' @rdname makeRawGenoMatrix
-setGeneric('makeRawGenoMatrix', makeRawGenoMatrix)
-
-# DNAStringSet::makeRawGenoMatrix ----------------------------------------------
-#' @rdname makeRawGenoMatrix
-setMethod('makeRawGenoMatrix', signature='DNAStringSet', 
-    definition=makeRawGenoMatrix.DNAStringSet)
-
-# QualityScaledDNAStringSet::makeRawGenoMatrix ---------------------------------
-#' @rdname makeRawGenoMatrix
-setMethod('makeRawGenoMatrix', signature='QualityScaledDNAStringSet', 
-    definition=makeRawGenoMatrix.DNAStringSet)
-
-# makeGeno (S3) ----------------------------------------------------------------
+# makeGeno ---------------------------------------------------------------------
 #' Make an \pkg{R/qtl} \code{cross} \code{geno} object.
 #' 
-#' @param sample.geno Sample genotype data.
-#' @param founder.geno Founder genotype data.
+#' @param x Raw sample genotype \code{array}.
+#' @param y Raw founder genotype \code{array}.
 #' 
 #' @return A \code{geno} object.
 #' 
-#' @importFrom Biostrings DNAStringSet
-#' @importFrom Biostrings QualityScaledDNAStringSet
 #' @keywords internal
 #' @rdname makeGeno
-makeGeno <- function(sample.geno, founder.geno=NULL) {
-    UseMethod('makeGeno', sample.geno)
-}
-
-# makeGeno.DNAStringSet --------------------------------------------------------
-#' @rdname makeGeno
-makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
+makeGeno <- function(x, y=NULL) {
     
     crosstype <- 'bc' # TODO: support other cross types
     
     # If founder genotypes available, get founder genotype matrix..
-    if ( ! is.null(founder.geno) ) {
-        geno.matrix <- makeFounderGenoMatrix(sample.geno, founder.geno)
-    } else { # ..otherwise get raw genotype matrix.
-        geno.matrix <- makeRawGenoMatrix(sample.geno)
+    if ( ! is.null(y) ) {
+        geno.matrix <- makeFounderGenoMatrix(x, y)
+    } else { # ..otherwise get enumerated genotype matrix.
+        geno.matrix <- makeEnumGenoMatrix(x)
     }
-    
-    # Subset sample genotype data to contain only loci in the genotype matrix.
-    sample.geno <- subsetByLocusID(sample.geno, 
-        function(loc.id) loc.id %in% colnames(geno.matrix))
-    
-    # Get locus info.
-    locus.ids <- colnames(geno.matrix)
-    
-    # Make a map from sample genotype loci.
-    # NB: resolves and sorts sequence IDs.
-    geno.map <- makeMap(sample.geno)
     
     # Get genotype symbols from genotype matrix.
     genotypes <- attr(geno.matrix, 'genotypes')
     attr(geno.matrix, 'genotypes') <- NULL
     
-    # Verify that genotypes are haploid.
-    # TODO: handle other ploidies.
-    if ( any( nchar(genotypes) > 1 ) ) {
-        stop("unsupported genotype ploidy")
-    }
+    # Get sample and SNP IDs from genotype matrix.
+    sample.ids <- rownames(geno.matrix)
+    snp.ids <- colnames(geno.matrix)
+    dimnames(geno.matrix) <- NULL
+    
+    # Make a map from sample genotype loci.
+    # NB: resolves and sorts sequence IDs.
+    geno.map <- makeMapFromDefaultMarkerIDs(snp.ids)
     
     # Verify that there are exactly two genotypes.
     # TODO: handle more than two genotypes.
@@ -639,26 +515,26 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     
     if ( length(geno.seqs) < const$min.spm  ) {
         stop("cannot make cross geno - too few sequences (min=",
-            const$min.spm, ")")
+             const$min.spm, ")")
     }
     
     # Create CrossInfo object.
     cross.info <- methods::new('CrossInfo')
-    cross.info <- setMarkers(cross.info, markers=locus.ids)
+    cross.info <- setMarkers(cross.info, markers=snp.ids)
     cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
     cross.info <- setAlleles(cross.info, alleles)
     cross.info <- setGenotypes(cross.info, genotypes)
     cross.info <- setCrossType(cross.info, crosstype)
-    cross.info <- setSamples(cross.info, names(sample.geno))
+    cross.info <- setSamples(cross.info, sample.ids)
     cross.info <- setSequences(cross.info, geno.seqs)
     
     # Init cross genotype object.
     cross.geno <- list()
     
     for ( geno.seq in geno.seqs ) {
-   
+        
         # Get genotype data for this sequence.
-        seq.dat <- geno.matrix[, locus.seqs == geno.seq ]
+        seq.dat <- geno.matrix[, locus.seqs == geno.seq, drop=FALSE]
         
         # Get map info for this sequence.
         seq.map <- geno.map[[geno.seq]]
@@ -666,7 +542,7 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
         
         if ( length(seq.map) < const$min.lps ) {
             stop("cannot make cross geno - sequence has too few loci - '",
-                geno.seq, "'")
+                 geno.seq, "'")
         }
         
         # Assign geno data and map for this sequence.
@@ -681,24 +557,94 @@ makeGeno.DNAStringSet <- function(sample.geno, founder.geno=NULL) {
     return(cross.geno)
 }
 
-# makeGeno.QualityScaledDNAStringSet -------------------------------------------
-#' @rdname makeGeno
-makeGeno.QualityScaledDNAStringSet <- function(sample.geno, founder.geno=NULL) {
-    return( makeGeno.DNAStringSet(sample.geno, founder.geno=founder.geno) )
+# validateRawGenoArray ---------------------------------------------------------
+#' Validate \code{array} as containing raw genotype data.
+#' 
+#' @param x Raw genotype \code{array}.
+#' 
+#' @return TRUE if object is an \code{array} containing raw genotype data in 
+#' expected form; otherwise, raises first error.
+#' 
+#' @keywords internal
+#' @rdname validateRawGenoArray
+validateRawGenoArray <- function(x) {
+    
+    stopifnot( is.array(x) )
+    stopifnot( all( dim(x) > 0 ) )
+    
+    x.names <- dimnames(x)
+    
+    if ( length(x.names) != 3 ) {
+        stop("raw genotype array has incorrect number of dimensions - '",
+             length(x.names), "'")
+    }
+    
+    sample.ids <- x.names[[1]]
+    snp.ids <- x.names[[2]]
+    slices <- x.names[[3]]
+    
+    if ( ! length(slices) %in% 1:2 || slices[1] != 'geno' ||
+        ( length(slices) == 2 && slices[2] != 'prob' ) ) {
+        stop("raw genotype array has invalid slice names")
+    }
+    
+    if ( is.null(sample.ids) ) {
+        stop("no sample IDs found in raw genotype array")
+    }
+    
+    dup.samples <- sample.ids[ duplicated(sample.ids) ]
+    if ( length(dup.samples) > 0 ) {
+        stop("duplicate sample IDs - '", toString(dup.samples), "'")
+    }
+    
+    err.samples <- sample.ids[ ! isValidID(sample.ids) ]
+    if ( length(err.samples) > 0 ) {
+        stop("invalid sample IDs - '", toString(err.samples), "'")
+    }
+    
+    if ( is.null(snp.ids) ) {
+        stop("no SNP IDs found in raw genotype array")
+    }
+    
+    dup.snps <- snp.ids[ duplicated(snp.ids) ]
+    if ( length(dup.snps) > 0 ) {
+        stop("duplicate SNP IDs - '", toString(dup.snps), "'")
+    }
+    
+    err.snps <- snp.ids[ ! isDefaultMarkerID(snp.ids) ]
+    if ( length(err.snps) > 0 ) {
+        stop("invalid SNP IDs - '", toString(err.snps), "'")
+    }
+    
+    # Get symbols from genotype matrix.
+    g.symbols <- unique( as.character(x[, , 'geno']) )
+    
+    # Get genotype symbols.
+    genotypes <- g.symbols[ g.symbols != const$missing.value ]
+    
+    ploidies <- unique( nchar(genotypes) )
+    if ( length(ploidies) > 1 ) {
+        stop("mixed ploidy in raw genotype array")
+    }
+    
+    # Get characters in genotype symbols.
+    a.symbols <- unique( unlist( strsplit(genotypes, '') ) )
+    
+    # Get allele symbols.
+    alleles <- a.symbols[ a.symbols != const$missing.value ]
+    
+    unknown <- alleles[ ! isRawAllele(alleles) ]
+    if ( length(unknown) > 0 ) {
+        stop("raw genotype array data contains unknown alleles - '",
+            toString(unknown), "'")
+    }
+    
+    if ( 'prob' %in% slices ) {
+        prob <- as.numeric(x[, , 'prob'])
+        if ( ! all( isProbability(prob) ) ) {
+            stop("raw genotype array data contains invalid error probabilities")
+        }
+    }
 }
-
-# makeGeno (S4) ----------------------------------------------------------------
-#' @rdname makeGeno
-setGeneric('makeGeno', makeGeno)
-
-# DNAStringSet::makeGeno -------------------------------------------------------
-#' @rdname makeGeno
-setMethod('makeGeno', signature='DNAStringSet', 
-    definition=makeGeno.DNAStringSet)
-
-# QualityScaledDNAStringSet::makeGeno ------------------------------------------
-#' @rdname makeGeno
-setMethod('makeGeno', signature='QualityScaledDNAStringSet', 
-    definition=makeGeno.DNAStringSet)
 
 # End of geno.R ################################################################

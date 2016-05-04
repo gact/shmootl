@@ -1465,15 +1465,15 @@ setMethod('validateAlleles', signature='CrossInfo',
     }
     
     valid.founder <- isFounderAllele(cross.info@alleles)
-    valid.raw <- isRawAllele(cross.info@alleles)
+    valid.enum <- isEnumAllele(cross.info@alleles)
     
-    err.alleles <- cross.info@alleles[ ! ( valid.founder | valid.raw ) ]
+    err.alleles <- cross.info@alleles[ ! ( valid.founder | valid.enum ) ]
     if ( length(err.alleles) > 0 ) {
         stop("invalid allele values - '", toString(err.alleles), "'")
     }
     
-    if ( any(valid.founder) && any(valid.raw) ) {
-        stop("alleles can be of raw or founder type, but not both")
+    if ( any(valid.founder) && any(valid.enum) ) {
+        stop("alleles can be of enumerated or founder type, but not both")
     }
     
     return(TRUE)
@@ -1544,15 +1544,15 @@ setMethod('validateGenotypes', signature='CrossInfo',
     }
     
     valid.founder <- isFounderGenotype(cross.info@genotypes)
-    valid.raw <- isRawGenotype(cross.info@genotypes)
+    valid.enum <- isEnumGenotype(cross.info@genotypes)
     
-    err.geno <- cross.info@genotypes[ ! ( valid.founder | valid.raw ) ]
+    err.geno <- cross.info@genotypes[ ! ( valid.founder | valid.enum ) ]
     if ( length(err.geno) > 0 ) {
         stop("invalid genotype values - '", toString(err.geno), "'")
     }
     
-    if ( any(valid.founder) && any(valid.raw) ) {
-        stop("genotypes can be of raw or founder type, but not both")
+    if ( any(valid.founder) && any(valid.enum) ) {
+        stop("genotypes can be of enumerated or founder type, but not both")
     }
     
     if ( length( unique( nchar(cross.info@genotypes) ) ) != 1 ) {
