@@ -86,7 +86,7 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
 #' 
 #' @param from Object containing genotype data.
 #' 
-#' @return An \code{geno} object corresponding to the input object.
+#' @return A \code{geno} object corresponding to the input object.
 #' 
 #' @keywords internal
 #' @rdname as.geno

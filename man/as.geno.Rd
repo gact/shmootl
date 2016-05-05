@@ -13,7 +13,7 @@ as.geno(from)
 \item{from}{Object containing genotype data.}
 }
 \value{
-An \code{geno} object corresponding to the input object.
+A \code{geno} object corresponding to the input object.
 }
 \description{
 Coerce to \code{geno} object.
