@@ -150,4 +150,53 @@ compareCrossInfo.geno <- function(x, cross.info=NULL) {
     return( if ( length(errors) == 0 ) {TRUE} else {errors} )
 }
 
+# compareCrossInfo.pheno -------------------------------------------------------
+#' @rdname compareCrossInfo
+compareCrossInfo.pheno <- function(x, cross.info=NULL) {
+    
+    # If CrossInfo object not specified,
+    # extract it from the pheno object.
+    if ( is.null(cross.info) ) {
+        cross.info <- attr(x, 'info')
+    }
+    
+    if ( is.null(cross.info) ) {
+        stop("CrossInfo not found in pheno object")
+    }
+    
+    validObject(cross.info)
+    
+    errors <- vector('character')
+    
+    pheno.names <- colnames(x)[ ! tolower( colnames(x) ) %in%
+        const$reserved.phenotypes ]
+    obj.phenames <- getPhenotypeNames(cross.info)
+    
+    if ( any(obj.phenames != pheno.names) ) {
+        errors <- c(errors, "phenotype mismatch")
+    }
+    
+    id.col <- which( tolower( colnames(x) ) == 'id' )
+    
+    if ( getNumSamples(cross.info) != nrow(x) ) {
+        errors <- c(errors, "sample count mismatch")
+    }
+    
+    if ( xor( hasSampleIDs(cross.info), ! is.null(id.col) ) ) {
+        errors <- c(errors, "sample ID presence/absence mismatch")
+    }
+    
+    if ( hasSampleIDs(cross.info) ) {
+        
+        cross.samples <- as.character(x[, id.col])
+        obj.samples <- getSamples(cross.info)
+        
+        if ( any(obj.samples != cross.samples) ) {
+            errors <- c(errors, "sample ID mismatch")
+        }
+    }
+    
+    return( if ( length(errors) == 0 ) {TRUE} else {errors} )
+}
+
 # End of compareCrossInfo.R ####################################################

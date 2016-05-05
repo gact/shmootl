@@ -45,6 +45,7 @@ Collate:
     'getQTLPeaks.R'
     'hdf5.R'
     'map.R'
+    'pheno.R'
     'pipeline.R'
     'run.R'
     'run_scanone.R'
