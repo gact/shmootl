@@ -7,10 +7,10 @@
 allNA(x)
 }
 \arguments{
-\item{x}{Test object.}
+\item{x}{Test vector.}
 }
 \value{
-TRUE if object has nonzero length and all elements are NA values; 
+TRUE if vector is of length zero or contains only NA values;
 FALSE otherwise.
 }
 \description{

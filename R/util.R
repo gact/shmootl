@@ -17,16 +17,16 @@ allKwargs <- function(...) {
 # allNA ------------------------------------------------------------------------
 #' Test if all elements are NA values.
 #' 
-#' @param x Test object.
+#' @param x Test vector.
 #'     
-#' @return TRUE if object has nonzero length and all elements are NA values; 
+#' @return TRUE if vector is of length zero or contains only NA values;
 #' FALSE otherwise.
 #' 
 #' @keywords internal
 #' @rdname allNA
 allNA <- function(x) {
-    na.vals <- is.na(x)
-    return( length(na.vals) > 0 && all(na.vals) )
+    stopifnot( is.vector(x) )
+    return( all( is.na(x) ) )
 }
 
 # allWhite ---------------------------------------------------------------------
@@ -194,7 +194,7 @@ dispatchFromClassS3 <- function(generic, class.vector, package) {
         
         class.match <- match(classes, class.vector)
         
-        if ( ! allNA(class.match) ) {
+        if ( length(class.match) > 0 && ! allNA(class.match) ) {
             
             first.match <- min(class.match, na.rm = TRUE)
             cls <- classes[ ! is.na(class.match) & class.match == first.match ]
@@ -1412,7 +1412,9 @@ parsePseudomarkerIDs <- function(loc.ids) {
 #' @rdname removeColsNA
 removeColsNA <- function(x) {
     stopifnot( is.data.frame(x) || is.matrix(x) )
-    x <- x[, ! apply(x, 2, allNA), drop=FALSE]
+    stopifnot( nrow(x) > 0 )
+    mask <- ! apply( x, 2, function(column) allNA( as.vector(column) ) )
+    x <- x[, mask, drop=FALSE]
     return(x)
 }
 
@@ -1427,7 +1429,9 @@ removeColsNA <- function(x) {
 #' @rdname removeRowsNA
 removeRowsNA <- function(x) {
     stopifnot( is.data.frame(x) || is.matrix(x) )
-    x <- x[ ! apply(x, 1, allNA), , drop=FALSE]
+    stopifnot( nrow(x) > 0 )
+    mask <- ! apply( x, 1, function(row) allNA( as.vector(row) ) )
+    x <- x[mask, , drop=FALSE]
     return(x)
 }
 

@@ -58,7 +58,7 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ..
     stopifnot( length(chr) > 0 )
     
     # Return NULL if no LOD data.
-    if( allNA(x[, lodcol.index]) ) {
+    if( nrow(x) == 0 || allNA(x[, lodcol.index]) ) {
         return(NULL)
     }
     
