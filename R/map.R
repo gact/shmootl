@@ -1406,7 +1406,7 @@ isGeneticMapframe <- function(x) {
     
     if ( 'mapframe' %in% class(x) ) {
         map.unit <- getMapUnit(x)
-        if ( is.na(map.unit) || const$known.map.types[map.unit] == 'gmap' ) {
+        if ( ! is.na(map.unit) && const$known.map.types[map.unit] == 'gmap' ) {
             return(TRUE)
         }
     }
@@ -1445,7 +1445,7 @@ isPhysicalMap <- function(x) {
     
     if ( 'map' %in% class(x) ) {
         map.unit <- getMapUnit(x)
-        if ( is.na(map.unit) || const$known.map.types[map.unit] == 'pmap' ) {
+        if ( ! is.na(map.unit) && const$known.map.types[map.unit] == 'pmap' ) {
             return(TRUE)
         }
     }
@@ -1467,7 +1467,7 @@ isPhysicalMapframe <- function(x) {
     
     if ( 'mapframe' %in% class(x) ) {
         map.unit <- getMapUnit(x)
-        if ( is.na(map.unit) || const$known.map.types[map.unit] == 'pmap' ) {
+        if ( ! is.na(map.unit) && const$known.map.types[map.unit] == 'pmap' ) {
             return(TRUE)
         }
     }
