@@ -43,9 +43,7 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     
     map.function <- match.arg(map.function)
     
-    # Read cross input data as CSV file. Don't check names now, will   
-    # check them soon. Don't allow headers, we want to see them as 
-    # they are. Replace any whitespace/empty cells with NA values.
+    # Read cross input data as CSV file.
     cross.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='', 
         stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
     
@@ -232,9 +230,7 @@ readGenoCSV <- function(infile) {
     
     stopifnot( isSingleString(infile) )
     
-    # Read genotype input data as CSV file. Don't check names now, will
-    # check them soon. Don't allow headers, we want to see them as
-    # they are. Replace any whitespace/empty cells with NA values.
+    # Read genotype input data as CSV file.
     geno.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='',
         stringsAsFactors=FALSE, strip.white=TRUE, colClasses='character',
         na.strings=const$missing.value)
