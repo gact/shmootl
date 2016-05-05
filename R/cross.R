@@ -722,6 +722,75 @@ interpTimeSeries <- function(cross, tol=1e-5) {
     return(cross)
 }
 
+# makeCross --------------------------------------------------------------------
+#' Make an \pkg{R/qtl} \code{cross} object.
+#' 
+#' @param geno A \code{geno} object.
+#' @param pheno A \code{pheno} object.
+#' 
+#' @return An \pkg{R/qtl} \code{cross} object.
+#' 
+#' @keywords internal
+#' @rdname makeCross
+makeCross <- function(geno, pheno) {
+    
+    # TODO: handle replicate phenotype measurements
+    
+    stopifnot( 'geno' %in% class(geno) )
+    stopifnot( 'pheno' %in% class(pheno) )
+    
+    # Get CrossInfo for geno data.
+    geno.info <- attr(geno, 'info')
+    compareCrossInfo(geno, geno.info)
+    attr(geno, 'info') <- NULL
+
+    # Get CrossInfo for pheno data.
+    pheno.info <- attr(pheno, 'info')
+    compareCrossInfo(pheno, pheno.info)
+    attr(pheno, 'info') <- NULL
+    
+    if ( ! hasSampleIDs(geno.info) ) {
+        stop("cannot make cross - no genotype sample IDs")
+    }
+    
+    if ( ! hasSampleIDs(pheno.info) ) {
+        stop("cannot make cross - no phenotype sample IDs")
+    }
+    
+    if ( any(geno.info@samples != pheno.info@samples) ) {
+        stop("cannot make cross - sample mismatch")
+    }
+    
+    if ( is.na(geno.info@crosstype) ) {
+        stop("cannot make cross - unknown cross type")
+    }
+    
+    # Create CrossInfo object from genotype and phenotype info.
+    cross.info <- methods::new('CrossInfo', seq=geno.info@seq,
+        pheno     = pheno.info@pheno,
+        markers   = geno.info@markers,
+        samples   = geno.info@samples,
+        alleles   = geno.info@alleles,
+        genotypes = geno.info@genotypes,
+        crosstype = geno.info@crosstype
+    )
+    
+    # Prepare genotype and phenotype objects.
+    class(pheno) <- 'data.frame'
+    class(geno) <- 'list'
+    
+    # Create cross list.
+    cross <- list(geno=geno, pheno=pheno)
+    
+    # Set cross info.
+    attr(cross, 'info') <- cross.info
+    
+    # Set cross class.
+    class(cross) <- c(cross.info@crosstype, 'cross')
+    
+    return(cross)
+}
+
 # padTimeSeries ----------------------------------------------------------------
 #' Pad gaps in a time-series.
 #' 
