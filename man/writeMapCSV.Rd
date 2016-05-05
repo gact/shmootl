@@ -20,7 +20,9 @@ Write \code{map} to a CSV file.
 Other csv utilities: \code{\link{readCrossCSV}},
   \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
   \code{\link{readMapframeCSV}},
-  \code{\link{writeCrossCSV}}, \code{\link{writeGenoCSV}},
-  \code{\link{writeMapframeCSV}}
+  \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
+  \code{\link{writeGenoCSV}},
+  \code{\link{writeMapframeCSV}},
+  \code{\link{writePhenoCSV}}
 }
 

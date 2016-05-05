@@ -11,8 +11,8 @@
 
 \item{...}{Unused arguments.}
 
-\item{digits}{If specified, round numeric phenotype positions to the 
-specified number of digits.}
+\item{digits}{If specified, round numeric phenotype values to the given
+number of digits.}
 }
 \value{
 A \code{data.frame} corresponding to the input \code{pheno} object.

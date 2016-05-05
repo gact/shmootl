@@ -30,7 +30,9 @@ attribute of the \code{cross}, if present.
 Other csv utilities: \code{\link{readCrossCSV}},
   \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
   \code{\link{readMapframeCSV}},
-  \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
-  \code{\link{writeMapframeCSV}}
+  \code{\link{readPhenoCSV}}, \code{\link{writeGenoCSV}},
+  \code{\link{writeMapCSV}},
+  \code{\link{writeMapframeCSV}},
+  \code{\link{writePhenoCSV}}
 }
 

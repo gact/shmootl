@@ -315,6 +315,38 @@ readMapframeCSV <- function(infile) {
     return( as.mapframe(x) )
 }
 
+# readPhenoCSV -----------------------------------------------------------------
+#' Read yeast phenotype data from a CSV file.
+#'
+#' @param infile Input CSV file path.
+#'
+#' @export
+#' @family csv utilities
+#' @rdname readPhenoCSV
+readPhenoCSV <- function(infile) {
+    
+    stopifnot( isSingleString(infile) )
+    
+    # Read phenotype input data as CSV file.
+    pheno.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='',
+        stringsAsFactors=FALSE, strip.white=TRUE, colClasses='character',
+        na.strings=const$missing.value)
+    
+    # Trim any blank rows/columns from the bottom/right, respectively.
+    pheno.table <- bstripBlankRows( rstripBlankCols(pheno.table) )
+    
+    # Make pheno table column names from first row of input table.
+    colnames(pheno.table) <- make.names(pheno.table[1, ])
+    
+    # Check for ID heading.
+    id.col <- which( tolower( colnames(pheno.table) ) == 'id' )
+    if ( length(id.col) == 0 ) {
+        stop("ID column not found in phenotype data file - '", infile, "'")
+    }
+    
+    return( as.pheno(pheno.table) )
+}
+
 # writeCrossCSV ----------------------------------------------------------------
 #' Write yeast \code{cross} to a CSV file.
 #' 
@@ -536,6 +568,31 @@ writeMapframeCSV <- function(x, outfile, include.mapunit=TRUE) {
     
     # Write mapframe to CSV file.
     write.csv(x, file=outfile, quote=FALSE, row.names=FALSE)
+    
+    return( invisible() )
+}
+
+# writePhenoCSV ----------------------------------------------------------------
+#' Write yeast pheno data to a CSV file.
+#'   
+#' @param pheno An \pkg{R/qtl} \code{cross} \code{pheno} object.
+#' @param outfile Output CSV file path.
+#' @param digits If specified, round numeric phenotype values to the specified
+#' number of digits.
+#'  
+#' @export
+#' @family csv utilities
+#' @rdname writePhenoCSV
+writePhenoCSV <- function(pheno, outfile, digits=NULL) {
+    
+    stopifnot( isSingleString(outfile) )
+    
+    # Convert pheno data to a data frame for output.
+    pheno.table <- as.data.frame(pheno, digits=digits)
+    
+    # Write cross pheno data to CSV file.
+    write.table(pheno.table, file=outfile, na=const$missing.value, sep=',',
+        quote=FALSE, row.names=FALSE, col.names=FALSE)
     
     return( invisible() )
 }

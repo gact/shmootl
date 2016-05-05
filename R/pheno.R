@@ -5,8 +5,8 @@
 #' 
 #' @param x A \code{pheno} object.
 #' @param ... Unused arguments.
-#' @param digits If specified, round numeric phenotype positions to the 
-#' specified number of digits.
+#' @param digits If specified, round numeric phenotype values to the given
+#' number of digits.
 #' 
 #' @return A \code{data.frame} corresponding to the input \code{pheno} object.
 #' 

@@ -15,7 +15,9 @@ Read yeast genotype data from a CSV file.
 \seealso{
 Other csv utilities: \code{\link{readCrossCSV}},
   \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
-  \code{\link{writeCrossCSV}}, \code{\link{writeGenoCSV}},
-  \code{\link{writeMapCSV}}, \code{\link{writeMapframeCSV}}
+  \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
+  \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
+  \code{\link{writeMapframeCSV}},
+  \code{\link{writePhenoCSV}}
 }
 
