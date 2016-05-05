@@ -1367,6 +1367,36 @@ parsePseudomarkerIDs <- function(loc.ids) {
     return( gmapframe(chr=loc.seqs, pos=loc.pos, row.names=loc.ids) )
 }
 
+# removeColsNA -----------------------------------------------------------------
+#' Remove columns containing only NA values.
+#'
+#' @param x A \code{data.frame} or \code{matrix}.
+#'
+#' @return Input object with NA-only columns removed.
+#'
+#' @keywords internal
+#' @rdname removeColsNA
+removeColsNA <- function(x) {
+    stopifnot( is.data.frame(x) || is.matrix(x) )
+    x <- x[, ! apply(x, 2, allNA), drop=FALSE]
+    return(x)
+}
+
+# removeRowsNA -----------------------------------------------------------------
+#' Remove rows containing only NA values.
+#'
+#' @param x A \code{data.frame} or \code{matrix}.
+#'
+#' @return Input object with NA-only rows removed.
+#'
+#' @keywords internal
+#' @rdname removeRowsNA
+removeRowsNA <- function(x) {
+    stopifnot( is.data.frame(x) || is.matrix(x) )
+    x <- x[ ! apply(x, 1, allNA), , drop=FALSE]
+    return(x)
+}
+
 # requestNodes -----------------------------------------------------------------
 #' Request nodes for parallel execution.
 #' 

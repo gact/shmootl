@@ -392,7 +392,7 @@ makeFounderGenoMatrix <- function(x, y) {
     }
     
     # Remove null loci.
-    geno.matrix <- geno.matrix[, ! apply(geno.matrix, 2, allNA), drop=FALSE]
+    geno.matrix <- removeColsNA(geno.matrix)
     
     if ( ncol(geno.matrix) == 0 ) {
         stop("cannot make founder genotype matrix - no diallelic loci found")
@@ -452,7 +452,7 @@ makeEnumGenoMatrix <- function(x) {
     }
     
     # Remove null loci.
-    geno.matrix <- geno.matrix[, ! apply(geno.matrix, 2, allNA), drop=FALSE]
+    geno.matrix <- removeColsNA(geno.matrix)
     
     if ( ncol(geno.matrix) == 0 ) {
         stop("cannot make enumerated genotype matrix - no diallelic loci found")
