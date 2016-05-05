@@ -246,8 +246,8 @@ readGenoCSV <- function(infile) {
     colnames(geno.table) <- make.names(geno.table[1, ])
     
     # Check for ID heading in first column.
-    id.col <- min( which( tolower( colnames(geno.table) ) == 'id' ) )
-    if ( id.col != 1 ) {
+    id.col <- which( tolower( colnames(geno.table) ) == 'id' )
+    if ( length(id.col) == 0 || id.col[1] != 1 ) {
         stop("ID column not found in genotype data file - '", infile, "'")
     }
     
