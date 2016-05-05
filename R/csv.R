@@ -49,6 +49,9 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     cross.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='', 
         stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
     
+    # Trim any blank rows/columns from the bottom/right, respectively.
+    cross.table <- bstripBlankRows( rstripBlankCols(cross.table) )
+    
     # Get logical vector indicating which columns are blank 
     # in the first row after the initial heading row.
     seq.is.blank <- cross.table[2, ] == ''
@@ -87,11 +90,6 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     # Get index of first and last data rows.
     first.data.row <- dat.offset + 1
     last.data.row <- nrow(cross.table)
-    
-    # Trim any empty rows from the bottom.
-    while ( allNA( cross.table[last.data.row, ] ) ) {
-        last.data.row <- last.data.row - 1
-    }
     
     stopifnot( last.data.row >= first.data.row )
     
@@ -239,6 +237,9 @@ readGenoCSV <- function(infile) {
     # they are. Replace any whitespace/empty cells with NA values.
     geno.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='', 
         stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
+    
+    # Trim any blank rows/columns from the bottom/right, respectively.
+    geno.table <- bstripBlankRows( rstripBlankCols(geno.table) )
     
     # Make geno table column names from first row of input table.
     colnames(geno.table) <- make.names(geno.table[1, ])

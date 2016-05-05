@@ -146,11 +146,6 @@ as.geno.data.frame <- function(from) {
     first.data.row <- dat.offset + 1
     last.data.row <- nrow(from)
     
-    # Trim any empty rows from the bottom.
-    while ( allNA( from[last.data.row, ] ) ) {
-        last.data.row <- last.data.row - 1
-    }
-    
     stopifnot( last.data.row >= first.data.row )
     
     # Get vector of data row indices.

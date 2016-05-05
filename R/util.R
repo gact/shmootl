@@ -29,6 +29,40 @@ allNA <- function(x) {
     return( length(na.vals) > 0 && all(na.vals) )
 }
 
+# allWhite ---------------------------------------------------------------------
+#' Test if vector is all whitespace.
+#' 
+#' @param x Character vector.
+#' 
+#' @return TRUE if character vector is of length zero or contains only
+#' whitespace characters; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname allWhite
+allWhite <- function(x) {
+    stopifnot( is.character(x) )
+    return( all( grepl( "^[[:space:]]*$", x)  ) )
+}
+
+# bstripBlankRows --------------------------------------------------------------
+#' Strip blank rows from bottom of \code{data.frame}.
+#' 
+#' @param x A \code{data.frame} with columns of type \code{character}.
+#' 
+#' @return Input object in which bottommost blank rows (i.e. rows
+#' containing no non-whitespace characters) have been stripped.
+#' 
+#' @keywords internal
+#' @rdname bstripBlankRows
+bstripBlankRows <- function(x) {
+    stopifnot( is.data.frame(x) )
+    stopifnot( all( sapply(x, class) == 'character' ) )
+    while( allWhite( as.character( x[nrow(x), ]) ) ) {
+        x <- x[-nrow(x), , drop=FALSE]
+    }
+    return(x)
+}
+
 # clamp ------------------------------------------------------------------------
 #' Clamp numbers within a range.
 #' 
@@ -1509,6 +1543,25 @@ resolveQtlIndices <- function(x, qtl.indices=NULL) {
     }
     
     return(qtl.indices)
+}
+
+# rstripBlankCols --------------------------------------------------------------
+#' Strip blank columns from right of \code{data.frame}.
+#'
+#' @param x A \code{data.frame} with columns of type \code{character}.
+#'
+#' @return Input object in which rightmost blank columns (i.e. columns
+#' containing no non-whitespace characters) have been stripped.
+#' 
+#' @keywords internal
+#' @rdname rstripBlankCols
+rstripBlankCols <- function(x) {
+    stopifnot( is.data.frame(x) )
+    stopifnot( all( sapply(x, class) == 'character' ) )
+    while( allWhite( as.character(x[, ncol(x)]) ) ) {
+        x <- x[, -ncol(x), drop=FALSE]
+    }
+    return(x)
 }
 
 # setColumnFromRownames --------------------------------------------------------
