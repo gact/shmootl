@@ -235,8 +235,9 @@ readGenoCSV <- function(infile) {
     # Read genotype input data as CSV file. Don't check names now, will
     # check them soon. Don't allow headers, we want to see them as
     # they are. Replace any whitespace/empty cells with NA values.
-    geno.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='', 
-        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
+    geno.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='',
+        stringsAsFactors=FALSE, strip.white=TRUE, colClasses='character',
+        na.strings=const$missing.value)
     
     # Trim any blank rows/columns from the bottom/right, respectively.
     geno.table <- bstripBlankRows( rstripBlankCols(geno.table) )
@@ -298,8 +299,9 @@ readMapframeCSV <- function(infile) {
     stopifnot( file.exists(infile) )
     
     # Read mapframe from CSV file.
-    map.table <- read.csv(infile, check.names=FALSE, quote='', strip.white=TRUE, 
-        comment.char='', stringsAsFactors=FALSE, na.strings='')
+    map.table <- read.csv(infile, check.names=FALSE, quote='', strip.white=TRUE,
+        comment.char='', stringsAsFactors=FALSE, colClasses='character',
+        na.strings='')
     
     # Validate map unit information.
     tryCatch({
