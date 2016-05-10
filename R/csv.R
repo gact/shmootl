@@ -391,13 +391,12 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
         phenotypes <- getPhenotypes(cross.info)
         alleles <- getAlleles(cross.info)
         markers <- getSeqMarkers(cross.info, normSeq(chr), simplify=TRUE)
-        marker.names <- getMarkerNames(cross.info, markers)
         sample.ids <- getSamples(cross.info)
     } else { # ..otherwise take directly from cross.
         crosstype <- pull.crosstype(cross)
         phenotypes <- qtl::phenames(cross)[pheno.col]
         alleles <- pull.alleles(cross)
-        markers <- marker.names <- qtl::markernames(cross, chr)
+        markers <- qtl::markernames(cross, chr)
         sample.ids <- pull.ind(cross)
     }
     
@@ -410,7 +409,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     # Get phenotypes, map, genotypes.
     pheno.table <- cross$pheno[, pheno.col, drop=FALSE]
     map.table <- as.data.frame(qtl::pull.map(cross, chr), map.unit=map.unit)
-    geno.table <- qtl::pull.geno(cross)[, marker.names]
+    geno.table <- qtl::pull.geno(cross)[, markers]
     
     # As cross is haploid (though marked as 'bc'),
     # we can set genotypes directly from alleles.
