@@ -48,6 +48,7 @@ Collate:
     'pheno.R'
     'pipeline.R'
     'run.R'
+    'run_makegeno.R'
     'run_scanone.R'
     'scan.R'
     'seq.R'
