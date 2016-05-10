@@ -133,7 +133,7 @@ with(const, {
         numeric.name = 'X([.])?([[:digit:]]+(?:[.][[:digit:]]+)?)',
         
         # Package pipeline docs.
-        pipe.docs = '^(run_([[:alpha:]][[:alpha:]._]*))[.]Rd$',
+        pipe.docs = '^(run_([[:alpha:]][[:alnum:]._]*))[.]Rd$',
         
         # Package pipeline functions.
         pipe.func = '^run_([[:alpha:]][[:alpha:]._]*)$',
