@@ -739,6 +739,10 @@ makeCross <- function(geno, pheno) {
     stopifnot( 'geno' %in% class(geno) )
     stopifnot( 'pheno' %in% class(pheno) )
     
+    # Get alleles of geno.
+    alleles <- attr(geno, 'alleles')
+    attr(geno, 'alleles') <- NULL
+    
     # Get CrossInfo for geno data.
     geno.info <- attr(geno, 'info')
     compareCrossInfo(geno, geno.info)
@@ -781,6 +785,9 @@ makeCross <- function(geno, pheno) {
     
     # Create cross list.
     cross <- list(geno=geno, pheno=pheno)
+    
+    # Set cross alleles.
+    attr(cross, 'alleles') <- alleles
     
     # Set cross info.
     attr(cross, 'info') <- cross.info

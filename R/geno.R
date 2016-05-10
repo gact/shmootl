@@ -272,6 +272,8 @@ as.geno.data.frame <- function(from) {
         class(cross.geno[[geno.seq]]) <- 'A' # NB: assumes no 'X' chromosomes.
     }
     
+    attr(cross.geno, 'alleles') <- alleles
+    
     attr(cross.geno, 'info') <- cross.info
     
     class(cross.geno) <- c('geno', 'list')
@@ -548,6 +550,8 @@ makeGeno <- function(x, y=NULL) {
         cross.geno[[geno.seq]] <- list(data=seq.dat, map=seq.map)
         class(cross.geno[[geno.seq]]) <- 'A' # NB: assumes no 'X' chromosomes.
     }
+    
+    attr(cross.geno, 'alleles') <- alleles
     
     attr(cross.geno, 'info') <- cross.info
     
