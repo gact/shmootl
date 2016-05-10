@@ -153,6 +153,7 @@ as.geno.data.frame <- function(from) {
     
     # Get matrix of genotype data.
     geno.matrix <- as.matrix(from[dat.rows, ])
+    colnames(geno.matrix) <- from[1, ]
     
     # Get set of symbols in genotype matrix.
     symbols <- unique( as.character( unlist(geno.matrix) ) )
