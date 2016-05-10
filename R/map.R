@@ -2062,12 +2062,6 @@ setMapUnit.list <- function(x, map.unit) {
 #' @rdname setMapUnit
 setMapUnit.map <- function(x, map.unit) {
     
-    if ( isPhysicalMap(x) ) {
-        validatePhysicalMapUnit(map.unit)
-    } else {
-        validateGeneticMapUnit(map.unit)
-    }
-    
     existing.mapunit <- getMapUnit(x)
     
     if ( ! is.na(existing.mapunit) ) {
