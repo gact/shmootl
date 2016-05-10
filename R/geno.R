@@ -107,12 +107,12 @@ as.geno.data.frame <- function(from) {
     # Try to get map unit from putative map positions.
     map.unit <- getMapUnitSuffix(putative.positions)
     
-    if ( map.unit != 'cM' ) {
-        stop("cross geno map positions must be in centiMorgans (e.g. '47 cM')")
-    }
-    
     # Denote map positions as detected if a map unit was identified.
     map.positions.found <- ! is.na(map.unit)
+    
+    if ( map.positions.found && map.unit != 'cM' ) {
+        stop("cross geno map positions must be in centiMorgans (e.g. '47 cM')")
+    }
     
     # If map positions not detected, double-check putative map positions.
     if ( ! map.positions.found ) {
