@@ -489,9 +489,12 @@ makeGeno <- function(x, y=NULL) {
     snp.ids <- colnames(geno.matrix)
     dimnames(geno.matrix) <- NULL
     
-    # Make a map from sample genotype loci.
+    # Make a physical map from sample genotype loci.
     # NB: resolves and sorts sequence IDs.
     geno.map <- makeMapFromDefaultMarkerIDs(snp.ids)
+    
+    # Convert physical map to genetic map.
+    geno.map <- setMapUnit(geno.map, 'cM')
     
     # Verify that there are exactly two genotypes.
     # TODO: handle more than two genotypes.
