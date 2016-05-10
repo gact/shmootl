@@ -416,7 +416,7 @@ setGeneric('getPhenotypeIndices', function(cross.info, phenotypes=NULL) {
 #' @export
 #' @rdname getPhenotypeIndices-methods
 setMethod('getPhenotypeIndices', signature='CrossInfo', 
-    definition = function(cross.info, phenotypes=NULL) { 
+    definition = function(cross.info, phenotypes=NULL) {
     
     if ( ! is.null(phenotypes) ) {
         
@@ -442,9 +442,11 @@ setMethod('getPhenotypeIndices', signature='CrossInfo',
             
         } else if ( is.character(phenotypes) ) {
             
-            index.list <- lapply(phenotypes, function(phenotype) 
-                which( cross.info@pheno == phenotype | 
-                names(cross.info@pheno) == phenotype ) )
+            obj.phenames <- names(cross.info@pheno)
+            obj.pheno <- unname(cross.info@pheno)
+            
+            index.list <- lapply(phenotypes, function(phenotype)
+                which( obj.pheno == phenotype | obj.phenames == phenotype ) )
             
             unfound <- phenotypes[ lengths(index.list) == 0 ]
             if ( length(unfound) > 0 ) {
@@ -600,7 +602,7 @@ setMethod('getSampleIndices', signature='CrossInfo',
         } else if ( is.character(X) ) {
             
             headings <- const$sample.aspects[k, c('id', 'name')]
-  
+            
             for ( h in headings ) {
                 
                 if ( is.na(h) ) {
@@ -613,8 +615,8 @@ setMethod('getSampleIndices', signature='CrossInfo',
             }
             
             index.list <- lapply(X, function(x)
-                which( cross.info@samples[[ headings['id'] ]] == x | 
-                cross.info@samples[[ headings['name'] ]] == x ) )
+                which( cross.info@samples[[ headings[['id']] ]] == x |
+                cross.info@samples[[ headings[['name']] ]] == x ) )
             
             unfound <- X[ lengths(index.list) == 0 ]
             if ( length(unfound) > 0 ) {
@@ -800,10 +802,12 @@ setMethod('getSeqIndices', signature='CrossInfo',
           
         } else if ( is.character(sequences) ) {
           
+            obj.seq <- unname(cross.info@seq)
+            
             norm.seqs <- normSeq(sequences)
             
-            index.list <- lapply(norm.seqs, function(norm.seq) 
-                which( cross.info@seq == norm.seq ) )
+            index.list <- lapply(norm.seqs, function(norm.seq)
+                which( obj.seq == norm.seq ) )
           
             unfound <- sequences[ lengths(index.list) == 0 ]
             if ( length(unfound) > 0 ) {
@@ -913,7 +917,7 @@ setGeneric('getSequences', function(cross.info, sequences=NULL) {
 setMethod('getSequences', signature='CrossInfo', 
     definition = function(cross.info, sequences=NULL) { 
     indices <- getSeqIndices(cross.info, sequences)
-    return(cross.info@seq[indices])
+    return( unname(cross.info@seq[indices]) )
 })
 
 # getStrainIndices -------------------------------------------------------------
