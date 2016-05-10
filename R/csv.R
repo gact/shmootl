@@ -408,7 +408,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     stopifnot( length(sample.ids) > 0 )
     
     # Get phenotypes, map, genotypes.
-    pheno.table <- qtl::pull.pheno(cross, pheno.col)
+    pheno.table <- cross$pheno[, pheno.col, drop=FALSE]
     map.table <- as.data.frame(qtl::pull.map(cross, chr), map.unit=map.unit)
     geno.table <- qtl::pull.geno(cross)[, marker.names]
     
