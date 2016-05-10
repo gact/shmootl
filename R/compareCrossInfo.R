@@ -89,7 +89,7 @@ compareCrossInfo.cross <- function(x, cross.info=NULL) {
     obj.alleles <- cross.info@alleles
     if ( length(obj.alleles) != length(cross.alleles) ||
          any(obj.alleles != cross.alleles) ) {
-        errors <- c(errors, "genotype/allele mismatch")
+        errors <- c(errors, "allele mismatch")
     }
     
     return( if ( length(errors) == 0 ) {TRUE} else {errors} )
