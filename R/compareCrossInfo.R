@@ -147,6 +147,13 @@ compareCrossInfo.geno <- function(x, cross.info=NULL) {
         errors <- c(errors, "sample count mismatch")
     }
     
+    geno.alleles <- attr(x, 'alleles')
+    obj.alleles <- cross.info@alleles
+    if ( length(obj.alleles) != length(geno.alleles) ||
+         any(obj.alleles != geno.alleles) ) {
+        errors <- c(errors, "allele mismatch")
+    }
+    
     return( if ( length(errors) == 0 ) {TRUE} else {errors} )
 }
 
