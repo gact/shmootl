@@ -1024,7 +1024,14 @@ getMapUnit.default <- function(x) {
 #' @export
 #' @rdname getMapUnit
 getMapUnit.map <- function(x) {
-    return( getMapUnit.default(x) )
+    
+    map.unit <- getMapUnit.default(x)
+    
+    if ( is.na(map.unit) ) {
+        map.unit <- 'cM'
+    }
+    
+    return(map.unit)
 }
 
 # getMapUnit.mapframe ----------------------------------------------------------
