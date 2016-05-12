@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_makegeno.R
 \name{run_makegeno}
 \alias{run_makegeno}
-\title{Run run_makegeno pipeline.}
+\title{Run makegeno pipeline.}
 \usage{
 run_makegeno(samples, genfile, founders = NA, digits = NA)
 }

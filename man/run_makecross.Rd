@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_makecross.R
 \name{run_makecross}
 \alias{run_makecross}
-\title{Run run_makecross pipeline.}
+\title{Run makecross pipeline.}
 \usage{
 run_makecross(genfile, phefile, crossfile)
 }

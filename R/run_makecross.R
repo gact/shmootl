@@ -1,7 +1,7 @@
 # Start of run_makecross.R #####################################################
 
 # run_makecross ----------------------------------------------------------------
-#' Run run_makecross pipeline.
+#' Run makecross pipeline.
 #' 
 #' @description This script combines separate genotype and 
 #' phenotype files into a single cross data file.
