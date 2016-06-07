@@ -350,6 +350,70 @@ readPhenoCSV <- function(infile) {
     return( as.pheno(pheno.table) )
 }
 
+# sniffCSV ---------------------------------------------------------------------
+#' Identify type of \pkg{R/qtl} data in CSV file.
+#' 
+#' @param infile Input CSV file path.
+#'
+#' @return A string describing the type of data in the input CSV file. This can
+#' be \code{'cross'}, \code{'geno'}, \code{'pheno'}, or \code{'map'}. Returns
+#' \code{NULL} if the data could not be identified.
+#'
+#' @export
+#' @keywords internal
+#' @rdname sniffCSV
+sniffCSV <- function(infile) {
+    
+    stopifnot( isSingleString(infile) )
+    stopifnot( file.exists(infile) )
+    
+    guess <- NULL
+    
+    x <- read.csv(infile, header=FALSE, nrows=4, check.names=FALSE,
+        quote='', stringsAsFactors=FALSE, strip.white=TRUE)
+    
+    x <- bstripBlankRows( rstripBlankCols(x) )
+    
+    pheno.cols <- which(x[2, ] == '')
+    
+    id.col <- which( tolower(x[1, ]) == 'id' )
+    
+    if ( length(id.col) > 1 ) {
+        return(NULL)
+    }
+    
+    if ( length(pheno.cols) > 0 ) {
+        
+        if ( pheno.cols[1] != 1 || any(diff(pheno.cols) != 1) ) {
+            return(NULL)
+        } 
+        
+        if ( length(pheno.cols) == 1 && length(id.col) == 1 ) {
+            guess <- 'geno'
+        } else {
+            guess <- 'cross'
+        }
+        
+    } else {
+        
+        if ( length(id.col) == 0 ) {
+            return(NULL)
+        }
+        
+        seq.col <- which( x[1, ] == 'chr' )
+        pos.col <- which(grepl(const$pattern$poscol, x[1, ], ignore.case=TRUE))
+        
+        if ( length(seq.col) == 1 && length(pos.col) == 1 &&
+             id.col == 1 && seq.col == 2 && pos.col == 3 ) {
+            guess <- 'map'
+        } else {
+            guess <- 'pheno'
+        }
+    }
+    
+    return(guess)
+}
+
 # writeCrossCSV ----------------------------------------------------------------
 #' Write yeast \code{cross} to a CSV file.
 #' 
