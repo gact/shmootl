@@ -290,13 +290,14 @@ as.geno.data.frame <- function(from) {
 #' 
 #' @param x Raw sample genotype \code{array}.
 #' @param y Raw founder genotype \code{array}.
+#' @param alleles Founder allele symbols.
 #'   
 #' @return A founder genotype matrix, with genotypes encoded as integers and
 #' their corresponding genotype symbols in the attribute \code{'genotypes'}.
 #' 
 #' @keywords internal
 #' @rdname makeFounderGenoMatrix
-makeFounderGenoMatrix <- function(x, y) {
+makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
     
     validateRawGenoArray(x)
     validateRawGenoArray(y)
@@ -308,6 +309,27 @@ makeFounderGenoMatrix <- function(x, y) {
     y.names <- dimnames(y)
     y.samples <- y.names[[1]]
     y.snps <- y.names[[2]]
+    
+    if ( ! is.null(alleles) ) {
+        
+        if ( length(alleles) != length(y.samples) ) {
+            stop("founder allele length mismatch")
+        }
+        
+        dup.alleles <- alleles[ duplicated(alleles) ]
+        if ( length(dup.alleles) > 0 ) {
+            stop("duplicate founder alleles - '", toString(dup.alleles), "'")
+        }
+        
+        err.alleles <- alleles[ ! isFounderAllele(alleles) ]
+        if ( length(err.alleles) > 0 ) {
+            stop("invalid founder alleles - '", toString(err.alleles), "'")
+        }
+        
+    } else {
+        
+        alleles <- const$founder.allele.charset[ getIndices(y.samples) ]
+    }
     
     # Get genotype loci common to samples and founders.
     common.snps <- intersect(x.snps, y.snps)
@@ -372,18 +394,19 @@ makeFounderGenoMatrix <- function(x, y) {
         x.genotypes <- x.levels[ x.levels != const$missing.value ]
         
         # Get founder symbols and genotypes for this locus.
-        y.symbols <- y.geno[, j]
-        y.levels <- unique(y.symbols)
-        y.genotypes <- y.levels[ y.levels != const$missing.value ]
-        y.geno.count <- length(y.genotypes)
+        y.genotypes <- y.symbols <- y.geno[, j]
+        
+        # Skip monomorphic/incomplete markers.
+        # TODO: support polyallelic markers.
+        if ( anyDuplicated(y.symbols) || const$missing.value %in% y.symbols ) {
+            next
+        }
         
         # Assign locus genotypes from matching founder.
-        if ( y.geno.count == 2 ) { # TODO: support polyallelic markers.
-            if ( length(x.genotypes) > 1 ) {
-                if ( all( x.genotypes %in% y.genotypes ) ) {
-                    for ( i in 1:y.geno.count ) {
-                        geno.matrix[ x.symbols == y.genotypes[i], j ] <- i
-                    }
+        if ( length(x.genotypes) > 1 ) {
+            if ( all( x.genotypes %in% y.genotypes ) ) {
+                for ( i in getIndices(y.genotypes) ) {
+                    geno.matrix[ x.symbols == y.genotypes[i], j ] <- i
                 }
             }
         }
@@ -398,8 +421,7 @@ makeFounderGenoMatrix <- function(x, y) {
     
     # Set genotype symbols for founders.
     # TODO: handle other segregant ploidies.
-    attr(geno.matrix, 'genotypes') <- const$founder.allele.charset[
-        getIndices(y.samples) ]
+    attr(geno.matrix, 'genotypes') <- alleles
     
     return(geno.matrix)
 }
@@ -467,19 +489,27 @@ makeEnumGenoMatrix <- function(x) {
 #' 
 #' @param x Raw sample genotype \code{array}.
 #' @param y Raw founder genotype \code{array}.
+#' @param alleles Founder allele symbols.
 #' 
 #' @return A \code{geno} object.
 #' 
 #' @keywords internal
 #' @rdname makeGeno
-makeGeno <- function(x, y=NULL) {
+makeGeno <- function(x, y=NULL, alleles=NULL) {
     
     crosstype <- 'bc' # TODO: support other cross types
     
     # If founder genotypes available, get founder genotype matrix..
     if ( ! is.null(y) ) {
-        geno.matrix <- makeFounderGenoMatrix(x, y)
+        
+        geno.matrix <- makeFounderGenoMatrix(x, y, alleles=alleles)
+        
     } else { # ..otherwise get enumerated genotype matrix.
+        
+        if ( ! is.null(alleles) ) {
+            stop("founder alleles specified without founders")
+        }
+        
         geno.matrix <- makeEnumGenoMatrix(x)
     }
     

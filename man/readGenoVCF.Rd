@@ -4,7 +4,7 @@
 \alias{readGenoVCF}
 \title{Read genotype data from a VCF file.}
 \usage{
-readGenoVCF(..., samples, founders = NULL)
+readGenoVCF(..., samples, founders = NULL, alleles = NULL)
 }
 \arguments{
 \item{...}{Input VCF file paths.}
@@ -12,6 +12,8 @@ readGenoVCF(..., samples, founders = NULL)
 \item{samples}{Cross sample IDs.}
 
 \item{founders}{Founder sample IDs.}
+
+\item{alleles}{Founder allele symbols.}
 }
 \value{
 An \pkg{R/qtl} \code{cross} \code{geno} object.
@@ -29,7 +31,8 @@ genotypes is performed independently for each locus, so a given
 enumerated genotype does not have the same meaning across loci.
 
 If founder samples are specified, this function assigns a genotype symbol
-according to the inferred founder for each genotype at each locus. In this
-case, a given genotype represents the same founder strain across markers.
+from the \code{alleles} parameter, or otherwise from a default symbol. In
+the case of founder genotypes, a given genotype represents the same founder
+strain across markers.
 }
 

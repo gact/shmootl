@@ -405,18 +405,20 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
 #' enumerated genotype does not have the same meaning across loci.
 #' 
 #' If founder samples are specified, this function assigns a genotype symbol
-#' according to the inferred founder for each genotype at each locus. In this
-#' case, a given genotype represents the same founder strain across markers.
+#' from the \code{alleles} parameter, or otherwise from a default symbol. In
+#' the case of founder genotypes, a given genotype represents the same founder
+#' strain across markers.
 #' 
 #' @param ... Input VCF file paths.
 #' @param samples Cross sample IDs.
 #' @param founders Founder sample IDs.
+#' @param alleles Founder allele symbols.
 #' 
 #' @return An \pkg{R/qtl} \code{cross} \code{geno} object.
 #' 
 #' @export
 #' @rdname readGenoVCF
-readGenoVCF <- function(..., samples, founders=NULL) {
+readGenoVCF <- function(..., samples, founders=NULL, alleles=NULL) {
     
     # TODO: optimise.
     
@@ -432,13 +434,13 @@ readGenoVCF <- function(..., samples, founders=NULL) {
         
         founder.data <- readSnpsVCF(..., samples=founders,
             require.all=TRUE, require.polymorphic=TRUE)
-        
+    
     } else {
         
         founder.data <- NULL
     }
     
-    geno <- makeGeno(sample.data, founder.data)
+    geno <- makeGeno(sample.data, founder.data, alleles=alleles)
     
     return(geno)
 }

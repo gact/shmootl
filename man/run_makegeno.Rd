@@ -4,7 +4,7 @@
 \alias{run_makegeno}
 \title{Run makegeno pipeline.}
 \usage{
-run_makegeno(samples, genfile, founders = NA, digits = NA)
+run_makegeno(samples, genfile, founders = NA, alleles = NA, digits = NA)
 }
 \arguments{
 \item{samples}{sample VCF file}
@@ -12,6 +12,8 @@ run_makegeno(samples, genfile, founders = NA, digits = NA)
 \item{genfile}{output genotype CSV file}
 
 \item{founders}{optional founder VCF file}
+
+\item{alleles}{founder allele symbols}
 
 \item{digits}{numeric precision [default: unrounded]}
 }

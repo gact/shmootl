@@ -4,12 +4,14 @@
 \alias{makeGeno}
 \title{Make an \pkg{R/qtl} \code{cross} \code{geno} object.}
 \usage{
-makeGeno(x, y = NULL)
+makeGeno(x, y = NULL, alleles = NULL)
 }
 \arguments{
 \item{x}{Raw sample genotype \code{array}.}
 
 \item{y}{Raw founder genotype \code{array}.}
+
+\item{alleles}{Founder allele symbols.}
 }
 \value{
 A \code{geno} object.

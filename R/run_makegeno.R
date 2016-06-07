@@ -9,15 +9,17 @@
 #' @param samples sample VCF file
 #' @param founders optional founder VCF file
 #' @param genfile output genotype CSV file
+#' @param alleles founder allele symbols
 #' @param digits numeric precision [default: unrounded]
 #' 
 #' @export
 #' @rdname run_makegeno
-run_makegeno <- function(samples, genfile, founders=NA, digits=NA) {
+run_makegeno <- function(samples, genfile, founders=NA, alleles=NA, digits=NA) {
     
     stopifnot( isSingleString(genfile) )
     
     digits <- if ( ! is.na(digits) ) { strtoi(digits) } else { NULL }
+    alleles <- if ( ! is.na(alleles) ) { alleles } else { NULL }
     
     sample.ids <- getSamplesVCF(samples)
     
@@ -29,7 +31,8 @@ run_makegeno <- function(samples, genfile, founders=NA, digits=NA) {
         infiles <- samples
     }
     
-    geno <- readGenoVCF(infiles, samples=sample.ids, founders=founder.ids)
+    geno <- readGenoVCF(infiles, samples=sample.ids,
+        founders=founder.ids, alleles=alleles)
     
     writeGenoCSV(geno, genfile, digits=digits)
     

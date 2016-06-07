@@ -4,12 +4,14 @@
 \alias{makeFounderGenoMatrix}
 \title{Make founder genotype matrix from genotype data.}
 \usage{
-makeFounderGenoMatrix(x, y)
+makeFounderGenoMatrix(x, y, alleles = NULL)
 }
 \arguments{
 \item{x}{Raw sample genotype \code{array}.}
 
 \item{y}{Raw founder genotype \code{array}.}
+
+\item{alleles}{Founder allele symbols.}
 }
 \value{
 A founder genotype matrix, with genotypes encoded as integers and
