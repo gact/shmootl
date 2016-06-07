@@ -5,7 +5,7 @@
 \title{Read yeast \code{cross} from a CSV file.}
 \usage{
 readCrossCSV(infile, error.prob = 1e-04, map.function = c("haldane",
-  "kosambi", "c-f", "morgan"))
+  "kosambi", "c-f", "morgan"), require.mapunit = TRUE)
 }
 \arguments{
 \item{infile}{Input CSV file path.}
@@ -13,6 +13,8 @@ readCrossCSV(infile, error.prob = 1e-04, map.function = c("haldane",
 \item{error.prob}{Genotyping error rate (ignored unless estimating genetic map).}
 
 \item{map.function}{Genetic map function (ignored unless estimating genetic map).}
+
+\item{require.mapunit}{Require map unit information in map positions.}
 }
 \value{
 An \pkg{R/qtl} \code{cross} object with an attribute \code{'info'} of 

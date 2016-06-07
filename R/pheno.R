@@ -80,10 +80,6 @@ as.pheno.data.frame <- function(from) {
     # Get phenotype headings.
     phenotypes <- as.character(from[head.row, ])
     
-    # Get phenotype data.
-    cross.pheno <- do.call(cbind.data.frame, 
-        lapply(from[dat.rows, ], type.convert))
-    
     # Get index of phenotype columns with R/qtl special heading 'id'. If present,
     # this contains identifiers of sampled individuals. Search is case-insensitive.
     id.col <- which( tolower(phenotypes) == 'id' )
@@ -92,13 +88,22 @@ as.pheno.data.frame <- function(from) {
         # If 'id' column present, set vector of
         # sample IDs and remove from phenotypes..
         stopifnot( length(id.col) == 1 )
-        samples <- as.character(cross.pheno[, id.col])
+        samples <- as.character(from[dat.rows, id.col])
         phenotypes <- phenotypes[-id.col]
         
     } else {
         # ..otherwise set vector of sample indices.
         samples <- getIndices(dat.rows)
     }
+    
+    # Check for blank phenotypes.
+    if ( any(from[dat.rows, -id.col] == '') ) {
+        stop("blank phenotype values found")
+    }
+    
+    # Get phenotype data.
+    cross.pheno <- do.call(cbind.data.frame,
+        lapply(from[dat.rows, ], type.convert))
     
     # Create CrossInfo object.
     cross.info <- methods::new('CrossInfo')

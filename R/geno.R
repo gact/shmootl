@@ -33,7 +33,12 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
     genotypes <- getGenotypes(cross.info)
     locus.ids <- getMarkers(cross.info)
     locus.names <- make.names(locus.ids)
-    samples <- getSamples(cross.info)
+    
+    if ( hasSampleIDs(cross.info) ) {
+        samples <- getSamples(cross.info)
+    } else {
+        samples <- rep.int('', getNumSamples(cross.info))
+    }
     
     # Get specified sequences.
     chr <- subsetBySeq(names(x), chr)
@@ -70,13 +75,18 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
         col.name='id', data=locus.ids)
     rownames(map.table) <- locus.names
     map.matrix <- t(map.table)
+    rownames(map.matrix) <- NULL
     
     # Prepare genotype matrix.
-    dimnames(geno.matrix) <- list(samples, locus.names)
+    colnames(geno.matrix) <- locus.names
     
     # Bind map and genotype matrices into one data frame.
     geno.frame <- as.data.frame(rbind(map.matrix, geno.matrix), 
         stringsAsFactors=FALSE)
+    
+    # Insert sample ID column.
+    geno.frame <- insertColumn(geno.frame, 1, col.name='id',
+        data=c('id', '', '', samples))
     
     return(geno.frame)
 }
@@ -85,59 +95,43 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
 #' Coerce to \code{geno} object.
 #' 
 #' @param from Object containing genotype data.
+#' @param require.mapunit Require map unit information in map positions.
 #' 
 #' @return A \code{geno} object corresponding to the input object.
 #' 
 #' @keywords internal
 #' @rdname as.geno
-as.geno <- function(from) {
+as.geno <- function(from, require.mapunit=TRUE) {
     UseMethod('as.geno', from)
 }
 
 # as.geno.data.frame -----------------------------------------------------------
 #' @method as.geno data.frame
 #' @rdname as.geno
-as.geno.data.frame <- function(from) {
+as.geno.data.frame <- function(from, require.mapunit=TRUE) {
+    
+    stopifnot( isBOOL(require.mapunit) )
     
     crosstype <- 'bc' # TODO: support other cross types
     
-    # Set putative map positions from third row.
-    putative.positions <- as.character(from[3, ])
-    
-    # Try to get map unit from putative map positions.
-    map.unit <- getMapUnitSuffix(putative.positions)
-    
-    # Denote map positions as detected if a map unit was identified.
-    map.positions.found <- ! is.na(map.unit)
-    
-    if ( map.positions.found && map.unit != 'cM' ) {
-        stop("cross geno map positions must be in centiMorgans (e.g. '47 cM')")
+    if ( nrow(from) < 3 || ncol(from) < 2 ) {
+        stop("invalid genotype data frame")
     }
     
-    # If map positions not detected, double-check putative map positions.
-    if ( ! map.positions.found ) {
-        
-        # Get set of values in putative mapline.
-        mapline.values <- unique( as.character(putative.positions) )
-        
-        # Get set of invalid values in mapline.
-        invalid.values <- mapline.values[ ! ( is.na(mapline.values) |
-            isValidGenotype(mapline.values) ) ]
-        
-        # Check mapline contains only valid genotypes and missing values.
-        if ( length(invalid.values) > 0 ) {
-            mapline.numbers <- mapline.values[ ! is.na( suppressWarnings(
-                as.numeric(mapline.values) ) ) ]
-            if ( length(mapline.numbers) == length(mapline.values) ) {
-                stop("cross geno map positions must include centiMorgan units (e.g. '47 cM')")
-            } else {
-                stop("invalid genotype symbols - '", toString(invalid.values), "'")
-            }
-        }
+    # Check for ID heading in first column.
+    id.col <- which( tolower(from[1, ]) == 'id' )
+    if ( length(id.col) == 0 || id.col[1] != 1 ) {
+        stop("ID column not found in genotype data frame")
     }
+    
+    if ( from[2, id.col] != '' ) {
+        stop("second row of ID column must be blank")
+    }
+    
+    map.present <- from[3, id.col] == ''
     
     # Get indices of initial rows.
-    head.rows <- if (map.positions.found) {1:3} else {1:2}
+    head.rows <- if (map.present) {1:3} else {1:2}
     
     # Get offset of main body of genotype data.
     dat.offset = length(head.rows)
@@ -151,12 +145,37 @@ as.geno.data.frame <- function(from) {
     # Get vector of data row indices.
     dat.rows <- first.data.row : last.data.row
     
+    if (map.present) {
+        
+        map.unit <- getMapUnitSuffix( as.character(from[3, -id.col]) )
+        
+        if ( ! is.na(map.unit) ) {
+            
+            if ( map.unit != 'cM' ) {
+                stop("cross map positions must be in centiMorgans (e.g. '47 cM')")
+            }
+            
+        } else {
+            
+            if (require.mapunit) {
+                stop("cross map positions must include map units (e.g. '47 cM')")
+            }
+            
+            map.unit <- 'cM'
+        }
+    }
+    
     # Get matrix of genotype data.
-    geno.matrix <- as.matrix(from[dat.rows, ])
-    colnames(geno.matrix) <- from[1, ]
+    geno.matrix <- as.matrix(from[dat.rows, -id.col])
+    colnames(geno.matrix) <- from[1, -id.col]
     
     # Get set of symbols in genotype matrix.
     symbols <- unique( as.character( unlist(geno.matrix) ) )
+    
+    # Check for blank genotypes.
+    if ( '' %in% symbols ) {
+        stop("blank genotype values found")
+    }
     
     # Decompose symbols into different types.
     founder.symbols <- symbols[ isFounderGenotype(symbols) ]
@@ -166,12 +185,6 @@ as.geno.data.frame <- function(from) {
     # Check for invalid values.
     if ( length(invalid.values) > 0 ) {
         stop("invalid genotype symbols - '", toString(invalid.values), "'")
-    }
-    
-    # Check for map positions that resemble enumerated genotypes.
-    if ( ! map.positions.found && length(enum.symbols) > 0 &&
-         ! all( is.na(mapline.values) | mapline.values == '1' ) ) {
-        stop("cross geno map positions must include centiMorgan units (e.g. '47 cM')")
     }
     
     # Get genotype symbols.
@@ -207,21 +220,23 @@ as.geno.data.frame <- function(from) {
     }
     geno.matrix <- apply(geno.matrix, 2, as.numeric)
     
-    # If rownames present, set vector of sample IDs from these..
-    if ( hasRownames(from) ) {
-        samples <- rownames(from)[dat.rows]
-    } else { # ..otherwise set vector of sample indices.
+    # Get sample IDs or indices.
+    if ( all(from[dat.rows, id.col] == '') ) {
         samples <- getIndices(dat.rows)
+    } else if ( any(from[dat.rows, id.col] == '') ) {
+        stop("ID column is incomplete in genotype data frame")
+    } else {
+        samples <- from[dat.rows, id.col]
     }
     
     # Create map table from initial rows.
-    map.table <- as.data.frame( t(from[head.rows, ]), stringsAsFactors=FALSE)
+    map.table <- as.data.frame( t(from[head.rows, -id.col]), stringsAsFactors=FALSE)
     colnames(map.table) <- const$maptable.colnames[head.rows]
     map.table <- setRownamesFromColumn(map.table, col.name='id')
     
     # If map positions found, coerce map table to a map object..
-    if (map.positions.found) {
-        geno.map <- as.map(map.table)
+    if (map.present) {
+        geno.map <- as.map(map.table, map.unit=map.unit)
     } else { # ..otherwise create a dummy map, as in R/qtl.
         geno.map <- makeDummyMap(map.table$chr, rownames(map.table))
     }

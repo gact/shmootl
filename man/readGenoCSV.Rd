@@ -4,10 +4,12 @@
 \alias{readGenoCSV}
 \title{Read yeast genotype data from a CSV file.}
 \usage{
-readGenoCSV(infile)
+readGenoCSV(infile, require.mapunit = TRUE)
 }
 \arguments{
 \item{infile}{Input CSV file path.}
+
+\item{require.mapunit}{Require map unit information in map positions.}
 }
 \description{
 Read yeast genotype data from a CSV file.

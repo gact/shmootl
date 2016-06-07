@@ -5,12 +5,14 @@
 \alias{as.geno.data.frame}
 \title{Coerce to \code{geno} object.}
 \usage{
-as.geno(from)
+as.geno(from, require.mapunit = TRUE)
 
-\method{as.geno}{data.frame}(from)
+\method{as.geno}{data.frame}(from, require.mapunit = TRUE)
 }
 \arguments{
 \item{from}{Object containing genotype data.}
+
+\item{require.mapunit}{Require map unit information in map positions.}
 }
 \value{
 A \code{geno} object corresponding to the input object.

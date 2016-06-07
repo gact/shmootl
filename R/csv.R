@@ -23,6 +23,7 @@ NULL
 #' @param infile Input CSV file path.
 #' @param error.prob Genotyping error rate (ignored unless estimating genetic map).
 #' @param map.function Genetic map function (ignored unless estimating genetic map).
+#' @param require.mapunit Require map unit information in map positions.
 #'  
 #' @return An \pkg{R/qtl} \code{cross} object with an attribute \code{'info'} of 
 #' type \code{CrossInfo}.
@@ -32,7 +33,8 @@ NULL
 #' @importFrom methods new
 #' @rdname readCrossCSV
 readCrossCSV <- function(infile, error.prob=0.0001,
-    map.function=c('haldane', 'kosambi', 'c-f', 'morgan')) {
+    map.function=c('haldane', 'kosambi', 'c-f', 'morgan'),
+    require.mapunit=TRUE) {
     
     crosstype <- 'bc' # TODO: support other cross types
     
@@ -40,6 +42,7 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     stopifnot( file.exists(infile) )
     error.prob <- as.numeric(error.prob)
     stopifnot( isSingleProbability(error.prob) )
+    stopifnot( isBOOL(require.mapunit) )
     
     map.function <- match.arg(map.function)
     
@@ -171,24 +174,27 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     # If map is present, check for map unit info.
     if (map.present) {
         
-        # Set map table from cross map data.
-        map.table <- data.frame( row.names=locus.ids, chr=locus.seqs,
-            pos=as.character(cross.table[3, geno.cols]),
-            stringsAsFactors=FALSE)
+        # Get cross map positions.
+        map.pos <- as.character(cross.table[3, geno.cols])
         
-        # Validate genetic map unit information.
-        tryCatch({
-            validateGeneticMapUnit(map.table)
-        }, error=function(e) {
-            stop("cross input map positions must include genetic map units ",
-                "(e.g. '47 cM')")
-        })
+        # Get map unit from map positions.
+        map.unit <- getMapUnitSuffix(map.pos)
+        
+        if ( ! is.na(map.unit) ) {
+            if ( map.unit != 'cM' ) {
+                stop("cross map positions must be in centiMorgans (e.g. '47 cM')")
+            }
+        } else {
+            if (require.mapunit) {
+                stop("cross map positions must include map units (e.g. '47 cM')")
+            }
+        }
         
         # Strip map unit information.
-        map.table <- setPosColDataMapUnit(map.table, NULL)
+        map.pos <- setPosColDataMapUnit(map.pos, NULL)
         
         # Replace original map positions.
-        cross.table[3, geno.cols] <- map.table$pos
+        cross.table[3, geno.cols] <- map.pos
     }
     
     # Create temp file for adjusted cross data.
@@ -222,11 +228,12 @@ readCrossCSV <- function(infile, error.prob=0.0001,
 #' Read yeast genotype data from a CSV file.
 #' 
 #' @param infile Input CSV file path.
+#' @param require.mapunit Require map unit information in map positions.
 #' 
 #' @export
 #' @family csv utilities
 #' @rdname readGenoCSV
-readGenoCSV <- function(infile) {
+readGenoCSV <- function(infile, require.mapunit=TRUE) {
     
     stopifnot( isSingleString(infile) )
     
@@ -238,6 +245,10 @@ readGenoCSV <- function(infile) {
     # Trim any blank rows/columns from the bottom/right, respectively.
     geno.table <- bstripBlankRows( rstripBlankCols(geno.table) )
     
+    if ( nrow(geno.table) < 3 || ncol(geno.table) < 2 ) {
+        stop("invalid genotype data file")
+    }
+    
     # Make geno table column names from first row of input table.
     colnames(geno.table) <- make.names(geno.table[1, ])
     
@@ -247,22 +258,14 @@ readGenoCSV <- function(infile) {
         stop("ID column not found in genotype data file - '", infile, "'")
     }
     
-    # Fill second row of ID column, checking for map blank.
-    if ( geno.table[2, 'id'] == '' ) {
-        geno.table[2, 'id'] <- const$maptable.colnames[2]
-    } else {
-        stop("second row of ID column must be blank")
+    # Check for sample IDs - required in genotype file.
+    head.rows <- if (geno.table[3, id.col] == '') {1:3} else {1:2}
+    dat.rows <- getRowIndices(geno.table)[-head.rows]
+    if ( any(geno.table[dat.rows, id.col] == '') ) {
+        stop("ID column is incomplete in genotype data file - '", infile, "'")
     }
     
-    # Fill third row of ID column, if blank.
-    if ( geno.table[3, 'id'] == '' ) {
-        geno.table[3, 'id'] <- const$maptable.colnames[3]
-    }
-    
-    # Move sample IDs from first column of geno table.
-    geno.table <- setRownamesFromColumn(geno.table, col.name='id')
-    
-    return( as.geno(geno.table) )
+    return( as.geno(geno.table, require.mapunit=require.mapunit) )
 }
 
 # readMapCSV -------------------------------------------------------------------
@@ -507,11 +510,10 @@ writeGenoCSV <- function(geno, outfile, chr=NULL, digits=NULL,
     geno.table <- as.data.frame(geno, chr=chr, digits=digits, 
         include.mapunit=include.mapunit)
     
-    # Move sample IDs into first column of geno table.
-    geno.table <- setColumnFromRownames(geno.table)
-    
-    # Blank map rows of ID column.
-    geno.table[2:3, 1] <- c('', '')
+    # Check for sample IDs - required in genotype file.
+    if ( any(geno.table[4:nrow(geno.table), 'id'] == '') ) {
+        stop("cannot output genotype data without sample IDs")
+    }
     
     # Write cross geno data to CSV file.
     write.table(geno.table, file=outfile, na=const$missing.value, sep=',',
