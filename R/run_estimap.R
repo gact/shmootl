@@ -55,7 +55,9 @@ run_estimap <- function(infile, mapfile, n.cluster=1L, error.prob=0.0001,
     cross.map <- qtl::est.map(cross, error.prob=error.prob,
         map.function=map.function, offset=0, n.cluster=n.cluster)
     
-    writeMapCSV(cross.map, mapfile)
+    cross.map <- as.mapframe(cross.map)
+    
+    writeMapframeCSV(cross.map, mapfile)
     
     return( invisible() )
 }
