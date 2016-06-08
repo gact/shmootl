@@ -117,4 +117,68 @@ as.pheno.data.frame <- function(from) {
     return(cross.pheno)
 }
 
+# makePlaceholderPheno ---------------------------------------------------------
+#' Make a placeholder \code{pheno} object.
+#' 
+#' @param samples Integer vector of sample indices or character vector of
+#' sample IDs.
+#' 
+#' @return A placeholder \code{pheno} object with the given samples.
+#' 
+#' @keywords internal
+#' @rdname makePlaceholderPheno
+makePlaceholderPheno <- function(samples) {
+    
+    num.samples <- length(samples)
+    
+    stopifnot( num.samples > 0 )
+    
+    if ( is.character(samples) ) {
+        
+        ids <- samples
+        
+    } else if ( is.integer(samples) ) {
+        
+        ids <- NULL
+        
+        if ( any(samples != 1:num.samples) ) {
+            stop("integer sample vector must contain sample indices")
+        }
+        
+    } else {
+        
+        stop("sample vector must be of type integer or character")
+    }
+    
+    # If phenotypes specified, validate them..
+    if ( ! is.null(phenotypes) ) {
+        stopif( any( tolower(phenotypes) %in% const$reserved.phenotypes ) )
+    } else { # ..otherwise set default.
+        phenotypes <- 'PLACEHOLDER'
+    }
+    
+    # Generate random phenotype values.
+    placeholder.values <- lapply(phenotypes, function(p) runif(num.samples))
+    names(placeholder.values) <- phenotypes
+    
+    # Append sample IDs, if specified.
+    if ( ! is.null(ids) ) {
+        placeholder.values[['id']] <- ids
+    }
+    
+    # Create phenotype data frame.
+    cross.pheno <- do.call(cbind.data.frame, placeholder.values)
+    
+    # Create CrossInfo object.
+    cross.info <- methods::new('CrossInfo')
+    cross.info <- setPhenotypes(cross.info, phenotypes)
+    cross.info <- setSamples(cross.info, samples)
+    
+    attr(cross.pheno, 'info') <- cross.info
+    
+    class(cross.pheno) <- c('pheno', 'data.frame')
+    
+    return(cross.pheno)
+}
+
 # End of pheno.R ###############################################################
