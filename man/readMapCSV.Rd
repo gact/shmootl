@@ -4,10 +4,12 @@
 \alias{readMapCSV}
 \title{Read \code{map} from a CSV file.}
 \usage{
-readMapCSV(infile)
+readMapCSV(infile, require.mapunit = TRUE)
 }
 \arguments{
 \item{infile}{Input CSV file path.}
+
+\item{require.mapunit}{Require map unit information.}
 }
 \value{
 An \pkg{R/qtl} \code{map} object.

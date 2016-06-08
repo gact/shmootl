@@ -33,7 +33,7 @@ hasMapCSV <- function(infile) {
     status <- FALSE
     
     x <- read.csv(infile, header=FALSE, nrows=4, check.names=FALSE,
-                  quote='', stringsAsFactors=FALSE, strip.white=TRUE)
+        quote='', stringsAsFactors=FALSE, strip.white=TRUE)
     
     x <- rstripBlankCols(x)
     
@@ -336,50 +336,56 @@ readGenoCSV <- function(infile, require.mapunit=TRUE) {
 #' Read \code{map} from a CSV file.
 #' 
 #' @param infile Input CSV file path.
+#' @param require.mapunit Require map unit information.
 #'     
 #' @return An \pkg{R/qtl} \code{map} object.
 #' 
 #' @export
 #' @family csv utilities
 #' @rdname readMapCSV
-readMapCSV <- function(infile) {
-    return( as.map( readMapframeCSV(infile) ) )
+readMapCSV <- function(infile, require.mapunit=TRUE) {
+    return( as.map( readMapframeCSV(infile, require.mapunit=require.mapunit) ) )
 }
 
 # readMapframeCSV --------------------------------------------------------------
 #' Read \code{mapframe} from a CSV file.
 #' 
 #' @param infile Input CSV file path.
+#' @param require.mapunit Require map unit information.
 #'     
 #' @return A \code{mapframe} object.
 #' 
 #' @export
 #' @family csv utilities
 #' @rdname readMapframeCSV
-readMapframeCSV <- function(infile) {
+readMapframeCSV <- function(infile, require.mapunit=TRUE) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     
     # Read mapframe from CSV file.
-    map.table <- read.csv(infile, check.names=FALSE, quote='', strip.white=TRUE,
+    x <- read.csv(infile, check.names=FALSE, quote='', strip.white=TRUE,
         comment.char='', stringsAsFactors=FALSE, colClasses='character',
         na.strings='')
     
     # Validate map unit information.
-    tryCatch({
-        validateMapUnit(x)
-    }, error=function(e) {
-        stop("input map positions must include map units ",
-            "(e.g. '47 cM', '30 kb')")
-    })
+    map.unit <- getMapUnit(x)
+    
+    if ( is.na(map.unit) ) {
+        
+        if (require.mapunit) {
+            stop("input map must include map unit information (e.g. 'pos (cM)', '30 kb')")
+        }
+        
+        map.unit <- 'cM'
+    }
     
     # Set locus IDs from an input 'id' column, if present.
     if ( 'id' %in% colnames(x) ) {
         x <- setRownamesFromColumn(x, col.name='id')
     }
     
-    return( as.mapframe(x) )
+    return( as.mapframe(x, map.unit=map.unit) )
 }
 
 # readPhenoCSV -----------------------------------------------------------------

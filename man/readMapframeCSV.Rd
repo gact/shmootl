@@ -4,10 +4,12 @@
 \alias{readMapframeCSV}
 \title{Read \code{mapframe} from a CSV file.}
 \usage{
-readMapframeCSV(infile)
+readMapframeCSV(infile, require.mapunit = TRUE)
 }
 \arguments{
 \item{infile}{Input CSV file path.}
+
+\item{require.mapunit}{Require map unit information.}
 }
 \value{
 A \code{mapframe} object.
