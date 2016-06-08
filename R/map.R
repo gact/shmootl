@@ -2037,6 +2037,27 @@ pullLocusPos.mapframe <- function(x) {
     return( x[, getPosColIndex(x)] )
 }
 
+# pullMap ----------------------------------------------------------------------
+#' Pull map from object.
+#' 
+#' @param x Object containing map data.
+#' 
+#' @return An \pkg{R/qtl} \code{map} extracted from the input object.
+#' 
+#' @keywords internal
+#' @rdname pullMap
+pullMap <- function(x) {
+    UseMethod('pullMap', x)
+}
+
+# pullMap.geno -----------------------------------------------------------------
+#' @method pullMap geno
+#' @rdname pullMap
+pullMap.geno <- function(x) {
+    return( as.map( lapply(x, function(obj)
+        obj$map), map.unit='cM' ) )
+}
+
 # setMapUnit -------------------------------------------------------------------
 #' Set map unit.
 #' 

@@ -36,13 +36,7 @@ run_pullmap <- function(infile, mapfile, require.mapunit=TRUE,
     } else if ( guess == 'geno' ) {
         
         geno <- readGenoCSV(infile, require.mapunit=require.mapunit)
-        
-        cross.info <- attr(geno, 'info')
-        samples <- getSamples(cross.info)
-        pheno <- makePlaceholderPheno(samples=samples)
-        
-        cross <- makeCross(geno, pheno)
-        cross.map <- qtl::pull.map(cross)
+        cross.map <- pullMap(geno)
         
     } else {
         
