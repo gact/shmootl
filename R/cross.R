@@ -761,7 +761,7 @@ makeCross <- function(geno, pheno) {
         stop("cannot make cross - no phenotype sample IDs")
     }
     
-    if ( any(geno.info@samples != pheno.info@samples) ) {
+    if ( any(getSamples(geno.info) != getSamples(pheno.info)) ) {
         stop("cannot make cross - sample mismatch")
     }
     
