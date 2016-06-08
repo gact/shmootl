@@ -2058,6 +2058,62 @@ pullMap.geno <- function(x) {
         obj$map), map.unit='cM' ) )
 }
 
+# pushMap ----------------------------------------------------------------------
+#' Push map into object.
+#' 
+#' @param x Object that can contain map data.
+#' @param map An \pkg{R/qtl} \code{map} object.
+#' 
+#' @return Input object incorporating the given map data.
+#' 
+#' @keywords internal
+#' @rdname pushMap
+pushMap <- function(x, map) {
+    UseMethod('pushMap', x)
+}
+
+# pushMap.geno -----------------------------------------------------------------
+#' @method pushMap geno
+#' @rdname pushMap
+pushMap.geno <- function(x, map) {
+    
+    stopifnot( 'map' %in% class(map) )
+    
+    map.unit <- 'cM'
+    
+    if ( getMapUnit(map) != map.unit ) {
+        stop("cross map positions must be in centiMorgans (e.g. '47 cM')")
+    }
+    
+    norm.map.seqs <- normSeq( names(map) )
+    
+    geno.map <- as.map( lapply(x, function(obj) obj$map), map.unit=map.unit )
+    
+    geno.map.seqs <- names(geno.map)
+    
+    if ( length(norm.map.seqs) != length(geno.map.seqs) ||
+         any( norm.map.seqs != geno.map.seqs ) ) {
+        stop("map sequence mismatch")
+    }
+    
+    for ( map.seq in norm.map.seqs ) {
+        
+        geno.seq.ids <- names(geno.map[[map.seq]])
+        map.seq.ids <- names(map[[map.seq]])
+        if ( length(map.seq.ids) != length(geno.seq.ids) ||
+             any( map.seq.ids != geno.seq.ids ) ) {
+            stop("marker mismatch")
+        }
+        
+        seq.map <- map[[map.seq]]
+        class(seq.map) <- 'numeric'
+        
+        x[[map.seq]]$map <- seq.map
+    }
+    
+    return(x)
+}
+
 # setMapUnit -------------------------------------------------------------------
 #' Set map unit.
 #' 
