@@ -44,10 +44,6 @@ run_pullmap <- function(infile, mapfile, require.mapunit=TRUE,
         cross <- makeCross(geno, pheno)
         cross.map <- qtl::pull.map(cross)
         
-    } else if ( guess == 'map' ) {
-        
-        cross.map <- readMapCSV(infile, require.mapunit=require.mapunit)
-        
     } else {
         
         stop("cannot pull map from ", guess," data")
