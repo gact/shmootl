@@ -13,6 +13,70 @@
 #' @name CSV Utilities
 NULL
 
+# hasMapCSV --------------------------------------------------------------------
+#' Test if CSV file contains map data.
+#' 
+#' @param infile Input CSV file path.
+#'
+#' @return TRUE if CSV file contains map data in a known format;
+#' FALSE otherwise.
+#'
+#' @export
+#' @keywords internal
+#' @rdname hasMapCSV
+hasMapCSV <- function(infile) {
+    
+    stopifnot( isSingleString(infile) )
+    stopifnot( file.exists(infile) )
+    
+    # Assume file does not contain map data.
+    status <- FALSE
+    
+    x <- read.csv(infile, header=FALSE, nrows=4, check.names=FALSE,
+                  quote='', stringsAsFactors=FALSE, strip.white=TRUE)
+    
+    x <- rstripBlankCols(x)
+    
+    pheno.cols <- which(x[2, ] == '')
+    
+    id.col <- which( tolower(x[1, ]) == 'id' )
+    
+    if ( length(id.col) > 1 ) {
+        return(FALSE)
+    }
+    
+    # If cross/geno file, check if third row appears to contain map data..
+    if ( length(pheno.cols) > 0 ) {
+        
+        if ( pheno.cols[1] != 1 || any(diff(pheno.cols) != 1) ) {
+            return(FALSE)
+        } 
+        
+        map.blanks <- which( x[3, ] == '' )
+        
+        if ( length(map.blanks) == length(pheno.cols) &&
+             all(map.blanks == pheno.cols) ) {
+            status <- TRUE
+        }
+        
+    } else { # ..otherwise, check if file appears to contain map.
+        
+        if ( length(id.col) == 0 ) {
+            return(FALSE)
+        }
+        
+        seq.col <- which( x[1, ] == 'chr' )
+        pos.col <- which(grepl(const$pattern$poscol, x[1, ], ignore.case=TRUE))
+        
+        if ( length(seq.col) == 1 && length(pos.col) == 1 &&
+             id.col == 1 && seq.col == 2 && pos.col == 3 ) {
+            status <- TRUE
+        }
+    }
+    
+    return(status)
+}
+
 # readCrossCSV -----------------------------------------------------------------
 #' Read yeast \code{cross} from a CSV file.
 #' 
