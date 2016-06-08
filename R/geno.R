@@ -237,8 +237,8 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     # If map positions found, coerce map table to a map object..
     if (map.present) {
         geno.map <- as.map(map.table, map.unit=map.unit)
-    } else { # ..otherwise create a dummy map, as in R/qtl.
-        geno.map <- makeDummyMap(map.table$chr, rownames(map.table))
+    } else { # ..otherwise create a placeholder map, as in R/qtl.
+        geno.map <- makePlaceholderMap(map.table$chr, rownames(map.table))
     }
     
     # Get individual locus IDs.

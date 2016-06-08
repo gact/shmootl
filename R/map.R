@@ -1523,14 +1523,14 @@ isValidMapUnit <- function(x) {
     return(TRUE)
 }
 
-# makeDummyMap -----------------------------------------------------------------
-#' Make a dummy map.
+# makePlaceholderMap -----------------------------------------------------------
+#' Make a placeholder map.
 #' 
-#' Make a dummy map from the given combination of locus sequences, map unit, and
-#' map step size. If locus IDs are specified, the locus IDs of the dummy map
-#' will be set from these. Otherwise, locus IDs are set to pseudomarker IDs or
-#' default marker IDs, according to whether map units are for a genetic or
-#' physical map, respectively.
+#' Make a placeholder map from the given combination of locus sequences, map
+#' unit, and map step size. If locus IDs are specified, the locus IDs of the
+#' placeholder map will be set from these. Otherwise, locus IDs are set to
+#' pseudomarker IDs or default marker IDs, according to whether map units
+#' are for a genetic or physical map, respectively.
 #' 
 #' Locus sequences and locus IDs are assumed to be ordered. As in R/qtl, any
 #' sequence with too few loci is extended, to ensure that all sequences have
@@ -1542,8 +1542,9 @@ isValidMapUnit <- function(x) {
 #' @param step Map step size.
 #' 
 #' @keywords internal
-#' @rdname makeDummyMap
-makeDummyMap <- function(locus.seqs, locus.ids=NULL, map.unit='cM', step=5) {
+#' @rdname makePlaceholderMap
+makePlaceholderMap <- function(locus.seqs, locus.ids=NULL, map.unit='cM',
+    step=5) {
     
     stopifnot( is.character(locus.seqs) )
     stopifnot( length(locus.seqs) > 0 )
@@ -1565,19 +1566,20 @@ makeDummyMap <- function(locus.seqs, locus.ids=NULL, map.unit='cM', step=5) {
         stop("map sequences are not ordered")
     }
     
-    # Get dummy-map sequences.
+    # Get placeholder-map sequences.
     map.seqs <- runs$values
     
     # Get index list for locus sequences.
     # NB: groups indices by sequence.
     index.list <- getRunIndexList(norm.locus.seqs)
     
-    # Generate dummy locus positions.
+    # Generate placeholder locus positions.
     locus.pos <- unlist( lapply( unname(index.list), function(indices)
         seq(0, length=length(indices), by=step)) )
     
-    # Create dummy mapframe.
-    dummy <- mapframe(chr=norm.locus.seqs, pos=locus.pos, map.unit=map.unit)
+    # Create placeholder mapframe.
+    placeholder <- mapframe(chr=norm.locus.seqs, pos=locus.pos,
+        map.unit=map.unit)
     
     # If locus IDs specified, set from those..
     if ( ! is.null(locus.ids) ) {
@@ -1585,22 +1587,22 @@ makeDummyMap <- function(locus.seqs, locus.ids=NULL, map.unit='cM', step=5) {
         stopifnot( is.character(locus.ids) )
         stopifnot( length(locus.ids) == length(locus.seqs) )
         
-        rownames(dummy) <- locus.ids
+        rownames(placeholder) <- locus.ids
         
     } else { # ..otherwise generate default locus IDs.
         
         if (is.gmap) {
-            rownames(dummy) <- makePseudomarkerIDs(dummy)
+            rownames(placeholder) <- makePseudomarkerIDs(placeholder)
         } else {
-            rownames(dummy) <- makeDefaultMarkerIDs(dummy)
+            rownames(placeholder) <- makeDefaultMarkerIDs(placeholder)
         }
     }
     
-    # Check dummy mapframe for short sequences.
+    # Check placeholder mapframe for short sequences.
     short.seqs <- map.seqs[ sapply(getRunIndices(runs),
         function(i) runs$lengths[i] < const$min.lps) ]
     
-    # If dummy mapframe contains short sequences,
+    # If placeholder mapframe contains short sequences,
     # extend these until they have enough loci.
     if ( length(short.seqs) > 0 ) {
         
@@ -1612,7 +1614,7 @@ makeDummyMap <- function(locus.seqs, locus.ids=NULL, map.unit='cM', step=5) {
         for ( short.seq in short.seqs ) {
             
             # Get loci in this sequence.
-            loc <- dummy[ dummy$chr == short.seq, ]
+            loc <- placeholder[ placeholder$chr == short.seq, ]
             
             # Calculate shortfall in number of loci.
             shortfall <- const$min.lps - nrow(loc)
@@ -1646,12 +1648,12 @@ makeDummyMap <- function(locus.seqs, locus.ids=NULL, map.unit='cM', step=5) {
             rownames(flanking) <- makeDefaultMarkerIDs(flanking)
         }
         
-        dummy <- rbind(dummy, flanking)
+        placeholder <- rbind(placeholder, flanking)
         
-        dummy <- orderMap(dummy)
+        placeholder <- orderMap(placeholder)
     }
     
-    return( as.map(dummy) )
+    return( as.map(placeholder) )
 }
 
 # makeMapFromDefaultMarkerIDs --------------------------------------------------
