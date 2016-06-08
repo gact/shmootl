@@ -52,6 +52,7 @@ Collate:
     'run_makecross.R'
     'run_makegeno.R'
     'run_pullmap.R'
+    'run_pushmap.R'
     'run_scanone.R'
     'scan.R'
     'seq.R'
