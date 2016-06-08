@@ -150,12 +150,8 @@ makePlaceholderPheno <- function(samples) {
         stop("sample vector must be of type integer or character")
     }
     
-    # If phenotypes specified, validate them..
-    if ( ! is.null(phenotypes) ) {
-        stopif( any( tolower(phenotypes) %in% const$reserved.phenotypes ) )
-    } else { # ..otherwise set default.
-        phenotypes <- 'PLACEHOLDER'
-    }
+    # Set placeholder phenotype.
+    phenotypes <- 'PLACEHOLDER'
     
     # Generate random phenotype values.
     placeholder.values <- lapply(phenotypes, function(p) runif(num.samples))
