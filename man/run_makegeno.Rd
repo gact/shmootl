@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_makegeno.R
 \name{run_makegeno}
 \alias{run_makegeno}
-\title{Run makegeno pipeline.}
+\title{Make genotype data from VCF.}
 \usage{
 run_makegeno(samples, genfile, founders = NA, alleles = NA, digits = NA)
 }

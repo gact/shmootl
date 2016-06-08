@@ -1,7 +1,7 @@
 # Start of run_makegeno.R ######################################################
 
 # run_makegeno -----------------------------------------------------------------
-#' Run makegeno pipeline.
+#' Make genotype data from VCF.
 #' 
 #' @description This script will read genotype data from the specified VCF 
 #' files, then write that genotype data to an \pkg{R/qtl} genotype CSV file.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_scanone.R
 \name{run_scanone}
 \alias{run_scanone}
-\title{Run scanone pipeline.}
+\title{Do single QTL scan.}
 \usage{
 run_scanone(infile, outfile, chr = NA, pheno = NA, model = c("normal",
   "binary", "2part", "np"), method = c("em", "imp", "hk", "ehk", "mr",

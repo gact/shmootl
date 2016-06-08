@@ -1,7 +1,7 @@
 # Start of run_scanone.R #######################################################
 
 # run_scanone ------------------------------------------------------------------
-#' Run scanone pipeline.
+#' Do single QTL scan.
 #' 
 #' @description This script will read cross data from the specified input file, 
 #' run a single QTL analysis using \pkg{R/qtl} \code{scanone}, and write the

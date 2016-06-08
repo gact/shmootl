@@ -1,7 +1,7 @@
 # Start of run_estimap.R #######################################################
 
 # run_estimap ------------------------------------------------------------------
-#' Run estimap pipeline.
+#' Estimate map from cross/geno data.
 #' 
 #' @description This script reads an R/qtl cross or genotype file, and outputs a
 #' map estimated from the input genotype data. Note that a genetic map cannot be

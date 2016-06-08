@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_estimap.R
 \name{run_estimap}
 \alias{run_estimap}
-\title{Run estimap pipeline.}
+\title{Estimate map from cross/geno data.}
 \usage{
 run_estimap(infile, mapfile, n.cluster = 1L, error.prob = 1e-04,
   map.function = c("haldane", "kosambi", "c-f", "morgan"))

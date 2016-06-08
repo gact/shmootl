@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_makecross.R
 \name{run_makecross}
 \alias{run_makecross}
-\title{Run makecross pipeline.}
+\title{Make cross from geno and pheno data.}
 \usage{
 run_makecross(genfile, phefile, crossfile)
 }
