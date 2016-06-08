@@ -372,7 +372,7 @@ sniffCSV <- function(infile) {
     x <- read.csv(infile, header=FALSE, nrows=4, check.names=FALSE,
         quote='', stringsAsFactors=FALSE, strip.white=TRUE)
     
-    x <- bstripBlankRows( rstripBlankCols(x) )
+    x <- rstripBlankCols(x)
     
     pheno.cols <- which(x[2, ] == '')
     
