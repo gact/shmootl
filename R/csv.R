@@ -13,6 +13,160 @@
 #' @name CSV Utilities
 NULL
 
+# getMetadataCSV -------------------------------------------------------------
+#' Get parameters of \pkg{R/qtl} input data.
+#' 
+#' @description Given a data frame as loaded from an \pkg{R/qtl} input CSV file,
+#' this function determines the parameters of that data (e.g. phenotype columns).
+#' 
+#' @details The returned list includes information on the following parameters:
+#' 
+#' \itemize{
+#'  \item{\code{pheno.cols}}{Indices of phenotype columns, or NA if none found.}
+#'  \item{\code{id.col}}{Index of ID column, or NA if not found.}
+#'  \item{\code{geno.cols}}{Indices of genotype columns, or NA if none found.}
+#'  \item{\code{dat.rows}}{Row indices of data.}
+#'  \item{\code{map.present}}{TRUE if the data contains a map; FALSE otherwise.}
+#'  \item{\code{class}}{Expected class of the input data.}
+#' }
+#' 
+#' This information can then guide further processing of the input data.
+#' 
+#' @param x An \pkg{R/qtl} input data frame as read from a CSV file.
+#'
+#' @return A list containing parameters of \pkg{R/qtl} input data.
+#' 
+#' @keywords internal
+#' @rdname getMetadataCSV
+getMetadataCSV <- function(x) {
+    
+    stopifnot( is.data.frame(x) )
+    
+    if ( nrow(x) < 2 ) {
+        stop("data not found")
+    }
+    
+    if ( anyNA(x[1:2, ]) ) {
+        stop("invalid headings found")
+    }
+    
+    # Get logical vector indicating which columns are blank
+    # in the first row after the initial heading row.
+    seq.blanks <- ! is.na(x[2, ]) & x[2, ] == ''
+    
+    # If third row present, get indices of columns with blanks
+    # (where the optional genetic map data is placed)..
+    if ( nrow(x) >= 3 ) {
+        map.blanks <- ! is.na(x[3, ]) & x[3, ] == ''
+    } else { # ..otherwise assume no map data.
+        map.blanks <- rep.int(FALSE, ncol(x))
+    }
+    
+    # Verify genetic map correctly formatted, if present.
+    if ( any(map.blanks) && ( length(map.blanks) != length(seq.blanks) ||
+        any(map.blanks != seq.blanks) ) ) {
+        stop("map data row is invalid")
+    }
+    
+    # Set phenotype columns from those with blank sequence row.
+    # This includes the ID column for now.
+    pheno.cols <- which(seq.blanks)
+    
+    # Get index of 'id' columns.
+    id.col <- which(tolower(x[1, ]) == 'id')
+    
+    if ( length(id.col) > 1 ) {
+        stop("multiple ID columns found")
+    }
+    
+    # If there are phenotype columns, this is either cross or geno data..
+    if ( length(pheno.cols) > 0 ) {
+        
+        if ( pheno.cols[1] != 1 || any(diff(pheno.cols) != 1) ) {
+            stop("sequence data row is invalid")
+        } 
+        
+        if ( length(id.col) > 0 ) {
+            pheno.cols <- pheno.cols[-id.col]
+        }
+        
+        geno.cols <- which( ! seq.blanks )
+        
+        if ( length(geno.cols) == 0 ) {
+            stop("genotype data not found")
+        }
+        
+        map.present <- any(map.blanks)
+        head.rows <- if (map.present) {1:3} else {1:2}
+        
+        if ( length(pheno.cols) == 0 ) {
+            
+            if ( length(id.col) == 0 ) {
+                stop("ID column not found")
+            }
+            
+            data.class <- 'geno'
+            
+        } else {
+            
+            data.class <- 'cross'
+        }
+        
+    } else { # ..otherwise it's either map or pheno data.
+        
+        if ( length(id.col) == 0 ) {
+            stop("ID column not found")
+        }
+        
+        geno.cols <- NA
+        head.rows <- 1
+        
+        seq.col <- which( x[1, ] == 'chr' )
+        pos.col <- which(grepl(const$pattern$poscol, x[1, ], ignore.case=TRUE))
+        
+        if ( length(seq.col) == 1 && length(pos.col) == 1 &&
+             id.col == 1 && seq.col == 2 && pos.col == 3 ) {
+            
+            data.class <- 'map'
+            map.present <- TRUE
+            
+        } else {
+            
+            data.class <- 'pheno'
+            map.present <- FALSE
+            pheno.cols <- getColIndices(x) # every column is a pheno column
+        }
+    }
+    
+    first.data.row <- length(head.rows) + 1
+    last.data.row <- nrow(x)
+    
+    if ( last.data.row < first.data.row ) {
+        stop("data not found")
+    }
+    
+    dat.rows <- first.data.row : last.data.row
+    
+    if ( length(pheno.cols) == 0 ) {
+        pheno.cols <- NA
+    }
+    
+    if ( length(id.col) == 0 ) {
+        id.col <- NA
+    }
+    
+    params <- list(
+        pheno.cols  = pheno.cols,
+        id.col      = id.col,
+        geno.cols   = geno.cols,
+        dat.rows    = dat.rows,
+        map.present = map.present,
+        class       = data.class
+    )
+    
+    return(params)
+}
+
 # hasMapCSV --------------------------------------------------------------------
 #' Test if CSV file contains map data.
 #' 
@@ -29,50 +183,17 @@ hasMapCSV <- function(infile) {
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     
-    # Assume file does not contain map data.
-    status <- FALSE
-    
     x <- read.csv(infile, header=FALSE, nrows=4, check.names=FALSE,
         quote='', stringsAsFactors=FALSE, strip.white=TRUE)
     
     x <- rstripBlankCols(x)
     
-    pheno.cols <- which(x[2, ] == '')
+    status <- FALSE
     
-    id.col <- which( tolower(x[1, ]) == 'id' )
-    
-    if ( length(id.col) > 1 ) {
-        return(FALSE)
-    }
-    
-    # If cross/geno file, check if third row appears to contain map data..
-    if ( length(pheno.cols) > 0 ) {
-        
-        if ( pheno.cols[1] != 1 || any(diff(pheno.cols) != 1) ) {
-            return(FALSE)
-        } 
-        
-        map.blanks <- which( x[3, ] == '' )
-        
-        if ( length(map.blanks) == length(pheno.cols) &&
-             all(map.blanks == pheno.cols) ) {
-            status <- TRUE
-        }
-        
-    } else { # ..otherwise, check if file appears to contain map.
-        
-        if ( length(id.col) == 0 ) {
-            return(FALSE)
-        }
-        
-        seq.col <- which( x[1, ] == 'chr' )
-        pos.col <- which(grepl(const$pattern$poscol, x[1, ], ignore.case=TRUE))
-        
-        if ( length(seq.col) == 1 && length(pos.col) == 1 &&
-             id.col == 1 && seq.col == 2 && pos.col == 3 ) {
-            status <- TRUE
-        }
-    }
+    tryCatch({
+        params <- getMetadataCSV(x)
+        status <- params$map.present
+    }, error=function(e) {})
     
     return(status)
 }
@@ -437,51 +558,19 @@ sniffCSV <- function(infile) {
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     
-    guess <- NULL
-    
     x <- read.csv(infile, header=FALSE, nrows=4, check.names=FALSE,
         quote='', stringsAsFactors=FALSE, strip.white=TRUE)
     
     x <- rstripBlankCols(x)
     
-    pheno.cols <- which(x[2, ] == '')
+    data.class <- NULL
     
-    id.col <- which( tolower(x[1, ]) == 'id' )
+    tryCatch({
+        params <- getMetadataCSV(x)
+        data.class <- params$class
+    }, error=function(e) {})
     
-    if ( length(id.col) > 1 ) {
-        return(NULL)
-    }
-    
-    if ( length(pheno.cols) > 0 ) {
-        
-        if ( pheno.cols[1] != 1 || any(diff(pheno.cols) != 1) ) {
-            return(NULL)
-        } 
-        
-        if ( length(pheno.cols) == 1 && length(id.col) == 1 ) {
-            guess <- 'geno'
-        } else {
-            guess <- 'cross'
-        }
-        
-    } else {
-        
-        if ( length(id.col) == 0 ) {
-            return(NULL)
-        }
-        
-        seq.col <- which( x[1, ] == 'chr' )
-        pos.col <- which(grepl(const$pattern$poscol, x[1, ], ignore.case=TRUE))
-        
-        if ( length(seq.col) == 1 && length(pos.col) == 1 &&
-             id.col == 1 && seq.col == 2 && pos.col == 3 ) {
-            guess <- 'map'
-        } else {
-            guess <- 'pheno'
-        }
-    }
-    
-    return(guess)
+    return(data.class)
 }
 
 # writeCrossCSV ----------------------------------------------------------------
