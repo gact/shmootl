@@ -255,7 +255,11 @@ with(const, {
     # R/argparser settings -----------------------------------------------------
     
     # Special arguments.
-    special.params <- c('help', 'opts')
+    special.params <- c(
+        'help', # help option
+        'opts', # options file
+        ''      # argument spacer option
+    )
     
     # Parameter groups.
     param.groups <- c('positional', 'optional', 'flags')
