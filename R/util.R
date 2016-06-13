@@ -1137,6 +1137,39 @@ loadChrInfo <- function() {
     return(chrinfo)
 }
 
+# loadListFromLine -------------------------------------------------------------
+#' Load a list from a line of text.
+#' 
+#' The input line is loaded as a YAML flow-style list.
+#' 
+#' @param line Character vector of length one, containing the line to be loaded.
+#' 
+#' @return List or vector of loaded data.
+#' 
+#' @importFrom yaml yaml.load
+#' @keywords internal
+#' @rdname loadListFromLine
+loadListFromLine <- function(line) {
+    
+    stopifnot( isSingleString(line) )
+    
+    first.char <- substr(line, 1, 1)
+    last.char <- substr(line, nchar(line), nchar(line))
+    enclosed <- first.char == '[' && first.char == ']'
+    
+    if ( ! enclosed ) {
+        line <- paste0('[', line, ']', collapse='')
+    }
+    
+    x <- yaml::yaml.load(line)
+    
+    if ( ! is.vector(x) || hasNames(x) ) {
+        stop("failed to load list from line - '", toString(line), "'")
+    }
+    
+    return(x)
+}
+
 # loadSeqInfo ------------------------------------------------------------------
 #' Load genome sequence info.
 #' 
@@ -1652,28 +1685,6 @@ stopif <- function(expression) {
     }
     
     return( invisible() )
-}
-
-# splitCSL ---------------------------------------------------------------------
-#' Split a comma-separated list.
-#' 
-#' @param x Character vector of length one, containing items as a 
-#' comma-separated list (CSL).
-#' 
-#' @return Character vector with each element containing one item of the input 
-#' CSL.
-#' 
-#' @keywords internal
-#' @rdname splitCSL
-splitCSL <- function(x) {
-    
-    stopifnot( isSingleString(x) )
-    
-    if ( x != '' ) {
-        x <- strsplit(x, ',')[[1]]
-    }
-    
-    return(x)
 }
 
 # stripWhite -------------------------------------------------------------------

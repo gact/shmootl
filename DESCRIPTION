@@ -22,7 +22,8 @@ Imports:
     parallel,
     qtl,
     rhdf5,
-    VariantAnnotation
+    VariantAnnotation,
+    yaml
 RoxygenNote: 5.0.1
 Collate:
     'CrossInfo-class.R'

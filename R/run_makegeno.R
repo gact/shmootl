@@ -18,8 +18,8 @@ run_makegeno <- function(samples, genfile, founders=NA, alleles=NA, digits=NA) {
     
     stopifnot( isSingleString(genfile) )
     
+    alleles <- if ( ! is.na(alleles) ) { as.character(loadListFromLine(alleles)) } else { NULL }
     digits <- if ( ! is.na(digits) ) { strtoi(digits) } else { NULL }
-    alleles <- if ( ! is.na(alleles) ) { alleles } else { NULL }
     
     sample.ids <- getSamplesVCF(samples)
     

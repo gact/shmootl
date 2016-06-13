@@ -38,8 +38,8 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     method <- match.arg(method)
     map.function <- match.arg(map.function)
     
-    chr <- if ( ! is.na(chr) ) { splitCSL(chr) } else { NULL }
-    pheno <- if ( ! is.na(pheno) ) { splitCSL(pheno) } else { NULL }
+    chr <- if ( ! is.na(chr) ) { as.character(loadListFromLine(chr)) } else { NULL }
+    pheno <- if ( ! is.na(pheno) ) { as.character(loadListFromLine(pheno)) } else { NULL }
 
     # Get parameter alpha as a percentage.
     pct.alpha <- paste0(alpha * 100, '%')
