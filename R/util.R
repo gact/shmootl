@@ -164,6 +164,7 @@ deleteColumn <- function(x, col.index=NULL, col.name=NULL) {
 #'     
 #' @return Method suited to the specified class.
 #' 
+#' @importFrom utils lsf.str
 #' @keywords internal
 #' @rdname dispatchFromClassS3
 dispatchFromClassS3 <- function(generic, class.vector, package) {
@@ -175,7 +176,7 @@ dispatchFromClassS3 <- function(generic, class.vector, package) {
     
     pkg <- paste0('package:', package)
     pattern <- paste0('^', generic, '[.]([^[:space:]]+)')
-    x <- lsf.str(pkg, pattern=pattern)
+    x <- utils::lsf.str(pkg, pattern=pattern)
     
     m <- regexec(pattern, x)
     matches <- regmatches(x, m)
@@ -224,6 +225,7 @@ dispatchFromClassS3 <- function(generic, class.vector, package) {
 #'     
 #' @return Coercion function.
 #' 
+#' @importFrom utils as.roman
 #' @keywords internal
 #' @rdname getCoercionFromClassS3
 getCoercionFromClassS3 <- function(class.vector) {
@@ -239,7 +241,7 @@ getCoercionFromClassS3 <- function(class.vector) {
         logical=as.logical,
         numeric=as.numeric,
         raw=as.raw,
-        roman=as.roman
+        roman=utils::as.roman
     )
     
     coercion <- NULL
@@ -335,7 +337,7 @@ getIndices <- function(x) {
     object.length <- length(x)
     stopifnot( isSingleNonNegativeWholeNumber(object.length) )
     return( if ( object.length > 0 ) { 1:object.length } else { integer() } )
-} 
+}
 
 # getMissingValueFromClassS3 ---------------------------------------------------
 #' Get missing value for the given class.
@@ -528,7 +530,7 @@ hasRownames <- function(x) {
     } 
     
     return(rowname.status) 
-} 
+}
 
 # inferStepSize ----------------------------------------------------------------
 #' Infer step size from step values.
@@ -1119,6 +1121,7 @@ isWholeNumber <- function(n, tol=.Machine$double.eps^0.5) {
 #' 
 #' @return A \code{data.frame} object containing chromosome info.
 #' 
+#' @importFrom utils read.csv
 #' @keywords internal
 #' @rdname loadChrInfo
 loadChrInfo <- function() {
@@ -1128,7 +1131,7 @@ loadChrInfo <- function() {
     column.classes <- c(seqids='character', seqnames='character', aliases='character', 
         isCircular='logical', genome='character')
     
-    chrinfo <- read.csv(filepath, quote='', stringsAsFactors=FALSE, 
+    chrinfo <- utils::read.csv(filepath, quote='', stringsAsFactors=FALSE,
         strip.white=TRUE, na.strings='', colClasses=column.classes)
     
     return(chrinfo)
@@ -1143,6 +1146,7 @@ loadChrInfo <- function() {
 #' @return A \code{list} of \code{data.frame} objects, each element named for a
 #' given genome and containing sequence info for that genome.
 #' 
+#' @importFrom utils read.csv
 #' @keywords internal
 #' @rdname loadSeqInfo
 loadSeqInfo <- function() {
@@ -1162,7 +1166,7 @@ loadSeqInfo <- function() {
         
         filepath <- file.path(genome.root, genome, 'seqinfo.csv')
         
-        seqinfo[[genome]] <- read.csv(filepath, quote='', 
+        seqinfo[[genome]] <- utils::read.csv(filepath, quote='',
             stringsAsFactors=FALSE, strip.white=TRUE, na.strings='', 
             colClasses=column.classes)
     }
@@ -1655,7 +1659,7 @@ stopif <- function(expression) {
 #' 
 #' @param x Character vector of length one, containing items as a 
 #' comma-separated list (CSL).
-#'     
+#' 
 #' @return Character vector with each element containing one item of the input 
 #' CSL.
 #' 

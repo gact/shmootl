@@ -648,6 +648,7 @@ inferTimeStep <- function(cross, allow.gaps=TRUE, tol=1e-5) {
 #'  
 #' @export
 #' @family cross utilities
+#' @importFrom stats approx
 #' @rdname interpTimeSeries
 interpTimeSeries <- function(cross, tol=1e-5) {
     
@@ -709,7 +710,7 @@ interpTimeSeries <- function(cross, tol=1e-5) {
             y <- time.series[x]
             
             # Interpolate phenotype values for this blank region.
-            interpolation <- approx(x, y, blank.indices, 'linear')
+            interpolation <- stats::approx(x, y, blank.indices, 'linear')
             
             # Set blank values from interpolation results.
             time.series[blank.indices] <- interpolation$y

@@ -10,6 +10,7 @@
 #' 
 #' @return A \code{data.frame} corresponding to the input \code{pheno} object.
 #' 
+#' @importFrom utils type.convert
 #' @keywords internal
 #' @method as.data.frame pheno
 #' @rdname as.data.frame.pheno
@@ -103,7 +104,7 @@ as.pheno.data.frame <- function(from) {
     
     # Get phenotype data.
     cross.pheno <- do.call(cbind.data.frame,
-        lapply(from[dat.rows, ], type.convert))
+        lapply(from[dat.rows, ], utils::type.convert))
     
     # Create CrossInfo object.
     cross.info <- methods::new('CrossInfo')
@@ -125,6 +126,7 @@ as.pheno.data.frame <- function(from) {
 #' 
 #' @return A placeholder \code{pheno} object with the given samples.
 #' 
+#' @importFrom stats runif
 #' @keywords internal
 #' @rdname makePlaceholderPheno
 makePlaceholderPheno <- function(samples) {
@@ -154,7 +156,7 @@ makePlaceholderPheno <- function(samples) {
     phenotypes <- 'PLACEHOLDER'
     
     # Generate random phenotype values.
-    placeholder.values <- lapply(phenotypes, function(p) runif(num.samples))
+    placeholder.values <- lapply(phenotypes, function(p) stats::runif(num.samples))
     names(placeholder.values) <- phenotypes
     
     # Append sample IDs, if specified.

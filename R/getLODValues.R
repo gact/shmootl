@@ -14,6 +14,7 @@
 #' given position.
 #' 
 #' @export
+#' @importFrom stats approx
 #' @rdname getLODValues
 getLODValues <- function(x, loc, lodcolumn=NULL) {
     
@@ -67,7 +68,7 @@ getLODValues <- function(x, loc, lodcolumn=NULL) {
             if ( anyNA(y) ) {
                 lod.values[i] <- NA
             } else {
-                interpolation <- approx(x, y, loc$pos, 'linear')
+                interpolation <- stats::approx(x, y, loc$pos, 'linear')
                 lod.values[i] <- interpolation$y
             }
         }

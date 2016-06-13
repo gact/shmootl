@@ -176,6 +176,7 @@ getMetadataCSV <- function(x) {
 #' FALSE otherwise.
 #'
 #' @export
+#' @importFrom utils read.csv
 #' @keywords internal
 #' @rdname hasMapCSV
 hasMapCSV <- function(infile) {
@@ -183,8 +184,8 @@ hasMapCSV <- function(infile) {
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     
-    x <- read.csv(infile, header=FALSE, nrows=4, check.names=FALSE,
-        quote='', stringsAsFactors=FALSE, strip.white=TRUE)
+    x <- utils::read.csv(infile, header=FALSE, nrows=4, check.names=FALSE, quote='',
+        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
     
     x <- rstripBlankCols(x)
     
@@ -216,6 +217,8 @@ hasMapCSV <- function(infile) {
 #' @export
 #' @family csv utilities
 #' @importFrom methods new
+#' @importFrom utils read.csv
+#' @importFrom utils write.table
 #' @rdname readCrossCSV
 readCrossCSV <- function(infile, error.prob=0.0001,
     map.function=c('haldane', 'kosambi', 'c-f', 'morgan'),
@@ -232,7 +235,7 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     map.function <- match.arg(map.function)
     
     # Read cross input data as CSV file.
-    cross.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='', 
+    cross.table <- utils::read.csv(infile, header=FALSE, check.names=FALSE, quote='',
         stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
     
     # Trim any blank rows/columns from the bottom/right, respectively.
@@ -384,7 +387,7 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     
     # Create temp file for adjusted cross data.
     temp.file <- tempfile(fileext='csv')
-    write.table(cross.table, file=temp.file, na='', sep=',', 
+    utils::write.table(cross.table, file=temp.file, na='', sep=',',
         quote=FALSE, row.names=FALSE, col.names=FALSE)
     
     # Read adjusted cross data.
@@ -417,13 +420,14 @@ readCrossCSV <- function(infile, error.prob=0.0001,
 #' 
 #' @export
 #' @family csv utilities
+#' @importFrom utils read.csv
 #' @rdname readGenoCSV
 readGenoCSV <- function(infile, require.mapunit=TRUE) {
     
     stopifnot( isSingleString(infile) )
     
     # Read genotype input data as CSV file.
-    geno.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='',
+    geno.table <- utils::read.csv(infile, header=FALSE, check.names=FALSE, quote='',
         stringsAsFactors=FALSE, strip.white=TRUE, colClasses='character',
         na.strings=const$missing.value)
     
@@ -478,6 +482,7 @@ readMapCSV <- function(infile, require.mapunit=TRUE) {
 #' 
 #' @export
 #' @family csv utilities
+#' @importFrom utils read.csv
 #' @rdname readMapframeCSV
 readMapframeCSV <- function(infile, require.mapunit=TRUE) {
     
@@ -485,7 +490,7 @@ readMapframeCSV <- function(infile, require.mapunit=TRUE) {
     stopifnot( file.exists(infile) )
     
     # Read mapframe from CSV file.
-    x <- read.csv(infile, check.names=FALSE, quote='', strip.white=TRUE,
+    x <- utils::read.csv(infile, check.names=FALSE, quote='', strip.white=TRUE,
         comment.char='', stringsAsFactors=FALSE, colClasses='character',
         na.strings='')
     
@@ -516,13 +521,14 @@ readMapframeCSV <- function(infile, require.mapunit=TRUE) {
 #'
 #' @export
 #' @family csv utilities
+#' @importFrom utils read.csv
 #' @rdname readPhenoCSV
 readPhenoCSV <- function(infile) {
     
     stopifnot( isSingleString(infile) )
     
     # Read phenotype input data as CSV file.
-    pheno.table <- read.csv(infile, header=FALSE, check.names=FALSE, quote='',
+    pheno.table <- utils::read.csv(infile, header=FALSE, check.names=FALSE, quote='',
         stringsAsFactors=FALSE, strip.white=TRUE, colClasses='character',
         na.strings=const$missing.value)
     
@@ -551,6 +557,7 @@ readPhenoCSV <- function(infile) {
 #' \code{NULL} if the data could not be identified.
 #'
 #' @export
+#' @importFrom utils read.csv
 #' @keywords internal
 #' @rdname sniffCSV
 sniffCSV <- function(infile) {
@@ -558,8 +565,8 @@ sniffCSV <- function(infile) {
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     
-    x <- read.csv(infile, header=FALSE, nrows=4, check.names=FALSE,
-        quote='', stringsAsFactors=FALSE, strip.white=TRUE)
+    x <- utils::read.csv(infile, header=FALSE, nrows=4, check.names=FALSE, quote='',
+        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
     
     x <- rstripBlankCols(x)
     
@@ -591,6 +598,7 @@ sniffCSV <- function(infile) {
 #'  
 #' @export
 #' @family csv utilities
+#' @importFrom utils write.table
 #' @rdname writeCrossCSV
 writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL, 
     include.mapunit=TRUE) {
@@ -703,7 +711,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     } 
     
     # Write cross data to file.
-    write.table(output.table, file=outfile, na=const$missing.value, sep=',',
+    utils::write.table(output.table, file=outfile, na=const$missing.value, sep=',',
         quote=FALSE, row.names=FALSE, col.names=FALSE)
     
     return( invisible() )
@@ -723,6 +731,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
 #'  
 #' @export
 #' @family csv utilities
+#' @importFrom utils write.table
 #' @rdname writeGenoCSV
 writeGenoCSV <- function(geno, outfile, chr=NULL, digits=NULL, 
     include.mapunit=TRUE) {
@@ -739,7 +748,7 @@ writeGenoCSV <- function(geno, outfile, chr=NULL, digits=NULL,
     }
     
     # Write cross geno data to CSV file.
-    write.table(geno.table, file=outfile, na=const$missing.value, sep=',',
+    utils::write.table(geno.table, file=outfile, na=const$missing.value, sep=',',
         quote=FALSE, row.names=FALSE, col.names=FALSE)
     
     return( invisible() )
@@ -770,6 +779,7 @@ writeMapCSV <- function(map, outfile, include.mapunit=TRUE) {
 #'  
 #' @export
 #' @family csv utilities
+#' @importFrom utils write.csv
 #' @rdname writeMapframeCSV
 writeMapframeCSV <- function(x, outfile, include.mapunit=TRUE) {
     
@@ -791,7 +801,7 @@ writeMapframeCSV <- function(x, outfile, include.mapunit=TRUE) {
     }
     
     # Write mapframe to CSV file.
-    write.csv(x, file=outfile, quote=FALSE, row.names=FALSE)
+    utils::write.csv(x, file=outfile, quote=FALSE, row.names=FALSE)
     
     return( invisible() )
 }
@@ -806,6 +816,7 @@ writeMapframeCSV <- function(x, outfile, include.mapunit=TRUE) {
 #'  
 #' @export
 #' @family csv utilities
+#' @importFrom utils write.table
 #' @rdname writePhenoCSV
 writePhenoCSV <- function(pheno, outfile, digits=NULL) {
     
@@ -815,7 +826,7 @@ writePhenoCSV <- function(pheno, outfile, digits=NULL) {
     pheno.table <- as.data.frame(pheno, digits=digits)
     
     # Write cross pheno data to CSV file.
-    write.table(pheno.table, file=outfile, na=const$missing.value, sep=',',
+    utils::write.table(pheno.table, file=outfile, na=const$missing.value, sep=',',
         quote=FALSE, row.names=FALSE, col.names=FALSE)
     
     return( invisible() )
