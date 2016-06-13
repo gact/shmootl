@@ -1170,6 +1170,39 @@ loadListFromLine <- function(line) {
     return(x)
 }
 
+# loadMappingFromLine ----------------------------------------------------------
+#' Load a mapping from a line of text.
+#' 
+#' The input line is loaded as a YAML flow-style mapping.
+#' 
+#' @param line Character vector of length one, containing the line to be loaded.
+#' 
+#' @return Named list or vector of loaded data.
+#' 
+#' @importFrom yaml yaml.load
+#' @keywords internal
+#' @rdname loadMappingFromLine
+loadMappingFromLine <- function(line) {
+    
+    stopifnot( isSingleString(line) )
+    
+    first.char <- substr(line, 1, 1)
+    last.char <- substr(line, nchar(line), nchar(line))
+    enclosed <- first.char == '{' && first.char == '}'
+    
+    if ( ! enclosed ) {
+        line <- paste0('{', line, '}', collapse='')
+    }
+    
+    x <- yaml::yaml.load(line)
+    
+    if ( ! ( is.list(x) && ( hasNames(x) || 'keys' %in% names(attributes(x)) ) ) ) {
+        stop("failed to load mapping from line - '", toString(line), "'")
+    }
+    
+    return(x)
+}
+
 # loadSeqInfo ------------------------------------------------------------------
 #' Load genome sequence info.
 #' 
