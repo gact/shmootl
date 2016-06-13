@@ -212,7 +212,8 @@ getPipelineInfo <- function(pipeline) {
     }
     
     # Get pipeline function title.
-    title <- as.character(rd.content[[title.index]])
+    title <- paste0(lapply(rd.content[[title.index]],
+        as.character), collapse='')
     
     # Get description index.
     desc.index <- which( rd.tags == '\\description' )
