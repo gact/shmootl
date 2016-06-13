@@ -1734,4 +1734,32 @@ stripWhite <- function(x) {
     return( gsub( "^[[:space:]]+|[[:space:]]+$", "", x) )
 }
 
+# validateGenotypeSet ----------------------------------------------------------
+#' Validate a set of genotypes.
+#' 
+#' @param x Vector of genotypes.
+#' @param strict Require complete genotypes.
+#' 
+#' @keywords internal
+#' @rdname validateGenotypeSet
+validateGenotypeSet <- function(x, strict=FALSE) {
+    
+    # Decompose genotype symbols into different types.
+    founder.symbols <- x[ isFounderGenotype(x, strict=strict) ]
+    enum.symbols <- x[ isEnumGenotype(x) ]
+    invalid.values <- x[ ! ( isValidGenotype(x, strict=strict) | is.na(x) ) ]
+    
+    # Check for invalid values.
+    if ( length(invalid.values) > 0 ) {
+        stop("invalid genotype symbols - '", toString(invalid.values), "'")
+    }
+    
+    # Check that symbols are either founder or enumerated genotypes.
+    if ( ! xor(length(founder.symbols) > 0, length(enum.symbols) > 0) ) {
+        stop("genotypes must be of enumerated or founder type, but not both")
+    }
+    
+    return( invisible() )
+}
+
 # End of util.R ################################################################

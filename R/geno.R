@@ -170,33 +170,15 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     colnames(geno.matrix) <- from[1, -id.col]
     
     # Get set of symbols in genotype matrix.
-    symbols <- unique( as.character( unlist(geno.matrix) ) )
+    genotypes <- unique( as.character( unlist(geno.matrix) ) )
+    genotypes <- genotypes[ ! is.na(genotypes) ]
     
     # Check for blank genotypes.
-    if ( '' %in% symbols ) {
+    if ( '' %in% genotypes ) {
         stop("blank genotype values found")
     }
     
-    # Decompose symbols into different types.
-    founder.symbols <- symbols[ isFounderGenotype(symbols) ]
-    enum.symbols <- symbols[ isEnumGenotype(symbols) ]
-    invalid.values <- symbols[ ! ( isValidGenotype(symbols) | is.na(symbols) ) ]
-    
-    # Check for invalid values.
-    if ( length(invalid.values) > 0 ) {
-        stop("invalid genotype symbols - '", toString(invalid.values), "'")
-    }
-    
-    # Get genotype symbols.
-    if ( length(founder.symbols) > 0 && length(enum.symbols) > 0 ) {
-        stop("cross geno contains both enumerated and founder genotypes")
-    } else if ( length(founder.symbols) > 0 ) {
-        genotypes <- founder.symbols
-    } else if ( length(enum.symbols) > 0 ) {
-        genotypes <- enum.symbols
-    } else {
-        stop("cross geno has no genotype data")
-    }
+    validateGenotypeSet(genotypes)
     
     # Verify that genotypes are haploid.
     # TODO: handle other ploidies.
