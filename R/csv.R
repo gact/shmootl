@@ -547,6 +547,89 @@ readPhenoCSV <- function(infile) {
     return( as.pheno(pheno.table) )
 }
 
+# recodeCSV --------------------------------------------------------------------
+#' Recode \pkg{R/qtl} data in CSV file.
+#' 
+#' @param infile Input CSV file path.
+#' @param outfile Output CSV file path.
+#' @param geno Named vector of genotype symbols, with vector names containing
+#' existing genotype symbols, and vector elements containing their replacement
+#' values.
+#'
+#' @importFrom utils read.csv
+#' @importFrom utils write.table
+#' @keywords internal
+#' @rdname recodeCSV
+recodeCSV <- function(infile, outfile, geno=NULL) {
+    
+    stopifnot( isSingleString(infile) )
+    stopifnot( file.exists(infile) )
+    stopifnot( isSingleString(outfile) )
+    
+    # At least one recoding parameter must be specified.
+    if ( is.null(geno) ) {
+        stop("cannot recode - no recoding specified")
+    }
+    
+    # Read input CSV file.
+    x <- utils::read.csv(infile, header=FALSE, check.names=FALSE, quote='', 
+        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
+    
+    # Trim any blank rows/columns from the bottom/right, respectively.
+    x <- bstripBlankRows( rstripBlankCols(x) )
+    
+    params <- getMetadataCSV(x)
+    
+    if ( ! is.null(geno) ) {
+        
+        stopifnot( is.character(geno) )
+        stopifnot( hasNames(geno) )
+        
+        src.geno <- names(geno)
+        dest.geno <- unname(geno)
+        
+        if ( length(params$geno.cols) == 0 ) {
+            stop("cannot recode - no genotype data")
+        }
+        
+        if ( anyNA(src.geno) || anyNA(dest.geno) ) {
+            stop("cannot recode - incomplete genotype recoding")
+        }
+        
+        if ( anyDuplicated(src.geno) || anyDuplicated(dest.geno) ) {
+            stop("cannot recode - ambiguous genotype recoding")
+        }
+        
+        # Existing genotypes can be any string,
+        # but replacements must be valid genotypes.
+        validateGenotypeSet(dest.geno)
+        
+        # Get genotype data.
+        geno.data <- x[params$dat.rows, params$geno.cols]
+        
+        # Get set of symbols in genotype data.
+        curr.geno <- unique( as.character( unlist(geno.data) ) )
+        curr.geno <- curr.geno[ ! is.na(curr.geno) ]
+        
+        err.geno <- curr.geno[ ! curr.geno %in% src.geno ]
+        if ( length(err.geno) > 0 ) {
+            stop("no recoding defined for genotype symbols - '", toString(err.geno), "'")
+        }
+        
+        # Recode genotypes.
+        for ( i in getIndices(geno) ) {
+            geno.data[ geno.data == src.geno[i] ] <- dest.geno[i]
+        }
+        
+        # Replace genotype data.
+        x[params$dat.rows, params$geno.cols] <- geno.data
+    } 
+    
+    # Write recoded data to file.
+    utils::write.table(x, file=outfile, na=const$missing.value, sep=',',
+        quote=FALSE, row.names=FALSE, col.names=FALSE)
+}
+
 # sniffCSV ---------------------------------------------------------------------
 #' Identify type of \pkg{R/qtl} data in CSV file.
 #' 
