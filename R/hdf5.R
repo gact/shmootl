@@ -119,6 +119,8 @@ h5writeAttributes <- function(x, h5obj) {
 #' @rdname joinH5ObjectNameParts
 joinH5ObjectNameParts <- function(components) {
     
+    components <- unlist( lapply(components, splitH5ObjectName) )
+    
     if ( ! all( isValidID(components) ) ) {
         stop("invalid H5Object component names - '", toString(components), "'")
     }
