@@ -496,6 +496,42 @@ getSpecialAttributeNames <- function(x) {
     return( union(class.specials, default.specials) )
 }
 
+# getThresholdAlpha ------------------------------------------------------------
+#' Get alpha of LOD threshold.
+#' 
+#' @param threshold Numeric vector whose only element is a LOD threshold value,
+#' and whose name is the corresponding alpha value expressed as a percentage.
+#' 
+#' @return Numeric vector whose only element is the alpha value of the
+#' input LOD threshold, expressed as a real number in the range 0-1.
+#' 
+#' @keywords internal
+#' @rdname getThresholdAlpha
+getThresholdAlpha <- function(threshold) {
+    
+    stopifnot( isSingleNonNegativeNumber(threshold) )
+    
+    pct.alpha <- names(threshold)
+    
+    if ( is.null(pct.alpha) ) {
+        stop("threshold name must be percent alpha")
+    }
+    
+    m <- (regexec(const$pattern$percentage, pct.alpha))
+    
+    if ( length(m[[1]]) == 1 && m[[1]] == -1 ) {
+        stop("threshold name is not percent alpha - '", toString(pct.alpha), "'")
+    }
+    
+    alpha <- as.numeric( (regmatches(pct.alpha, m))[[1]][2] ) / 100
+    
+    if ( ! inRange(alpha, 0:1) ) {
+        stop("invalid threshold alpha - '", toString(alpha), "'")
+    }
+    
+    return(alpha)
+}
+
 # hasNames ---------------------------------------------------------------------
 #' Test if object has names.
 #' 

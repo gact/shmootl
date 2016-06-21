@@ -132,6 +132,9 @@ with(const, {
         # Numeric name.
         numeric.name = 'X([.])?([[:digit:]]+(?:[.][[:digit:]]+)?)',
         
+        # Percentage.
+        percentage = '^([+-]?[[:digit:]](?:[.][[:digit:]]+)?)%$',
+        
         # Package pipeline docs.
         pipe.docs = '^(run_([[:alpha:]][[:alnum:]._]*))[.]Rd$',
         

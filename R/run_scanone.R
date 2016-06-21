@@ -86,6 +86,10 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     # Output results of single QTL analysis for each phenotype.
     for ( i in getIndices(phenotypes) ) {
         
+        # Get threshold for this phenotype.
+        threshold <- thresholds[pct.alpha, i]
+        names(threshold) <- pct.alpha
+        
         # Output scan result for this phenotype.
         pheno.result <- qtl:::subset.scanone(scanone.result, lodcolumn=i)
         writeResultHDF5(pheno.result, outfile, phenotypes[i])
@@ -95,8 +99,8 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
         writeResultHDF5(pheno.perms, outfile, phenotypes[i])
         
         # Get significant QTL intervals.
-        qtl.intervals <- getQTLIntervals(scanone.result, lodcolumn=i, 
-            threshold=thresholds[pct.alpha, i])
+        qtl.intervals <- getQTLIntervals(scanone.result,
+            lodcolumn=i, threshold=threshold)
         
         # Output any significant QTL intervals.
         if ( ! is.null(qtl.intervals) ) {

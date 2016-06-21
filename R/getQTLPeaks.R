@@ -34,8 +34,8 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ..
     
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
-    threshold <- as.numeric(threshold)
     stopifnot( isSingleNonNegativeNumber(threshold) )
+    getThresholdAlpha(threshold) # validate threshold alpha
 
     seqcol.index <- getSeqColIndex(x)
     poscol.index <- getPosColIndex(x)

@@ -44,9 +44,8 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
 
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
-    threshold <- as.numeric(threshold)
     stopifnot( isSingleNonNegativeNumber(threshold) )
-    drop <- as.numeric(drop)
+    getThresholdAlpha(threshold) # validate threshold alpha
     stopifnot( isSingleNonNegativeNumber(drop) )
     stopifnot( isBOOL(expandtomarkers) )
     
