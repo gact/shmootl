@@ -59,4 +59,24 @@ subsetBySeq.map <- function(x, sequences=NULL) {
     return(x)
 }
 
+# subsetBySeq.qtlintervals -----------------------------------------------------
+#' @rdname subsetBySeq
+subsetBySeq.qtlintervals <- function(x, sequences=NULL) {
+    
+    if ( ! is.null(sequences) ) {
+        
+        sequences <- normSeq(sequences)
+        
+        interval.seqs <- sapply(x, function(obj) unique(obj[, 'chr']))
+        
+        for ( i in rev( getIndices(x) ) ) { # NB: must delete in reverse order
+            if ( ! interval.seqs[i] %in% sequences ) {
+                x[i] <- NULL
+            }
+        }
+    }
+    
+    return(x)
+}
+
 # End of subsetBySeq.R #########################################################
