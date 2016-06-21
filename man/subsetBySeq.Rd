@@ -5,6 +5,7 @@
 \alias{subsetBySeq.character}
 \alias{subsetBySeq.data.frame}
 \alias{subsetBySeq.map}
+\alias{subsetBySeq.qtlintervals}
 \title{Subset object by the specified sequences.}
 \usage{
 subsetBySeq(x, sequences = NULL)
@@ -14,6 +15,8 @@ subsetBySeq(x, sequences = NULL)
 \method{subsetBySeq}{data.frame}(x, sequences = NULL)
 
 \method{subsetBySeq}{map}(x, sequences = NULL)
+
+\method{subsetBySeq}{qtlintervals}(x, sequences = NULL)
 }
 \arguments{
 \item{x}{Object subsettable by sequence.}
