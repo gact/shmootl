@@ -18,8 +18,8 @@
 #' for which a QTL peak should be returned. 
 #'   
 #' @return A \code{mapframe} object in which each row indicates the locus of a 
-#' QTL peak, with row names containing respective QTL names. Returns \code{NULL}
-#' if there are no significant QTLs.
+#' QTL peak, with row names containing respective QTL names. Returns an empty
+#' \code{mapframe} if there are no significant QTLs.
 #'   
 #' @export
 #' @rdname getQTLPeaks
@@ -57,9 +57,9 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ..
     chr <- subsetBySeq(map.seqs, chr)
     stopifnot( length(chr) > 0 )
     
-    # Return NULL if no LOD data.
+    # Return empty genetic mapframe if no LOD data.
     if( nrow(x) == 0 || allNA(x[, lodcol.index]) ) {
-        return(NULL)
+        return( gmapframe() )
     }
     
     # Create LOD character mask. Regions with significant LOD values are marked
@@ -80,9 +80,9 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ..
     # indices of the loci in a significant region.
     significant.rows <- getRunIndexList(lod.mask, na.rm=TRUE)
    
-    # Return NULL if no significant regions found.
+    # Return empty genetic mapframe if no significant regions found.
     if ( length(significant.rows) == 0 ) {
-        return(NULL)
+        return( gmapframe() )
     }
     
     # Get row index of peak for each significant 

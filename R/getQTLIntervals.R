@@ -28,7 +28,8 @@
 #' @return An object of class \code{qtlintervals}, which is essentially a list
 #' of \code{mapframe} objects, each containing three rows of information about
 #' the lower QTL interval limit, QTL peak, and upper QTL interval limit, 
-#' respectively. Returns \code{NULL} if there are no significant QTLs.
+#' respectively. Returns an empty \code{qtlintervals} object if there are no
+#' significant QTLs.
 #'  
 #' @export
 #' @rdname getQTLIntervals
@@ -48,6 +49,12 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
     getThresholdAlpha(threshold) # validate threshold alpha
     stopifnot( isSingleNonNegativeNumber(drop) )
     stopifnot( isBOOL(expandtomarkers) )
+    
+    # Init intervals.
+    intervals <- list()
+    class(intervals) <- c('qtlintervals', 'list')
+    attr(intervals, 'threshold') <- threshold
+    attr(intervals, 'drop') <- drop
     
     # Set standard QTL interval indices.
     ci <- c(low=1, peak=2, high=3)
@@ -94,9 +101,9 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
         qtl.peaks <- getQTLPeaks(x, chr=chr, threshold=threshold)
     }
     
-    # Return NULL if there are no significant peaks.
-    if ( is.null(qtl.peaks) ) {
-        return(NULL)
+    # Return empty intervals list if there are no significant peaks.
+    if ( nrow(qtl.peaks) == 0 ) {
+        return(intervals)
     }
 
     # Get row indices of QTL peaks.
@@ -201,9 +208,6 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
             merged.intervals[r, 'high'] <- u
         }
     }    
-
-    # Create list of interval mapframes.
-    intervals <- list()
     
     for ( r in getRowIndices(merged.intervals) ) {
         
@@ -249,11 +253,6 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
 
     # Set QTL interval names.
     names(intervals) <- peak.ids
-    
-    class(intervals) <- c('qtlintervals', 'list')
-    
-    attr(intervals, 'threshold') <- threshold
-    attr(intervals, 'drop') <- drop
     
     return(intervals) 
 }

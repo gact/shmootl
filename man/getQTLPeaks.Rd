@@ -40,8 +40,8 @@ for which a QTL peak should be returned.}
 }
 \value{
 A \code{mapframe} object in which each row indicates the locus of a 
-QTL peak, with row names containing respective QTL names. Returns \code{NULL}
-if there are no significant QTLs.
+QTL peak, with row names containing respective QTL names. Returns an empty
+\code{mapframe} if there are no significant QTLs.
 }
 \description{
 Get QTL peaks.
