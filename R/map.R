@@ -1942,18 +1942,21 @@ pullLocusSeq <- function(x) {
 }
 
 # pullLocusSeq.data.frame ------------------------------------------------------
+#' @method pullLocusSeq data.frame
 #' @rdname pullLocusSeq
 pullLocusSeq.data.frame <- function(x) {
     return( as.character(x[, getSeqColIndex(x)]) )
 }
 
 # pullLocusSeq.list ------------------------------------------------------------
+#' @method pullLocusSeq list
 #' @rdname pullLocusSeq
 pullLocusSeq.list <- function(x) {
     return( pullLocusSeq.map(x) )
 }
 
 # pullLocusSeq.map -------------------------------------------------------------
+#' @method pullLocusSeq map
 #' @rdname pullLocusSeq
 pullLocusSeq.map <- function(x) {
     return( unlist( lapply( getIndices(x), function(i)
@@ -1974,18 +1977,21 @@ pullLocusIDs <- function(x) {
 }
 
 # pullLocusIDs.data.frame ------------------------------------------------------
+#' @method pullLocusIDs data.frame
 #' @rdname pullLocusIDs
 pullLocusIDs.data.frame <- function(x) {
     return( if ( nrow(x) > 0 && hasRownames(x) ) { rownames(x) } else { NULL } )
 }
 
 # pullLocusIDs.list ------------------------------------------------------------
+#' @method pullLocusIDs list
 #' @rdname pullLocusIDs
 pullLocusIDs.list <- function(x) {
     return( pullLocusIDs.map(x) )
 }
   
 # pullLocusIDs.map -------------------------------------------------------------
+#' @method pullLocusIDs map
 #' @rdname pullLocusIDs
 pullLocusIDs.map <- function(x) {
     return( unlist( lapply(x, function(loci) names(loci)), use.names=FALSE ) )
@@ -2005,6 +2011,7 @@ pullLocusPos <- function(x) {
 }
 
 # pullLocusPos.data.frame ------------------------------------------------------
+#' @method pullLocusPos data.frame
 #' @rdname pullLocusPos
 pullLocusPos.data.frame <- function(x) {
     
@@ -2020,18 +2027,21 @@ pullLocusPos.data.frame <- function(x) {
 }
 
 # pullLocusPos.list ------------------------------------------------------------
+#' @method pullLocusPos list
 #' @rdname pullLocusPos
 pullLocusPos.list <- function(x) {
     return( pullLocusPos.map(x) )
 }
 
 # pullLocusPos.map -------------------------------------------------------------
+#' @method pullLocusPos map
 #' @rdname pullLocusPos
 pullLocusPos.map <- function(x) {
     return( unlist( lapply(x, function(loci) unname(loci) ) ) )
 }
 
 # pullLocusPos.mapframe --------------------------------------------------------
+#' @method pullLocusPos mapframe
 #' @rdname pullLocusPos
 pullLocusPos.mapframe <- function(x) {
     return( x[, getPosColIndex(x)] )

@@ -69,9 +69,9 @@ joinSeqLabels <- function(x) {
 
 # normSeq ----------------------------------------------------------------------
 #' Normalise sequence labels.
-#'   
+#'
 #' @param x Vector of sequence labels.
-#'          
+#'
 #' @return Vector of normalised sequence labels.
 #' 
 #' @export
