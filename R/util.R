@@ -149,8 +149,12 @@ deleteColumn <- function(x, col.index=NULL, col.name=NULL) {
         col.index <- which( colnames(x) == col.name )
     } 
     
+    others <- otherattributes(x)
+    
     # Delete column.
     x <- x[, -col.index, drop=FALSE]
+    
+    otherattributes(x) <- others
     
     return(x)
 }
@@ -683,6 +687,8 @@ insertColumn <- function(x, col.index, col.name=NULL, data=NA) {
     
     stopifnot( isWholeNumber( nrow(x) / length(data) ) )
     
+    others <- otherattributes(x)
+    
     # Get column names of input object.
     object.colnames <- colnames(x)
     
@@ -709,6 +715,8 @@ insertColumn <- function(x, col.index, col.name=NULL, data=NA) {
     if ( ! is.null(col.name) && ! is.null(object.colnames) ) {
         colnames(x) <- append(object.colnames, col.name, after=(col.index - 1))
     }
+    
+    otherattributes(x) <- others
     
     return(x)
 }
