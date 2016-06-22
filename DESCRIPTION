@@ -56,6 +56,7 @@ Collate:
     'run_pullmap.R'
     'run_pushmap.R'
     'run_recode.R'
+    'run_report.R'
     'run_scanone.R'
     'scan.R'
     'seq.R'
