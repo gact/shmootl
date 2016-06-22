@@ -186,8 +186,9 @@ plotQTLIntervals.qtlintervals <- function(x, lod.profile, chr=NULL,
     ylim <- c( 0.0, ceiling(max.lod + 0.5) )
     
     # Draw LOD plot.
-    plot(lod.profile, xlim=xlim, ylim=ylim, chr=chr, main=plot.title,
-         ylab='LOD', show.marker.names=FALSE, incl.markers=incl.markers)
+    qtl:::plot.scanone(lod.profile, xlim=xlim, ylim=ylim, chr=chr,
+        main=plot.title, ylab='LOD', show.marker.names=FALSE,
+        incl.markers=incl.markers)
     
     # Get user space parameters.
     usr <- par('usr')
