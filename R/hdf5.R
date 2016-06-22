@@ -279,36 +279,47 @@ makeGroupObjectNames <- function(group.names=NULL, group.size=NULL) {
 #' @keywords internal
 #' @rdname readClassHDF5
 readClassHDF5 <- function(infile, h5name) {
-    attr <- rhdf5::h5readAttributes(infile, h5name)
-    return(attr$class)
+    
+    attrs <- rhdf5::h5readAttributes(infile, h5name)
+    
+    if ( 'R.class' %in% names(attrs) ) {
+        cls <- attrs[['R.class']]
+    } else {
+        cls <- attrs[['class']]
+    }
+    
+    return(cls)
 }
 
 # readDatasetHDF5 --------------------------------------------------------------
 #' Read HDF5 dataset.
 #'    
-#' The named HDF5 dataset is read from the specified HDF5 file using the method 
-#' for the dataset type, as determined from the \code{'class'} attribute of the 
-#' HDF5 object.
+#' The named HDF5 dataset is read from the specified HDF5 file using the method
+#' for the dataset type, as determined from the \code{'R.class'} or \code{'class'}
+#' attribute of the HDF5 object.
 #' 
 #' An \pkg{R/qtl} \code{map} object is not suited for HDF5 format, but can be 
 #' stored as a \code{mapframe} object, which can be read from file and then 
 #' converted back to a \code{map}.
 #'    
 #' @param infile An input HDF5 file.
-#' @param h5name HDF5 dataset name. 
-#'      
+#' @param h5name HDF5 dataset name.
+#' @param ... Further arguments (see below).
+#' @param col.name For a \code{data.frame}, if any column has a name matching
+#' this parameter, that column is extracted from the \code{data.frame} and the
+#' rownames are set from its contents.
+#' 
 #' @return R object corresponding to the named HDF5 object.
 #'  
 #' @export
 #' @family hdf5 utilities
 #' @importFrom rhdf5 h5read
 #' @rdname readDatasetHDF5
-readDatasetHDF5 <- function(infile, h5name) {
+readDatasetHDF5 <- function(infile, h5name, ...) {
     
     class.vector <- readClassHDF5(infile, h5name)
     
-    readDataset <- dispatchFromClassS3('readDatasetHDF5', 
-        class.vector, 'shmootl')
+    readDataset <- dispatchFromClassS3('readDatasetHDF5', class.vector, 'shmootl')
     
     dataset <- readDataset(infile, h5name)
     
@@ -318,7 +329,7 @@ readDatasetHDF5 <- function(infile, h5name) {
 # readDatasetHDF5.array --------------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.array <- function(infile, h5name) {
+readDatasetHDF5.array <- function(infile, h5name, ...) {
     dataset <- readDatasetHDF5.default(infile, h5name)
     dataset <- aperm(dataset) # NB: R is column-major, HDF5 is row-major
     return(dataset)
@@ -327,18 +338,18 @@ readDatasetHDF5.array <- function(infile, h5name) {
 # readDatasetHDF5.data.frame ---------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.data.frame <- function(infile, h5name) {
+readDatasetHDF5.data.frame <- function(infile, h5name, col.name='rownames') {
     
     dataset <- readDatasetHDF5.default(infile, h5name)
     
-    stopifnot( 'classes' %in% names( attributes(dataset) ) )
+    stopifnot( 'R.colClasses' %in% names( attributes(dataset) ) )
     
-    classes <- attr(dataset, 'classes')
-    dataset <- coerceDataFrame(dataset, classes)
-    attr(dataset, 'classes') <- NULL
+    colClasses <- attr(dataset, 'R.colClasses')
+    dataset <- coerceDataFrame(dataset, colClasses)
+    attr(dataset, 'R.colClasses') <- NULL
     
-    if ( 'rownames' %in% colnames(dataset) && ! hasRownames(dataset) ) {
-        dataset <- setRownamesFromColumn(dataset)
+    if ( col.name %in% colnames(dataset) && ! hasRownames(dataset) ) {
+        dataset <- setRownamesFromColumn(dataset, col.name=col.name)
     } 
     
     return(dataset)
@@ -347,7 +358,7 @@ readDatasetHDF5.data.frame <- function(infile, h5name) {
 # readDatasetHDF5.default ------------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.default <- function(infile, h5name) {
+readDatasetHDF5.default <- function(infile, h5name, ...) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
@@ -403,7 +414,7 @@ readDatasetHDF5.default <- function(infile, h5name) {
 # readDatasetHDF5.list ---------------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.list <- function(infile, h5name) {
+readDatasetHDF5.list <- function(infile, h5name, ...) {
     
     # Get names from HDF5 attributes first, because once the list dataset has 
     # been loaded, the attribute names will be in alphabetical order.
@@ -438,21 +449,14 @@ readDatasetHDF5.list <- function(infile, h5name) {
 # readDatasetHDF5.mapframe -----------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.mapframe <- function(infile, h5name) {
+readDatasetHDF5.mapframe <- function(infile, h5name, ...) {
     
-    dataset <- readDatasetHDF5.default(infile, h5name)
+    dataset <- readDatasetHDF5.data.frame(infile, h5name, col.name='id')
     
-    stopifnot( 'classes' %in% names( attributes(dataset) ) )
+    stopifnot( 'R.class' %in% names( attributes(dataset) ) )
     
-    classes <- attr(dataset, 'classes')
-    dataset <- coerceDataFrame(dataset, classes)
-    attr(dataset, 'classes') <- NULL
-    
-    if ( 'id' %in% colnames(dataset) && ! hasRownames(dataset) ) {
-        dataset <- setRownamesFromColumn(dataset, col.name='id')
-    } 
-    
-    dataset <- as.mapframe(dataset)
+    class(dataset) <- attr(dataset, 'R.class')
+    attr(dataset, 'R.class') <- NULL
     
     return(dataset)
 }
@@ -460,7 +464,7 @@ readDatasetHDF5.mapframe <- function(infile, h5name) {
 # readDatasetHDF5.matrix -------------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.matrix <- function(infile, h5name) {
+readDatasetHDF5.matrix <- function(infile, h5name, ...) {
     dataset <- readDatasetHDF5.default(infile, h5name)
     dataset <- t(dataset) # NB: R is column-major, HDF5 is row-major
     return(dataset)
@@ -469,86 +473,101 @@ readDatasetHDF5.matrix <- function(infile, h5name) {
 # readDatasetHDF5.scanone ------------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.scanone <- function(infile, h5name) {
+readDatasetHDF5.scanone <- function(infile, h5name, ...) {
     return( readDatasetHDF5.mapframe(infile, h5name) )
 }
 
 # readDatasetHDF5.scanoneperm --------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.scanoneperm  <- function(infile, h5name) {
+readDatasetHDF5.scanoneperm  <- function(infile, h5name, ...) {
     
-    result <- readDatasetHDF5.data.frame(infile, h5name)
+    dataset.attrs <- readObjectAttributesHDF5(infile, h5name)
     
-    result.attrs <- attributes(result)
-    attr.names <- names(result.attrs)
-    trans.attrs <- result.attrs[ ! attr.names %in% c('class', 'names', 'row.names') ]
+    dataset <- readDatasetHDF5.data.frame(infile, h5name)
     
-    perm.indices <- result$perm
+    attr.names <- names(dataset.attrs)
     
-    result <- matrix(result$lod, dimnames=list(perm.indices, 'lod') )
+    stopifnot( 'R.class' %in% attr.names )
+    
+    trans.attrs <- dataset.attrs[ ! attr.names %in% c('class', 'names', 'row.names') ]
+    
+    perm.indices <- dataset$perm
+    
+    dataset <- matrix(dataset$lod, dimnames=list(perm.indices, 'lod') )
     
     for ( attr.name in names(trans.attrs) ) {
-        attr(result, attr.name) <- trans.attrs[[attr.name]]
+        attr(dataset, attr.name) <- trans.attrs[[attr.name]]
     }
     
-    class(result) <- 'scanoneperm'
+    class(dataset) <- attr(dataset, 'R.class')
+    attr(dataset, 'R.colClasses') <- NULL # currently unused
+    attr(dataset, 'R.class') <- NULL
     
-    return(result)
+    return(dataset)
 }
 
 # readDatasetHDF5.scantwo ------------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.scantwo <- function(infile, h5name) {
+readDatasetHDF5.scantwo <- function(infile, h5name, ...) {
     
-    result <- readDatasetHDF5.list(infile, h5name)
+    dataset <- readDatasetHDF5.list(infile, h5name)
     
-    result$map <- setRownamesFromColumn(result$map, col.name='id') 
-    result$map$eq.spacing <- as.numeric( result$map$eq.spacing )
-    result$map$xchr <- FALSE
+    stopifnot( 'R.class' %in% names( attributes(dataset) ) )
     
-    attr(result, 'fullmap') <- as.map(result$fullmap)
-    result[['fullmap']] <- NULL
+    dataset$map <- setRownamesFromColumn(dataset$map, col.name='id')
+    dataset$map$eq.spacing <- as.numeric( dataset$map$eq.spacing )
+    dataset$map$xchr <- FALSE
     
-    result['scanoneX'] <- list(NULL)
+    attr(dataset, 'fullmap') <- as.map(dataset$fullmap)
+    dataset[['fullmap']] <- NULL
+    
+    dataset['scanoneX'] <- list(NULL)
+    
+    class(dataset) <- attr(dataset, 'R.class')
+    attr(dataset, 'R.class') <- NULL
  
-    return(result)
+    return(dataset)
 }
 
 # readDatasetHDF5.scantwoperm --------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.scantwoperm <- function(infile, h5name) {
-    
-    result <- readDatasetHDF5.data.frame(infile, h5name)
+readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
     
     dataset.attrs <- readObjectAttributesHDF5(infile, h5name)
     
-    result.attrs <- attributes(result)
-    attr.names <- names(result.attrs)
-    trans.attrs <- result.attrs[ ! attr.names %in% c('class', 'names', 'row.names') ]
+    dataset <- readDatasetHDF5.data.frame(infile, h5name)
     
-    indices <- which( colnames(result) != 'perm' )
+    attr.names <- names(dataset.attrs)
     
-    lod.types <- colnames(result)[indices]
+    stopifnot( 'R.class' %in% attr.names )
     
-    result <- lapply(indices, function (i) matrix(result[[i]]))
-    names(result) <- lod.types
+    trans.attrs <- dataset.attrs[ ! attr.names %in% c('class', 'names', 'row.names') ]
+    
+    indices <- which( colnames(dataset) != 'perm' )
+    
+    lod.types <- colnames(dataset)[indices]
+    
+    dataset <- lapply(indices, function (i) matrix(dataset[[i]]))
+    names(dataset) <- lod.types
     
     for ( attr.name in names(trans.attrs) ) {
-        attr(result, attr.name) <- trans.attrs[[attr.name]]
+        attr(dataset, attr.name) <- trans.attrs[[attr.name]]
     }
     
-    class(result) <- c('scantwoperm', 'list')
+    class(dataset) <- attr(dataset, 'R.class')
+    attr(dataset, 'R.colClasses') <- NULL # currently unused
+    attr(dataset, 'R.class') <- NULL
     
-    for ( i in getIndices(result) ) {
+    for ( i in getIndices(dataset) ) {
         
-        colnames(result[[i]]) <- attr(result, 'phenotypes')
+        colnames(dataset[[i]]) <- attr(dataset, 'phenotypes')
     }
-    attr(result, 'phenotypes') <- NULL
+    attr(dataset, 'phenotypes') <- NULL
     
-    return(result)
+    return(dataset)
 }
 
 # readGroupMemberNamesHDF5 -----------------------------------------------------
@@ -734,9 +753,13 @@ splitH5ObjectName <- function(h5name) {
 #' although \pkg{R/qtl} \code{map} objects are not ideally suited for HDF5 
 #' format, they can be written to a HDF5 file as a \code{mapframe} object.
 #'  
-#' @param dataset R object. 
+#' @param dataset R object.
 #' @param outfile An output HDF5 file.
-#' @param h5name HDF5 dataset name. 
+#' @param h5name HDF5 dataset name.
+#' @param ... Further arguments (see below).
+#' @param col.name For a \code{data.frame}, rownames are removed, and then
+#' inserted into a column of the main table, with its column name taken
+#' from this parameter.
 #'        
 #' @export
 #' @family hdf5 utilities
@@ -752,14 +775,14 @@ splitH5ObjectName <- function(h5name) {
 #' @importFrom rhdf5 h5writeDataset.logical
 #' @importFrom rhdf5 h5writeDataset.matrix
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5 <- function(dataset, outfile, h5name) {
+writeDatasetHDF5 <- function(dataset, outfile, h5name, ...) {
     UseMethod('writeDatasetHDF5', dataset)
 }
 
 # writeDatasetHDF5.array -------------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.array <- function(dataset, outfile, h5name) {
+writeDatasetHDF5.array <- function(dataset, outfile, h5name, ...) {
     dataset <- aperm(dataset) # NB: R is column-major, HDF5 is row-major
     writeDatasetHDF5.default(dataset, outfile, h5name)
 }
@@ -767,24 +790,26 @@ writeDatasetHDF5.array <- function(dataset, outfile, h5name) {
 # writeDatasetHDF5.data.frame --------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name) {
+writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name,
+    col.name='rownames', ...) {
 
-    stopif( 'classes' %in% names( attributes(dataset) ) )
-    stopif( nrow(dataset) == 0 )
-    stopif( ncol(dataset) == 0 )
+    stopif( 'R.colClasses' %in% names( attributes(dataset) ) )
+    
+    stopifnot( nrow(dataset) > 0 )
+    stopifnot( ncol(dataset) > 0 )
     
     if ( hasRownames(dataset) ) {
-        dataset <- setColumnFromRownames(dataset) 
+        dataset <- setColumnFromRownames(dataset, col.name=col.name)
     }
     
-    classes <- sapply(dataset, class)
-    cols <- which( classes %in% c('factor', 'logical') )
+    colClasses <- sapply(dataset, class)
+    cols <- which( colClasses %in% c('factor', 'logical') )
     
     for ( col in cols ) {
         dataset[[col]] <- as.character(dataset[[col]])
     }
     
-    attr(dataset, 'classes') <- classes
+    attr(dataset, 'R.colClasses') <- colClasses
     
     writeDatasetHDF5.default(dataset, outfile, h5name)
     
@@ -794,7 +819,7 @@ writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name) {
 # writeDatasetHDF5.default -----------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.default <- function(dataset, outfile, h5name) {
+writeDatasetHDF5.default <- function(dataset, outfile, h5name, ...) {
 
     stopifnot( isSingleString(outfile) )
     
@@ -818,7 +843,7 @@ writeDatasetHDF5.default <- function(dataset, outfile, h5name) {
 # writeDatasetHDF5.list --------------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.list <- function(dataset, outfile, h5name) {
+writeDatasetHDF5.list <- function(dataset, outfile, h5name, ...) {
     
     writeObjectAttributesHDF5(dataset, outfile, h5name)
     
@@ -838,26 +863,15 @@ writeDatasetHDF5.list <- function(dataset, outfile, h5name) {
 # writeDatasetHDF5.mapframe ----------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name) {
+writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name, ...) {
     
-    stopif( 'classes' %in% names( attributes(dataset) ) )
-    stopifnot( nrow(dataset) > 0 )
-    stopifnot( ncol(dataset) > 0 )
-
-    if ( hasRownames(dataset) ) {
-        dataset <- setColumnFromRownames(dataset, col.name='id') 
-    }    
-
-    classes <- sapply(dataset, class)
-    cols <- which( classes %in% c('factor', 'logical') )
-
-    for ( col in cols) {
-        dataset[[col]] <- as.character(dataset[[col]])
-    }
-
-    attr(dataset, 'classes') <- classes
-
-    writeDatasetHDF5.default(dataset, outfile, h5name)
+    stopif( 'R.class' %in% names( attributes(dataset) ) )
+    
+    attr(dataset, 'R.class') <- class(dataset)
+    
+    dataset <- as.data.frame(dataset)
+    
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name, col.name='id')
 
     return( invisible() )
 }
@@ -865,7 +879,7 @@ writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name) {
 # writeDatasetHDF5.matrix ------------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.matrix <- function(dataset, outfile, h5name) {
+writeDatasetHDF5.matrix <- function(dataset, outfile, h5name, ...) {
     dataset <- t(dataset) # NB: R is column-major, HDF5 is row-major
     writeDatasetHDF5.default(dataset, outfile, h5name)
 }
@@ -873,18 +887,21 @@ writeDatasetHDF5.matrix <- function(dataset, outfile, h5name) {
 # writeDatasetHDF5.scanone -----------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.scanone <- function(dataset, outfile, h5name) {
+writeDatasetHDF5.scanone <- function(dataset, outfile, h5name, ...) {
     
     stopifnot( length( getDatColIndices(dataset) ) == 1 )
     
     writeDatasetHDF5.mapframe(dataset, outfile, h5name)
+    
     return( invisible() )
 }
 
 # writeDatasetHDF5.scanoneperm -------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name) {
+writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name, ...) {
+    
+    stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     pheno.names <- colnames(dataset)
     stopifnot( length(pheno.names) == 1 )
@@ -898,22 +915,26 @@ writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name) {
     perm.indices <- as.integer( rownames(dataset) )
     class(dataset) <- c('scanoneperm', 'matrix')
     
-    dataset <- data.frame(perm=perm.indices, lod=unname(dataset))
+    scanoneperm.dataset <- data.frame(perm=perm.indices, lod=unname(dataset))
     
     for ( attr.key in names(trans.attrs) ) {
-        attr(dataset, attr.key) <- trans.attrs[[attr.key]]
+        attr(scanoneperm.dataset, attr.key) <- trans.attrs[[attr.key]]
     }
     
-    class(dataset) <- c('scanoneperm', 'data.frame')
+    attr(scanoneperm.dataset, 'R.class') <- 'scanoneperm'
+    class(scanoneperm.dataset) <- 'data.frame'
     
-    writeDatasetHDF5.data.frame(dataset, outfile, h5name)
+    writeDatasetHDF5.data.frame(scanoneperm.dataset, outfile, h5name)
+    
     return( invisible() )
 }
 
 # writeDatasetHDF5.scantwo -----------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name) {
+writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name, ...) {
+    
+    stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     stopifnot( is.null(dataset$scanoneX) )
     stopif( any( isTRUE(dataset$map$xchr) ) )
@@ -933,7 +954,8 @@ writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name) {
     dataset[['fullmap']] <- as.mapframe(attr(dataset, 'fullmap'), map.unit='cM')
     attr(dataset, 'fullmap') <- NULL
     
-    class(dataset) <- c('scantwo', 'list')
+    attr(dataset, 'R.class') <- class(dataset)
+    class(dataset) <- 'list'
     
     writeDatasetHDF5.list(dataset, outfile, h5name)
     
@@ -943,7 +965,9 @@ writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name) {
 # writeDatasetHDF5.scantwoperm -------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name) {
+writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name, ...) {
+    
+    stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     phenames.vectors <- lapply(unname(dataset), colnames)
     stopifnot( length( unique(phenames.vectors) ) == 1 )
@@ -982,9 +1006,11 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name) {
     
     attr(scantwoperm.dataset, 'phenotypes') <- pheno.names
     
-    class(scantwoperm.dataset) <- c('scantwoperm', 'data.frame')
+    attr(scantwoperm.dataset, 'R.class') <- c('scantwoperm', 'list')
+    class(scantwoperm.dataset) <- 'data.frame'
     
     writeDatasetHDF5.data.frame(scantwoperm.dataset, outfile, h5name)
+    
     return( invisible() )
 }
 

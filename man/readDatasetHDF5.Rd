@@ -14,36 +14,42 @@
 \alias{readDatasetHDF5.scantwoperm}
 \title{Read HDF5 dataset.
    
-The named HDF5 dataset is read from the specified HDF5 file using the method 
-for the dataset type, as determined from the \code{'class'} attribute of the 
-HDF5 object.}
+The named HDF5 dataset is read from the specified HDF5 file using the method
+for the dataset type, as determined from the \code{'R.class'} or \code{'class'}
+attribute of the HDF5 object.}
 \usage{
-readDatasetHDF5(infile, h5name)
+readDatasetHDF5(infile, h5name, ...)
 
-readDatasetHDF5.array(infile, h5name)
+readDatasetHDF5.array(infile, h5name, ...)
 
-readDatasetHDF5.data.frame(infile, h5name)
+readDatasetHDF5.data.frame(infile, h5name, col.name = "rownames")
 
-readDatasetHDF5.default(infile, h5name)
+readDatasetHDF5.default(infile, h5name, ...)
 
-readDatasetHDF5.list(infile, h5name)
+readDatasetHDF5.list(infile, h5name, ...)
 
-readDatasetHDF5.mapframe(infile, h5name)
+readDatasetHDF5.mapframe(infile, h5name, ...)
 
-readDatasetHDF5.matrix(infile, h5name)
+readDatasetHDF5.matrix(infile, h5name, ...)
 
-readDatasetHDF5.scanone(infile, h5name)
+readDatasetHDF5.scanone(infile, h5name, ...)
 
-readDatasetHDF5.scanoneperm(infile, h5name)
+readDatasetHDF5.scanoneperm(infile, h5name, ...)
 
-readDatasetHDF5.scantwo(infile, h5name)
+readDatasetHDF5.scantwo(infile, h5name, ...)
 
-readDatasetHDF5.scantwoperm(infile, h5name)
+readDatasetHDF5.scantwoperm(infile, h5name, ...)
 }
 \arguments{
 \item{infile}{An input HDF5 file.}
 
 \item{h5name}{HDF5 dataset name.}
+
+\item{...}{Further arguments (see below).}
+
+\item{col.name}{For a \code{data.frame}, if any column has a name matching
+this parameter, that column is extracted from the \code{data.frame} and the
+rownames are set from its contents.}
 }
 \value{
 R object corresponding to the named HDF5 object.

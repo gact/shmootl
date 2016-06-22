@@ -19,27 +19,28 @@ the dataset type, as determined by the class of the R object. Note that
 although \pkg{R/qtl} \code{map} objects are not ideally suited for HDF5 
 format, they can be written to a HDF5 file as a \code{mapframe} object.}
 \usage{
-writeDatasetHDF5(dataset, outfile, h5name)
+writeDatasetHDF5(dataset, outfile, h5name, ...)
 
-\method{writeDatasetHDF5}{array}(dataset, outfile, h5name)
+\method{writeDatasetHDF5}{array}(dataset, outfile, h5name, ...)
 
-\method{writeDatasetHDF5}{data.frame}(dataset, outfile, h5name)
+\method{writeDatasetHDF5}{data.frame}(dataset, outfile, h5name,
+  col.name = "rownames", ...)
 
-\method{writeDatasetHDF5}{default}(dataset, outfile, h5name)
+\method{writeDatasetHDF5}{default}(dataset, outfile, h5name, ...)
 
-\method{writeDatasetHDF5}{list}(dataset, outfile, h5name)
+\method{writeDatasetHDF5}{list}(dataset, outfile, h5name, ...)
 
-\method{writeDatasetHDF5}{mapframe}(dataset, outfile, h5name)
+\method{writeDatasetHDF5}{mapframe}(dataset, outfile, h5name, ...)
 
-\method{writeDatasetHDF5}{matrix}(dataset, outfile, h5name)
+\method{writeDatasetHDF5}{matrix}(dataset, outfile, h5name, ...)
 
-\method{writeDatasetHDF5}{scanone}(dataset, outfile, h5name)
+\method{writeDatasetHDF5}{scanone}(dataset, outfile, h5name, ...)
 
-\method{writeDatasetHDF5}{scanoneperm}(dataset, outfile, h5name)
+\method{writeDatasetHDF5}{scanoneperm}(dataset, outfile, h5name, ...)
 
-\method{writeDatasetHDF5}{scantwo}(dataset, outfile, h5name)
+\method{writeDatasetHDF5}{scantwo}(dataset, outfile, h5name, ...)
 
-\method{writeDatasetHDF5}{scantwoperm}(dataset, outfile, h5name)
+\method{writeDatasetHDF5}{scantwoperm}(dataset, outfile, h5name, ...)
 }
 \arguments{
 \item{dataset}{R object.}
@@ -47,6 +48,12 @@ writeDatasetHDF5(dataset, outfile, h5name)
 \item{outfile}{An output HDF5 file.}
 
 \item{h5name}{HDF5 dataset name.}
+
+\item{...}{Further arguments (see below).}
+
+\item{col.name}{For a \code{data.frame}, rownames are removed, and then
+inserted into a column of the main table, with its column name taken
+from this parameter.}
 }
 \description{
 Write R object to a HDF5 dataset.
