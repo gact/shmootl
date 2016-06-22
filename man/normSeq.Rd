@@ -25,10 +25,10 @@ normSeq(x)
 \method{normSeq}{numeric}(x)
 }
 \arguments{
-\item{x}{Vector of sequence labels.}
+\item{x}{Object containing sequence labels.}
 }
 \value{
-Vector of normalised sequence labels.
+Input object with normalised sequence labels.
 }
 \description{
 Normalise sequence labels.
