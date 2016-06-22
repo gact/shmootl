@@ -103,7 +103,7 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
             lodcolumn=i, threshold=threshold)
         
         # Output any significant QTL intervals.
-        if ( ! is.null(qtl.intervals) ) {
+        if ( length(qtl.intervals) > 0 ) {
             writeResultHDF5(qtl.intervals, outfile, phenotypes[i])
             comments[i] <- paste(length(qtl.intervals), 'QTLs')
             status[i] <- TRUE
