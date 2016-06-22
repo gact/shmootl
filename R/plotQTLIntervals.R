@@ -20,6 +20,8 @@
 #' to the nearest flanking markers, or to the respective terminal loci.
 #' @param threshold For a \code{scanone} object, this indicates 
 #' the LOD significance threshold for identifying QTL intervals.
+#' @param alpha For a \code{scanone} object, this contains
+#' the significance level of the given threshold.
 #' @template param-lodcolumn
 #' @param phenotype Name of the phenotype, to be used in plot title.
 #' 
@@ -31,7 +33,6 @@
 #' @importFrom graphics segments
 #' @importFrom graphics strwidth
 #' @importFrom graphics text
-#' @importFrom graphics xinch
 #' @importFrom graphics yinch
 #' @importFrom grDevices graphics.off
 #' @importFrom utils tail
@@ -61,6 +62,9 @@ plotQTLIntervals.qtlintervals <- function(x, lod.profile, chr=NULL,
     
     # Get LOD threshold.
     threshold <- attr(x, 'threshold')
+    
+    # Get alpha value corresponding to LOD threshold.
+    alpha <- attr(x, 'alpha')
     
     # Ensure LOD profile has normalised sequence IDs.
     lod.profile <- normSeq(lod.profile)
@@ -239,54 +243,54 @@ plotQTLIntervals.qtlintervals <- function(x, lod.profile, chr=NULL,
     }
     
     if ( ! is.null(threshold) ) {
-    
-        # Get alpha value of LOD threshold.
-        alpha <- getThresholdAlpha(threshold)
         
         # Draw horizontal red dashed line to indicate LOD threshold.
         abline(threshold, 0, col='gray32', lwd=0.5, lty='dashed')
         
-        # Set threshold label text.
-        thresh.label.text <- bquote( alpha ~ '=' ~ .(alpha) )
+        if ( ! is.null(alpha) ) {
         
-        # Set threshold label width.
-        thresh.label.width <- strwidth(thresh.label.text)
-        
-        # Set threshold label offset from rightmost available position.
-        thresh.label.offset <- 0.025 * cum.plot.width
-        
-        # Set threshold label default position.
-        default.position <- cum.plot.width - thresh.label.offset - thresh.label.width
-        
-        # Set threshold label position from default.
-        thresh.label.pos <- default.position
-        
-        # If interval regions are present, try to adjust threshold label to avoid these.
-        if ( nrow(interval.regions) > 0 ) {
+            # Set threshold label text.
+            thresh.label.text <- bquote( alpha ~ '=' ~ .(alpha) )
             
-            # Check label against each interval in reverse order. Shift label left for 
-            # each coinciding interval. Stop if label does not coincide with any interval.
-            for ( r in nrow(interval.regions):1 ) {
+            # Set threshold label width.
+            thresh.label.width <- strwidth(thresh.label.text)
+            
+            # Set threshold label offset from rightmost available position.
+            thresh.label.offset <- 0.025 * cum.plot.width
+            
+            # Set threshold label default position.
+            default.position <- cum.plot.width - thresh.label.offset - thresh.label.width
+            
+            # Set threshold label position from default.
+            thresh.label.pos <- default.position
+            
+            # If interval regions are present, try to adjust threshold label to avoid these.
+            if ( nrow(interval.regions) > 0 ) {
                 
-                region <- interval.regions[r,]
+                # Check label against each interval in reverse order. Shift label left for 
+                # each coinciding interval. Stop if label does not coincide with any interval.
+                for ( r in nrow(interval.regions):1 ) {
+                    
+                    region <- interval.regions[r,]
+                    
+                    if ( (thresh.label.pos + thresh.label.width) >= region[1] && region[2] >= thresh.label.pos ) {
+                        thresh.label.pos <- region[1] - thresh.label.offset - thresh.label.width
+                    } else {
+                        break
+                    }
+                }
                 
-                if ( (thresh.label.pos + thresh.label.width) >= region[1] && region[2] >= thresh.label.pos ) {
-                    thresh.label.pos <- region[1] - thresh.label.offset - thresh.label.width
-                } else {
-                    break
+                # If, after shifting threshold label left to avoid QTL intervals, we have
+                # moved the label off the plot, just put it back in the default position.
+                if (thresh.label.pos < 0.0) {
+                    thresh.label.pos <- default.position
                 }
             }
             
-            # If, after shifting threshold label left to avoid QTL intervals, we have
-            # moved the label off the plot, just put it back in the default position.
-            if (thresh.label.pos < 0.0) {
-                thresh.label.pos <- default.position
-            }
+            # Draw LOD significance threshold label.
+            text(thresh.label.pos, threshold + yinch(0.025), thresh.label.text, 
+                col='gray32', adj=c(0, 0), cex=0.8)
         }
-        
-        # Draw LOD significance threshold label.
-        text(thresh.label.pos, threshold + yinch(0.025), thresh.label.text, 
-            col='gray32', adj=c(0, 0), cex=0.8)
     }
     
     return( invisible() )
@@ -296,10 +300,10 @@ plotQTLIntervals.qtlintervals <- function(x, lod.profile, chr=NULL,
 #' @export
 #' @rdname plotQTLIntervals
 plotQTLIntervals.scanone <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
-    threshold=NULL, lodcolumn=NULL, phenotype=NULL, ...) {
+    threshold=NULL, alpha=NULL, lodcolumn=NULL, phenotype=NULL, ...) {
     
     intervals <- getQTLIntervals(x, chr=chr, drop=drop, threshold=threshold,
-        expandtomarkers=expandtomarkers, lodcolumn=lodcolumn)
+        alpha=alpha, expandtomarkers=expandtomarkers, lodcolumn=lodcolumn)
     
     plotQTLIntervals(intervals, x, chr=chr, phenotype=phenotype)
     

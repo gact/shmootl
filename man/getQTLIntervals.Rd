@@ -11,15 +11,15 @@
 getQTLIntervals(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...)
 
 \method{getQTLIntervals}{mapframe}(x, chr = NULL, drop = 1.5,
-  expandtomarkers = FALSE, threshold = NULL, lodcolumn = NULL,
-  qtl.peaks = NULL, ...)
+  expandtomarkers = FALSE, threshold = NULL, alpha = NULL,
+  lodcolumn = NULL, qtl.peaks = NULL, ...)
 
 \method{getQTLIntervals}{qtl}(x, chr = NULL, drop = 1.5,
   expandtomarkers = FALSE, qtl.indices = NULL, ...)
 
 \method{getQTLIntervals}{scanone}(x, chr = NULL, drop = 1.5,
-  expandtomarkers = FALSE, threshold = NULL, lodcolumn = NULL,
-  qtl.peaks = NULL, ...)
+  expandtomarkers = FALSE, threshold = NULL, alpha = NULL,
+  lodcolumn = NULL, qtl.peaks = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{scanone} or \code{qtl} object.}
@@ -34,8 +34,11 @@ markers, or to the respective terminal loci.}
 
 \item{...}{Further arguments (see below).}
 
-\item{threshold}{In a \code{scanone} or equivalent object, this indicates 
+\item{threshold}{In a \code{scanone} or equivalent object, this indicates
 the LOD significance threshold for QTL intervals.}
+
+\item{alpha}{In a \code{scanone} or equivalent object, this contains
+the significance level of the given threshold.}
 
 \item{lodcolumn}{In a \code{scanone} or equivalent object, this parameter 
 indicates which LOD column to consider. This must be either a column name 

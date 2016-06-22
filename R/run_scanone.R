@@ -73,6 +73,7 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     # Get LOD thresholds from permutation results. 
     thresholds <- qtl:::summary.scanoneperm(scanone.perms, alpha=alpha)
     
+    # Remove existing result file.
     if ( file.exists(outfile) ) {
         file.remove(outfile)
     }
@@ -88,10 +89,9 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
         
         # Get threshold for this phenotype.
         threshold <- thresholds[pct.alpha, i]
-        names(threshold) <- pct.alpha
         
         # Output scan result for this phenotype.
-        pheno.result <- qtl:::subset.scanone(scanone.result, lodcolumn=i)
+        pheno.result <- getLODProfile(scanone.result, lodcolumn=i)
         writeResultHDF5(pheno.result, outfile, phenotypes[i])
         
         # Output permutation scan results for this phenotype.
@@ -99,8 +99,8 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
         writeResultHDF5(pheno.perms, outfile, phenotypes[i])
         
         # Get significant QTL intervals.
-        qtl.intervals <- getQTLIntervals(scanone.result,
-            lodcolumn=i, threshold=threshold)
+        qtl.intervals <- getQTLIntervals(pheno.result, lodcolumn=i,
+            threshold=threshold, alpha=alpha)
         
         # Output any significant QTL intervals.
         if ( length(qtl.intervals) > 0 ) {

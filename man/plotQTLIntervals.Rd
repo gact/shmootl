@@ -13,8 +13,8 @@ plotQTLIntervals(x, ...)
   lodcolumn = NULL, phenotype = NULL, ...)
 
 \method{plotQTLIntervals}{scanone}(x, chr = NULL, drop = 1.5,
-  expandtomarkers = FALSE, threshold = NULL, lodcolumn = NULL,
-  phenotype = NULL, ...)
+  expandtomarkers = FALSE, threshold = NULL, alpha = NULL,
+  lodcolumn = NULL, phenotype = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{scanone} or \code{qtlintervals} object.}
@@ -43,6 +43,9 @@ to the nearest flanking markers, or to the respective terminal loci.}
 
 \item{threshold}{For a \code{scanone} object, this indicates 
 the LOD significance threshold for identifying QTL intervals.}
+
+\item{alpha}{For a \code{scanone} object, this contains
+the significance level of the given threshold.}
 }
 \description{
 Plot QTL intervals.

@@ -11,8 +11,10 @@
 #' @param chr Vector indicating which sequences to consider. If no sequences
 #' are specified, QTL peaks are returned for all available sequences.
 #' @param ... Further arguments (see below).
-#' @param threshold In a \code{scanone} or equivalent object, this indicates 
+#' @param threshold In a \code{scanone} or equivalent object, this indicates
 #' the LOD significance threshold for QTL peaks.
+#' @param alpha In a \code{scanone} or equivalent object, this contains
+#' the significance level of the given threshold.
 #' @template param-lodcolumn
 #' @param qtl.indices In a \code{qtl} object, this option indicates the QTLs 
 #' for which a QTL peak should be returned. 
@@ -30,13 +32,24 @@ getQTLPeaks <- function(x, chr=NULL, ...) {
 # getQTLPeaks.mapframe ---------------------------------------------------------
 #' @export
 #' @rdname getQTLPeaks
-getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ...) {
+getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, alpha=NULL,
+    lodcolumn=NULL, ...) {
     
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
     stopifnot( isSingleNonNegativeNumber(threshold) )
-    getThresholdAlpha(threshold) # validate threshold alpha
-
+    
+    if ( ! is.null(alpha) ) {
+        stopifnot( isSingleProbability(alpha) )
+    }
+    
+    # Set default QTL peaks mapframe.
+    qtl.peaks <- gmapframe()
+    attr(qtl.peaks, 'threshold') <- unname(threshold)
+    if ( ! is.null(alpha) ) {
+        attr(qtl.peaks, 'alpha') <- unname(alpha)
+    }
+    
     seqcol.index <- getSeqColIndex(x)
     poscol.index <- getPosColIndex(x)
     lodcol.index <- getDatColIndices(x, datcolumns=lodcolumn)
@@ -59,7 +72,7 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ..
     
     # Return empty genetic mapframe if no LOD data.
     if( nrow(x) == 0 || allNA(x[, lodcol.index]) ) {
-        return( gmapframe() )
+        return(qtl.peaks)
     }
     
     # Create LOD character mask. Regions with significant LOD values are marked
@@ -82,7 +95,7 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ..
    
     # Return empty genetic mapframe if no significant regions found.
     if ( length(significant.rows) == 0 ) {
-        return( gmapframe() )
+        return(qtl.peaks)
     }
     
     # Get row index of peak for each significant 
@@ -93,6 +106,12 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ..
     # Create genetic mapframe of QTL peaks.
     qtl.peaks <- gmapframe(chr=x[peak.indices, seqcol.index], 
         pos=x[peak.indices, poscol.index])
+    
+    # Set attributes of QTL peaks mapframe.
+    attr(qtl.peaks, 'threshold') <- unname(threshold)
+    if ( ! is.null(alpha) ) {
+        attr(qtl.peaks, 'alpha') <- unname(alpha)
+    }
     
     # If mapframe has row names, get locus IDs at QTL 
     # peaks, identify unnamed loci (i.e. pseudomarkers)..
@@ -150,9 +169,11 @@ getQTLPeaks.qtl <- function(x, chr=NULL, qtl.indices=NULL, ...) {
 # getQTLPeaks.scanone ----------------------------------------------------------
 #' @export
 #' @rdname getQTLPeaks
-getQTLPeaks.scanone <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ...) {
-    return( getQTLPeaks(as.mapframe(x), chr=chr, threshold=threshold, 
-        lodcolumn=lodcolumn) )
+getQTLPeaks.scanone <- function(x, chr=NULL, threshold=NULL, alpha=NULL,
+    lodcolumn=NULL, ...) {
+    qtl.peaks <- getQTLPeaks(as.mapframe(x), chr=chr, threshold=threshold,
+        alpha=alpha, lodcolumn=lodcolumn)
+    return(qtl.peaks)
 }
 
 # testQTLPeakSignificance ------------------------------------------------------

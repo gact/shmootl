@@ -16,8 +16,10 @@
 #' @param expandtomarkers Expand the LOD interval to the nearest flanking 
 #' markers, or to the respective terminal loci.
 #' @param ... Further arguments (see below).
-#' @param threshold In a \code{scanone} or equivalent object, this indicates 
+#' @param threshold In a \code{scanone} or equivalent object, this indicates
 #' the LOD significance threshold for QTL intervals.
+#' @param alpha In a \code{scanone} or equivalent object, this contains
+#' the significance level of the given threshold.
 #' @template param-lodcolumn
 #' @param qtl.peaks Locus \code{mapframe} indicating the location of the QTL 
 #' peaks in a \code{scanone} result. If not specified, these are found using 
@@ -41,20 +43,24 @@ getQTLIntervals <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...) {
 #' @export
 #' @rdname getQTLIntervals
 getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, 
-    threshold=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
+    threshold=NULL, alpha=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
 
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
     stopifnot( isSingleNonNegativeNumber(threshold) )
-    getThresholdAlpha(threshold) # validate threshold alpha
     stopifnot( isSingleNonNegativeNumber(drop) )
     stopifnot( isBOOL(expandtomarkers) )
     
     # Init intervals.
     intervals <- list()
     class(intervals) <- c('qtlintervals', 'list')
-    attr(intervals, 'threshold') <- threshold
-    attr(intervals, 'drop') <- drop
+    attr(intervals, 'threshold') <- unname(threshold)
+    attr(intervals, 'drop') <- unname(drop)
+    
+    if ( ! is.null(alpha) ) {
+        stopifnot( isSingleProbability(alpha) )
+        attr(intervals, 'alpha') <- unname(alpha)
+    }
     
     # Set standard QTL interval indices.
     ci <- c(low=1, peak=2, high=3)
@@ -91,7 +97,7 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
                 warning("QTL peaks below threshold - '", toString(subthreshold), "'")
             }
         }
-    
+        
     } else { # ..otherwise find QTL peaks from LOD profile.
         
         qtl.peaks <- getQTLPeaks(x, chr=chr, threshold=threshold)
@@ -225,9 +231,6 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
             rownames(interval)[ ci['high'] ] <- 'ci.high'
         }    
         
-        attr(interval, 'threshold') <- threshold
-        attr(interval, 'drop') <- drop
-        
         intervals[[r]] <- interval
     }
 
@@ -303,9 +306,10 @@ getQTLIntervals.qtl <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
 #' @export
 #' @rdname getQTLIntervals
 getQTLIntervals.scanone <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
-    threshold=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
-    return( getQTLIntervals(as.mapframe(x), chr=chr, threshold=threshold, drop=drop, 
-        expandtomarkers=expandtomarkers, lodcolumn=lodcolumn, qtl.peaks=qtl.peaks) )
+    threshold=NULL, alpha=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
+    return( getQTLIntervals(as.mapframe(x), chr=chr, threshold=threshold,
+        drop=drop, expandtomarkers=expandtomarkers, alpha=alpha,
+        lodcolumn=lodcolumn, qtl.peaks=qtl.peaks) )
 }
     
 # End of getQTLIntervals.R #####################################################
