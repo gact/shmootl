@@ -40,10 +40,14 @@ getLODProfile.data.frame <- function(x, lodcolumn=NULL, ...) {
         stop("no LOD column found")
     }
     
+    others <- otherattributes(x)
+    
     # Create LOD profile with specified LOD column.
     lod.profile <- x[, c(seqcol.index, poscol.index, lodcol.index)]
     colnames(lod.profile) <- c('chr', 'pos', 'lod')
     class(lod.profile) <- c('scanone', 'data.frame')
+    
+    otherattributes(lod.profile) <- others
     
     return(lod.profile)
 }
