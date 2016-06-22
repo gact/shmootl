@@ -90,12 +90,8 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
             if ( length(subthreshold) > 0 ) { 
                 warning("QTL peaks below threshold - '", toString(subthreshold), "'")
             }
-            
-        } else {
-            
-            qtl.peaks <- NULL
         }
-        
+    
     } else { # ..otherwise find QTL peaks from LOD profile.
         
         qtl.peaks <- getQTLPeaks(x, chr=chr, threshold=threshold)
