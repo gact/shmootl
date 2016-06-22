@@ -112,7 +112,7 @@ plotQTLIntervals.qtlintervals <- function(x, lod.profile, chr=NULL,
     # Include markers if plotting one chromosome with fewer than 100 markers.
     incl.markers = length(chr) == 1 && nrow(lod.profile) < 100
     
-    # Set maximum y-value, ensure at least one.
+    # Set maximum y-value, ensure greater than or equal to one.
     max.lod <- max( lod.profile[, lodcol.index],
         threshold, 1.0, na.rm=TRUE )
     
@@ -179,7 +179,7 @@ plotQTLIntervals.qtlintervals <- function(x, lod.profile, chr=NULL,
     xlim <- c(-half.gap, cum.plot.width + half.gap)
     
     # Set y-axis range from range of LOD values.
-    ylim <- c( 0.0, ceiling(max.lod + xinch(0.5)) )
+    ylim <- c( 0.0, ceiling(max.lod + 0.5) )
     
     # Draw LOD plot.
     plot(lod.profile, xlim=xlim, ylim=ylim, chr=chr, main=plot.title,
