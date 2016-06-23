@@ -38,6 +38,8 @@ run_scanone(infile, outfile, chr = NA, pheno = NA, model = c("normal",
 \description{
 This script will read cross data from the specified input file, 
 run a single QTL analysis using \pkg{R/qtl} \code{scanone}, and write the
-results to the specified output file.
+results to the specified output file. If the input cross contains enumerated
+genotypes, marker regresion is performed regardless of the value of the
+\code{method} parameter.
 }
 

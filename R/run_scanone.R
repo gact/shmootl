@@ -5,7 +5,9 @@
 #' 
 #' @description This script will read cross data from the specified input file, 
 #' run a single QTL analysis using \pkg{R/qtl} \code{scanone}, and write the
-#' results to the specified output file.
+#' results to the specified output file. If the input cross contains enumerated
+#' genotypes, marker regresion is performed regardless of the value of the
+#' \code{method} parameter.
 #' 
 #' @param infile input cross file
 #' @param outfile output result file
@@ -54,6 +56,16 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     phenotypes <- getPhenotypes(cross.info, pheno)
     pheno.names <- getPhenotypeNames(cross.info, pheno)
     pheno.col <- getPhenoColIndices(cross, pheno.names)
+    genotypes <- getGenotypes(cross.info)
+    
+    # If cross contains enumerated genotypes, do marker regression.
+    if ( all( isEnumGenotype(genotypes) ) ) {
+        if ( sum( qtl::nmissing(cross) ) > 0 ) {
+            stop("cannot scan with enumerated genotypes - missing genotype data")
+        }
+        cat(" --- Using marker regression on enumerated genotypes\n")
+        method <- 'mr'
+    }
     
     # Get cross map.
     cross.map <- qtl::pull.map(cross)
