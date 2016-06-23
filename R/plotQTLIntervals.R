@@ -234,10 +234,8 @@ plotQTLIntervals.qtlintervals <- function(x, lod.profile, chr=NULL,
         # Draw QTL interval line segments.
         segments(x0, y0, x1, y1, col='black', lwd=0.5, lty='solid')
         
-        # If this LOD plot is of one chromosome, draw point at LOD peak.
-        if ( length(chr) == 1 ) {
-            points(xpos[2], iline, col='black', lwd=0.5, pch=20)
-        }
+        # Draw point at LOD peak.
+        points(xpos[2], iline, col='black', lwd=0.5, pch=20)
         
         # Add this region to the matrix of interval regions.
         interval.regions[i, ] <- c(xpos[1], xpos[3])
