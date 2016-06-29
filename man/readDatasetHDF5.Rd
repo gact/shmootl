@@ -9,6 +9,7 @@
 \alias{readDatasetHDF5.mapframe}
 \alias{readDatasetHDF5.matrix}
 \alias{readDatasetHDF5.scanone}
+\alias{readDatasetHDF5.scanonebins}
 \alias{readDatasetHDF5.scanoneperm}
 \alias{readDatasetHDF5.scantwo}
 \alias{readDatasetHDF5.scantwoperm}
@@ -33,6 +34,8 @@ readDatasetHDF5.mapframe(infile, h5name, ...)
 readDatasetHDF5.matrix(infile, h5name, ...)
 
 readDatasetHDF5.scanone(infile, h5name, ...)
+
+readDatasetHDF5.scanonebins(infile, h5name, ...)
 
 readDatasetHDF5.scanoneperm(infile, h5name, ...)
 

@@ -4,26 +4,38 @@
 #' Run \code{qtl::scanone} on a batch of permuted \code{cross} objects.
 #' 
 #' @param cross An \pkg{R/qtl} \code{cross} object.
-#' @param pheno.col Phenotype columns for which QTL analysis should be run. 
+#' @param pheno.col Phenotype columns for which QTL analysis should be run.
 #' If no phenotypes are specified, all are used.
 #' @template param-n.cluster
 #' @param iseed Seed for random number generator.
 #' @param n.perm Number of permutations.
 #' @param perm.pheno Permute phenotype data.
 #' @param perm.geno Permute genotype data.
+#' @param perm.type Type of permutation data (see below).
 #' @param ... Additional keyword arguments passed to \code{scanone}.
-#'     
-#' @return A \code{scanoneperm} matrix containing the results of \code{scanone}
-#' for all permutations.
+#' 
+#' @return If \code{perm.type} is set to \code{'max'}, a regular
+#' \code{scanoneperm} object is returned, containing the maximum
+#' LOD values from the given permutations. If \code{perm.type} is
+#' set to \code{'bins'}, a \code{scanonebins} array is returned.
+#' Each row of this array corresponds to a permutation, each array
+#' column corresponds to a bin spanning an interval of LOD values,
+#' and each slice corresponds to a LOD column. Each element contains
+#' the number of loci in the given bin interval for that LOD column
+#' in that permutation.
 #'  
 #' @export
 #' @family scan utilities
+#' @importFrom abind abind
+#' @include scanonebins.R
 #' @rdname batchPermScanone
 batchPermScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, 
-    n.perm=1000, perm.pheno=TRUE, perm.geno=FALSE, ...) {
+    n.perm=1000, perm.pheno=TRUE, perm.geno=FALSE, perm.type=c('max', 'bins'), ...) {
     
     stopifnot( isSinglePositiveWholeNumber(n.perm) )
     stopifnot( allKwargs(...) )
+    
+    perm.type <- match.arg(perm.type)
     
     # Get phenotype column indices.
     pheno.col <- getPhenoColIndices(cross, pheno.col)
@@ -31,16 +43,25 @@ batchPermScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
     # Set batch scan arguments.
     args <- list(x=1:n.perm, scanfunction=nodePermScanone, cross=cross, 
         pheno.col=pheno.col, n.cluster=n.cluster, iseed=iseed, 
-        perm.pheno=perm.pheno, perm.geno=perm.geno)
+        perm.pheno=perm.pheno, perm.geno=perm.geno, perm.type=perm.type)
     
     # Run permutation batch scan.
     scanone.perms <- do.call(batchScan, c(args, list(...)))
     
     # Combine permutation results.
-    combined.result <- do.call(rbind, scanone.perms)
-    
-    # Set class of combined result.
-    class(combined.result) <- c('scanoneperm', 'matrix')
+    if ( perm.type == 'max' ) {
+        
+        combined.result <- do.call(rbind, scanone.perms)
+        class(combined.result) <- c('scanoneperm', 'matrix')
+        
+    } else if ( perm.type == 'bins' ) {
+        
+        num.bins <- max( sapply(scanone.perms, function(x) dim(x)[2]) )
+        scanone.perms <- lapply(scanone.perms, padBins, num.bins)
+        combined.result <- abind::abind(scanone.perms, along=1)
+        attr(combined.result, 'n.loci') <- attr(scanone.perms[[1]], 'n.loci')
+        class(combined.result) <- c('scanonebins', 'array')
+    }
     
     return(combined.result)
 }
@@ -49,7 +70,7 @@ batchPermScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
 #' Run \code{qtl::scanone} on a batch of phenotypes.
 #' 
 #' @param cross An \pkg{R/qtl} \code{cross} object.
-#' @param pheno.col Phenotype columns for which QTL analysis should be run. 
+#' @param pheno.col Phenotype columns for which QTL analysis should be run.
 #' If no phenotypes are specified, all are used.
 #' @template param-n.cluster
 #' @param iseed Seed for random number generator.
@@ -61,8 +82,7 @@ batchPermScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
 #' @export
 #' @family scan utilities
 #' @rdname batchPhenoScanone
-batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, 
-    ...) {
+batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, ...) {
     
     stopifnot( allKwargs(...) )
 
@@ -98,19 +118,30 @@ batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
 #' If no phenotypes are specified, all are used.
 #' @param perm.pheno Permute phenotype data.
 #' @param perm.geno Permute genotype data.
+#' @param perm.type Type of permutation data to return (see below).
 #' @param ... Additional keyword arguments passed to \code{scanone}.
-#'     
-#' @return A \code{scanoneperm} matrix containing the result of \code{scanone} 
-#' for a single permutation.
+#' 
+#' @return If \code{perm.type} is set to \code{'max'}, a regular
+#' \code{scanoneperm} object is returned, containing the maximum
+#' LOD value from the given permutation. If \code{perm.type} is
+#' set to \code{'bins'}, a \code{scanonebins} array is returned.
+#' The single row of this array corresponds to the permutation,
+#' each column corresponds to a bin spanning an interval of LOD
+#' values, and each slice corresponds to a LOD column. Each array
+#' element contains the number of loci in the given bin interval
+#' for that LOD column in that permutation.
 #' 
 #' @export
 #' @family scan utilities
+#' @include binLODValues.R
 #' @rdname nodePermScanone
 nodePermScanone <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE, 
-    perm.geno=FALSE, ...) {
+    perm.geno=FALSE, perm.type=c('max', 'bins'), ...) {
     
     stopifnot( isSinglePositiveWholeNumber(perm.id) )
     stopifnot( allKwargs(...) )
+    
+    perm.type <- match.arg(perm.type)
 
     kwargs <- list(...)
     
@@ -170,15 +201,26 @@ nodePermScanone <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE,
     # Get LOD column indices.
     lodcol.indices = getDatColIndices(scanone.result)
     
-    # Get max LOD value for each LOD column.
-    perm.result <- apply(scanone.result[, lodcol.indices, drop=FALSE], 2, max)
-    
-    # Create scanone permutation result.
-    perm.result <- matrix(perm.result, nrow=1, byrow=TRUE,
-        dimnames=list(perm.id, names(perm.result)))
-    
-    # Set class of permutation result.
-    class(perm.result) <- c('scanoneperm', 'matrix')
+    if ( perm.type == 'max' ) {
+        
+        # Get max LOD value for each LOD column.
+        perm.result <- apply(scanone.result[, lodcol.indices, drop=FALSE], 2, max)
+        
+        # Create scanone permutation result.
+        perm.result <- matrix(perm.result, nrow=1, byrow=TRUE,
+            dimnames=list(perm.id, names(perm.result)))
+        
+        # Set class of permutation result.
+        class(perm.result) <- c('scanoneperm', 'matrix')
+        
+    } else if ( perm.type == 'bins' ) {
+        
+        # Bin LOD values of scanone permutation result.
+        perm.result <- binLODValues(scanone.result)
+        
+        # Set rowname to permutation ID.
+        dimnames(perm.result)[[1]] <- perm.id
+    }
     
     return(perm.result)
 }

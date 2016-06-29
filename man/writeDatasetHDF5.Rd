@@ -9,6 +9,7 @@
 \alias{writeDatasetHDF5.mapframe}
 \alias{writeDatasetHDF5.matrix}
 \alias{writeDatasetHDF5.scanone}
+\alias{writeDatasetHDF5.scanonebins}
 \alias{writeDatasetHDF5.scanoneperm}
 \alias{writeDatasetHDF5.scantwo}
 \alias{writeDatasetHDF5.scantwoperm}
@@ -35,6 +36,8 @@ writeDatasetHDF5(dataset, outfile, h5name, ...)
 \method{writeDatasetHDF5}{matrix}(dataset, outfile, h5name, ...)
 
 \method{writeDatasetHDF5}{scanone}(dataset, outfile, h5name, ...)
+
+\method{writeDatasetHDF5}{scanonebins}(dataset, outfile, h5name, ...)
 
 \method{writeDatasetHDF5}{scanoneperm}(dataset, outfile, h5name, ...)
 

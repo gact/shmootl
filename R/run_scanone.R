@@ -9,6 +9,11 @@
 #' genotypes, marker regresion is performed regardless of the value of the
 #' \code{method} parameter.
 #' 
+#' @details LOD threshold stringency can be set through either the significance
+#' level (\code{alpha}), or the false-discovery rate (\code{fdr}), but not both.
+#' If neither is specified, a significance level \code{alpha} of \code{0.05} is
+#' used by default.
+#' 
 #' @param infile input cross file
 #' @param outfile output result file
 #' @param chr sequences [default: all]
@@ -18,6 +23,7 @@
 #' @param n.perm number of permutations
 #' @param n.cluster number of threads
 #' @param alpha significance level for LOD threshold
+#' @param fdr FDR for LOD threshold
 #' @param step step size for genotype probabilities
 #' @param error.prob genotyping error rate 
 #' @param map.function genetic map function
@@ -26,13 +32,12 @@
 #' @rdname run_scanone
 run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     'binary', '2part', 'np'), method=c('em', 'imp', 'hk', 'ehk', 'mr', 'mr-imp',
-    'mr-argmax'), n.perm=1000L, n.cluster=1L, alpha=0.05, step=0,
+    'mr-argmax'), n.perm=1000L, n.cluster=1L, alpha=NA, fdr=NA, step=0,
     error.prob=0.0001, map.function=c('haldane', 'kosambi', 'c-f', 'morgan')) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     stopifnot( isSingleString(outfile) )
-    stopifnot( isSingleProbability(alpha) )
     stopifnot( isSingleNonNegativeNumber(step) )
     stopifnot( isSingleProbability(error.prob) )
     
@@ -42,9 +47,22 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     
     chr <- if ( ! is.na(chr) ) { as.character(loadListFromLine(chr)) } else { NULL }
     pheno <- if ( ! is.na(pheno) ) { as.character(loadListFromLine(pheno)) } else { NULL }
-
-    # Get parameter alpha as a percentage.
-    pct.alpha <- paste0(alpha * 100, '%')
+    alpha <- if ( ! is.na(alpha) ) { as.numeric(alpha) } else { NULL }
+    fdr <- if ( ! is.na(fdr) ) { as.numeric(fdr) } else { NULL }
+    
+    if ( ! is.null(alpha) && ! is.null(fdr) ) {
+        stop("cannot set both significance level (alpha) and FDR")
+    } else if ( ! is.null(alpha) ) {# set specified alpha value
+        stopifnot( isSingleProbability(alpha) )
+        perm.type <- 'max'
+    } else if ( ! is.null(fdr) ) { # set specified FDR
+        stopifnot( isSingleFiniteNumber(fdr) )
+        stopifnot( fdr > 0 & fdr < 1 )
+        perm.type <- 'bins'
+    } else { # set default alpha value
+        perm.type <- 'max'
+        alpha <- 0.05
+    }
     
     # Read cross input file.
     cross <- readCrossCSV(infile, error.prob=error.prob,
@@ -59,11 +77,14 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     genotypes <- getGenotypes(cross.info)
     
     # If cross contains enumerated genotypes, do marker regression.
-    if ( all( isEnumGenotype(genotypes) ) ) {
+    if ( hasEnumGenotypes(cross) ) {
+        
         if ( sum( qtl::nmissing(cross) ) > 0 ) {
             stop("cannot scan with enumerated genotypes - missing genotype data")
         }
+        
         cat(" --- Using marker regression on enumerated genotypes\n")
+        
         method <- 'mr'
     }
     
@@ -80,10 +101,19 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     
     # Run permutation scans.
     scanone.perms <- batchPermScanone(cross, chr=sequences, pheno.col=pheno.col, 
-        model=model, method=method, n.perm=n.perm, n.cluster=n.cluster)
+        model=model, method=method, n.perm=n.perm, n.cluster=n.cluster,
+        perm.type=perm.type)
     
     # Get LOD thresholds from permutation results. 
-    thresholds <- qtl:::summary.scanoneperm(scanone.perms, alpha=alpha)
+    if ( ! is.null(alpha) ) {
+        perm.summary <- qtl:::subset.scanoneperm(scanone.perms, alpha=alpha)
+        thresholds <- as.numeric(perm.summary[1, ])
+    } else { # fdr
+        perm.summary <- summary.scanonebins(scanone.perms, scanone.result, fdr=fdr)
+        thresholds <- rep(perm.summary[1, 'lod'], length(phenotypes))
+        # NB: update FDR from perm summary, can differ from requested FDR
+        fdr <- 0.01 * as.numeric(sub('%', '', rownames(perm.summary)[1]))
+    }
     
     # Remove existing result file.
     if ( file.exists(outfile) ) {
@@ -99,20 +129,21 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     # Output results of single QTL analysis for each phenotype.
     for ( i in getIndices(phenotypes) ) {
         
-        # Get threshold for this phenotype.
-        threshold <- thresholds[pct.alpha, i]
-        
         # Output scan result for this phenotype.
         pheno.result <- getLODProfile(scanone.result, lodcolumn=i)
         writeResultHDF5(pheno.result, outfile, phenotypes[i])
         
         # Output permutation scan results for this phenotype.
-        pheno.perms <- qtl:::subset.scanoneperm(scanone.perms, lodcolumn=i)
+        if ( ! is.null(alpha) ) {
+            pheno.perms <- qtl:::subset.scanoneperm(scanone.perms, lodcolumn=i)
+        } else { # fdr
+            pheno.perms <- scanone.perms[,, i]
+        }
         writeResultHDF5(pheno.perms, outfile, phenotypes[i])
         
         # Get significant QTL intervals.
         qtl.intervals <- getQTLIntervals(pheno.result, lodcolumn=i,
-            threshold=threshold, alpha=alpha)
+            threshold=thresholds[i], alpha=alpha, fdr=fdr)
         
         # Output any significant QTL intervals.
         if ( length(qtl.intervals) > 0 ) {

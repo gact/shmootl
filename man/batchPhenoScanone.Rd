@@ -10,7 +10,7 @@ batchPhenoScanone(cross, pheno.col = NULL, n.cluster = 1, iseed = NULL,
 \arguments{
 \item{cross}{An \pkg{R/qtl} \code{cross} object.}
 
-\item{pheno.col}{Phenotype columns for which QTL analysis should be run. 
+\item{pheno.col}{Phenotype columns for which QTL analysis should be run.
 If no phenotypes are specified, all are used.}
 
 \item{n.cluster}{Number of nodes to request for parallel execution. Any 

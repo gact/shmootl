@@ -7,7 +7,7 @@
 #' @param reportfile PDF report file
 #' 
 #' @export
-#' @importFrom grDevices pdf
+#' @importFrom grDevices cairo_pdf
 #' @rdname run_report
 run_report <- function(resultfile, reportfile) {
     
@@ -49,7 +49,7 @@ run_report <- function(resultfile, reportfile) {
     }
     
     # Init PDF graphics device.  
-    grDevices::pdf(reportfile, width=fig.width, height=fig.height)
+    grDevices::cairo_pdf(reportfile, width=fig.width, height=fig.height, onefile=TRUE)
     
     # Get phenotypes from result file.
     results <- readGroupMemberNamesHDF5(resultfile, 'Results')
@@ -67,7 +67,7 @@ run_report <- function(resultfile, reportfile) {
         pheno.result <- readResultHDF5(resultfile, phenotype, 'Scanone')
         
         # Plot (zero or more) QTL intervals across all sequences.
-        plotQTLIntervals(qtl.intervals, pheno.result, phenotype=phenotype)
+        plotQTLScanone(pheno.result, qtl.intervals=qtl.intervals, phenotype=phenotype)
         
         # If significant QTL intervals found, plot
         # all sequences with a significant QTL.
@@ -77,7 +77,7 @@ run_report <- function(resultfile, reportfile) {
                 function(x) unique(x[, 'chr']) ) )
             
             for ( interval.seq in interval.seqs ) {
-                plotQTLIntervals(qtl.intervals, pheno.result,
+                plotQTLScanone(pheno.result, qtl.intervals=qtl.intervals,
                     chr=interval.seq, phenotype=phenotype)
             }
         }

@@ -6,9 +6,9 @@
 \usage{
 run_scanone(infile, outfile, chr = NA, pheno = NA, model = c("normal",
   "binary", "2part", "np"), method = c("em", "imp", "hk", "ehk", "mr",
-  "mr-imp", "mr-argmax"), n.perm = 1000L, n.cluster = 1L, alpha = 0.05,
-  step = 0, error.prob = 1e-04, map.function = c("haldane", "kosambi",
-  "c-f", "morgan"))
+  "mr-imp", "mr-argmax"), n.perm = 1000L, n.cluster = 1L, alpha = NA,
+  fdr = NA, step = 0, error.prob = 1e-04, map.function = c("haldane",
+  "kosambi", "c-f", "morgan"))
 }
 \arguments{
 \item{infile}{input cross file}
@@ -29,6 +29,8 @@ run_scanone(infile, outfile, chr = NA, pheno = NA, model = c("normal",
 
 \item{alpha}{significance level for LOD threshold}
 
+\item{fdr}{FDR for LOD threshold}
+
 \item{step}{step size for genotype probabilities}
 
 \item{error.prob}{genotyping error rate}
@@ -41,5 +43,11 @@ run a single QTL analysis using \pkg{R/qtl} \code{scanone}, and write the
 results to the specified output file. If the input cross contains enumerated
 genotypes, marker regresion is performed regardless of the value of the
 \code{method} parameter.
+}
+\details{
+LOD threshold stringency can be set through either the significance
+level (\code{alpha}), or the false-discovery rate (\code{fdr}), but not both.
+If neither is specified, a significance level \code{alpha} of \code{0.05} is
+used by default.
 }
 

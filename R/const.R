@@ -222,11 +222,12 @@ with(const, {
     
     # Default QTL analysis result names ----------------------------------------
     default.result.names <- data.frame( matrix(c(
-        #           class                    name
-        'scanone',              'Scanone',
-        'scantwo',              'Scantwo',
-        'scanoneperm', 'Scanone Permutations',
-        'scantwoperm', 'Scantwo Permutations',
+        #       class                    name
+        'scanone',                   'Scanone',
+        'scantwo',                   'Scantwo',
+        'scanoneperm',   'Scanone Perms (Max)',
+        'scanonebins',  'Scanone Perms (Bins)',
+        'scantwoperm',   'Scantwo Perms (Max)',
         'qtlintervals',        'QTL Intervals'
     ), ncol=2, byrow=TRUE, dimnames=list(NULL, c('class', 'name'))), 
     stringsAsFactors=FALSE)

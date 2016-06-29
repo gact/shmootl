@@ -14,6 +14,7 @@ LazyData: true
 License: GPL-3
 URL: https://github.com/gact/shmootl
 Imports:
+    abind,
     argparser,
     BiocGenerics,
     GenomeInfoDb,
@@ -28,6 +29,8 @@ RoxygenNote: 5.0.1
 Collate:
     'CrossInfo-class.R'
     'H5Stack-class.R'
+    'scanonebins.R'
+    'binLODValues.R'
     'batchScanone.R'
     'batchScanoneF.R'
     'batchScantwo.R'
@@ -44,11 +47,13 @@ Collate:
     'getLODValues.R'
     'getQTLIntervals.R'
     'getQTLPeaks.R'
+    'hasEnumGenotypes.R'
     'hdf5.R'
     'map.R'
     'pheno.R'
     'pipeline.R'
     'plotQTLIntervals.R'
+    'plotQTLScanone.R'
     'run.R'
     'run_estimap.R'
     'run_makecross.R'

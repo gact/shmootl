@@ -18,8 +18,12 @@
 #' @param ... Further arguments (see below).
 #' @param threshold In a \code{scanone} or equivalent object, this indicates
 #' the LOD significance threshold for QTL intervals.
-#' @param alpha In a \code{scanone} or equivalent object, this contains
-#' the significance level of the given threshold.
+#' @param alpha In a \code{scanone} or equivalent object, this contains the
+#' the significance level of the given threshold. (Mutually exclusive
+#' with \code{fdr}.)
+#' @param fdr In a \code{scanone} or equivalent object, this contains
+#' the false discovery rate (FDR) of the given threshold. (Mutually exclusive
+#' with \code{alpha}.)
 #' @template param-lodcolumn
 #' @param qtl.peaks Locus \code{mapframe} indicating the location of the QTL 
 #' peaks in a \code{scanone} result. If not specified, these are found using 
@@ -43,7 +47,7 @@ getQTLIntervals <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...) {
 #' @export
 #' @rdname getQTLIntervals
 getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, 
-    threshold=NULL, alpha=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
+    threshold=NULL, alpha=NULL, fdr=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
 
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
@@ -51,15 +55,26 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
     stopifnot( isSingleNonNegativeNumber(drop) )
     stopifnot( isBOOL(expandtomarkers) )
     
+    # Init info attributes.
+    info <- list( threshold=unname(threshold), drop=unname(drop) )
+    
+    # Set significance level / false-discovery rate.
+    if ( ! is.null(alpha) && ! is.null(fdr) ) {
+        stop("cannot set both significance level (alpha) and FDR")
+    } else if ( ! is.null(alpha) ) {
+        stopifnot( isSingleProbability(alpha) )
+        info[['alpha']] <- unname(alpha)
+    } else if ( ! is.null(fdr) ) {
+        stopifnot( isSingleFiniteNumber(fdr) )
+        stopifnot( fdr > 0 & fdr < 1 )
+        info[['fdr']] <- unname(fdr)
+    }
+    
     # Init intervals.
     intervals <- list()
     class(intervals) <- c('qtlintervals', 'list')
-    attr(intervals, 'threshold') <- unname(threshold)
-    attr(intervals, 'drop') <- unname(drop)
-    
-    if ( ! is.null(alpha) ) {
-        stopifnot( isSingleProbability(alpha) )
-        attr(intervals, 'alpha') <- unname(alpha)
+    for ( key in names(info) ) { # set info attributes
+        attr(intervals, key) <- info[[key]]
     }
     
     # Set standard QTL interval indices.
@@ -306,9 +321,9 @@ getQTLIntervals.qtl <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
 #' @export
 #' @rdname getQTLIntervals
 getQTLIntervals.scanone <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
-    threshold=NULL, alpha=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
+    threshold=NULL, alpha=NULL, fdr=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
     return( getQTLIntervals(as.mapframe(x), chr=chr, threshold=threshold,
-        drop=drop, expandtomarkers=expandtomarkers, alpha=alpha,
+        drop=drop, expandtomarkers=expandtomarkers, alpha=alpha, fdr=fdr,
         lodcolumn=lodcolumn, qtl.peaks=qtl.peaks) )
 }
     

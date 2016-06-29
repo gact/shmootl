@@ -5,7 +5,7 @@
 \title{Run \code{qtl::scanone} on a single permuted \code{cross} object.}
 \usage{
 nodePermScanone(perm.id, cross, pheno.col = NULL, perm.pheno = TRUE,
-  perm.geno = FALSE, ...)
+  perm.geno = FALSE, perm.type = c("max", "bins"), ...)
 }
 \arguments{
 \item{perm.id}{Permutation index.}
@@ -19,11 +19,20 @@ If no phenotypes are specified, all are used.}
 
 \item{perm.geno}{Permute genotype data.}
 
+\item{perm.type}{Type of permutation data to return (see below).}
+
 \item{...}{Additional keyword arguments passed to \code{scanone}.}
 }
 \value{
-A \code{scanoneperm} matrix containing the result of \code{scanone} 
-for a single permutation.
+If \code{perm.type} is set to \code{'max'}, a regular
+\code{scanoneperm} object is returned, containing the maximum
+LOD value from the given permutation. If \code{perm.type} is
+set to \code{'bins'}, a \code{scanonebins} array is returned.
+The single row of this array corresponds to the permutation,
+each column corresponds to a bin spanning an interval of LOD
+values, and each slice corresponds to a LOD column. Each array
+element contains the number of loci in the given bin interval
+for that LOD column in that permutation.
 }
 \description{
 Run \code{qtl::scanone} on a single permuted \code{cross} object.

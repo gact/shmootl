@@ -222,6 +222,19 @@ dispatchFromClassS3 <- function(generic, class.vector, package) {
     return( get(func.name) )
 }
 
+# emptyArgs --------------------------------------------------------------------
+#' Test if ellipsis arguments are empty.
+#' 
+#' @param ... Ellipsis arguments.
+#' 
+#' @return TRUE if there are no ellipsis arguments; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname emptyArgs
+emptyArgs <- function(...) {
+    return( length( list(...) ) == 0 )
+}
+
 # getCoercionFromClassS3 -------------------------------------------------------
 #' Get coercion function for the given class.
 #' 
@@ -946,6 +959,20 @@ isRawGenotype <- function(x, strict=FALSE) {
 #' @rdname isSingleChar
 isSingleChar <- function(x) {
     return( length(x) == 1 && is.character(x) && ! is.na(x) && nchar(x) == 1 )
+}
+
+# isSingleFiniteNumber ---------------------------------------------------------
+#' Test for a single finite number.
+#' 
+#' @param n Test object.
+#' 
+#' @return TRUE if the object is a single finite number;
+#' FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname isSingleFiniteNumber
+isSingleFiniteNumber <- function(n) {
+    return( length(n) == 1 && is.numeric(n) && is.finite(n) )
 }
 
 # isSingleNonNegativeNumber ----------------------------------------------------

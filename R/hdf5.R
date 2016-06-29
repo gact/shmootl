@@ -477,6 +477,42 @@ readDatasetHDF5.scanone <- function(infile, h5name, ...) {
     return( readDatasetHDF5.mapframe(infile, h5name) )
 }
 
+# readDatasetHDF5.scanonebins --------------------------------------------------
+#' @export
+#' @rdname readDatasetHDF5
+readDatasetHDF5.scanonebins  <- function(infile, h5name, ...) {
+    
+    dataset.attrs <- readObjectAttributesHDF5(infile, h5name)
+    
+    dataset <- readDatasetHDF5.data.frame(infile, h5name)
+    
+    attr.names <- names(dataset.attrs)
+    
+    stopifnot( 'R.class' %in% attr.names )
+    
+    trans.attrs <- dataset.attrs[ ! attr.names %in% c('class', 'names', 'row.names') ]
+    
+    perm.indices <- as.character(dataset$perm)
+    
+    dataset <- deleteColumn(dataset, col.name='perm')
+    
+    bin.labels <- colnames(dataset)
+    
+    dim.names <- list(perm.indices, bin.labels, 'lod')
+    
+    dataset <- array(unlist(dataset), dim=lengths(dim.names), dimnames=dim.names)
+    
+    for ( attr.name in names(trans.attrs) ) {
+        attr(dataset, attr.name) <- trans.attrs[[attr.name]]
+    }
+    
+    class(dataset) <- attr(dataset, 'R.class')
+    attr(dataset, 'R.colClasses') <- NULL # currently unused
+    attr(dataset, 'R.class') <- NULL
+    
+    return(dataset)
+}
+
 # readDatasetHDF5.scanoneperm --------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
@@ -889,9 +925,44 @@ writeDatasetHDF5.matrix <- function(dataset, outfile, h5name, ...) {
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5.scanone <- function(dataset, outfile, h5name, ...) {
     
-    stopifnot( length( getDatColIndices(dataset) ) == 1 )
+    num.phenotypes <- length( getDatColIndices(dataset) )
+    stopifnot( num.phenotypes == 1 )
     
     writeDatasetHDF5.mapframe(dataset, outfile, h5name)
+    
+    return( invisible() )
+}
+
+# writeDatasetHDF5.scanonebins -------------------------------------------------
+#' @export
+#' @rdname writeDatasetHDF5
+writeDatasetHDF5.scanonebins <- function(dataset, outfile, h5name, ...) {
+    
+    stopif( 'R.class' %in% names( attributes(dataset) ) )
+    
+    num.phenotypes <- dim(dataset)[3]
+    stopifnot( num.phenotypes == 1 )
+    
+    others <- otherattributes(dataset)
+    
+    bin.labels <- dimnames(dataset)[[2]]
+    
+    perm.indices <- as.integer( dimnames(dataset)[[1]] )
+    
+    num.bins <- dim(dataset)[2]
+    
+    dataset <- sapply(1:num.bins, function(i) as.vector(dataset[, i, 1]))
+    
+    dataset <- data.frame(dataset, check.names=FALSE)
+    colnames(dataset) <- bin.labels
+    
+    dataset <- insertColumn(dataset, col.index=1, col.name='perm', data=perm.indices)
+    
+    otherattributes(dataset) <- others
+    
+    attr(dataset, 'R.class') <- c('scanonebins', 'array')
+    
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name)
     
     return( invisible() )
 }
@@ -903,8 +974,8 @@ writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name, ...) {
     
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
-    pheno.names <- colnames(dataset)
-    stopifnot( length(pheno.names) == 1 )
+    num.phenotypes <- ncol(dataset)
+    stopifnot( num.phenotypes == 1 )
     
     dataset.attrs <- attributes(dataset)
     

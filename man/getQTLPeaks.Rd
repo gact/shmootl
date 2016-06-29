@@ -11,12 +11,12 @@
 getQTLPeaks(x, chr=NULL, ...)
 
 \method{getQTLPeaks}{mapframe}(x, chr = NULL, threshold = NULL,
-  alpha = NULL, lodcolumn = NULL, ...)
+  alpha = NULL, fdr = NULL, lodcolumn = NULL, ...)
 
 \method{getQTLPeaks}{qtl}(x, chr = NULL, qtl.indices = NULL, ...)
 
 \method{getQTLPeaks}{scanone}(x, chr = NULL, threshold = NULL,
-  alpha = NULL, lodcolumn = NULL, ...)
+  alpha = NULL, fdr = NULL, lodcolumn = NULL, ...)
 }
 \arguments{
 \item{x}{An \pkg{R/qtl} \code{scanone} or \code{qtl} object.}
@@ -29,8 +29,13 @@ are specified, QTL peaks are returned for all available sequences.}
 \item{threshold}{In a \code{scanone} or equivalent object, this indicates
 the LOD significance threshold for QTL peaks.}
 
-\item{alpha}{In a \code{scanone} or equivalent object, this contains
-the significance level of the given threshold.}
+\item{alpha}{In a \code{scanone} or equivalent object, this contains the
+the significance level of the given threshold. (Mutually exclusive
+with \code{fdr}.)}
+
+\item{fdr}{In a \code{scanone} or equivalent object, this contains
+the false discovery rate (FDR) of the given threshold. (Mutually exclusive
+with \code{alpha}.)}
 
 \item{lodcolumn}{In a \code{scanone} or equivalent object, this parameter 
 indicates which LOD column to consider. This must be either a column name 

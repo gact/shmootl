@@ -8,6 +8,7 @@ environment. Utility functions are available from within R.
 
 This package depends on the following:
 
+- [abind](https://cran.r-project.org/web/packages/abind/index.html)
 - [argparser](https://cran.r-project.org/web/packages/argparser/index.html)
 - [Bioconductor](http://www.bioconductor.org/)
 - [Biostrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html)

@@ -5,12 +5,13 @@
 \title{Run \code{qtl::scanone} on a batch of permuted \code{cross} objects.}
 \usage{
 batchPermScanone(cross, pheno.col = NULL, n.cluster = 1, iseed = NULL,
-  n.perm = 1000, perm.pheno = TRUE, perm.geno = FALSE, ...)
+  n.perm = 1000, perm.pheno = TRUE, perm.geno = FALSE,
+  perm.type = c("max", "bins"), ...)
 }
 \arguments{
 \item{cross}{An \pkg{R/qtl} \code{cross} object.}
 
-\item{pheno.col}{Phenotype columns for which QTL analysis should be run. 
+\item{pheno.col}{Phenotype columns for which QTL analysis should be run.
 If no phenotypes are specified, all are used.}
 
 \item{n.cluster}{Number of nodes to request for parallel execution. Any 
@@ -28,11 +29,20 @@ from the PBS node file.}
 
 \item{perm.geno}{Permute genotype data.}
 
+\item{perm.type}{Type of permutation data (see below).}
+
 \item{...}{Additional keyword arguments passed to \code{scanone}.}
 }
 \value{
-A \code{scanoneperm} matrix containing the results of \code{scanone}
-for all permutations.
+If \code{perm.type} is set to \code{'max'}, a regular
+\code{scanoneperm} object is returned, containing the maximum
+LOD values from the given permutations. If \code{perm.type} is
+set to \code{'bins'}, a \code{scanonebins} array is returned.
+Each row of this array corresponds to a permutation, each array
+column corresponds to a bin spanning an interval of LOD values,
+and each slice corresponds to a LOD column. Each element contains
+the number of loci in the given bin interval for that LOD column
+in that permutation.
 }
 \description{
 Run \code{qtl::scanone} on a batch of permuted \code{cross} objects.
