@@ -4,12 +4,10 @@
 \alias{run_recode}
 \title{Recode data in \pkg{R/qtl} CSV file.}
 \usage{
-run_recode(infile, outfile, geno = NA)
+run_recode(datafile, geno = NA)
 }
 \arguments{
-\item{infile}{input CSV file}
-
-\item{outfile}{output CSV file}
+\item{datafile}{cross/geno CSV file}
 
 \item{geno}{genotype recode mapping}
 }

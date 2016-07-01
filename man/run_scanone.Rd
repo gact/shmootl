@@ -4,16 +4,16 @@
 \alias{run_scanone}
 \title{Do single QTL scan.}
 \usage{
-run_scanone(infile, outfile, chr = NA, pheno = NA, model = c("normal",
+run_scanone(crossfile, scanfile, chr = NA, pheno = NA, model = c("normal",
   "binary", "2part", "np"), method = c("em", "imp", "hk", "ehk", "mr",
   "mr-imp", "mr-argmax"), n.perm = 1000L, n.cluster = 1L, alpha = NA,
   fdr = NA, step = 0, error.prob = 1e-04, map.function = c("haldane",
   "kosambi", "c-f", "morgan"))
 }
 \arguments{
-\item{infile}{input cross file}
+\item{crossfile}{input cross file}
 
-\item{outfile}{output result file}
+\item{scanfile}{scan result HDF5 file}
 
 \item{chr}{sequences [default: all]}
 
@@ -38,11 +38,11 @@ run_scanone(infile, outfile, chr = NA, pheno = NA, model = c("normal",
 \item{map.function}{genetic map function}
 }
 \description{
-This script will read cross data from the specified input file, 
-run a single QTL analysis using \pkg{R/qtl} \code{scanone}, and write the
-results to the specified output file. If the input cross contains enumerated
-genotypes, marker regresion is performed regardless of the value of the
-\code{method} parameter.
+This script will read cross data from the specified cross input
+file, run a single QTL analysis using \pkg{R/qtl} \code{scanone}, and write
+the results to the specified output file. If the input cross contains
+enumerated genotypes, marker regresion is performed regardless of the value
+of the \code{method} parameter.
 }
 \details{
 LOD threshold stringency can be set through either the significance

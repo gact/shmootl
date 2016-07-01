@@ -6,36 +6,36 @@
 #' @description This script pulls the map from an R/qtl cross or genotype file,
 #' and writes it to a separate map file.
 #' 
-#' @param infile input cross/geno CSV file
+#' @param datafile cross/geno CSV file
 #' @param mapfile output map CSV file
 #' @param require.mapunit require map units in input
 #' @param include.mapunit include map units in output
 #' 
 #' @export
 #' @rdname run_pullmap
-run_pullmap <- function(infile, mapfile, require.mapunit=TRUE,
+run_pullmap <- function(datafile, mapfile, require.mapunit=TRUE,
     include.mapunit=TRUE) {
     
     stopifnot( isSingleString(mapfile) )
     
-    guess <- sniffCSV(infile)
+    guess <- sniffCSV(datafile)
     
     if ( is.null(guess) ) {
         stop("cannot pull map - unknown input data")
     }
     
-    if ( ! hasMapCSV(infile) ) {
-        stop("no map data found in file '", infile,"'")
+    if ( ! hasMapCSV(datafile) ) {
+        stop("no map data found in file '", datafile,"'")
     }
     
     if ( guess == 'cross' ) {
         
-        cross <- readCrossCSV(infile, require.mapunit=require.mapunit)
+        cross <- readCrossCSV(datafile, require.mapunit=require.mapunit)
         cross.map <- qtl::pull.map(cross)
         
     } else if ( guess == 'geno' ) {
         
-        geno <- readGenoCSV(infile, require.mapunit=require.mapunit)
+        geno <- readGenoCSV(datafile, require.mapunit=require.mapunit)
         cross.map <- pullMap(geno)
         
     } else {
@@ -43,7 +43,12 @@ run_pullmap <- function(infile, mapfile, require.mapunit=TRUE,
         stop("cannot pull map from ", guess," data")
     }
     
-    writeMapCSV(cross.map, mapfile, include.mapunit=include.mapunit)
+    tmp <- tempfile()
+    on.exit( file.remove(tmp) )
+    
+    writeMapCSV(cross.map, tmp, include.mapunit=include.mapunit)
+    
+    file.copy(tmp, mapfile, overwrite=TRUE)
     
     return( invisible() )
 }

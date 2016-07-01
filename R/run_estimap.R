@@ -8,7 +8,7 @@
 #' estimated from enumerated genotypes, as these are generated independently for
 #' each marker.
 #' 
-#' @param infile input cross/geno CSV file
+#' @param datafile input cross/geno CSV file
 #' @param mapfile output map CSV file
 #' @param n.cluster number of threads
 #' @param error.prob genotyping error rate
@@ -16,13 +16,13 @@
 #' 
 #' @export
 #' @rdname run_estimap
-run_estimap <- function(infile, mapfile, n.cluster=1L, error.prob=0.0001,
+run_estimap <- function(datafile, mapfile, n.cluster=1L, error.prob=0.0001,
     map.function=c("haldane","kosambi","c-f","morgan")) {
     
     stopifnot( isSingleString(mapfile) )
     stopifnot( isSinglePositiveNumber(n.cluster) )
     
-    guess <- sniffCSV(infile)
+    guess <- sniffCSV(datafile)
     
     if ( is.null(guess) ) {
         stop("cannot estimate map - unknown input data")
@@ -30,11 +30,11 @@ run_estimap <- function(infile, mapfile, n.cluster=1L, error.prob=0.0001,
     
     if ( guess == 'cross' ) {
         
-        cross <- readCrossCSV(infile, require.mapunit=FALSE)
+        cross <- readCrossCSV(datafile, require.mapunit=FALSE)
         
     } else if ( guess == 'geno' ) {
         
-        geno <- readGenoCSV(infile, require.mapunit=FALSE)
+        geno <- readGenoCSV(datafile, require.mapunit=FALSE)
         
         cross.info <- attr(geno, 'info')
         samples <- getSamples(cross.info)
@@ -57,7 +57,12 @@ run_estimap <- function(infile, mapfile, n.cluster=1L, error.prob=0.0001,
     
     cross.map <- as.mapframe(cross.map)
     
-    writeMapframeCSV(cross.map, mapfile)
+    tmp <- tempfile()
+    on.exit( file.remove(tmp) )
+    
+    writeMapframeCSV(cross.map, tmp)
+    
+    file.copy(tmp, mapfile, overwrite=TRUE)
     
     return( invisible() )
 }

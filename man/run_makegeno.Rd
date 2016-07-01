@@ -4,14 +4,14 @@
 \alias{run_makegeno}
 \title{Make genotype data from VCF.}
 \usage{
-run_makegeno(samples, genfile, founders = NA, alleles = NA, digits = NA)
+run_makegeno(datafile, genfile, fdrfile = NA, alleles = NA, digits = NA)
 }
 \arguments{
-\item{samples}{sample VCF file}
+\item{datafile}{sample VCF file}
 
 \item{genfile}{output genotype CSV file}
 
-\item{founders}{optional founder VCF file}
+\item{fdrfile}{optional founder VCF file}
 
 \item{alleles}{founder allele symbols}
 

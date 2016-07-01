@@ -3,19 +3,19 @@
 # run_scanone ------------------------------------------------------------------
 #' Do single QTL scan.
 #' 
-#' @description This script will read cross data from the specified input file, 
-#' run a single QTL analysis using \pkg{R/qtl} \code{scanone}, and write the
-#' results to the specified output file. If the input cross contains enumerated
-#' genotypes, marker regresion is performed regardless of the value of the
-#' \code{method} parameter.
+#' @description This script will read cross data from the specified cross input
+#' file, run a single QTL analysis using \pkg{R/qtl} \code{scanone}, and write
+#' the results to the specified output file. If the input cross contains
+#' enumerated genotypes, marker regresion is performed regardless of the value
+#' of the \code{method} parameter.
 #' 
 #' @details LOD threshold stringency can be set through either the significance
 #' level (\code{alpha}), or the false-discovery rate (\code{fdr}), but not both.
 #' If neither is specified, a significance level \code{alpha} of \code{0.05} is
 #' used by default.
 #' 
-#' @param infile input cross file
-#' @param outfile output result file
+#' @param crossfile input cross file
+#' @param scanfile scan result HDF5 file
 #' @param chr sequences [default: all]
 #' @param pheno phenotypes [default: all]
 #' @param model phenotype model
@@ -30,14 +30,14 @@
 #' 
 #' @export
 #' @rdname run_scanone
-run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
+run_scanone <- function(crossfile, scanfile, chr=NA, pheno=NA, model=c('normal',
     'binary', '2part', 'np'), method=c('em', 'imp', 'hk', 'ehk', 'mr', 'mr-imp',
     'mr-argmax'), n.perm=1000L, n.cluster=1L, alpha=NA, fdr=NA, step=0,
     error.prob=0.0001, map.function=c('haldane', 'kosambi', 'c-f', 'morgan')) {
     
-    stopifnot( isSingleString(infile) )
-    stopifnot( file.exists(infile) )
-    stopifnot( isSingleString(outfile) )
+    stopifnot( isSingleString(crossfile) )
+    stopifnot( file.exists(crossfile) )
+    stopifnot( isSingleString(scanfile) )
     stopifnot( isSingleNonNegativeNumber(step) )
     stopifnot( isSingleProbability(error.prob) )
     
@@ -65,7 +65,7 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     }
     
     # Read cross input file.
-    cross <- readCrossCSV(infile, error.prob=error.prob,
+    cross <- readCrossCSV(crossfile, error.prob=error.prob,
         map.function=map.function)
     
     # Get cross info.
@@ -115,13 +115,12 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
         fdr <- 0.01 * as.numeric(sub('%', '', rownames(perm.summary)[1]))
     }
     
-    # Remove existing result file.
-    if ( file.exists(outfile) ) {
-        file.remove(outfile)
-    }
+    # Create temp output file, ensure will be removed.
+    tmp <- tempfile()
+    on.exit( file.remove(tmp) )
     
-    # Write map to output file.
-    writeMapHDF5(cross.map, outfile)
+    # Write map to temp output file.
+    writeMapHDF5(cross.map, tmp)
     
     comments <- character( length(phenotypes) )
     status <- logical( length(phenotypes) )
@@ -131,7 +130,7 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
         
         # Output scan result for this phenotype.
         pheno.result <- getLODProfile(scanone.result, lodcolumn=i)
-        writeResultHDF5(pheno.result, outfile, phenotypes[i])
+        writeResultHDF5(pheno.result, tmp, phenotypes[i])
         
         # Output permutation scan results for this phenotype.
         if ( ! is.null(alpha) ) {
@@ -139,7 +138,7 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
         } else { # fdr
             pheno.perms <- scanone.perms[,, i]
         }
-        writeResultHDF5(pheno.perms, outfile, phenotypes[i])
+        writeResultHDF5(pheno.perms, tmp, phenotypes[i])
         
         # Get significant QTL intervals.
         qtl.intervals <- getQTLIntervals(pheno.result,
@@ -147,7 +146,7 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
         
         # Output any significant QTL intervals.
         if ( length(qtl.intervals) > 0 ) {
-            writeResultHDF5(qtl.intervals, outfile, phenotypes[i])
+            writeResultHDF5(qtl.intervals, tmp, phenotypes[i])
             comments[i] <- paste(length(qtl.intervals), 'QTLs')
             status[i] <- TRUE
         }
@@ -156,7 +155,10 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
     # Output results overview.
     overview <- data.frame(Phenotype=phenotypes, Status=status, 
         Comments=comments, stringsAsFactors=FALSE)
-    writeOverviewHDF5(overview, outfile)
+    writeOverviewHDF5(overview, tmp)
+    
+    # Move temp output file to scan output file.
+    file.copy(tmp, scanfile, overwrite=TRUE)
     
     return( invisible() )
 }

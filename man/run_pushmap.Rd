@@ -4,23 +4,20 @@
 \alias{run_pushmap}
 \title{Push map into cross/geno data file.}
 \usage{
-run_pushmap(infile, mapfile, outfile, require.mapunit = TRUE,
+run_pushmap(mapfile, datafile, require.mapunit = TRUE,
   include.mapunit = TRUE)
 }
 \arguments{
-\item{infile}{input cross/geno CSV file}
-
 \item{mapfile}{input map CSV file}
 
-\item{outfile}{output cross/geno CSV file}
+\item{datafile}{cross/geno CSV file}
 
 \item{require.mapunit}{require map units in input}
 
 \item{include.mapunit}{include map units in output}
 }
 \description{
-This script reads cross or genotype data from the specified
-input file, replaces its map with that of the given map file, and writes
-the result to the specified output file.
+This script replaces the map of the specified data file with the
+data from the given map file.
 }
 

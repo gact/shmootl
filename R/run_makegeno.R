@@ -6,35 +6,40 @@
 #' @description This script will read genotype data from the specified VCF 
 #' files, then write that genotype data to an \pkg{R/qtl} genotype CSV file.
 #' 
-#' @param samples sample VCF file
-#' @param founders optional founder VCF file
+#' @param datafile sample VCF file
+#' @param fdrfile optional founder VCF file
 #' @param genfile output genotype CSV file
 #' @param alleles founder allele symbols
 #' @param digits numeric precision [default: unrounded]
 #' 
 #' @export
 #' @rdname run_makegeno
-run_makegeno <- function(samples, genfile, founders=NA, alleles=NA, digits=NA) {
+run_makegeno <- function(datafile, genfile, fdrfile=NA, alleles=NA, digits=NA) {
     
     stopifnot( isSingleString(genfile) )
     
     alleles <- if ( ! is.na(alleles) ) { as.character(loadListFromLine(alleles)) } else { NULL }
     digits <- if ( ! is.na(digits) ) { strtoi(digits) } else { NULL }
     
-    sample.ids <- getSamplesVCF(samples)
+    sample.ids <- getSamplesVCF(datafile)
     
-    if ( ! is.na(founders) ) {
-        founder.ids <- getSamplesVCF(founders)
-        infiles <- c(samples, founders)
+    if ( ! is.na(fdrfile) ) {
+        founder.ids <- getSamplesVCF(fdrfile)
+        infiles <- c(datafile, fdrfile)
     } else {
         founder.ids <- NULL
-        infiles <- samples
+        infiles <- datafile
     }
     
     geno <- readGenoVCF(infiles, samples=sample.ids,
         founders=founder.ids, alleles=alleles)
     
-    writeGenoCSV(geno, genfile, digits=digits)
+    tmp <- tempfile()
+    on.exit( file.remove(tmp) )
+    
+    writeGenoCSV(geno, tmp, digits=digits)
+    
+    file.copy(tmp, genfile, overwrite=TRUE)
     
     return( invisible() )
 }

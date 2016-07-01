@@ -4,10 +4,11 @@
 \alias{run_pullmap}
 \title{Pull map from cross/geno data.}
 \usage{
-run_pullmap(infile, mapfile, require.mapunit = TRUE, include.mapunit = TRUE)
+run_pullmap(datafile, mapfile, require.mapunit = TRUE,
+  include.mapunit = TRUE)
 }
 \arguments{
-\item{infile}{input cross/geno CSV file}
+\item{datafile}{cross/geno CSV file}
 
 \item{mapfile}{output map CSV file}
 

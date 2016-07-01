@@ -2,16 +2,16 @@
 % Please edit documentation in R/run_report.R
 \name{run_report}
 \alias{run_report}
-\title{Create report of \pkg{R/qtl} output.}
+\title{Create report of \pkg{R/qtl} analysis results.}
 \usage{
-run_report(resultfile, reportfile)
+run_report(scanfile, report)
 }
 \arguments{
-\item{resultfile}{HDF5 result file}
+\item{scanfile}{scan result HDF5 file}
 
-\item{reportfile}{PDF report file}
+\item{report}{scan report PDF file}
 }
 \description{
-Create report of \pkg{R/qtl} output.
+Create report of \pkg{R/qtl} analysis results.
 }
 

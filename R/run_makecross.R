@@ -20,7 +20,12 @@ run_makecross <- function(genfile, phefile, crossfile) {
     
     cross <- makeCross(geno, pheno)
     
-    writeCrossCSV(cross, crossfile)
+    tmp <- tempfile()
+    on.exit( file.remove(tmp) )
+    
+    writeCrossCSV(cross, tmp)
+    
+    file.copy(tmp, crossfile, overwrite=TRUE)
     
     return( invisible() )
 }

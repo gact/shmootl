@@ -4,11 +4,11 @@
 \alias{run_estimap}
 \title{Estimate map from cross/geno data.}
 \usage{
-run_estimap(infile, mapfile, n.cluster = 1L, error.prob = 1e-04,
+run_estimap(datafile, mapfile, n.cluster = 1L, error.prob = 1e-04,
   map.function = c("haldane", "kosambi", "c-f", "morgan"))
 }
 \arguments{
-\item{infile}{input cross/geno CSV file}
+\item{datafile}{input cross/geno CSV file}
 
 \item{mapfile}{output map CSV file}
 

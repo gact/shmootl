@@ -1,19 +1,24 @@
 # Start of run_report.R ########################################################
 
 # run_report -------------------------------------------------------------------
-#' Create report of \pkg{R/qtl} output.
+#' Create report of \pkg{R/qtl} analysis results.
 #' 
-#' @param resultfile HDF5 result file
-#' @param reportfile PDF report file
+#' @param scanfile scan result HDF5 file
+#' @param report scan report PDF file
 #' 
 #' @export
 #' @importFrom grDevices cairo_pdf
+#' @importFrom grDevices dev.cur
+#' @importFrom grDevices dev.off
 #' @rdname run_report
-run_report <- function(resultfile, reportfile) {
+run_report <- function(scanfile, report) {
     
-    stopifnot( isSingleString(resultfile) )
-    stopifnot( file.exists(resultfile) )
-    stopifnot( isSingleString(reportfile) )
+    stopifnot( isSingleString(scanfile) )
+    stopifnot( file.exists(scanfile) )
+    stopifnot( isSingleString(report) )
+    
+    # Introduce plot device.
+    plot.device <- NULL
     
     # Set figure margin defaults (values taken from R par() doc).
     fig.margin.defaults <- c(1.02, 0.82, 0.82, 0.42)
@@ -41,18 +46,18 @@ run_report <- function(resultfile, reportfile) {
     fig.height <- plot.height + fig.margin.height
     
     # Ensure graphics device will be switched off.
-    on.exit({ graphics.off() })
+    on.exit( if ( ! is.null(plot.device) ) { dev.off(plot.device) } )
     
-    # Remove existing report file.
-    if ( file.exists(reportfile) ) {
-        file.remove(reportfile)
-    }
+    # Create temp report file, ensure will be removed.
+    tmp <- tempfile()
+    on.exit( file.remove(tmp), add=TRUE )
     
     # Init PDF graphics device.  
-    grDevices::cairo_pdf(reportfile, width=fig.width, height=fig.height, onefile=TRUE)
+    grDevices::cairo_pdf(tmp, width=fig.width, height=fig.height, onefile=TRUE)
+    plot.device <- dev.cur()
     
     # Get phenotypes from result file.
-    results <- readGroupMemberNamesHDF5(resultfile, 'Results')
+    results <- readGroupMemberNamesHDF5(scanfile, 'Results')
     phenotypes <- results[ results != 'Overview' ]
     
     # Write output for each phenotype.
@@ -61,10 +66,10 @@ run_report <- function(resultfile, reportfile) {
         phenotype <- phenotypes[i]
         
         # Get QTL intervals.
-        qtl.intervals <- readResultHDF5(resultfile, phenotype, 'QTL Intervals')
+        qtl.intervals <- readResultHDF5(scanfile, phenotype, 'QTL Intervals')
         
         # Get scanone result.
-        pheno.result <- readResultHDF5(resultfile, phenotype, 'Scanone')
+        pheno.result <- readResultHDF5(scanfile, phenotype, 'Scanone')
         
         # Plot (zero or more) QTL intervals across all sequences.
         plotQTLScanone(pheno.result, qtl.intervals=qtl.intervals, phenotype=phenotype)
@@ -82,6 +87,13 @@ run_report <- function(resultfile, reportfile) {
             }
         }
     }
+    
+    # Switch off graphics device.
+    dev.off(plot.device)
+    plot.device <- NULL
+    
+    # Move temp report file to final report file.
+    file.copy(tmp, report, overwrite=TRUE)
     
     return( invisible() )
 }
