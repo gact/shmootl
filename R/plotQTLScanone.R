@@ -187,11 +187,15 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     default.args <- list(bg='white', cex=1, las=1, lty=1, main=plot.title,
         xaxt=xaxt, xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim)
     
+    # Set args from fixed and default values.
+    # TODO: allow user to set some arguments
+    args <- c(fixed.args, default.args)
+    
     # Set palette for sequences.
     col <- rep_len(col, length(chr))
     
     # Start new plot.
-    do.call('plot', c(NA, fixed.args, default.args))
+    do.call('plot', c(NA, args))
     
     # If plot type not specified, choose based on marker density.
     if ( is.null(type) ) {
