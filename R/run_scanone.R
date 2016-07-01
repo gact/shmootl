@@ -142,7 +142,7 @@ run_scanone <- function(infile, outfile, chr=NA, pheno=NA, model=c('normal',
         writeResultHDF5(pheno.perms, outfile, phenotypes[i])
         
         # Get significant QTL intervals.
-        qtl.intervals <- getQTLIntervals(pheno.result, lodcolumn=i,
+        qtl.intervals <- getQTLIntervals(pheno.result,
             threshold=thresholds[i], alpha=alpha, fdr=fdr)
         
         # Output any significant QTL intervals.
