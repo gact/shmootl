@@ -321,6 +321,8 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
         seq.plot.size <- min( seq.par[, 'length'] )
         if ( seq.plot.size < seq.label.size ) {
             cex.axis <- seq.plot.size / seq.label.size
+        } else {
+            cex.axis <- 1
         }
         
         # Plot x-axis with given ticks and labels.
