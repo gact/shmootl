@@ -38,6 +38,7 @@
 #' @importFrom graphics axis
 #' @importFrom graphics box
 #' @importFrom graphics lines
+#' @importFrom graphics par
 #' @importFrom graphics plot
 #' @importFrom graphics points
 #' @importFrom graphics segments
@@ -234,30 +235,17 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
             interval.widths <- sapply(qtl.intervals, function(qtl.interval)
                 diff(qtl.interval[c(1,3), 'pos']) )
             
-            # Get size of bullet symbol (pch=20) in centiMorgans.
-            bullet.width <- tryCatch({
-                
-                # Get actual bullet width with current settings.
-                bullet.width <- strwidth('\u2022', cex=args$cex, family ='sans')
-                
-                return(bullet.width)
-                
-            }, error=function(e) {
-                
-                # Get default bullet width in inches (family='sans', cex=1).
-                bullet.inches <- 0.06944444
-                
-                # Get plot width in inches.
-                plot.inches <- par('pin')[1]
-                
-                # Get plot user-space width.
-                plot.space <- diff(xlim)
-                
-                # Get default bullet width.
-                bullet.width <- (bullet.inches / plot.inches) * plot.space
-                
-                return(bullet.width)
-            })
+            # Get default bullet width.
+            bullet.inches <- 0.06944444 # default bullet width in inches (family='sans', cex=1)
+            plot.inches <- graphics::par('pin')[1] # plot width in inches
+            plot.space <- diff(xlim) # plot width in user-space
+            bullet.width <- (bullet.inches / plot.inches) * plot.space
+            
+            # Try to get size of bullet symbol (pch=20) in user-space.
+            tryCatch({
+                bullet.width <- suppressWarnings(
+                    strwidth('\u2022', cex=args$cex, family ='sans') )
+            }, error=function(e) {})
             
             # Plot QTL intervals if plotting LOD curves and typical
             # QTL intervals would be visually distinguishable.
