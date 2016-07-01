@@ -26,9 +26,9 @@
 #' @rdname makeLODBinLabels
 makeLODBinLabels <- function(bin.starts) {
     
-    stopifnot( is.numeric(bin.starts) )
-    
     if ( length(bin.starts) > 0 ) {
+        
+        stopifnot( is.numeric(bin.starts) )
         
         if ( bin.starts[1] != 1 ) {
             stop("cannot make LOD bin labels - bins do not start at 1")
@@ -62,9 +62,9 @@ makeLODBinLabels <- function(bin.starts) {
 #' @rdname parseLODBinLabels
 parseLODBinLabels <- function(bin.labels) {
     
-    stopifnot( is.character(bin.labels) )
-    
     if ( length(bin.labels) > 0 ) {
+        
+        stopifnot( is.character(bin.labels) )
         
         lod.bin.regex <- '^LOD\\[([[:digit:]]+),([[:digit:]]+)\\)$'
         
@@ -107,27 +107,34 @@ parseLODBinLabels <- function(bin.labels) {
 mergeLODBinLabels <- function(...) {
     
     bin.label.list <- list(...)
-    
     stopifnot( is.list(bin.label.list) )
     stopifnot( length(bin.label.list) > 0 )
-    stopifnot( all( sapply(bin.label.list, is.character) ) )
     
-    max.idx <- which.max( lengths(bin.label.list) )
+    # Remove empty bin label vectors.
+    bin.label.list <- bin.label.list[ ! unlist( lapply(bin.label.list, is.null) ) ]
     
-    merged.labels <- bin.label.list[[max.idx]]
+    if ( length(bin.label.list) > 0 ) {
     
-    parseLODBinLabels(merged.labels) # NB: implicitly validates merged labels
-    
-    for ( bin.labels in bin.label.list ) {
+        stopifnot( all( sapply(bin.label.list, is.character) ) )
         
-        l <- length(bin.labels)
+        max.idx <- which.max( lengths(bin.label.list) )
         
-        if ( l > 0 ) {
+        merged.labels <- bin.label.list[[max.idx]]
+        
+        parseLODBinLabels(merged.labels) # NB: implicitly validates merged labels
+        
+        for ( bin.labels in bin.label.list ) {
             
-            if ( any( bin.labels != merged.labels[1:l] ) ) {
+            l <- length(bin.labels)
+            
+            if ( l > 0 && any( bin.labels != merged.labels[1:l] ) ) {
                 stop("LOD bin label mismatch")
             }
         }
+    
+    } else {
+        
+        merged.labels <- character()
     }
     
     return(merged.labels)
@@ -151,11 +158,15 @@ padBins <- function(x, n) {
     
     others <- otherattributes(x)
     
-    bin.labels <- makeLODBinLabels(1:n)
+    bin.starts <- if ( n > 0 ) { 1:n } else { numeric() }
+    
+    bin.labels <- makeLODBinLabels(bin.starts)
     
     x.labels <- dimnames(x)[[2]]
     
-    num.bins <- dim(x)[2]
+    x.dim <- dim(x)
+    
+    num.bins <- x.dim[2]
     
     bin.labels <- do.call(mergeLODBinLabels, list(x.labels, bin.labels))
     
@@ -167,7 +178,10 @@ padBins <- function(x, n) {
         padding.dimnames <- dimnames(x)
         padding.dimnames[[2]] <- padding.labels
         
-        padding <- array(0, dim=lengths(padding.dimnames),
+        padding.dim <- x.dim
+        padding.dim[2] <- length(padding.labels)
+        
+        padding <- array(0, dim=padding.dim,
             dimnames=padding.dimnames)
         
         x <- abind::abind(x, padding, along=2)
@@ -265,6 +279,7 @@ summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.0
     # Get threshold values from merged bin labels.
     scan.bin.labels <- dimnames(scan.bins)[[2]]
     perm.bin.labels <- dimnames(object)[[2]]
+
     bin.labels <- do.call(mergeLODBinLabels, list(scan.bin.labels, perm.bin.labels))
     thresholds <- parseLODBinLabels(bin.labels)
     
