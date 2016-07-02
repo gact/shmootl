@@ -106,7 +106,7 @@ run_scanone <- function(crossfile, scanfile, chr=NA, pheno=NA, model=c('normal',
     
     # Get LOD thresholds from permutation results. 
     if ( ! is.null(alpha) ) {
-        perm.summary <- qtl:::subset.scanoneperm(scanone.perms, alpha=alpha)
+        perm.summary <- qtl:::summary.scanoneperm(scanone.perms, alpha=alpha)
         thresholds <- as.numeric(perm.summary[1, ])
     } else { # fdr
         perm.summary <- summary.scanonebins(scanone.perms, scanone.result, fdr=fdr)
