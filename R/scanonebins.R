@@ -377,7 +377,6 @@ summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.0
     result <- matrix(thresholds, nrow=length(fdrs), ncol=1,
         dimnames=list(pct.fdrs, 'lod'))
     
-    attr(result, 'n.loci') <- attr(object, 'n.loci')
     attr(result, 'n.perm') <- num.perms
     
     class(result) <- 'summary.scanonebins'

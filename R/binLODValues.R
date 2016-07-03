@@ -79,8 +79,6 @@ binLODValues <- function(x, lodcolumns=NULL) {
     
     lod.bins[ is.na(lod.bins) ] <- 0
     
-    attr(lod.bins, 'n.loci') <- nrow(x)
-    
     class(lod.bins) <- c('scanonebins', 'array')
     
     return(lod.bins)

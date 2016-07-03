@@ -59,7 +59,6 @@ batchPermScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
         num.bins <- max( sapply(scanone.perms, function(x) dim(x)[2]) )
         scanone.perms <- lapply(scanone.perms, padBins, num.bins)
         combined.result <- abind::abind(scanone.perms, along=1)
-        attr(combined.result, 'n.loci') <- attr(scanone.perms[[1]], 'n.loci')
         class(combined.result) <- c('scanonebins', 'array')
     }
     
