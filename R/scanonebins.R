@@ -316,8 +316,8 @@ summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.0
     bin.labels <- do.call(mergeLODBinLabels, list(scan.bin.labels, perm.bin.labels))
     thresholds <- parseLODBinLabels(bin.labels)
     
-    # Get number of bins in scanone result.
-    num.scan.bins <- dim(scan.bins)[2]
+    # Get number of bins in scanone result (i.e. last scan bin index).
+    num.scan.bins <- last.scan.index <- dim(scan.bins)[2]
     
     # Get number of bins in scanone permutations.
     num.perm.bins <- dim(object)[2]
@@ -348,8 +348,37 @@ summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.0
     # Get FDRs at each fixed LOD threshold.
     fdrs <- mean.perm.counts / scan.counts
     
+    # Remove any artefactual bump in FDR estimates.
+    # NB: at low scan counts, as the threshold decreases, the proportional
+    # increase in mean permutation counts can be greater than the proportional
+    # increase in scan counts. This can actually result in a higher threshold
+    # having a higher FDR estimate. To avoid this, we remove these artifactually
+    # higher FDR estimates. This will result in a lower threshold, but in these
+    # cases, the LOD threshold underestimate warning will be output anyway.
+    util.indices <- which( ! is.na(fdrs) & is.finite(fdrs) & fdrs > 0 & fdrs < 1 )
+    if ( last.scan.index %in% util.indices && length(util.indices) >= 2 ) {
+        
+        upper.index <- which(util.indices == last.scan.index)
+        
+        if ( upper.index >= 2 ) {
+            
+            for ( i in upper.index:2 ) {
+                
+                u <- util.indices[i]
+                l <- util.indices[i-1]
+                
+                if ( fdrs[u] > fdrs[l] ) {
+                    last.scan.index <- l
+                    fdrs[u] <- 0
+                } else {
+                    break
+                }
+            }
+        }
+    }
+    
     # Get useable FDR values.
-    util.fdrs <- fdrs[ is.finite(fdrs) & fdrs > 0 & fdrs < 1 ]
+    util.fdrs <- fdrs[ ! is.na(fdrs) & is.finite(fdrs) & fdrs > 0 & fdrs < 1 ]
     
     # If there are useable FDR values, for each requested FDR, get 
     # closest matching FDR and its corresponding LOD threshold..
