@@ -7,8 +7,7 @@
 makeLODBinLabels(bin.starts)
 }
 \arguments{
-\item{bin.starts}{Numeric vector of bin starts: integers
-starting from one and increasing in steps of one.}
+\item{bin.starts}{Numeric vector of bin starts.}
 }
 \value{
 Character vector of LOD bin labels corresponding to the input bins.

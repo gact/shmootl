@@ -4,12 +4,13 @@
 \alias{padBins}
 \title{Pad \code{scanonebins} object to given number of bins.}
 \usage{
-padBins(x, n)
+padBins(x, num.bins)
 }
 \arguments{
 \item{x}{A \code{scanonebins} object.}
 
-\item{n}{Number of bins to which \code{scanonebins} object should be padded.}
+\item{num.bins}{Number of bins to which \code{scanonebins} object
+should be padded.}
 }
 \value{
 Input \code{scanonebins} object, padded with zeroes to the

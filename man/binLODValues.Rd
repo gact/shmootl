@@ -19,10 +19,9 @@ to the set of LOD columns}. If no LOD columns are specified, all are used.}
 A \code{scanonebins} array of LOD bin counts, with a single row, each
 column corresponding to a bin spanning an interval of LOD values, and each
 slice corresponding to a LOD column. Each column name indicates the half-open
-interval that defines the given bin (e.g. \code{'LOD[1,2)'} for a bin that
-contains the number of loci with LOD scores greater than or equal to one and
-less than two). Returned bins cover the range of LOD values from 1.0 until the
-lowest integer that is greater than the maximum observed LOD value.
+interval that defines the given bin (e.g. \code{'LOD[1.1,1.2)'} for a bin that
+contains the number of loci with LOD scores greater than or equal to 1.1 and
+less than 1.2).
 }
 \description{
 Bin LOD values of \code{scanone} object.

@@ -17,8 +17,7 @@
 # makeLODBinLabels -------------------------------------------------------------
 #' Make LOD bin labels from bin starts.
 #'
-#' @param bin.starts Numeric vector of bin starts: integers
-#' starting from one and increasing in steps of one.
+#' @param bin.starts Numeric vector of bin starts.
 #' 
 #' @return Character vector of LOD bin labels corresponding to the input bins.
 #' 
@@ -30,17 +29,35 @@ makeLODBinLabels <- function(bin.starts) {
         
         stopifnot( is.numeric(bin.starts) )
         
-        if ( bin.starts[1] != 1 ) {
-            stop("cannot make LOD bin labels - bins do not start at 1")
+        if ( bin.starts[1] != const$lod.bin$min.start ) {
+            stop("invalid LOD bins start ", bin.starts[1])
         }
         
-        if ( any( diff(bin.starts) != 1 ) ) {
-            stop("cannot make LOD bin labels - bins are not consecutive integers")
-        } 
+        if ( length(bin.starts) > 1 ) {
+            
+            bin.sizes <- diff(bin.starts)
+            
+            neg.bin.sizes <- bin.sizes[ bin.sizes < 0 ]
+            if ( length(neg.bin.sizes) > 0 ) {
+                stop("negative LOD bin sizes - '", toString(neg.bin.sizes), "'")
+            }
+            
+            bin.delta <- abs(bin.sizes - const$lod.bin$size)
+            err.bin.sizes <- bin.sizes[ bin.delta > .Machine$double.eps^0.5 ]
+            if ( length(err.bin.sizes) > 0 ) {
+                stop("invalid LOD bin sizes - '", toString(err.bin.sizes), "'")
+            }
+        }
         
-        bin.ends <- bin.starts + 1
+        bin.ends <- bin.starts + const$lod.bin$size
         
-        bin.labels <- paste0('LOD[', bin.starts, ',', bin.ends, ')')
+        # Format bin start and end strings.
+        fractional.part <- const$lod.bin$size %% 1.0
+        digits <- abs( floor( log10(fractional.part) ) )
+        bin.starts.str <- sprintf(paste0('%.', digits, 'f'), bin.starts)
+        bin.ends.str <- sprintf(paste0('%.', digits, 'f'), bin.ends)
+        
+        bin.labels <- paste0('LOD[', bin.starts.str, ',', bin.ends.str, ')')
         
     } else {
         
@@ -55,8 +72,7 @@ makeLODBinLabels <- function(bin.starts) {
 #'
 #' @param bin.labels Character vector of LOD bin labels to a set of LOD bins.
 #' 
-#' @return Numeric vector of bin starts: integers
-#' starting from one and increasing in steps of one.
+#' @return Numeric vector of bin starts.
 #' 
 #' @keywords internal
 #' @rdname parseLODBinLabels
@@ -66,7 +82,7 @@ parseLODBinLabels <- function(bin.labels) {
         
         stopifnot( is.character(bin.labels) )
         
-        lod.bin.regex <- '^LOD\\[([[:digit:]]+),([[:digit:]]+)\\)$'
+        lod.bin.regex <- '^LOD\\[([0-9]+(?:[.][0-9]+)?),([0-9]+(?:[.][0-9]+)?)\\)$'
         
         m <- regexec(lod.bin.regex, bin.labels)
         regmatch.list <- regmatches(bin.labels, m)
@@ -79,12 +95,21 @@ parseLODBinLabels <- function(bin.labels) {
         bin.starts <- as.numeric( sapply(regmatch.list, function(x) x[2]) )
         bin.ends <- as.numeric( sapply(regmatch.list, function(x) x[3]) )
         
-        if ( bin.starts[1] != 1 ) {
-            stop("LOD bins do not start at 1")
+        if ( bin.starts[1] != const$lod.bin$min.start ) {
+            stop("invalid LOD bins start ", bin.starts[1])
         }
         
-        if ( any( diff(bin.starts) != 1 ) || any( bin.ends - bin.starts != 1 ) ) {
-            stop("LOD bins must be of length 1")
+        bin.sizes <- bin.ends - bin.starts
+        
+        neg.bin.sizes <- bin.sizes[ bin.sizes < 0 ]
+        if ( length(neg.bin.sizes) > 0 ) {
+            stop("negative LOD bin sizes - '", toString(neg.bin.sizes), "'")
+        }
+        
+        bin.delta <- abs(bin.sizes - const$lod.bin$size)
+        err.bin.sizes <- bin.sizes[ bin.delta > .Machine$double.eps^0.5 ]
+        if ( length(err.bin.sizes) > 0 ) {
+            stop("invalid LOD bin sizes - '", toString(err.bin.sizes), "'")
         }
     
     } else {
@@ -144,7 +169,8 @@ mergeLODBinLabels <- function(...) {
 #' Pad \code{scanonebins} object to given number of bins.
 #'
 #' @param x A \code{scanonebins} object.
-#' @param n Number of bins to which \code{scanonebins} object should be padded.
+#' @param num.bins Number of bins to which \code{scanonebins} object
+#' should be padded.
 #' 
 #' @return Input \code{scanonebins} object, padded with zeroes to the
 #' specified size.
@@ -152,13 +178,14 @@ mergeLODBinLabels <- function(...) {
 #' @importFrom abind abind
 #' @keywords internal
 #' @rdname padBins
-padBins <- function(x, n) {
+padBins <- function(x, num.bins) {
     
     stopifnot( 'scanonebins' %in% class(x) )
     
     others <- otherattributes(x)
     
-    bin.starts <- if ( n > 0 ) { 1:n } else { numeric() }
+    bin.starts <- seq(from=const$lod.bin$min.start,
+        by=const$lod.bin$size, length.out=num.bins)
     
     bin.labels <- makeLODBinLabels(bin.starts)
     
@@ -166,13 +193,13 @@ padBins <- function(x, n) {
     
     x.dim <- dim(x)
     
-    num.bins <- x.dim[2]
+    n <- x.dim[2]
     
     bin.labels <- do.call(mergeLODBinLabels, list(x.labels, bin.labels))
     
-    if ( num.bins < n ) {
+    if ( n < num.bins ) {
         
-        padding.indices <- (num.bins + 1):n
+        padding.indices <- (n + 1):num.bins
         padding.labels <- bin.labels[padding.indices]
         
         padding.dimnames <- dimnames(x)

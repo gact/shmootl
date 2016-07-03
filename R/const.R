@@ -97,6 +97,13 @@ with(const, {
         genome = 'S288C_R64-1-1'
     )
     
+    # LOD bin settings ---------------------------------------------------------
+    
+    lod.bin = list(
+        min.start = 1.0,
+        size = 0.1
+    )
+    
     # Regex patterns -----------------------------------------------------------
     pattern <- list(
         

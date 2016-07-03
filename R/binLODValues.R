@@ -10,10 +10,9 @@
 #' @return A \code{scanonebins} array of LOD bin counts, with a single row, each
 #' column corresponding to a bin spanning an interval of LOD values, and each
 #' slice corresponding to a LOD column. Each column name indicates the half-open
-#' interval that defines the given bin (e.g. \code{'LOD[1,2)'} for a bin that
-#' contains the number of loci with LOD scores greater than or equal to one and
-#' less than two). Returned bins cover the range of LOD values from 1.0 until the
-#' lowest integer that is greater than the maximum observed LOD value.
+#' interval that defines the given bin (e.g. \code{'LOD[1.1,1.2)'} for a bin that
+#' contains the number of loci with LOD scores greater than or equal to 1.1 and
+#' less than 1.2).
 #' 
 #' @export
 #' @include scanonebins.R
@@ -36,19 +35,21 @@ binLODValues <- function(x, lodcolumns=NULL) {
         
         lods <- x[, lodcol.indices[i]]
         
-        lods <- lods[ ! is.na(lods) & lods >= 1.0 ]
+        lods <- lods[ ! is.na(lods) & lods >= const$lod.bin$min.start ]
         
         if ( length(lods) > 0 ) {
             
-            floored.lods <- floor(lods)
+            # Floor LOD values to nearest bin start.
+            floored.lods <- lods - (lods %% const$lod.bin$size)
             
-            num.bins <- max(floored.lods)
+            lod.bin.max.start <- max(floored.lods)
             
-            bin.starts <- seq_len(num.bins)
+            bin.starts <- seq(from=const$lod.bin$min.start,
+                to=lod.bin.max.start, by=const$lod.bin$size)
             
             bin.labels <- makeLODBinLabels(bin.starts)
             
-            binned.lods <- rep_len(0, num.bins)
+            binned.lods <- rep_len(0, length(bin.labels))
             names(binned.lods) <- bin.labels
             
             bin.freqs <- table(floored.lods)

@@ -10,8 +10,7 @@ parseLODBinLabels(bin.labels)
 \item{bin.labels}{Character vector of LOD bin labels to a set of LOD bins.}
 }
 \value{
-Numeric vector of bin starts: integers
-starting from one and increasing in steps of one.
+Numeric vector of bin starts.
 }
 \description{
 Parse bin starts from LOD bin labels.
