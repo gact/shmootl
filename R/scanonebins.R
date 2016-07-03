@@ -376,14 +376,25 @@ summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.0
             }
         }
     }
-    
-    # Get useable FDR values.
-    util.fdrs <- fdrs[ ! is.na(fdrs) & is.finite(fdrs) & fdrs > 0 & fdrs < 1 ]
+
+    # Get indices of useable FDR values.
+    util.indices <- which( ! is.na(fdrs) & is.finite(fdrs) & fdrs > 0 & fdrs < 1 )
     
     # If there are useable FDR values, for each requested FDR, get 
     # closest matching FDR and its corresponding LOD threshold..
-    if ( length(util.fdrs) > 0 ) {
+    if ( length(util.indices) > 0 ) {
         
+        # Check if FDR estimate is limited by scanone LOD profile..
+        if ( last.scan.index %in% util.indices && fdrs[last.scan.index] > min(fdr) ) {
+            warning("LOD threshold (", thresholds[last.scan.index], ") is maximum ",
+                "possible with this LOD profile - may be an underestimate")
+        # ..otherwise check if limited by permutation-derived FDR estimates.
+        } else if ( min(fdrs) > min(fdr) ) {
+            warning("LOD threshold for FDR (", min(fdr), ") may be an overestimate",
+                " - more permutations may help")
+        }
+        
+        util.fdrs <- fdrs[util.indices]
         prox.fdrs <- sapply(fdr, function(x) util.fdrs[ which.min( abs( x - util.fdrs ) ) ])
         prox.fdrs <- unique(prox.fdrs)
         
