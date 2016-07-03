@@ -39,6 +39,9 @@ run_makegeno <- function(datafile, genfile, fdrfile=NA, alleles=NA, digits=NA) {
     
     writeGenoCSV(geno, tmp, digits=digits)
     
+    # Move temp file to final genotypes file.
+    # NB: file.copy is used here instead of file.rename because the latter
+    # can sometimes fail when moving files between different file systems.
     file.copy(tmp, genfile, overwrite=TRUE)
     
     return( invisible() )

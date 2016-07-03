@@ -25,6 +25,9 @@ run_makecross <- function(genfile, phefile, crossfile) {
     
     writeCrossCSV(cross, tmp)
     
+    # Move temp file to final cross file.
+    # NB: file.copy is used here instead of file.rename because the latter
+    # can sometimes fail when moving files between different file systems.
     file.copy(tmp, crossfile, overwrite=TRUE)
     
     return( invisible() )

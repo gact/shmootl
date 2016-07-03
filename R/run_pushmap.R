@@ -48,6 +48,9 @@ run_pushmap <- function(mapfile, datafile, require.mapunit=TRUE,
         stop("cannot push map into ", guess," data file")
     }
     
+    # Move temp file to final output file.
+    # NB: file.copy is used here instead of file.rename because the latter
+    # can sometimes fail when moving files between different file systems.
     file.copy(tmp, datafile, overwrite=TRUE)
     
     return( invisible() )

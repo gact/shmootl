@@ -113,7 +113,9 @@ run_report <- function(scanfile, report) {
     dev.off(plot.device)
     plot.device <- NULL
     
-    # Move temp report file to final report file.
+    # Move temp file to final report file.
+    # NB: file.copy is used here instead of file.rename because the latter
+    # can sometimes fail when moving files between different file systems.
     file.copy(tmp, report, overwrite=TRUE)
     
     return( invisible() )

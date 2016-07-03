@@ -160,7 +160,9 @@ run_scanone <- function(crossfile, scanfile, chr=NA, pheno=NA, model=c('normal',
         Comments=comments, stringsAsFactors=FALSE)
     writeOverviewHDF5(overview, tmp)
     
-    # Move temp output file to scan output file.
+    # Move temp file to final scan result file.
+    # NB: file.copy is used here instead of file.rename because the latter
+    # can sometimes fail when moving files between different file systems.
     file.copy(tmp, scanfile, overwrite=TRUE)
     
     return( invisible() )

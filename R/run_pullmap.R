@@ -48,6 +48,9 @@ run_pullmap <- function(datafile, mapfile, require.mapunit=TRUE,
     
     writeMapCSV(cross.map, tmp, include.mapunit=include.mapunit)
     
+    # Move temp file to final map file.
+    # NB: file.copy is used here instead of file.rename because the latter
+    # can sometimes fail when moving files between different file systems.
     file.copy(tmp, mapfile, overwrite=TRUE)
     
     return( invisible() )

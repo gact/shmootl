@@ -62,6 +62,9 @@ run_estimap <- function(datafile, mapfile, n.cluster=1L, error.prob=0.0001,
     
     writeMapframeCSV(cross.map, tmp)
     
+    # Move temp file to final map file.
+    # NB: file.copy is used here instead of file.rename because the latter
+    # can sometimes fail when moving files between different file systems.
     file.copy(tmp, mapfile, overwrite=TRUE)
     
     return( invisible() )
