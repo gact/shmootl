@@ -270,15 +270,15 @@ print.summary.scanonebins <- function(x, ...) {
 summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.01, ...) {
     
     stopifnot( 'scanone' %in% class(scanone.result) )
-    stopifnot( all( fdr > 0 & fdr < 1 ) )
+    stopifnot( all( ! is.na(fdr) & is.finite(fdr) & fdr > 0 & fdr < 1 ) )
     stopifnot( emptyArgs(...) )
     
     # Get sorted unique FDR values. 
     fdr <- unique( sort(fdr) )
     
     # Check that LOD column names match between scanone and scanonebins objects.
-    lodcol.indices <- getDatColIndices(scanone.result)
-    scan.lodcol.names <- colnames(scanone.result)[lodcol.indices]
+    scan.lodcols <- getDatColIndices(scanone.result)
+    scan.lodcol.names <- colnames(scanone.result)[scan.lodcols]
     perm.lodcol.names <- dimnames(object)[[3]]
     if ( length(perm.lodcol.names) != length(scan.lodcol.names) ||
         any( perm.lodcol.names != scan.lodcol.names ) ) {
@@ -291,7 +291,7 @@ summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.0
     
     # If no error occurred above, there is a single LOD column.
     if ( is.null(lodcolumns) ) {
-        lodcolumns <- 1
+        lodcolumns <- scan.lodcols - 2 # 'chr' and 'pos' columns
     }
     
     # Subset scanone permutations for LOD columns of interest.
