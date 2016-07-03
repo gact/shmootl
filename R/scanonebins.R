@@ -51,9 +51,15 @@ makeLODBinLabels <- function(bin.starts) {
         
         bin.ends <- bin.starts + const$lod.bin$size
         
-        # Format bin start and end strings.
+        # Get number of digits needed to display bin size number.
         fractional.part <- const$lod.bin$size %% 1.0
-        digits <- abs( floor( log10(fractional.part) ) )
+        if (fractional.part) {
+            digits <- abs( floor( log10(fractional.part) ) )
+        } else {
+            digits <- 0
+        }
+        
+        # Format bin start and end strings.
         bin.starts.str <- sprintf(paste0('%.', digits, 'f'), bin.starts)
         bin.ends.str <- sprintf(paste0('%.', digits, 'f'), bin.ends)
         
