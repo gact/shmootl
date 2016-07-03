@@ -712,7 +712,7 @@ readOverviewHDF5 <- function(infile) {
     overview <- readDatasetHDF5(infile, h5name)
     
     stopifnot( is.data.frame(overview) )
-    stopifnot( colnames(overview) == c('Phenotype', 'Status', 'Comments') )
+    stopifnot( all( colnames(overview) == c('Phenotype', 'Status', 'Comments') ) )
     stopifnot( is.character(overview[['Phenotype']]) )
     stopifnot( is.logical(overview[['Status']]) )
     stopifnot( is.character(overview[['Comments']]) )

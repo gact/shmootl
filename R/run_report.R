@@ -65,8 +65,29 @@ run_report <- function(scanfile, report) {
         
         phenotype <- phenotypes[i]
         
-        # Get QTL intervals.
-        qtl.intervals <- readResultHDF5(scanfile, phenotype, 'QTL Intervals')
+        # Get any QTL intervals.
+        qtl.intervals <- NULL
+        tryCatch({
+            qtl.intervals <- readResultHDF5(scanfile, phenotype, 'QTL Intervals')
+        }, error=function(e) {})
+        
+        if ( is.null(qtl.intervals) ) {
+            
+            # Get scanone permutations for this phenotype. # TODO: simplify
+            h5name <- joinH5ObjectNameParts( c('Results', phenotype) )
+            pheno.results <- readGroupMemberNamesHDF5(scanfile, h5name)
+            index <- pmatch('Scanone Perms', pheno.results)
+            stopif( is.na(index) )
+            pheno.perms <- readResultHDF5(scanfile, phenotype, pheno.results[index])
+            
+            # Get threshold parameters from permutations.
+            threshold <- attr(pheno.perms, 'threshold')
+            alpha <- attr(pheno.perms, 'alpha')
+            fdr <- attr(pheno.perms, 'fdr')
+            
+            # Create empty QTL intervals object with threshold info.
+            qtl.intervals <- qtlintervals(threshold=threshold, alpha=alpha, fdr=fdr) 
+        }
         
         # Get scanone result.
         pheno.result <- readResultHDF5(scanfile, phenotype, 'Scanone')

@@ -19,8 +19,8 @@
 #' @param threshold In a \code{scanone} or equivalent object, this indicates
 #' the LOD significance threshold for QTL intervals.
 #' @param alpha In a \code{scanone} or equivalent object, this contains the
-#' the significance level of the given threshold. (Mutually exclusive
-#' with \code{fdr}.)
+#' significance level of the given threshold. (Mutually exclusive with
+#' \code{fdr}.)
 #' @param fdr In a \code{scanone} or equivalent object, this contains
 #' the false discovery rate (FDR) of the given threshold. (Mutually exclusive
 #' with \code{alpha}.)
@@ -51,31 +51,11 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
 
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
-    stopifnot( isSingleNonNegativeNumber(threshold) )
-    stopifnot( isSingleNonNegativeNumber(drop) )
     stopifnot( isBOOL(expandtomarkers) )
     
-    # Init info attributes.
-    info <- list( threshold=unname(threshold), drop=unname(drop) )
-    
-    # Set significance level / false-discovery rate.
-    if ( ! is.null(alpha) && ! is.null(fdr) ) {
-        stop("cannot set both significance level (alpha) and FDR")
-    } else if ( ! is.null(alpha) ) {
-        stopifnot( isSingleProbability(alpha) )
-        info[['alpha']] <- unname(alpha)
-    } else if ( ! is.null(fdr) ) {
-        stopifnot( isSingleFiniteNumber(fdr) )
-        stopifnot( fdr > 0 & fdr < 1 )
-        info[['fdr']] <- unname(fdr)
-    }
-    
     # Init intervals.
-    intervals <- list()
-    class(intervals) <- c('qtlintervals', 'list')
-    for ( key in names(info) ) { # set info attributes
-        attr(intervals, key) <- info[[key]]
-    }
+    intervals <- qtlintervals(drop=drop, threshold=threshold,
+        alpha=alpha, fdr=fdr)
     
     # Set standard QTL interval indices.
     ci <- c(low=1, peak=2, high=3)

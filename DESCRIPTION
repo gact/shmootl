@@ -53,6 +53,7 @@ Collate:
     'pheno.R'
     'pipeline.R'
     'plotQTLScanone.R'
+    'qtlintervals.R'
     'run.R'
     'run_estimap.R'
     'run_makecross.R'

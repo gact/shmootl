@@ -38,8 +38,8 @@ markers, or to the respective terminal loci.}
 the LOD significance threshold for QTL intervals.}
 
 \item{alpha}{In a \code{scanone} or equivalent object, this contains the
-the significance level of the given threshold. (Mutually exclusive
-with \code{fdr}.)}
+significance level of the given threshold. (Mutually exclusive with
+\code{fdr}.)}
 
 \item{fdr}{In a \code{scanone} or equivalent object, this contains
 the false discovery rate (FDR) of the given threshold. (Mutually exclusive

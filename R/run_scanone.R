@@ -135,9 +135,12 @@ run_scanone <- function(crossfile, scanfile, chr=NA, pheno=NA, model=c('normal',
         # Output permutation scan results for this phenotype.
         if ( ! is.null(alpha) ) {
             pheno.perms <- qtl:::subset.scanoneperm(scanone.perms, lodcolumn=i)
+            attr(pheno.perms, 'alpha') <- alpha
         } else { # fdr
             pheno.perms <- scanone.perms[,, i]
+            attr(pheno.perms, 'fdr') <- fdr
         }
+        attr(pheno.perms, 'threshold') <- thresholds[i]
         writeResultHDF5(pheno.perms, tmp, phenotypes[i])
         
         # Get significant QTL intervals.
