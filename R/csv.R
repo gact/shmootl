@@ -22,9 +22,9 @@ NULL
 #' @details The returned list includes information on the following parameters:
 #' 
 #' \itemize{
-#'  \item{\code{pheno.cols}}{Indices of phenotype columns, or NA if none found.}
+#'  \item{\code{pheno.cols}}{Indices of phenotype columns, or NULL if none found.}
 #'  \item{\code{id.col}}{Index of ID column, or NA if not found.}
-#'  \item{\code{geno.cols}}{Indices of genotype columns, or NA if none found.}
+#'  \item{\code{geno.cols}}{Indices of genotype columns, or NULL if none found.}
 #'  \item{\code{dat.rows}}{Row indices of data.}
 #'  \item{\code{map.present}}{TRUE if the data contains a map; FALSE otherwise.}
 #'  \item{\code{class}}{Expected class of the input data.}
@@ -87,6 +87,11 @@ getMetadataCSV <- function(x) {
         } 
         
         if ( length(id.col) > 0 ) {
+            
+            if ( ! id.col %in% pheno.cols ) {
+                stop("ID column not in phenotype columns")
+            }
+            
             pheno.cols <- pheno.cols[-id.col]
         }
         
@@ -118,7 +123,7 @@ getMetadataCSV <- function(x) {
             stop("ID column not found")
         }
         
-        geno.cols <- NA
+        geno.cols <- NULL
         head.rows <- 1
         
         seq.col <- which( x[1, ] == 'chr' )
@@ -134,7 +139,7 @@ getMetadataCSV <- function(x) {
             
             data.class <- 'pheno'
             map.present <- FALSE
-            pheno.cols <- getColIndices(x) # every column is a pheno column
+            pheno.cols <- getColIndices(x)[-id.col] # every column (except ID column) is a pheno column
         }
     }
     
@@ -148,7 +153,7 @@ getMetadataCSV <- function(x) {
     dat.rows <- first.data.row : last.data.row
     
     if ( length(pheno.cols) == 0 ) {
-        pheno.cols <- NA
+        pheno.cols <- NULL
     }
     
     if ( length(id.col) == 0 ) {
@@ -588,7 +593,7 @@ recodeCSV <- function(infile, outfile, geno=NULL) {
         src.geno <- names(geno)
         dest.geno <- unname(geno)
         
-        if ( length(params$geno.cols) == 0 ) {
+        if ( is.null(params$geno.cols) ) {
             stop("cannot recode - no genotype data")
         }
         
