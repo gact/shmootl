@@ -355,7 +355,7 @@ inferTetradIndices.character <- function(x) {
     exemplar.sindices <- sapply(exemplar.ids, match, x)
     
     # Get indices of replicates with respect to the vector of sample IDs.
-    terminal.sindices <- c(sapply(exemplar.sindices[2:length(exemplar.sindices)], 
+    terminal.sindices <- c(sapply(unname(exemplar.sindices[2:length(exemplar.sindices)]),
         function(e) e - 1), length(x) )
     replicate.sindices <- mapply(function(i, j) i:j, exemplar.sindices, 
         terminal.sindices, SIMPLIFY=FALSE)
@@ -411,20 +411,32 @@ inferTetradIndices.character <- function(x) {
     # If notional exemplar indices were identified, use these to assign tetrad indices.
     if ( ! is.null(exemplar.nindices) ) {
         
-        num.tetrads <- ceiling( max(exemplar.nindices) / 4 )
+        # Get notional number of tetrads.
+        ntetrads <- ceiling( max(exemplar.nindices) / 4 )
         
-        expected.xindices <- lapply(1:num.tetrads, function(i) 
+        # Get expected notional indices for the given number of tetrads.
+        expected.nindices <- lapply(1:ntetrads, function(i)
             { o <- 4*(i-1); seq(o + 1, o + 4) } )
         
-        tetrad.xindices <- lapply(1:num.tetrads, function(i) 
-            exemplar.nindices[ exemplar.nindices %in% expected.xindices[[i]] ])
+        # Get list containing notional indices for each tetrad.
+        tetrad.nindices <- lapply(1:ntetrads, function(i)
+            exemplar.nindices[ exemplar.nindices %in% expected.nindices[[i]] ])
         
+        # Collapse tetrad notional indices to tetrad exemplar indices.
+        tetrad.xindices <- tetrad.nindices[ lengths(tetrad.nindices) > 0 ]
+        exemplar.count <- 0
+        for ( i in 1:length(tetrad.xindices) ) {
+            tetrad.xindices[[i]] <- exemplar.count + seq_along(tetrad.xindices[[i]])
+            exemplar.count <- exemplar.count + length(tetrad.xindices[[i]])
+        }
+        
+        # Get sample tetrad indices.
         sample.tindices <- integer( length=length(x) )
-        for ( i in 1:num.tetrads ) {
+        for ( i in getIndices(tetrad.xindices) ) {
             tetrad.sindices <- unlist( replicate.sindices[ tetrad.xindices[[i]] ] )
             sample.tindices[tetrad.sindices] <- i
         }
-    }    
+    }
     
     return(sample.tindices)
 }
@@ -458,7 +470,7 @@ inferTetradIndices.cross <- function(x) {
     exemplar.sindices <- sapply(unique(strain.indices), match, strain.indices)
     
     # Get indices of replicates with respect to the set of samples.
-    terminal.sindices <- c(sapply(exemplar.sindices[2:length(exemplar.sindices)], 
+    terminal.sindices <- c(sapply(unname(exemplar.sindices[2:length(exemplar.sindices)]),
         function(e) e - 1), length(strain.indices) )
     replicate.sindices <- mapply(function(i, j) i:j, exemplar.sindices, 
         terminal.sindices, SIMPLIFY=FALSE)
