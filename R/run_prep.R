@@ -5,9 +5,10 @@
 #' 
 #' @description This script will take an \pkg{R/qtl} input data file, and
 #' prepare it for input to \pkg{shmootl}. Marker sequence IDs are resolved,
-#' genetic map units are appended to map positions, and empty cells are
-#' replaced with a missing value symbol. It is the responsibility of the
-#' user to ensure that these changes are valid for a given input file.
+#' and empty cells are replaced with a missing value symbol. If a genetic
+#' map is present, map positions are jittered and map units are added. It
+#' is the responsibility of the user to ensure that these changes are valid
+#' for a given input file.
 #' 
 #' @param datafile \pkg{R/qtl} CSV file
 #' 
@@ -49,18 +50,32 @@ run_prep <- function(datafile) {
         
         if (params$map.present) {
             
-            # Get map positions.
-            map.pos <- as.character(x[3, params$geno.cols])
+            head.rows <- 1:3
+            
+            # Create map table from initial rows.
+            map.table <- as.data.frame( t(x[head.rows, params$geno.cols]),
+                stringsAsFactors=FALSE)
+            colnames(map.table) <- const$maptable.colnames[head.rows]
+            map.table <- setRownamesFromColumn(map.table, col.name='id')
             
             # Get map unit from map positions.
-            map.unit <- getMapUnitSuffix(map.pos)
+            map.unit <- getPosColDataMapUnit(map.table)
             
-            # If map unit suffix not found, append to map positions..
-            if ( is.na(map.unit) ) {
-                x[3, params$geno.cols] <- setPosColDataMapUnit(map.pos, 'cM')
-            } else if ( map.unit != 'cM' ) { # ..otherwise check map unit.
+            # Check map unit if present.
+            if ( ! is.na(map.unit) && map.unit != 'cM' ) {
                 stop("map positions must be in centiMorgans (e.g. '47 cM')")
             }
+            
+            # Convert map table to genetic map object.
+            gmap <- as.map(map.table, map.unit='cM')
+            
+            # Ensure no coinciding markers.
+            gmap <- qtl::jittermap(gmap)
+            
+            # Replace map in initial rows.
+            map.table <- setPosColDataMapUnit(as.data.frame(gmap), 'cM')
+            map.table <- setColumnFromRownames(map.table, col.name='id')
+            x[head.rows, params$geno.cols] <- t(map.table)
         }
     }
     

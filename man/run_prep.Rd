@@ -12,8 +12,9 @@ run_prep(datafile)
 \description{
 This script will take an \pkg{R/qtl} input data file, and
 prepare it for input to \pkg{shmootl}. Marker sequence IDs are resolved,
-genetic map units are appended to map positions, and empty cells are
-replaced with a missing value symbol. It is the responsibility of the
-user to ensure that these changes are valid for a given input file.
+and empty cells are replaced with a missing value symbol. If a genetic
+map is present, map positions are jittered and map units are added. It
+is the responsibility of the user to ensure that these changes are valid
+for a given input file.
 }
 
