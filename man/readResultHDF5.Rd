@@ -14,18 +14,11 @@ readResultHDF5(infile, phenotype, name)
 \item{name}{Name of QTL analysis result.}
 }
 \value{
-R object containing QTL analysis result.
+R object containing QTL analysis result. Returns \code{NULL}
+if the given phenotype has no result with the specified name.
 }
 \description{
 Read QTL analysis result from a HDF5 file.
 }
-\seealso{
-Other hdf5 utilities: \code{\link{readDatasetHDF5}},
-  \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
-}
+\keyword{internal}
 

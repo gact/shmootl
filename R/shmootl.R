@@ -33,7 +33,6 @@
 #'   \pkg{shmootl} \code{mapframe} objects.}
 #'   \item{\link{Scan Utilities}:}{QTL scan functions.}
 #'   \item{\link{CSV Utilities}:}{Reading and writing CSV files.}
-#'   \item{\link{HDF5 Utilities}:}{Reading and writing HDF5 files.}
 #' }
 #' 
 #' @section Package Conventions:

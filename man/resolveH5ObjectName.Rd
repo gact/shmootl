@@ -2,7 +2,7 @@
 % Please edit documentation in R/hdf5.R
 \name{resolveH5ObjectName}
 \alias{resolveH5ObjectName}
-\title{Resolve HDF5 object name.}
+\title{Resolve absolute HDF5 object name.}
 \usage{
 resolveH5ObjectName(h5name)
 }
@@ -13,8 +13,8 @@ resolveH5ObjectName(h5name)
 HDF5 object name.
 }
 \description{
-Validates and (if necessary) corrects a HDF5 object name: ensuring that it 
-has a leading slash and does not have a trailing slash.
+Validates and (if necessary) corrects a HDF5 object name: ensuring
+that it has a leading slash and does not have a trailing slash.
 }
 \keyword{internal}
 

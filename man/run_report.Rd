@@ -9,7 +9,7 @@ run_report(scanfile, report)
 \arguments{
 \item{scanfile}{scan result HDF5 file}
 
-\item{report}{scan report PDF file}
+\item{report}{scan report file}
 }
 \description{
 Create report of \pkg{R/qtl} analysis results.

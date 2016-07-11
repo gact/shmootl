@@ -65,13 +65,5 @@ An \pkg{R/qtl} \code{map} object is not suited for HDF5 format, but can be
 stored as a \code{mapframe} object, which can be read from file and then 
 converted back to a \code{map}.
 }
-\seealso{
-Other hdf5 utilities: \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
-}
+\keyword{internal}
 

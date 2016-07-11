@@ -12,7 +12,8 @@ readMapHDF5(infile, name)
 \item{name}{Map name.}
 }
 \value{
-An \pkg{R/qtl} \code{map} object.
+An \pkg{R/qtl} \code{map} object. Returns \code{NULL}
+if no map is found with the specified name.
 }
 \description{
 Read \code{map} from a HDF5 file.
@@ -21,13 +22,5 @@ Read \code{map} from a HDF5 file.
 A \code{mapframe} dataset is read from the 'Maps' group at the root
 of the HDF5 file, and converted to an \pkg{R/qtl} \code{map} object.
 }
-\seealso{
-Other hdf5 utilities: \code{\link{readDatasetHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
-}
+\keyword{internal}
 

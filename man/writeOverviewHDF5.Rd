@@ -14,12 +14,5 @@ writeOverviewHDF5(overview, outfile)
 \description{
 Write QTL analysis results overview to a HDF5 file.
 }
-\seealso{
-Other hdf5 utilities: \code{\link{readDatasetHDF5}},
-  \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}}, \code{\link{writeResultHDF5}}
-}
+\keyword{internal}
 

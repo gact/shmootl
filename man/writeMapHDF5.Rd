@@ -17,18 +17,9 @@ writeMapHDF5(map, outfile, name = NULL)
 Write \code{map} to a HDF5 file.
 }
 \details{
-An \pkg{R/qtl} \code{map} object is converted to a \code{mapframe}, 
-and written to the 'Maps' group at the root of the given HDF5 file. If no 
-map name is specified, a default will be assigned based on whether it is a 
-genetic or physical map.
+An \pkg{R/qtl} \code{map} object is written to the 'Maps' group at
+the root of the given HDF5 file. If no map name is specified, a default will
+be assigned based on whether it is a genetic or physical map.
 }
-\seealso{
-Other hdf5 utilities: \code{\link{readDatasetHDF5}},
-  \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
-}
+\keyword{internal}
 

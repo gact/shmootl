@@ -11,7 +11,7 @@ splitH5ObjectName(h5name)
 multiple parts, only the initial part can contain an absolute H5Object name.}
 }
 \value{
-Character vector of HDF5 name components.
+HDF5 name components.
 }
 \description{
 Split HDF5 object name into component parts.

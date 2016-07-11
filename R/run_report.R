@@ -4,7 +4,7 @@
 #' Create report of \pkg{R/qtl} analysis results.
 #' 
 #' @param scanfile scan result HDF5 file
-#' @param report scan report PDF file
+#' @param report scan report file
 #' 
 #' @export
 #' @importFrom grDevices cairo_pdf
@@ -16,6 +16,32 @@ run_report <- function(scanfile, report) {
     stopifnot( isSingleString(scanfile) )
     stopifnot( file.exists(scanfile) )
     stopifnot( isSingleString(report) )
+    
+    results.sought <- 'Scanone'
+    results.found <- list()
+    result.info <- list()
+    
+    if ( hasObjectHDF5(scanfile, 'Results') ) {
+        
+        # Get phenotypes from scan result file.
+        phenotypes <- getPhenotypesHDF5(scanfile)
+        
+        # Get result info for phenotypes.
+        result.info <- lapply(phenotypes, function(phenotype)
+            getResultNamesHDF5(scanfile, phenotype))
+        names(result.info) <- phenotypes
+        
+        # Get results of interest for each phenotype.
+        results.found <- lapply(result.info, function(results)
+            results[ results %in% results.sought ])
+    }
+    
+    # Get set of results of interest.
+    roi <- unique( unlist(results.found) )
+    
+    if ( length(roi) == 0 ) {
+        warning("cannot output report - results not found in file '", scanfile, "'")
+    }
     
     # Introduce plot device.
     plot.device <- NULL
@@ -52,59 +78,45 @@ run_report <- function(scanfile, report) {
     tmp <- tempfile()
     on.exit( file.remove(tmp), add=TRUE )
     
-    # Init PDF graphics device.  
+    # Init PDF graphics device.
     grDevices::cairo_pdf(tmp, width=fig.width, height=fig.height, onefile=TRUE)
     plot.device <- dev.cur()
-    
-    # Get phenotypes from result file.
-    results <- readGroupMemberNamesHDF5(scanfile, 'Results')
-    phenotypes <- results[ results != 'Overview' ]
     
     # Write output for each phenotype.
     for ( i in getIndices(phenotypes) ) {
         
         phenotype <- phenotypes[i]
         
-        # Get any QTL intervals.
-        qtl.intervals <- NULL
-        tryCatch({
+        if ( 'Scanone' %in% result.info[[phenotype]] ) {
+            
+            scanone.result <- readResultHDF5(scanfile, phenotype, 'Scanone')
+            
+            # Get any QTL intervals.
             qtl.intervals <- readResultHDF5(scanfile, phenotype, 'QTL Intervals')
-        }, error=function(e) {})
-        
-        if ( is.null(qtl.intervals) ) {
             
-            # Get scanone permutations for this phenotype. # TODO: simplify
-            h5name <- joinH5ObjectNameParts( c('Results', phenotype) )
-            pheno.results <- readGroupMemberNamesHDF5(scanfile, h5name)
-            index <- pmatch('Scanone Perms', pheno.results)
-            stopif( is.na(index) )
-            pheno.perms <- readResultHDF5(scanfile, phenotype, pheno.results[index])
+            # If no QTL intervals, get scanone permutations for this phenotype,
+            # and create a QTL intervals object with any threshold info.
+            # NB: if no permutations found, threshold attributes will be NULL.
+            if ( is.null(qtl.intervals) ) {
+                scanone.perms <- readResultHDF5(scanfile, phenotype, 'Scanone Perms')
+                qtl.intervals <- qtlintervals(threshold=attr(scanone.perms, 'threshold'),
+                    alpha=attr(scanone.perms, 'alpha'), fdr=attr(scanone.perms, 'fdr'))
+            }
             
-            # Get threshold parameters from permutations.
-            threshold <- attr(pheno.perms, 'threshold')
-            alpha <- attr(pheno.perms, 'alpha')
-            fdr <- attr(pheno.perms, 'fdr')
+            # Plot (zero or more) QTL intervals across all sequences.
+            plotQTLScanone(scanone.result, qtl.intervals=qtl.intervals, phenotype=phenotype)
             
-            # Create empty QTL intervals object with threshold info.
-            qtl.intervals <- qtlintervals(threshold=threshold, alpha=alpha, fdr=fdr) 
-        }
-        
-        # Get scanone result.
-        pheno.result <- readResultHDF5(scanfile, phenotype, 'Scanone')
-        
-        # Plot (zero or more) QTL intervals across all sequences.
-        plotQTLScanone(pheno.result, qtl.intervals=qtl.intervals, phenotype=phenotype)
-        
-        # If significant QTL intervals found, plot
-        # all sequences with a significant QTL.
-        if ( length(qtl.intervals) > 0 ) {
-            
-            interval.seqs <- unique( sapply( qtl.intervals,
-                function(x) unique(x[, 'chr']) ) )
-            
-            for ( interval.seq in interval.seqs ) {
-                plotQTLScanone(pheno.result, qtl.intervals=qtl.intervals,
-                    chr=interval.seq, phenotype=phenotype)
+            # If significant QTL intervals found, plot
+            # all sequences with a significant QTL.
+            if ( length(qtl.intervals) > 0 ) {
+                
+                interval.seqs <- unique( sapply( qtl.intervals,
+                    function(x) unique(x[, 'chr']) ) )
+                
+                for ( interval.seq in interval.seqs ) {
+                    plotQTLScanone(scanone.result, qtl.intervals=qtl.intervals,
+                        chr=interval.seq, phenotype=phenotype)
+                }
             }
         }
     }

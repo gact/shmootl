@@ -6,7 +6,9 @@
 \alias{HDF5 Utilities-package}
 \title{HDF5 input/output utilities.}
 \description{
-Functions for HDF5 input and output.
+Functions for HDF5 input and output. These should only be
+used internally. External HDF5 input/output should be done through an
+exported package function (e.g. \code{\link{run_scanone}}).
 }
 \details{
 HDF5 files are assumed to have one or more of the following root 
@@ -28,16 +30,17 @@ read with \code{\link{readOverviewHDF5}}), or written with
 \code{\link{writeOverviewHDF5}}.
 }
 
-If desired, datasets with any user-specified name can be read or written 
-using the functions \code{\link{readDatasetHDF5}} or 
-\code{\link{writeDatasetHDF5}}, respectively. When reading or writing a 
-matrix or array object, the object is transposed (with R function \code{t})
-or permuted (with R function \code{aperm}), respectively. This is because 
-HDF5 uses row-major order (like the C language) while R uses column-major 
-order (like Fortran). For more information, see the 
+If needed, datasets with a specified name can be read or written using the
+functions \code{\link{readDatasetHDF5}} or \code{\link{writeDatasetHDF5}},
+respectively. When reading or writing a matrix or array object, the object
+is transposed (with R function \code{t}) or permuted (with R function
+\code{aperm}), respectively. This is because HDF5 uses row-major order
+(like the C language) while R uses column-major order (like Fortran).
+For more information, see the
 \href{https://www.hdfgroup.org/HDF5/doc/}{HDF5 documentation}. 
 
 Note that attribute order is not preserved when reading/writing HDF5 objects,
 and that datasets within a file cannot currently be overwritten.
 }
+\keyword{internal}
 

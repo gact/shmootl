@@ -69,12 +69,5 @@ the dataset type, as determined by the class of the R object. Note that
 although \pkg{R/qtl} \code{map} objects are not ideally suited for HDF5 
 format, they can be written to a HDF5 file as a \code{mapframe} object.
 }
-\seealso{
-Other hdf5 utilities: \code{\link{readDatasetHDF5}},
-  \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{readResultHDF5}}, \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
-}
+\keyword{internal}
 

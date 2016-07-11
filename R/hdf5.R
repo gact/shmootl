@@ -3,7 +3,9 @@
 # HDF5 Utilities ---------------------------------------------------------------
 #' HDF5 input/output utilities.
 #' 
-#' @description Functions for HDF5 input and output.
+#' @description Functions for HDF5 input and output. These should only be
+#' used internally. External HDF5 input/output should be done through an
+#' exported package function (e.g. \code{\link{run_scanone}}).
 #' 
 #' @details HDF5 files are assumed to have one or more of the following root 
 #' groups.
@@ -24,21 +26,185 @@
 #' \code{\link{writeOverviewHDF5}}.
 #' }
 #' 
-#' If desired, datasets with any user-specified name can be read or written 
-#' using the functions \code{\link{readDatasetHDF5}} or 
-#' \code{\link{writeDatasetHDF5}}, respectively. When reading or writing a 
-#' matrix or array object, the object is transposed (with R function \code{t})
-#' or permuted (with R function \code{aperm}), respectively. This is because 
-#' HDF5 uses row-major order (like the C language) while R uses column-major 
-#' order (like Fortran). For more information, see the 
+#' If needed, datasets with a specified name can be read or written using the
+#' functions \code{\link{readDatasetHDF5}} or \code{\link{writeDatasetHDF5}},
+#' respectively. When reading or writing a matrix or array object, the object
+#' is transposed (with R function \code{t}) or permuted (with R function
+#' \code{aperm}), respectively. This is because HDF5 uses row-major order
+#' (like the C language) while R uses column-major order (like Fortran).
+#' For more information, see the
 #' \href{https://www.hdfgroup.org/HDF5/doc/}{HDF5 documentation}. 
 #' 
 #' Note that attribute order is not preserved when reading/writing HDF5 objects,
 #' and that datasets within a file cannot currently be overwritten.
 #' 
 #' @docType package
+#' @keywords internal
 #' @name HDF5 Utilities
 NULL
+
+# getGroupMemberNamesHDF5 ------------------------------------------------------
+#' Get HDF5 group member names.
+#' 
+#' @param infile An input HDF5 file.
+#' @param h5name HDF5 group name.
+#' 
+#' @return Vector of group member names. Returns \code{NULL}
+#' if group is not present or has no members.
+#' 
+#' @importFrom methods new
+#' @importFrom rhdf5 H5Lexists
+#' @importFrom rhdf5 h5ls
+#' @keywords internal
+#' @rdname getGroupMemberNamesHDF5
+getGroupMemberNamesHDF5 <- function(infile, h5name) {
+    
+    stopifnot( isSingleString(infile) )
+    stopifnot( file.exists(infile) )
+    h5name <- resolveH5ObjectName(h5name)
+    
+    member.names <- NULL
+    
+    h5stack <- methods::new('H5Stack', infile, h5name)
+    
+    on.exit( closeStack(h5stack) )
+    
+    if( ! rhdf5::H5Lexists(fileID(h5stack), h5name) ) {
+        stop("HDF5 object ('", h5name, "') not found in file - '",  infile, "'")
+    }
+
+    group.info <- rhdf5::h5ls(peek(h5stack), recursive=FALSE)
+    
+    if ( nrow(group.info) > 0 ) {
+        member.names <- group.info$name
+    }
+    
+    return(member.names)
+}
+
+# getMapNamesHDF5 --------------------------------------------------------------
+#' Get names of maps in HDF5 file.
+#' 
+#' @param infile An input HDF5 file.
+#' 
+#' @return Vector of map names. Returns \code{NULL}
+#' if there are no maps present.
+#' 
+#' @keywords internal
+#' @rdname getMapNamesHDF5
+getMapNamesHDF5 <- function(infile) {
+    return( getGroupMemberNamesHDF5(infile, 'Maps') )
+}
+
+# getObjectClassHDF5 -----------------------------------------------------------
+#' Get R class of a HDF5 object.
+#' 
+#' If possible, the R class of the specified object is obtained from the
+#' attributes 'R.class' and 'class', in that order. If neither attribute
+#' is available, the object is loaded from the HDF5 file and its R class
+#' determined from the resulting R object.
+#' 
+#' @param infile An input HDF5 file.
+#' @param h5name HDF5 object name.
+#' 
+#' @return R class of HDF5 object.
+#' 
+#' @importFrom rhdf5 h5read
+#' @importFrom rhdf5 h5readAttributes
+#' @keywords internal
+#' @rdname getObjectClassHDF5
+getObjectClassHDF5 <- function(infile, h5name) {
+    
+    stopifnot( isSingleString(infile) )
+    stopifnot( file.exists(infile) )
+    h5name <- resolveH5ObjectName(h5name)
+    
+    attrs <- rhdf5::h5readAttributes(infile, h5name)
+    
+    if ( 'R.class' %in% names(attrs) ) {
+        
+        cls <- attrs[['R.class']]
+        
+    } else if ( 'class' %in% names(attrs) ) {
+        
+        cls <- attrs[['class']]
+        
+    } else {
+        
+        obj <- rhdf5::h5read(infile, h5name, read.attributes=TRUE)
+        cls <- class(obj)
+    }
+    
+    return(cls)
+}
+
+# getPhenotypesHDF5 ------------------------------------------------------------
+#' Get names of phenotypes in HDF5 file.
+#' 
+#' @param infile An input HDF5 file.
+#' 
+#' @return Vector of phenotype names. Returns \code{NULL}
+#' if there are no phenotypes present.
+#' 
+#' @keywords internal
+#' @rdname getPhenotypesHDF5
+getPhenotypesHDF5 <- function(infile) {
+    
+    phenotypes <- NULL
+    
+    result.names <- getGroupMemberNamesHDF5(infile, 'Results')
+    
+    if ( ! is.null(result.names) ) {
+        
+        phenotypes <- result.names[ result.names != 'Overview' ]
+        
+        if ( length(phenotypes) == 0 ) {
+            phenotypes <- NULL
+        }
+    }
+    
+    return(phenotypes)
+}
+
+# getResultNamesHDF5 -----------------------------------------------------------
+#' Get names of results for a given phenotype.
+#' 
+#' @param infile An input HDF5 file.
+#' @param phenotype Name of phenotype (or equivalent analysis unit).
+#' 
+#' @return Vector of result names for the given phenotype. Returns \code{NULL}
+#' if there are no results present for the given phenotype.
+#' 
+#' @keywords internal
+#' @rdname getResultNamesHDF5
+getResultNamesHDF5 <- function(infile, phenotype) {
+    stopifnot( phenotype %in% getPhenotypesHDF5(infile) )
+    h5name <- joinH5ObjectNameParts( c('Results', phenotype) )
+    phenotype.results <- getGroupMemberNamesHDF5(infile, h5name)
+    return(phenotype.results)
+}
+
+# hasObjectHDF5 ----------------------------------------------------------------
+#' Test if HDF5 file contains the named object.
+#' 
+#' @param infile An input HDF5 file.
+#' @param h5name HDF5 object name.
+#' 
+#' @return TRUE if the given HDF5 file contains the named object;
+#' FALSE otherwise.
+#' 
+#' @importFrom methods new
+#' @importFrom rhdf5 H5Lexists
+#' @keywords internal
+#' @rdname hasObjectHDF5
+hasObjectHDF5 <- function(infile, h5name) {
+    stopifnot( isSingleString(infile) )
+    stopifnot( file.exists(infile) )
+    h5name <- resolveH5ObjectName(h5name)
+    h5stack <- methods::new('H5Stack', infile)
+    on.exit( closeStack(h5stack) )
+    return( rhdf5::H5Lexists(peek(h5stack), h5name) )
+}
 
 # h5writeAttributes ------------------------------------------------------------
 #' Write attributes to a HDF5 object.
@@ -46,7 +212,6 @@ NULL
 #' @param x List of attributes, or an R object whose attributes will be written.
 #' @param h5obj HDF5 object to which attributes will be assigned.
 #' 
-#' @keywords internal
 #' @importFrom rhdf5 h5writeAttribute
 #' @importFrom rhdf5 h5writeAttribute.array
 #' @importFrom rhdf5 h5writeAttribute.character
@@ -54,6 +219,7 @@ NULL
 #' @importFrom rhdf5 h5writeAttribute.integer
 #' @importFrom rhdf5 h5writeAttribute.logical
 #' @importFrom rhdf5 h5writeAttribute.matrix
+#' @keywords internal
 #' @rdname h5writeAttributes
 h5writeAttributes <- function(x, h5obj) {
     
@@ -267,30 +433,6 @@ makeGroupObjectNames <- function(group.names=NULL, group.size=NULL) {
     return(group.names)
 }
 
-# readClassHDF5 ----------------------------------------------------------------
-#' Read \code{'class'} attribute of a HDF5 object.
-#'   
-#' @param infile An input HDF5 file.
-#' @param h5name HDF5 object name. 
-#'      
-#' @return HDF5 object class.
-#' 
-#' @importFrom rhdf5 h5readAttributes
-#' @keywords internal
-#' @rdname readClassHDF5
-readClassHDF5 <- function(infile, h5name) {
-    
-    attrs <- rhdf5::h5readAttributes(infile, h5name)
-    
-    if ( 'R.class' %in% names(attrs) ) {
-        cls <- attrs[['R.class']]
-    } else {
-        cls <- attrs[['class']]
-    }
-    
-    return(cls)
-}
-
 # readDatasetHDF5 --------------------------------------------------------------
 #' Read HDF5 dataset.
 #'    
@@ -310,14 +452,14 @@ readClassHDF5 <- function(infile, h5name) {
 #' rownames are set from its contents.
 #' 
 #' @return R object corresponding to the named HDF5 object.
-#'  
+#' 
 #' @export
-#' @family hdf5 utilities
 #' @importFrom rhdf5 h5read
+#' @keywords internal
 #' @rdname readDatasetHDF5
 readDatasetHDF5 <- function(infile, h5name, ...) {
     
-    class.vector <- readClassHDF5(infile, h5name)
+    class.vector <- getObjectClassHDF5(infile, h5name)
     
     readDataset <- dispatchFromClassS3('readDatasetHDF5', class.vector, 'shmootl')
     
@@ -362,6 +504,7 @@ readDatasetHDF5.default <- function(infile, h5name, ...) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
+    h5name <- resolveH5ObjectName(h5name)
     
     dataset <- rhdf5::h5read(infile, h5name, read.attributes=TRUE)
     
@@ -422,7 +565,7 @@ readDatasetHDF5.list <- function(infile, h5name, ...) {
     original.names <- dataset.attrs[['names']]
     original.names[ original.names == 'NA' ] <- NA
     
-    child.names <- readGroupMemberNamesHDF5(infile, h5name)
+    child.names <- getGroupMemberNamesHDF5(infile, h5name)
     
     ordered.names <- makeGroupObjectNames(group.names=original.names, 
         group.size=length(child.names) )
@@ -632,36 +775,6 @@ readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
     return(dataset)
 }
 
-# readGroupMemberNamesHDF5 -----------------------------------------------------
-#' Read HDF5 group member names.
-#'   
-#' @param infile An input HDF5 file.
-#' @param h5name HDF5 group name. 
-#'      
-#' @return Vector of group member names. Returns \code{NULL} if group has no 
-#' members.
-#'  
-#' @importFrom methods new
-#' @importFrom rhdf5 H5Lexists
-#' @importFrom rhdf5 h5ls
-#' @keywords internal
-#' @rdname readClassHDF5
-readGroupMemberNamesHDF5 <- function(infile, h5name) {
-    
-    stopifnot( isSingleString(infile) )
-    stopifnot( file.exists(infile) )
-    
-    h5stack <- methods::new('H5Stack', infile, h5name)
-    
-    on.exit( closeStack(h5stack) )
-    
-    stopifnot( rhdf5::H5Lexists(fileID(h5stack), h5name) )
-    
-    group.info <- rhdf5::h5ls(peek(h5stack), recursive=FALSE)
-    
-    return( if ( nrow(group.info) > 0 ) { group.info$name } else { NULL } )
-}
-
 # readMapHDF5 ------------------------------------------------------------------
 #' Read \code{map} from a HDF5 file.
 #'   
@@ -671,16 +784,22 @@ readGroupMemberNamesHDF5 <- function(infile, h5name) {
 #' @param infile An input HDF5 file.
 #' @param name Map name.
 #'      
-#' @return An \pkg{R/qtl} \code{map} object.
-#'  
+#' @return An \pkg{R/qtl} \code{map} object. Returns \code{NULL}
+#' if no map is found with the specified name.
+#' 
 #' @export
-#' @family hdf5 utilities
+#' @keywords internal
 #' @rdname readMapHDF5
 readMapHDF5 <- function(infile, name) {
     
-    h5name <- joinH5ObjectNameParts( c('Maps', name) )
+    map.names <- getMapNamesHDF5(infile)
     
-    result <- readDatasetHDF5(infile, h5name)
+    if ( name %in% map.names ) {
+        h5name <- joinH5ObjectNameParts( c('Maps', name) )
+        result <- readDatasetHDF5(infile, h5name)
+    } else {
+        result <- NULL
+    }
     
     return(result)
 }
@@ -699,36 +818,19 @@ readMapHDF5 <- function(infile, name) {
 readObjectAttributesHDF5 <- function(infile, h5name) {
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
+    h5name <- resolveH5ObjectName(h5name)
     return( rhdf5::h5readAttributes(infile, h5name) )
-}
-
-# readResultHDF5 ---------------------------------------------------------------
-#' Read QTL analysis result from a HDF5 file.
-#'    
-#' @param infile An input HDF5 file.
-#' @param phenotype Name of phenotype (or equivalent analysis unit).
-#' @param name Name of QTL analysis result.
-#'      
-#' @return R object containing QTL analysis result.
-#'   
-#' @export
-#' @family hdf5 utilities
-#' @rdname readResultHDF5
-readResultHDF5 <- function(infile, phenotype, name) {
-    h5name <- joinH5ObjectNameParts( c('Results', phenotype, name) )
-    result <- readDatasetHDF5(infile, h5name)
-    return(result)
 }
 
 # readOverviewHDF5 -------------------------------------------------------------
 #' Read QTL analysis results overview from a HDF5 file.
 #'    
 #' @param infile An input HDF5 file.
-#'      
+#' 
 #' @return A \code{data.frame} containing QTL analysis results overview.
-#'   
+#' 
 #' @export
-#' @family hdf5 utilities
+#' @keywords internal
 #' @rdname readOverviewHDF5
 readOverviewHDF5 <- function(infile) {
     
@@ -744,11 +846,38 @@ readOverviewHDF5 <- function(infile) {
     return(overview)
 }
 
-# resolveH5ObjectName ----------------------------------------------------------
-#' Resolve HDF5 object name.
+# readResultHDF5 ---------------------------------------------------------------
+#' Read QTL analysis result from a HDF5 file.
 #' 
-#' Validates and (if necessary) corrects a HDF5 object name: ensuring that it 
-#' has a leading slash and does not have a trailing slash.
+#' @param infile An input HDF5 file.
+#' @param phenotype Name of phenotype (or equivalent analysis unit).
+#' @param name Name of QTL analysis result.
+#' 
+#' @return R object containing QTL analysis result. Returns \code{NULL}
+#' if the given phenotype has no result with the specified name.
+#' 
+#' @export
+#' @keywords internal
+#' @rdname readResultHDF5
+readResultHDF5 <- function(infile, phenotype, name) {
+    
+    phenotype.results <- getResultNamesHDF5(infile, phenotype)
+    
+    if ( name %in% phenotype.results ) {
+        h5name <- joinH5ObjectNameParts( c('Results', phenotype, name) )
+        result <- readDatasetHDF5(infile, h5name)
+    } else {
+        result <- NULL
+    }
+    
+    return(result)
+}
+
+# resolveH5ObjectName ----------------------------------------------------------
+#' Resolve absolute HDF5 object name.
+#' 
+#' Validates and (if necessary) corrects a HDF5 object name: ensuring
+#' that it has a leading slash and does not have a trailing slash.
 #' 
 #' @param components HDF5 name components.
 #'     
@@ -762,7 +891,7 @@ resolveH5ObjectName <- function(h5name) {
         
         stopifnot( isSingleString(h5name) )
         
-        res <- sub('^/?', '/', h5name)
+        res <- sub('^/?', '/', unname(h5name))
         
         res <- sub('/$', '', res)
         
@@ -780,7 +909,7 @@ resolveH5ObjectName <- function(h5name) {
 #' @param h5name Character vector representing a HDF5 object name. If this has
 #' multiple parts, only the initial part can contain an absolute H5Object name.
 #' 
-#' @return Character vector of HDF5 name components.
+#' @return HDF5 name components.
 #' 
 #' @keywords internal
 #' @rdname splitH5ObjectName
@@ -833,9 +962,8 @@ splitH5ObjectName <- function(h5name) {
 #' @param col.name For a \code{data.frame}, rownames are removed, and then
 #' inserted into a column of the main table, with its column name taken
 #' from this parameter.
-#'        
+#' 
 #' @export
-#' @family hdf5 utilities
 #' @importFrom methods new
 #' @importFrom rhdf5 H5Dopen
 #' @importFrom rhdf5 h5writeDataset
@@ -847,6 +975,7 @@ splitH5ObjectName <- function(h5name) {
 #' @importFrom rhdf5 h5writeDataset.list
 #' @importFrom rhdf5 h5writeDataset.logical
 #' @importFrom rhdf5 h5writeDataset.matrix
+#' @keywords internal
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5 <- function(dataset, outfile, h5name, ...) {
     UseMethod('writeDatasetHDF5', dataset)
@@ -895,6 +1024,7 @@ writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name,
 writeDatasetHDF5.default <- function(dataset, outfile, h5name, ...) {
 
     stopifnot( isSingleString(outfile) )
+    h5name <- resolveH5ObjectName(h5name)
     
     name.parts <- splitH5ObjectName(h5name)
 
@@ -1141,17 +1271,16 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name, ...) {
 # writeMapHDF5 -----------------------------------------------------------------
 #' Write \code{map} to a HDF5 file.
 #'   
-#' @details An \pkg{R/qtl} \code{map} object is converted to a \code{mapframe}, 
-#' and written to the 'Maps' group at the root of the given HDF5 file. If no 
-#' map name is specified, a default will be assigned based on whether it is a 
-#' genetic or physical map.
+#' @details An \pkg{R/qtl} \code{map} object is written to the 'Maps' group at
+#' the root of the given HDF5 file. If no map name is specified, a default will
+#' be assigned based on whether it is a genetic or physical map.
 #' 
 #' @param map An \pkg{R/qtl} \code{map} object.
 #' @param outfile An output HDF5 file.
 #' @param name Map name.
-#'  
+#' 
 #' @export
-#' @family hdf5 utilities
+#' @keywords internal
 #' @rdname writeMapHDF5
 writeMapHDF5 <- function(map, outfile, name=NULL) {
     
@@ -1163,6 +1292,7 @@ writeMapHDF5 <- function(map, outfile, name=NULL) {
     
     h5name <- joinH5ObjectNameParts( c('Maps', name) )
     writeDatasetHDF5(map, outfile, h5name)
+    
     return( invisible() )
 }
 
@@ -1189,36 +1319,14 @@ writeObjectAttributesHDF5 <- function(x, outfile, h5name) {
     return( invisible() )
 }
 
-# writeResultHDF5 --------------------------------------------------------------
-#' Write QTL analysis result to a HDF5 file.
-#'    
-#' @param result R object containing a QTL analysis result.
-#' @param outfile An output HDF5 file.
-#' @param phenotype Name of phenotype (or equivalent analysis unit).
-#' @param name Name of QTL analysis result.
-#'  
-#' @export
-#' @family hdf5 utilities
-#' @rdname writeResultHDF5
-writeResultHDF5 <- function(result, outfile, phenotype, name=NULL) {
-    
-    if ( is.null(name) ) {
-        name <- makeDefaultResultName(result)
-    }
-    
-    h5name <- joinH5ObjectNameParts( c('Results', phenotype, name) )
-    writeDatasetHDF5(result, outfile, h5name)
-    return( invisible() )
-}
-
 # writeOverviewHDF5 ------------------------------------------------------------
 #' Write QTL analysis results overview to a HDF5 file.
 #'    
 #' @param overview Object containing a QTL analysis results overview.
 #' @param outfile An output HDF5 file.
-#'  
+#' 
 #' @export
-#' @family hdf5 utilities
+#' @keywords internal
 #' @rdname writeOverviewHDF5
 writeOverviewHDF5 <- function(overview, outfile) {
     
@@ -1232,6 +1340,28 @@ writeOverviewHDF5 <- function(overview, outfile) {
     
     h5name <- joinH5ObjectNameParts( c('Results', 'Overview') )
     writeDatasetHDF5(overview, outfile, h5name)
+    return( invisible() )
+}
+
+# writeResultHDF5 --------------------------------------------------------------
+#' Write QTL analysis result to a HDF5 file.
+#' 
+#' @param result R object containing a QTL analysis result.
+#' @param outfile An output HDF5 file.
+#' @param phenotype Name of phenotype (or equivalent analysis unit).
+#' @param name Name of QTL analysis result.
+#' 
+#' @export
+#' @keywords internal
+#' @rdname writeResultHDF5
+writeResultHDF5 <- function(result, outfile, phenotype, name=NULL) {
+    
+    if ( is.null(name) ) {
+        name <- makeDefaultResultName(result)
+    }
+    
+    h5name <- joinH5ObjectNameParts( c('Results', phenotype, name) )
+    writeDatasetHDF5(result, outfile, h5name)
     return( invisible() )
 }
 

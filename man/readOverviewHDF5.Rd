@@ -15,12 +15,5 @@ A \code{data.frame} containing QTL analysis results overview.
 \description{
 Read QTL analysis results overview from a HDF5 file.
 }
-\seealso{
-Other hdf5 utilities: \code{\link{readDatasetHDF5}},
-  \code{\link{readMapHDF5}}, \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
-}
+\keyword{internal}
 

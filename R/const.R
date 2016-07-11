@@ -160,7 +160,7 @@ with(const, {
         # Tetrad sample ID.
         tetrad = c( 
             alphanumeric = paste0('.*?([[:digit:]]+)([', 
-                                  paste(tetrad.sample.labels, collapse=''), '])'), 
+                paste(tetrad.sample.labels, collapse=''), '])'),
             numeric = '^.+?([[:digit:]]+)$'
         )
     )
@@ -232,9 +232,9 @@ with(const, {
         #       class                    name
         'scanone',                   'Scanone',
         'scantwo',                   'Scantwo',
-        'scanoneperm',   'Scanone Perms (Max)',
-        'scanonebins',  'Scanone Perms (Bins)',
-        'scantwoperm',   'Scantwo Perms (Max)',
+        'scanoneperm',         'Scanone Perms',
+        'scanonebins',         'Scanone Perms',
+        'scantwoperm',         'Scantwo Perms',
         'qtlintervals',        'QTL Intervals'
     ), ncol=2, byrow=TRUE, dimnames=list(NULL, c('class', 'name'))), 
     stringsAsFactors=FALSE)

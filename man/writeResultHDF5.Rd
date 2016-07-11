@@ -18,13 +18,5 @@ writeResultHDF5(result, outfile, phenotype, name = NULL)
 \description{
 Write QTL analysis result to a HDF5 file.
 }
-\seealso{
-Other hdf5 utilities: \code{\link{readDatasetHDF5}},
-  \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}}
-}
+\keyword{internal}
 
