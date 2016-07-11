@@ -188,7 +188,9 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
         snp.loc <- data.frame(chr=var.seqs[snp.indices],
             pos=var.pos[snp.indices])
         
-        if ( ! inMapOrder(snp.loc) ) {
+        # Sanity check for ordered VCF records.
+        if ( any( sapply( unique(var.seqs), function(var.seq)
+            is.unsorted(snp.loc[snp.loc$chr == var.seq, 'pos']) ) ) ) {
             stop("unordered variants in file - '", infile, "'")
         }
         
