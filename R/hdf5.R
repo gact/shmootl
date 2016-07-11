@@ -112,18 +112,16 @@ h5writeAttributes <- function(x, h5obj) {
 #' Join components of HDF5 object name.
 #'  
 #' @param components HDF5 name components.
+#' @param relative Option indicating that the returned H5Object name should be
+#' relative (i.e. should not contain a leading forward slash \code{'/'}).
 #'     
 #' @return HDF5 object name.
 #' 
 #' @keywords internal
 #' @rdname joinH5ObjectNameParts
-joinH5ObjectNameParts <- function(components) {
+joinH5ObjectNameParts <- function(components, relative=FALSE) {
     
-    components <- unlist( lapply(components, splitH5ObjectName) )
-    
-    if ( ! all( isValidID(components) ) ) {
-        stop("invalid H5Object component names - '", toString(components), "'")
-    }
+    stopifnot( isBOOL(relative) )
     
     if ( isSingleString(components) && components == '' ) {
         
@@ -137,7 +135,9 @@ joinH5ObjectNameParts <- function(components) {
         
         h5name <- paste(components, collapse='/')
         
-        h5name <- paste0('/', h5name)
+        if ( ! relative ) {
+            h5name <- paste0('/', h5name)
+        }
     }
     
     return(h5name)

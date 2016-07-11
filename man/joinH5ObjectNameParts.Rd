@@ -4,10 +4,13 @@
 \alias{joinH5ObjectNameParts}
 \title{Join components of HDF5 object name.}
 \usage{
-joinH5ObjectNameParts(components)
+joinH5ObjectNameParts(components, relative = FALSE)
 }
 \arguments{
 \item{components}{HDF5 name components.}
+
+\item{relative}{Option indicating that the returned H5Object name should be
+relative (i.e. should not contain a leading forward slash \code{'/'}).}
 }
 \value{
 HDF5 object name.
