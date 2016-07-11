@@ -4,16 +4,16 @@
 \alias{run_scanone}
 \title{Do single QTL scan.}
 \usage{
-run_scanone(crossfile, scanfile, chr = NA, pheno = NA, model = c("normal",
-  "binary", "2part", "np"), method = c("em", "imp", "hk", "ehk", "mr",
-  "mr-imp", "mr-argmax"), n.perm = 1000L, n.cluster = 1L, alpha = NA,
-  fdr = NA, step = 0, error.prob = 1e-04, map.function = c("haldane",
-  "kosambi", "c-f", "morgan"))
+run_scanone(infile = NA, h5file = NA, chr = NA, pheno = NA,
+  model = c("normal", "binary", "2part", "np"), method = c("em", "imp",
+  "hk", "ehk", "mr", "mr-imp", "mr-argmax"), n.perm = 1000L, n.cluster = 1L,
+  alpha = NA, fdr = NA, step = 0, error.prob = 1e-04,
+  map.function = c("haldane", "kosambi", "c-f", "morgan"))
 }
 \arguments{
-\item{crossfile}{input cross file}
+\item{infile}{input cross file}
 
-\item{scanfile}{scan result HDF5 file}
+\item{h5file}{scan result file}
 
 \item{chr}{sequences [default: all]}
 

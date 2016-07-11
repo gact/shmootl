@@ -3,7 +3,7 @@
 # run_report -------------------------------------------------------------------
 #' Create report of \pkg{R/qtl} analysis results.
 #' 
-#' @param scanfile scan result HDF5 file
+#' @param h5file scan result file
 #' @param report scan report file
 #' 
 #' @export
@@ -12,24 +12,24 @@
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices pdf
 #' @rdname run_report
-run_report <- function(scanfile, report) {
+run_report <- function(h5file=NA, report=NA) {
     
-    stopifnot( isSingleString(scanfile) )
-    stopifnot( file.exists(scanfile) )
+    stopifnot( isSingleString(h5file) )
+    stopifnot( file.exists(h5file) )
     stopifnot( isSingleString(report) )
     
     results.sought <- 'Scanone'
     results.found <- list()
     result.info <- list()
     
-    if ( hasObjectHDF5(scanfile, 'Results') ) {
+    if ( hasObjectHDF5(h5file, 'Results') ) {
         
         # Get phenotypes from scan result file.
-        phenotypes <- getPhenotypesHDF5(scanfile)
+        phenotypes <- getPhenotypesHDF5(h5file)
         
         # Get result info for phenotypes.
         result.info <- lapply(phenotypes, function(phenotype)
-            getResultNamesHDF5(scanfile, phenotype))
+            getResultNamesHDF5(h5file, phenotype))
         names(result.info) <- phenotypes
         
         # Get results of interest for each phenotype.
@@ -41,7 +41,7 @@ run_report <- function(scanfile, report) {
     roi <- unique( unlist(results.found) )
     
     if ( length(roi) == 0 ) {
-        warning("cannot output report - results not found in file '", scanfile, "'")
+        warning("cannot output report - results not found in file '", h5file, "'")
     }
     
     # Introduce plot device.
@@ -102,16 +102,16 @@ run_report <- function(scanfile, report) {
         
         if ( 'Scanone' %in% result.info[[phenotype]] ) {
             
-            scanone.result <- readResultHDF5(scanfile, phenotype, 'Scanone')
+            scanone.result <- readResultHDF5(h5file, phenotype, 'Scanone')
             
             # Get any QTL intervals.
-            qtl.intervals <- readResultHDF5(scanfile, phenotype, 'QTL Intervals')
+            qtl.intervals <- readResultHDF5(h5file, phenotype, 'QTL Intervals')
             
             # If no QTL intervals, get scanone permutations for this phenotype,
             # and create a QTL intervals object with any threshold info.
             # NB: if no permutations found, threshold attributes will be NULL.
             if ( is.null(qtl.intervals) ) {
-                scanone.perms <- readResultHDF5(scanfile, phenotype, 'Scanone Perms')
+                scanone.perms <- readResultHDF5(h5file, phenotype, 'Scanone Perms')
                 qtl.intervals <- qtlintervals(threshold=attr(scanone.perms, 'threshold'),
                     alpha=attr(scanone.perms, 'alpha'), fdr=attr(scanone.perms, 'fdr'))
             }

@@ -14,8 +14,8 @@
 #' If neither is specified, a significance level \code{alpha} of \code{0.05} is
 #' used by default.
 #' 
-#' @param crossfile input cross file
-#' @param scanfile scan result HDF5 file
+#' @param infile input cross file
+#' @param h5file scan result file
 #' @param chr sequences [default: all]
 #' @param pheno phenotypes [default: all]
 #' @param model phenotype model
@@ -30,14 +30,14 @@
 #' 
 #' @export
 #' @rdname run_scanone
-run_scanone <- function(crossfile, scanfile, chr=NA, pheno=NA, model=c('normal',
+run_scanone <- function(infile=NA, h5file=NA, chr=NA, pheno=NA, model=c('normal',
     'binary', '2part', 'np'), method=c('em', 'imp', 'hk', 'ehk', 'mr', 'mr-imp',
     'mr-argmax'), n.perm=1000L, n.cluster=1L, alpha=NA, fdr=NA, step=0,
     error.prob=0.0001, map.function=c('haldane', 'kosambi', 'c-f', 'morgan')) {
     
-    stopifnot( isSingleString(crossfile) )
-    stopifnot( file.exists(crossfile) )
-    stopifnot( isSingleString(scanfile) )
+    stopifnot( isSingleString(infile) )
+    stopifnot( file.exists(infile) )
+    stopifnot( isSingleString(h5file) )
     stopifnot( isSingleNonNegativeNumber(step) )
     stopifnot( isSingleProbability(error.prob) )
     
@@ -65,7 +65,7 @@ run_scanone <- function(crossfile, scanfile, chr=NA, pheno=NA, model=c('normal',
     }
     
     # Read cross input file.
-    cross <- readCrossCSV(crossfile, error.prob=error.prob,
+    cross <- readCrossCSV(infile, error.prob=error.prob,
         map.function=map.function)
     
     # Get cross info.
@@ -163,7 +163,7 @@ run_scanone <- function(crossfile, scanfile, chr=NA, pheno=NA, model=c('normal',
     # Move temp file to final scan result file.
     # NB: file.copy is used here instead of file.rename because the latter
     # can sometimes fail when moving files between different file systems.
-    file.copy(tmp, scanfile, overwrite=TRUE)
+    file.copy(tmp, h5file, overwrite=TRUE)
     
     return( invisible() )
 }

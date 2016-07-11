@@ -4,10 +4,10 @@
 \alias{run_report}
 \title{Create report of \pkg{R/qtl} analysis results.}
 \usage{
-run_report(scanfile, report)
+run_report(h5file = NA, report = NA)
 }
 \arguments{
-\item{scanfile}{scan result HDF5 file}
+\item{h5file}{scan result file}
 
 \item{report}{scan report file}
 }
