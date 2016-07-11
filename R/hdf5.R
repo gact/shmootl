@@ -753,29 +753,42 @@ resolveH5ObjectName <- function(h5name) {
 # splitH5ObjectName ------------------------------------------------------------
 #' Split HDF5 object name into component parts.
 #' 
-#' @param h5name HDF5 object name.
-#'     
-#' @return HDF5 name components.
+#' @param h5name Character vector representing a HDF5 object name. If this has
+#' multiple parts, only the initial part can contain an absolute H5Object name.
+#' 
+#' @return Character vector of HDF5 name components.
 #' 
 #' @keywords internal
 #' @rdname splitH5ObjectName
 splitH5ObjectName <- function(h5name) {
     
-    stopifnot( isSingleString(h5name) )
+    stopifnot( is.character(h5name) )
+    stopifnot( length(h5name) > 0 )
     
-    if ( h5name == '/' ) {
+    if ( length(h5name) == 1 ) {
         
-        components <- ''
-        
-    } else {
-        
-        h5name <- gsub('(^/)|(/$)', '', h5name)
-        
-        components <- unlist( strsplit(h5name, '/') )
-        
-        if ( any(nchar(components) == 0) ) {
-            stop("invalid H5Object name - '", toString(h5name), "'")
+        if ( h5name == '/' ) {
+            
+            components <- ''
+            
+        } else {
+            
+            trimmed.h5name <- gsub('(^/)|(/$)', '', h5name)
+            
+            components <- unname( unlist( strsplit(trimmed.h5name, '/') ) )
+            
+            if ( ! all( isValidID(components) ) ) {
+                stop("invalid H5Object name - '", toString(h5name), "'")
+            }
         }
+        
+    } else if ( length(h5name) > 1 ) {
+        
+        if ( any( substring(h5name[-1], 1, 1) == '/' ) ) {
+            stop("invalid multi-part H5Object name - '", toString(h5name), "'")
+        }
+        
+        components <- unlist( lapply(h5name, splitH5ObjectName) )
     }
     
     return(components)
