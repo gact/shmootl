@@ -10,6 +10,7 @@
 #' @importFrom grDevices cairo_pdf
 #' @importFrom grDevices dev.cur
 #' @importFrom grDevices dev.off
+#' @importFrom grDevices pdf
 #' @rdname run_report
 run_report <- function(scanfile, report) {
     
@@ -78,9 +79,21 @@ run_report <- function(scanfile, report) {
     tmp <- tempfile()
     on.exit( file.remove(tmp), add=TRUE )
     
-    # Init PDF graphics device.
+    # Load Cairo PDF graphics device.
     grDevices::cairo_pdf(tmp, width=fig.width, height=fig.height, onefile=TRUE)
     plot.device <- dev.cur()
+    
+    # If Cairo PDF device failed to load, fall back on regular PDF device.
+    if ( names(plot.device) == 'null device' ) {
+        grDevices::pdf(tmp, width=fig.width, height=fig.height, onefile=TRUE)
+        plot.device <- dev.cur()
+    }
+    
+    # Check graphics device loaded successfully.
+    if ( names(plot.device) == 'null device' ) {
+        plot.device <- NULL
+        stop("failed to load graphics device")
+    }
     
     # Write output for each phenotype.
     for ( i in getIndices(phenotypes) ) {
