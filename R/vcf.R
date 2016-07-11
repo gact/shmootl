@@ -70,7 +70,7 @@ hasGenoQualVCF <- function(file) {
 readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
     require.polymorphic=FALSE) {
     
-    infiles <- list(...)
+    infiles <- unlist( list(...) )
     stopifnot( length(infiles) > 0 )
     stopifnot( isBOOL(require.all) )
     stopifnot( isBOOL(require.polymorphic) )
