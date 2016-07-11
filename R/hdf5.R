@@ -446,6 +446,32 @@ readDatasetHDF5.list <- function(infile, h5name, ...) {
     return(dataset)
 }
 
+# readDatasetHDF5.map ----------------------------------------------------------
+#' @export
+#' @rdname readDatasetHDF5
+readDatasetHDF5.map <- function(infile, h5name, ...) {
+    
+    h5attrs <- readObjectAttributesHDF5(infile, h5name)
+    
+    dataset <- readDatasetHDF5.data.frame(infile, h5name, col.name='id')
+    
+    stopifnot( 'R.class' %in% names(h5attrs) )
+    stopifnot( 'map' %in% h5attrs[['R.class']] )
+    special.attributes <- getSpecialAttributeNames(dataset)
+    h5attrs <- h5attrs[ ! names(h5attrs) %in% special.attributes ]
+    
+    dataset <- as.map(dataset)
+    
+    for ( name in names(h5attrs) ) {
+        attr(dataset, name) <- h5attrs[[name]]
+    }
+    
+    class(dataset) <- attr(dataset, 'R.class')
+    attr(dataset, 'R.class') <- NULL
+    
+    return(dataset)
+}
+
 # readDatasetHDF5.mapframe -----------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
@@ -655,8 +681,6 @@ readMapHDF5 <- function(infile, name) {
     h5name <- joinH5ObjectNameParts( c('Maps', name) )
     
     result <- readDatasetHDF5(infile, h5name)
-    
-    result <- as.map(result)
     
     return(result)
 }
@@ -909,6 +933,22 @@ writeDatasetHDF5.list <- function(dataset, outfile, h5name, ...) {
     return( invisible() )
 }
 
+# writeDatasetHDF5.map ---------------------------------------------------------
+#' @export
+#' @rdname writeDatasetHDF5
+writeDatasetHDF5.map <- function(dataset, outfile, h5name, ...) {
+    
+    stopif( 'R.class' %in% names( attributes(dataset) ) )
+    
+    attr(dataset, 'R.class') <- class(dataset)
+    
+    dataset <- as.data.frame(dataset)
+    
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name, col.name='id')
+    
+    return( invisible() )
+}
+
 # writeDatasetHDF5.mapframe ----------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
@@ -1121,10 +1161,8 @@ writeMapHDF5 <- function(map, outfile, name=NULL) {
         name <- makeDefaultMapName(map)
     }
     
-    map.frame <- as.mapframe(map)
-    
     h5name <- joinH5ObjectNameParts( c('Maps', name) )
-    writeDatasetHDF5(map.frame, outfile, h5name)
+    writeDatasetHDF5(map, outfile, h5name)
     return( invisible() )
 }
 

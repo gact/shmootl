@@ -6,6 +6,7 @@
 \alias{readDatasetHDF5.data.frame}
 \alias{readDatasetHDF5.default}
 \alias{readDatasetHDF5.list}
+\alias{readDatasetHDF5.map}
 \alias{readDatasetHDF5.mapframe}
 \alias{readDatasetHDF5.matrix}
 \alias{readDatasetHDF5.scanone}
@@ -28,6 +29,8 @@ readDatasetHDF5.data.frame(infile, h5name, col.name = "rownames")
 readDatasetHDF5.default(infile, h5name, ...)
 
 readDatasetHDF5.list(infile, h5name, ...)
+
+readDatasetHDF5.map(infile, h5name, ...)
 
 readDatasetHDF5.mapframe(infile, h5name, ...)
 

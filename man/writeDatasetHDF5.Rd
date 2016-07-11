@@ -6,6 +6,7 @@
 \alias{writeDatasetHDF5.data.frame}
 \alias{writeDatasetHDF5.default}
 \alias{writeDatasetHDF5.list}
+\alias{writeDatasetHDF5.map}
 \alias{writeDatasetHDF5.mapframe}
 \alias{writeDatasetHDF5.matrix}
 \alias{writeDatasetHDF5.scanone}
@@ -30,6 +31,8 @@ writeDatasetHDF5(dataset, outfile, h5name, ...)
 \method{writeDatasetHDF5}{default}(dataset, outfile, h5name, ...)
 
 \method{writeDatasetHDF5}{list}(dataset, outfile, h5name, ...)
+
+\method{writeDatasetHDF5}{map}(dataset, outfile, h5name, ...)
 
 \method{writeDatasetHDF5}{mapframe}(dataset, outfile, h5name, ...)
 
