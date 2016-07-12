@@ -80,6 +80,7 @@ batchPermScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
 #' 
 #' @export
 #' @family scan utilities
+#' @importFrom qtl phenames
 #' @rdname batchPhenoScanone
 batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, ...) {
     
@@ -95,10 +96,16 @@ batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, ..
     # Run per-phenotype batch scan.
     scanone.results <- do.call(batchScan, c(args, list(...)))
     
-    # Combine per-phenotype scan results.  
+    # Assign phenotype names to LOD columns.
+    pheno.names <- qtl::phenames(cross)[pheno.col]
+    for ( i in seq_along(scanone.results) ) {
+        lodcol.index = getDatColIndices(scanone.results[[i]])
+        stopifnot( length(lodcol.index) == 1 )
+        colnames(scanone.results[[i]])[lodcol.index] <- pheno.names[i]
+    }
+    
+    # Combine per-phenotype scan results.
     combined.result <- do.call(cbind, scanone.results)
-    lodcol.indices = getDatColIndices(combined.result)
-    colnames(combined.result)[lodcol.indices] <- inferLodColNames(cross, pheno.col)
     
     # Set attributes of combined result from those of first result.
     for ( a in const$scan.attributes[['scanone']] ) {
