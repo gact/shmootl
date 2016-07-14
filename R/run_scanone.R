@@ -64,6 +64,14 @@ run_scanone <- function(infile=NA, h5file=NA, chr=NA, pheno=NA, model=c('normal'
         alpha <- 0.05
     }
     
+    # Attach required package namespaces ---------------------------------------
+    
+    req.pkgs <- c('qtl')
+    sapply(req.pkgs, attachNamespace)
+    on.exit( sapply(paste0('package:', req.pkgs), detach, character.only=TRUE) )
+    
+    # --------------------------------------------------------------------------
+    
     # Read cross input file.
     cross <- readCrossCSV(infile, error.prob=error.prob,
         map.function=map.function)
@@ -106,10 +114,10 @@ run_scanone <- function(infile=NA, h5file=NA, chr=NA, pheno=NA, model=c('normal'
     
     # Get LOD thresholds from permutation results. 
     if ( ! is.null(alpha) ) {
-        perm.summary <- qtl:::summary.scanoneperm(scanone.perms, alpha=alpha)
+        perm.summary <- summary(scanone.perms, alpha=alpha) # qtl:::summary.scanoneperm
         thresholds <- as.numeric(perm.summary[1, ])
     } else { # fdr
-        perm.summary <- summary.scanonebins(scanone.perms, scanone.result, fdr=fdr)
+        perm.summary <- summary(scanone.perms, scanone.result, fdr=fdr) # summary.scanonebins
         thresholds <- rep(perm.summary[1, 'lod'], length(phenotypes))
         # NB: update FDR from perm summary, can differ from requested FDR
         fdr <- 0.01 * as.numeric(sub('%', '', rownames(perm.summary)[1]))
@@ -134,7 +142,7 @@ run_scanone <- function(infile=NA, h5file=NA, chr=NA, pheno=NA, model=c('normal'
         
         # Output permutation scan results for this phenotype.
         if ( ! is.null(alpha) ) {
-            pheno.perms <- qtl:::subset.scanoneperm(scanone.perms, lodcolumn=i)
+            pheno.perms <- subset(scanone.perms, lodcolumn=i) # qtl:::subset.scanoneperm
             attr(pheno.perms, 'alpha') <- alpha
         } else { # fdr
             pheno.perms <- scanone.perms[,, i]
