@@ -1070,9 +1070,11 @@ writeDatasetHDF5.map <- function(dataset, outfile, h5name, ...) {
     
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
-    attr(dataset, 'R.class') <- class(dataset)
+    dataset.Rclass <- class(dataset)
     
     dataset <- as.data.frame(dataset)
+    
+    attr(dataset, 'R.class') <- dataset.Rclass
     
     writeDatasetHDF5.data.frame(dataset, outfile, h5name, col.name='id')
     
