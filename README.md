@@ -17,6 +17,7 @@ This package depends on the following:
 - [qtlcharts](http://kbroman.org/qtlcharts/)
 - [rhdf5](http://bioconductor.org/packages/release/bioc/html/rhdf5.html)
 - [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html)
+- [xlsx](https://cran.r-project.org/web/packages/xlsx/index.html)
 - [yaml](https://cran.r-project.org/web/packages/yaml/index.html)
 
 ## Installation 

@@ -24,6 +24,7 @@ Imports:
     qtl,
     rhdf5,
     VariantAnnotation,
+    xlsx,
     yaml
 RoxygenNote: 5.0.1
 Collate:
@@ -42,6 +43,8 @@ Collate:
     'const.R'
     'cross.R'
     'csv.R'
+    'hdf5.R'
+    'excel.R'
     'geno.R'
     'genome.R'
     'getLODProfile.R'
@@ -49,13 +52,13 @@ Collate:
     'getQTLIntervals.R'
     'getQTLPeaks.R'
     'hasEnumGenotypes.R'
-    'hdf5.R'
     'map.R'
     'pheno.R'
     'pipeline.R'
     'plotQTLScanone.R'
     'qtlintervals.R'
     'run.R'
+    'run_digest.R'
     'run_estimap.R'
     'run_makecross.R'
     'run_makegeno.R'

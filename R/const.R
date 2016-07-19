@@ -239,6 +239,40 @@ with(const, {
     ), ncol=2, byrow=TRUE, dimnames=list(NULL, c('class', 'name'))), 
     stringsAsFactors=FALSE)
     
+    # Excel settings -----------------------------------------------------------
+    
+    excel <- list(
+        
+        digest = list(
+            
+            `README` = list(
+                
+                description = 'This describes the contents of every worksheet in this workbook.',
+                
+                headings = c('Worksheet', 'Description')
+            ),
+            
+            `Overview` = list(
+                
+                description = 'Results overview from across the set of scan files.',
+                
+                headings = c('File', 'Phenotype', 'Status', 'Comments')
+            ),
+            
+            `QTL Intervals` = list(
+                
+                description = paste(
+                    'Table of QTL intervals as obtained by a single- or multi-QTL scan.',
+                    'Genomic features within the QTL interval are included, if available.'
+                ),
+                
+                headings = c('File', 'Phenotype', 'Chromosome', 'Peak LOD', 'LOD Threshold',
+                    'alpha', 'FDR', 'Interval Type', 'Start (cM)', 'Peak (cM)', 'End (cM)',
+                    'Start (bp)', 'End (bp)', 'Features')
+            )
+        )
+    )
+    
     # Scan function arguments --------------------------------------------------
     
     # Set documented scan function arguments.
