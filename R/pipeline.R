@@ -195,14 +195,12 @@ getPipelineInfo <- function(pipeline) {
                 arg <- p
                 group <- 'positional'
                 default <- NA_character_
-                short <- '-h' # NB: blocks short form
                 ptype <- 'character'
                 
             }
             
             # Set info for this parameter.
             params$arg[p] <- arg
-            params$short[p] <- short
             params$group[p] <- group
             params$default[[p]] <- default
             params$type[p] <- ptype
