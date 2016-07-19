@@ -37,6 +37,7 @@ Collate:
     'batchScantwoF.R'
     'chr.R'
     'compareCrossInfo.R'
+    'mapping.R'
     'util.R'
     'const.R'
     'cross.R'

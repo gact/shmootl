@@ -273,7 +273,7 @@ with(const, {
     )
     
     # Parameter groups.
-    param.groups <- c('positional', 'optional', 'flags')
+    param.groups <- c('positional', 'optional', 'flag', 'choice', 'compound')
 })
 
 # Lock constants ---------------------------------------------------------------

@@ -12,7 +12,7 @@
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices pdf
 #' @rdname run_report
-run_report <- function(h5file=NA, report=NA) {
+run_report <- function(h5file=NA_character_, report=NA_character_) {
     
     stopifnot( isSingleString(h5file) )
     stopifnot( file.exists(h5file) )

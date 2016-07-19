@@ -14,12 +14,13 @@
 #' 
 #' @export
 #' @rdname run_makegeno
-run_makegeno <- function(datafile, genfile, fdrfile=NA, alleles=NA, digits=NA) {
+run_makegeno <- function(datafile, genfile, fdrfile=NA_character_,
+    alleles=character(), digits=NA_integer_) {
     
     stopifnot( isSingleString(genfile) )
     
-    alleles <- if ( ! is.na(alleles) ) { as.character(loadListFromLine(alleles)) } else { NULL }
-    digits <- if ( ! is.na(digits) ) { strtoi(digits) } else { NULL }
+    alleles <- if ( ! identical(alleles, character()) ) { alleles } else { NULL }
+    digits <- if ( ! identical(digits, NA_integer_) ) { digits } else { NULL }
     
     sample.ids <- getSamplesVCF(datafile)
     

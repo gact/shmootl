@@ -4,17 +4,11 @@
 #' Recode data in \pkg{R/qtl} CSV file.
 #' 
 #' @param datafile cross/geno CSV file
-#' @param geno genotype recode mapping
+#' @param geno recode genotypes from mapping
 #' 
 #' @export
 #' @rdname run_recode
-run_recode <- function(datafile, geno=NA) {
-    
-    if ( ! is.na(geno) ) {
-        geno <- unlist( loadMappingFromLine(geno) )
-    } else {
-        geno <- NULL
-    }
+run_recode <- function(datafile, geno=mapping()) {
     
     tmp <- tempfile()
     on.exit( file.remove(tmp) )

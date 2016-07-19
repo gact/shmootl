@@ -1,49 +1,5 @@
 # Start of pipeline.R ##########################################################
 
-# getPipelineArgparser ---------------------------------------------------------
-#' Get argument parser for \pkg{shmootl} pipeline.
-#' 
-#' @param pipeline Name of a \pkg{shmootl} pipeline.
-#' 
-#' @return Argument parser for the specified \pkg{shmootl} pipeline.
-#' 
-#' @keywords internal
-#' @rdname getPipelineArgparser
-getPipelineArgparser <- function(pipeline) {
-    
-    # Get pipeline info.
-    pipe.info <- getPipelineInfo(pipeline)
-    
-    # Compose argument parser description by combining 
-    # the function title, description, and details.
-    description <- paste0(pipe.info$title, '\n')
-    for ( content in c(pipe.info$description, pipe.info$details) ) {
-        if ( ! is.null(content) ) {
-            description <- paste0(description, content)
-        }
-    }
-    
-    # Create argument parser.
-    ap <- argparser::arg_parser(name=pipe.info$command, description=description)
-    
-    # Add any parameters to the argument parser.
-    if ( ! is.null(pipe.info$params) ) {
-        
-        for ( i in getIndices(pipe.info$params$arg) ) {
-            
-            ap <- argparser::add_argument(ap, 
-                arg     = pipe.info$params$arg[i],
-                short   = pipe.info$params$short[i],
-                flag    = (pipe.info$params$group[i] == 'flag'),
-                default = pipe.info$params$default[[i]],
-                help    = pipe.info$params$help[i]
-            )
-        }
-    }
-    
-    return(ap)
-}
-
 # getPipelineFunction ----------------------------------------------------------
 #' Get \pkg{shmootl} pipeline function.
 #' 
@@ -97,7 +53,7 @@ getPipelineInfo <- function(pipeline) {
     }
     
     # Set the shell command used to run this pipeline.
-    command <- paste("Rscript -e 'shmootl::run()'", pipeline)
+    command <- paste("Rscript -e 'library(shmootl)' -e 'run()'", pipeline)
     
     # Compose pipeline function name.
     pipe.func <- paste0('run_', pipeline)
@@ -118,16 +74,16 @@ getPipelineInfo <- function(pipeline) {
         # Init parameter info.
         params <- list(
             arg = character(n.params),
-            short = character(n.params),
             group = factor(character(n.params), levels=const$param.groups),
             default = vector('list', n.params),
+            type = character(n.params),
             help = character(n.params)
         )
         
         for ( i in getIndices(params) ) {
             names(params[[i]]) <- def.params
         }
-  
+        
         # Get info for each defined parameter.
         for ( p in def.params ) {
             
@@ -141,41 +97,107 @@ getPipelineInfo <- function(pipeline) {
                 # If default value is a 'call', evaluate that 
                 # call and take first element of result.
                 if ( 'call' %in% class(default) ) {
-                    default <- eval(default)[[1]]
-                } 
+                    default <- eval(default)
+                }
+                
+                # If default is of length one, treat
+                # as flag or simple optional argument..
+                if ( length(default) == 1 ) {
+                    
+                    # If default value is FALSE, treat as flag..
+                    if( isFALSE(default) ) {
+                        
+                        group <- 'flag'
+                        ptype <- 'logical'
+                        
+                    } else { # ..otherwise treat as optional argument.
+                        
+                        group <- 'optional'
+                        
+                        if ( is.logical(default) ) {
+                            ptype <- 'logical'
+                        } else if ( is.integer(default) ) {
+                            ptype <- 'integer'
+                        } else if ( is.numeric(default) ) {
+                            ptype <- 'numeric'
+                        } else if ( is.character(default) ) {
+                            ptype <- 'character'
+                        } else {
+                            stop("parameter default value is of unknown type - '", default, "'")
+                        }
+                    }
+                
+                # ..otherwise if argument has multiple values,
+                # treat as avector of possible choices..
+                } else if ( length(default) > 1 ) {
+                    
+                    group <- 'choice'
+                    
+                    if ( is.logical(default) ) {
+                        ptype <- 'logical'
+                    } else if ( is.integer(default) ) {
+                        ptype <- 'integer'
+                    } else if ( is.numeric(default) ) {
+                        ptype <- 'numeric'
+                    } else if ( is.character(default) ) {
+                        ptype <- 'character'
+                    } else {
+                        stop("parameter choice vector is of unknown type - '", default, "'")
+                    }
+                    
+                # ..otherwise treat as a compound argument to be
+                # loaded from file or directly from the command-line.
+                } else {
+                    
+                    group <- 'compound'
+                    
+                    if ( is.logical(default) ) {
+                        ptype <- 'logical'
+                    } else if ( is.integer(default) ) {
+                        ptype <- 'integer'
+                    } else if ( is.numeric(default) ) {
+                        ptype <- 'numeric'
+                    } else if ( is.character(default) ) {
+                        ptype <- 'character'
+                    } else if ( is.mapping(default) ) {
+                        ptype <- 'mapping'
+                    }  else {
+                        stop("parameter default vector is of unknown type - '", default, "'")
+                    }
+                }
                 
                 # Verify default value is not NULL.
                 # NB: argparser converts NULL to NA anyway. To
                 # prevent confusion, use NA for unset values.
                 if( is.null(default) ) {
-                    stop("NULL default values in pipeline function '", 
+                    stop("parameter '", p, "' has default value NULL in pipeline function '",
                         pipe.func, "'")
                 }
                 
-                # If default value is FALSE, treat as flag..
-                if( isFALSE(default) ) {
-                    group <- 'flag'
-                    default <- NA
-                    short <- NA # NB: argparser sets automatically
-                } else { # ..otherwise treat as optional argument.
-                    group <- 'optional'
-                    short <- '-h' # NB: blocks short form
-                }
-                
-                # If argument is itself short form, prepend a 
-                # single hyphen, block argparser short form..
+                # If argument is itself short form, prepend one hyphen..
                 if ( nchar(p) == 1 ) {
+                    
+                    # Check that argument is a flag. NB: argparser does not
+                    # display short-form arguments correctly if not a flag.
+                    if ( group != 'flag' ) {
+                        stop("cannot use short-form for ", group, " parameter")
+                    }
+                    
                     arg <- paste0('-', p)
-                    short <- '-h' # NB: blocks short form
+                    
                 } else { # ..otherwise prepend two hyphens.
+                    
                     arg <- paste0('--', p)
                 }
                 
             } else { # ..otherwise process as positional argument.
+                
                 arg <- p
                 group <- 'positional'
-                default <- NA
+                default <- NA_character_
                 short <- '-h' # NB: blocks short form
+                ptype <- 'character'
+                
             }
             
             # Set info for this parameter.
@@ -183,6 +205,7 @@ getPipelineInfo <- function(pipeline) {
             params$short[p] <- short
             params$group[p] <- group
             params$default[[p]] <- default
+            params$type[p] <- ptype
         }
         
     } else {
@@ -274,12 +297,34 @@ getPipelineInfo <- function(pipeline) {
                  toString(undocumented), "'")
         }
         
-        # Get parameter help docs.
+        # Set parameter help doc string.
         for ( i in getIndices(item.indices) ) {
+            
+            # Get parameter item index.
             item.index <- item.indices[i]
+            
+            # Get parameter name.
             p <- doc.params[i]
-            help.list <- lapply(rd.content[[args.index]][[item.index]][[2]], as.character)
+            
+            # Get concatenated list of help strings for this parameter.
+            help.list <- lapply(rd.content[[args.index]][[item.index]][[2]],
+                as.character)
             params$help[p] <- paste0(help.list, collapse='')
+            
+            # If parameter is multiple-choice, add list of choices to help..
+            if ( params$group[p] == 'choice' ) {
+                
+                choice.info <- paste0('{', paste0(params$default[[p]], collapse=','), '}')
+                params$help[p] <- paste(params$help[p], choice.info)
+                
+            } else { # ..otherwise if a single valid default value, add to help.
+                
+                default <- params$default[[p]]
+                if ( length(default) == 1 && ! is.na(default) ) {
+                    default.info <- paste0('[default: ', default, ']')
+                    params$help[p] <- paste(params$help[p], default.info)
+                }
+            }
         }
         
     } else if ( length(args.index) > 1 ) {
@@ -347,6 +392,194 @@ getPipelineUsage <- function() {
     usage <- paste0(usage, pipeline.listing)
     
     return(usage)
+}
+
+# prepPipelineArgparser --------------------------------------------------------
+#' Prep argument parser for \pkg{shmootl} pipeline.
+#' 
+#' @param pipeline Name of a \pkg{shmootl} pipeline.
+#' 
+#' @return Argument parser for the specified \pkg{shmootl} pipeline.
+#' 
+#' @keywords internal
+#' @rdname prepPipelineArgparser
+prepPipelineArgparser <- function(pipeline) {
+    
+    # Get pipeline info.
+    pinfo <- getPipelineInfo(pipeline)
+    
+    # Compose argument parser description by combining
+    # the function title, description, and details.
+    description <- paste0(pinfo$title, '\n')
+    for ( content in c(pinfo$description, pinfo$details) ) {
+        if ( ! is.null(content) ) {
+            description <- paste0(description, content)
+        }
+    }
+    
+    # Create argument parser.
+    ap <- argparser::arg_parser(name=pinfo$command, description=description)
+    
+    # Add any parameters to the argument parser.
+    if ( ! is.null(pinfo$params) ) {
+        
+        for ( i in getIndices(pinfo$params$arg) ) {
+            
+            ap <- argparser::add_argument(ap,
+                arg   = pinfo$params$arg[i],
+                short = '-h', # NB: blocks short form
+                flag  = (pinfo$params$group[i] == 'flag'),
+                help  = pinfo$params$help[i]
+            )
+            
+            # If compound parameter, add additional argument to load from file.
+            if ( pinfo$params$group[i] == 'compound' ) {
+                
+                file.param <- paste0(pinfo$params$arg[i], '.file')
+                stopif( file.param %in% pinfo$params$arg )
+                
+                ap <- argparser::add_argument(ap,
+                    arg   = file.param,
+                    short = '-h', # NB: blocks short form
+                    flag  = FALSE,
+                    help  = pinfo$params$help[i]
+                )
+            }
+        }
+    }
+    
+    # Add pipeline info to argument parser.
+    stopif( 'pinfo' %in% names( attributes(ap) ) )
+    attr(ap, 'pinfo') <- pinfo
+    
+    return(ap)
+}
+
+# procPipelineArgs -------------------------------------------------------------
+#' Process arguments parsed by \pkg{argparser}.
+#' 
+#' @param ap An \pkg{argparser} parser object.
+#' @param args Arguments to be processed, having been parsed by \pkg{argparser}.
+#' 
+#' @return Processed pipeline arguments.
+#' 
+#' @include const.R
+#' @keywords internal
+#' @rdname procPipelineArgs
+procPipelineArgs <- function(ap, args) {
+    
+    # Get pipeline info from argument parser.
+    stopifnot( 'pinfo' %in% names( attributes(ap) ) )
+    pinfo <- attr(ap, 'pinfo')
+    
+    # Remove argparser special arguments.
+    args <- args[ ! names(args) %in% const$special.params ]
+    
+    # Process argument(s) corresponding to each parameter.
+    for ( p in names(pinfo$params$arg) ) {
+        
+        # Get parameter info.
+        default <- pinfo$params$default[[p]]
+        group <- pinfo$params$group[p]
+        ptype <- pinfo$params$type[p]
+        arg <- args[[p]]
+        
+        # If parameter is compound, get name and
+        # value of corresponding file argument.
+        if ( group == 'compound' ) {
+            fp <- paste0(p, '.file')
+            farg <- args[[fp]]
+        }
+        
+        # If argument has been specified..
+        if ( ! is.na(arg) ) {
+            
+            # ..and a parameter type has been specified..
+            if ( ! is.na(ptype) ) {
+                
+                # ..set argument according to its group.
+                if ( group %in% c('flag', 'optional', 'positional') ) {
+                    
+                    if ( ptype == 'integer' ) {
+                        arg <- as.numeric(arg)
+                        stopifnot( isWholeNumber(arg) )
+                        arg <- as.integer(arg)
+                    } else if ( ptype == 'numeric' ) {
+                        arg <- as.numeric(arg)
+                    } else if ( ptype == 'logical' ) {
+                        arg <- as.logical(arg)
+                    } else if ( ptype != 'character' ) {
+                        stop("unknown parameter type - '", ptype, "'")
+                    }
+                    
+                } else if ( group == 'choice' ) {
+                    
+                    if ( ptype == 'integer' ) {
+                        arg <- as.numeric(arg)
+                        stopifnot( isWholeNumber(arg) )
+                        arg <- as.integer(arg)
+                    } else if ( ptype == 'numeric' ) {
+                        arg <- as.numeric(arg)
+                    } else if ( ptype == 'logical' ) {
+                        arg <- as.logical(arg)
+                    } else if ( ptype != 'character' ) {
+                        stop("unknown parameter type - '", ptype, "'")
+                    }
+                    
+                    if ( ! arg %in% default ) {
+                        stop("unsupported choice for parameter '", p, "' - '", arg, "'")
+                    }
+                    
+                } else if ( group == 'compound' ) {
+                    
+                    if ( ! is.na(farg) ) {
+                        stop("incompatible arguments - '", toString( c(p, fp) ), "'")
+                    }
+                    
+                    if ( ptype == 'mapping' ) {
+                        arg <- loadMapping(line=arg)
+                    } else {
+                        arg <- loadVector(line=arg, type=ptype)
+                    }
+                }
+            }
+            
+        } else { # ..otherwise if regular argument not specified, set as appropriate.
+            
+            # NB: argparser will catch missing positional arguments.
+            
+            if ( group %in% c('flag', 'optional') ) {
+                
+                arg <- default
+            
+            } else if ( group == 'choice' ) {
+                
+                arg <- default[[1]]
+            
+            } else if ( group == 'compound' ) {
+                
+                # If file argument specified, set value from file..
+                if ( ! is.na(farg) ) {
+                    
+                    if ( ptype == 'mapping' ) {
+                        arg <- loadMapping(file=farg)
+                    } else {
+                        arg <- loadVector(file=farg, type=ptype)
+                    }
+                    
+                    args[[fp]] <- NULL
+                    
+                } else { # ..otherwise set default value.
+                    
+                    arg <- default
+                }
+            }
+        }
+        
+        args[[p]] <- arg
+    }
+    
+    return(args)
 }
 
 # End of pipeline.R ############################################################

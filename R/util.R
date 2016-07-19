@@ -1172,68 +1172,61 @@ loadChrInfo <- function() {
     return(chrinfo)
 }
 
-# loadListFromLine -------------------------------------------------------------
-#' Load a list from a line of text.
+# loadMapping ------------------------------------------------------------------
+#' Load a mapping from a line or file.
 #' 
-#' The input line is loaded as a YAML flow-style list.
+#' Given a specified line of text or filename, the input text is loaded
+#' as a YAML mapping, and returned as a simple \code{mapping} object.
 #' 
-#' @param line Character vector of length one, containing the line to be loaded.
+#' @param line Character string containing the line to be loaded.
+#' @param file Character string containing the name of the file to be loaded.
 #' 
-#' @return List or vector of loaded data.
-#' 
-#' @importFrom yaml yaml.load
-#' @keywords internal
-#' @rdname loadListFromLine
-loadListFromLine <- function(line) {
-    
-    stopifnot( isSingleString(line) )
-    
-    first.char <- substr(line, 1, 1)
-    last.char <- substr(line, nchar(line), nchar(line))
-    enclosed <- first.char == '[' && first.char == ']'
-    
-    if ( ! enclosed ) {
-        line <- paste0('[', line, ']', collapse='')
-    }
-    
-    x <- yaml::yaml.load(line)
-    
-    if ( ! is.vector(x) || hasNames(x) ) {
-        stop("failed to load list from line - '", toString(line), "'")
-    }
-    
-    return(x)
-}
-
-# loadMappingFromLine ----------------------------------------------------------
-#' Load a mapping from a line of text.
-#' 
-#' The input line is loaded as a YAML flow-style mapping.
-#' 
-#' @param line Character vector of length one, containing the line to be loaded.
-#' 
-#' @return Named list or vector of loaded data.
+#' @return A \code{mapping} of unique string keys to individual values.
 #' 
 #' @importFrom yaml yaml.load
+#' @importFrom yaml yaml.load_file
+#' @include mapping.R
 #' @keywords internal
-#' @rdname loadMappingFromLine
-loadMappingFromLine <- function(line) {
+#' @rdname loadMapping
+loadMapping <- function(line=NULL, file=NULL) {
     
-    stopifnot( isSingleString(line) )
-    
-    first.char <- substr(line, 1, 1)
-    last.char <- substr(line, nchar(line), nchar(line))
-    enclosed <- first.char == '{' && first.char == '}'
-    
-    if ( ! enclosed ) {
-        line <- paste0('{', line, '}', collapse='')
+    if ( ! xor( is.null(line), is.null(file) ) ) {
+        stop("mapping must be loaded from either a line or a file, but not both")
     }
     
-    x <- yaml::yaml.load(line)
-    
-    if ( ! ( is.list(x) && ( hasNames(x) || 'keys' %in% names(attributes(x)) ) ) ) {
-        stop("failed to load mapping from line - '", toString(line), "'")
+    if ( ! is.null(line) ) {
+        
+        stopifnot( isSingleString(line) )
+        
+        # Ensure line is enclosed by curly braces.
+        first.char <- substr(line, 1, 1)
+        last.char <- substr(line, nchar(line), nchar(line))
+        if ( first.char != '{' || first.char != '}' ) {
+            line <- paste0('{', line, '}', collapse='')
+        }
+        
+        tryCatch({ # Load YAML object from line.
+            x <- yaml::yaml.load(line)
+        }, error=function(e) {
+            stop("failed to load YAML from line - '", toString(line), "'")
+        })
+        
+    } else if ( ! is.null(file) ) {
+        
+        stopifnot( isSingleString(file) )
+        
+        tryCatch({ # Load YAML object from file.
+            x <- yaml::yaml.load_file(file)
+        }, error=function(e) {
+            stop("failed to load YAML from file - '", toString(file), "'")
+        })
     }
+    
+    tryCatch({ # Convert YAML object to mapping.
+        x <- mapping(x)
+    }, error=function(e) {
+        stop("failed to load mapping")
+    })
     
     return(x)
 }
@@ -1273,6 +1266,147 @@ loadSeqInfo <- function() {
     }
     
     return(seqinfo)
+}
+
+# loadVector -------------------------------------------------------------------
+#' Load a vector from a line or file.
+#' 
+#' Given a specified line of text or filename, the input text is loaded
+#' as a YAML list, and returned as an R \code{vector} object.
+#' 
+#' @param line Character string containing the line to be loaded.
+#' @param file Character string containing the name of the file to be loaded.
+#' 
+#' @return Vector of loaded data.
+#' 
+#' @importFrom utils read.table
+#' @importFrom yaml yaml.load
+#' @importFrom yaml yaml.load_file
+#' @keywords internal
+#' @rdname loadVector
+loadVector <- function(line=NULL, file=NULL, type=NULL) {
+    
+    if ( ! xor( is.null(line), is.null(file) ) ) {
+        stop("vector must be loaded from either a line or a file, but not both")
+    }
+    
+    if ( ! is.null(line) ) {
+        
+        stopifnot( isSingleString(line) )
+        
+        # Ensure line is enclosed by square brackets.
+        first.char <- substr(line, 1, 1)
+        last.char <- substr(line, nchar(line), nchar(line))
+        if ( first.char != '[' || first.char != ']' ) {
+            line <- paste0('[', line, ']', collapse='')
+        }
+        
+        tryCatch({ # Load YAML list from line.
+            x <- yaml::yaml.load(line)
+            stopifnot( is.vector(x) && ! hasNames(x) )
+        }, error=function(e) {
+            stop("failed to load vector from line - '", toString(line), "'")
+        })
+        
+    } else if ( ! is.null(file) ) {
+        
+        stopifnot( isSingleString(file) )
+        
+        tryCatch({
+        
+            # Read list file as a CSV file with one column.
+            x <- utils::read.table(file, sep='\n', quote='', as.is=TRUE,
+                na.strings=NA, strip.white=TRUE, blank.lines.skip=FALSE,
+                allowEscapes=TRUE, stringsAsFactors=FALSE)
+            stopifnot( ncol(x) == 1 )
+            
+            # Trim any blank rows from the bottom.
+            x <- bstripBlankRows(x)
+            
+            # Convert to vector of YAML-loaded values.
+            x <- lapply(getRowIndices(x), function(i) yaml::yaml.load(x[i, ]))
+            stopifnot( all( lengths(x) == 1 ) )
+            
+            # Get data types of YAML-loaded elements.
+            element.types <- unique( sapply(x, typeof) )
+            
+            if ( ! all( element.types %in%
+                c('character', 'logical', 'integer', 'double', 'numeric') ) ) {
+                stop("unknown vector element types - '", toString(element.types), "'")
+            }
+            
+            # If all elements are of the same type,
+            # convert list to a vector of that type.
+            if ( length(element.types) == 1 ) {
+                
+                if ( element.types == 'character' ) {
+                    x <- as.character(x)
+                } else if ( element.types == 'logical' ) {
+                    x <- as.logical(x)
+                } else if ( element.types == 'integer' ) {
+                    x <- as.integer(x)
+                } else if ( element.types %in% c('double', 'numeric') ) {
+                    x <- as.numeric(x)
+                }
+            }
+            
+        }, error=function(e) {
+            stop("failed to load vector from file - '", toString(file), "'")
+        })
+    }
+    
+    # If relevant, check type of vector against
+    # that specified, and convert if appropriate.
+    if ( ! is.null(type) ) {
+        
+        stopifnot( isSingleString(type) )
+        
+        err.type <- NULL
+        if ( type == 'character' ) {
+            
+            if ( ! is.character(x) ) {
+                x <- as.character(x)
+            }
+            
+        } else if ( type == 'logical' ) {
+            
+            if ( ! is.logical(x) ) {
+                err.type <- 'logical'
+            }
+            
+        } else if ( type == 'integer' ) {
+            
+            if ( ! is.integer(x) ) {
+                if ( is.numeric(x) ) {
+                    x <- as.integer(x)
+                } else {
+                    err.type <- 'integer'
+                }
+            }
+            
+        } else if ( type %in% c('double', 'numeric') ) {
+            
+            if ( ! is.numeric(x) ) {
+                err.type <- 'numeric'
+            }
+            
+        } else if ( type == 'list' ) {
+            
+            if ( ! is.list(x) ) {
+                x <- as.list(x)
+            }
+            
+        } else {
+            
+            stop("unknown vector type - '", type, "'")
+        }
+        
+        if ( ! is.null(err.type) ) {
+            stop("vector is not of type - '", type, "'")
+        }
+    }
+    
+    return(x)
 }
 
 # makeDefaultMarkerIDs ---------------------------------------------------------

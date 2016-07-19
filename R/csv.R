@@ -563,6 +563,7 @@ readPhenoCSV <- function(infile) {
 #'
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
+#' @include mapping.R
 #' @keywords internal
 #' @rdname recodeCSV
 recodeCSV <- function(infile, outfile, geno=NULL) {
@@ -587,11 +588,10 @@ recodeCSV <- function(infile, outfile, geno=NULL) {
     
     if ( ! is.null(geno) ) {
         
-        stopifnot( is.character(geno) )
-        stopifnot( hasNames(geno) )
+        stopifnot( is.mapping(geno) )
         
         src.geno <- names(geno)
-        dest.geno <- unname(geno)
+        dest.geno <- unlist( values(geno) )
         
         if ( is.null(params$geno.cols) ) {
             stop("cannot recode - no genotype data")
@@ -610,10 +610,10 @@ recodeCSV <- function(infile, outfile, geno=NULL) {
         validateGenotypeSet(dest.geno)
         
         # Get genotype data.
-        geno.data <- x[params$dat.rows, params$geno.cols]
+        recoded.geno <- original.geno <- x[params$dat.rows, params$geno.cols]
         
         # Get set of symbols in genotype data.
-        curr.geno <- unique( as.character( unlist(geno.data) ) )
+        curr.geno <- unique( as.character( unlist(original.geno) ) )
         curr.geno <- curr.geno[ ! is.na(curr.geno) ]
         
         err.geno <- curr.geno[ ! curr.geno %in% src.geno ]
@@ -623,11 +623,11 @@ recodeCSV <- function(infile, outfile, geno=NULL) {
         
         # Recode genotypes.
         for ( i in getIndices(geno) ) {
-            geno.data[ geno.data == src.geno[i] ] <- dest.geno[i]
+            recoded.geno[ original.geno == src.geno[i] ] <- dest.geno[i]
         }
         
         # Replace genotype data.
-        x[params$dat.rows, params$geno.cols] <- geno.data
+        x[params$dat.rows, params$geno.cols] <- recoded.geno
     } 
     
     # Write recoded data to file.

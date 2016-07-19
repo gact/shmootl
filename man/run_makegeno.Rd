@@ -4,7 +4,8 @@
 \alias{run_makegeno}
 \title{Make genotype data from VCF.}
 \usage{
-run_makegeno(datafile, genfile, fdrfile = NA, alleles = NA, digits = NA)
+run_makegeno(datafile, genfile, fdrfile = NA_character_,
+  alleles = character(), digits = NA_integer_)
 }
 \arguments{
 \item{datafile}{sample VCF file}

@@ -82,14 +82,14 @@ run <- function() {
         # If shmootl is available and valid pipeline is specified, run.
         if ( ! is.na(pipeline) && pipeline %in% getPipelines() ) {
             
-            # Create argument parser.
-            ap <- getPipelineArgparser(pipeline)
+            # Prep argument parser.
+            ap <- prepPipelineArgparser(pipeline)
             
-            # Parse arguments.
+            # Parse pipeline arguments.
             args <- argparser::parse_args(ap, args)
             
-            # Remove argparser special arguments.
-            args <- args[ ! names(args) %in% const$special.params ]
+            # Process pipeline arguments.
+            args <- procPipelineArgs(ap, args)
             
             # Get pipeline function.
             pipe.func <- getPipelineFunction(pipeline)
