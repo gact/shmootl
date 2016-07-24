@@ -9,8 +9,8 @@ joinH5ObjectNameParts(components, relative = FALSE)
 \arguments{
 \item{components}{HDF5 name components.}
 
-\item{relative}{Option indicating that the returned H5Object name should be
-relative (i.e. should not contain a leading forward slash \code{'/'}).}
+\item{relative}{Option indicating that the returned HDF5 object name should
+be relative (i.e. should not contain a leading forward slash \code{'/'}).}
 }
 \value{
 HDF5 object name.

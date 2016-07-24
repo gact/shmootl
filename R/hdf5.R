@@ -278,8 +278,8 @@ h5writeAttributes <- function(x, h5obj) {
 #' Join components of HDF5 object name.
 #'  
 #' @param components HDF5 name components.
-#' @param relative Option indicating that the returned H5Object name should be
-#' relative (i.e. should not contain a leading forward slash \code{'/'}).
+#' @param relative Option indicating that the returned HDF5 object name should
+#' be relative (i.e. should not contain a leading forward slash \code{'/'}).
 #'     
 #' @return HDF5 object name.
 #' 
@@ -299,8 +299,17 @@ joinH5ObjectNameParts <- function(components, relative=FALSE) {
             components <- unlist( lapply(components, splitH5ObjectName) )   
         }
         
+        # Join HDF5 name components.
         h5name <- paste(components, collapse='/')
         
+        # Collapse multiple component separators.
+        h5name <- gsub('/+', '/', h5name)
+        
+        # Strip leading component separator.
+        h5name <- gsub('^/', '', h5name)
+        
+        # If not returning a relative HDF5 object name,
+        # prepend leading component separator.
         if ( ! relative ) {
             h5name <- paste0('/', h5name)
         }
