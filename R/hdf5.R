@@ -138,6 +138,74 @@ getObjectClassHDF5 <- function(infile, h5name) {
     return(cls)
 }
 
+# getObjectNamesHDF5 -----------------------------------------------------------
+#' Get names of HDF5 objects from HDF5 file and name.
+#' 
+#' @param infile An input HDF5 file.
+#' @param h5name Requested HDF5 object name. By default, results
+#' are returned with respect to the HDF5 root object.
+#' @param include.requested Include the name of the
+#' requested HDF5 object among returned object names.
+#' @param relative Option indicating that the returned HDF5 object
+#' names should be given relative to the requested HDF5 object.
+#' @param recursive Option indicating whether
+#' to get HDF5 object names recursively.
+#' 
+#' @return Character vector of names of HDF5 objects
+#' that lie below the requested HDF5 object.
+#' 
+#' @importFrom methods new
+#' @importFrom rhdf5 H5Lexists
+#' @importFrom rhdf5 h5ls
+#' @keywords internal
+#' @rdname getObjectNamesHDF5
+getObjectNamesHDF5 <- function(infile, h5name=NULL, include.requested=FALSE,
+                               relative=FALSE, recursive=FALSE) {
+    
+    stopifnot( isSingleString(infile) )
+    stopifnot( file.exists(infile) )
+    stopifnot( isBOOL(include.requested) )
+    stopifnot( isBOOL(relative) )
+    stopifnot( isBOOL(recursive) )
+    h5name <- resolveH5ObjectName(h5name)
+    
+    object.names <- NULL
+    
+    h5stack <- methods::new('H5Stack', infile, h5name)
+    
+    on.exit( closeStack(h5stack) )
+    
+    if( ! rhdf5::H5Lexists(fileID(h5stack), h5name) ) {
+        stop("HDF5 object ('", h5name, "') not found in file - '",  infile, "'")
+    }
+    
+    h5info <- rhdf5::h5ls(peek(h5stack), datasetinfo=FALSE, recursive=recursive)
+    
+    if ( nrow(h5info) > 0 ) {
+        
+        object.names <- character( nrow(h5info) )
+        
+        for ( i in getRowIndices(h5info) ) {
+            
+            h5parts <- c(h5info$group[i], h5info$name[i])
+            
+            if (relative) {
+                object.name <- joinH5ObjectNameParts(h5parts, relative=TRUE)
+            } else { # absolute
+                object.name <- joinH5ObjectNameParts( c(h5name, h5parts) )
+            }
+            
+            object.names[i] <- object.name
+        }
+    }
+    
+    if (include.requested) {
+        object.names <- c(h5name, object.names)
+    }
+    
+    return(object.names)
+}
+
 # getPhenotypesHDF5 ------------------------------------------------------------
 #' Get names of phenotypes in HDF5 file.
 #' 
