@@ -151,7 +151,7 @@
 #' \subsection{Genomes}{
 #' The \pkg{shmootl} package allows the reference genome to be set using the 
 #' function \code{\link{genomeOpt}}, although there is currently only one 
-#' genome available (i.e. \code{'S288C_R64-1-1'}).
+#' genome available (i.e. \code{'SGD_S288C_R64-1-1'}).
 #' }
 #' 
 #' @section See Also: 
