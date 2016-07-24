@@ -4,10 +4,10 @@
 \alias{genomeOpt}
 \title{Set/get genome option.}
 \usage{
-genomeOpt(genome)
+genomeOpt(value)
 }
 \arguments{
-\item{genome}{New value of genome option.}
+\item{value}{New value of genome option.}
 }
 \value{
 Current value of genome option.

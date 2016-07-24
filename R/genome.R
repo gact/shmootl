@@ -7,33 +7,27 @@
 #' given value. Otherwise, this function returns the current value of the genome
 #' option.
 #' 
-#' @param genome New value of genome option.
+#' @param value New value of genome option.
 #' 
 #' @return Current value of genome option.
 #' 
 #' @export
 #' @rdname genomeOpt
-genomeOpt <- function(genome) {
+genomeOpt <- function(value) {
     
-    if ( ! missing(genome) ) {
+    result <- getOption('shmootl.genome', default=const$default$genome)
+    
+    if ( ! result %in% names(const$seqinfo) ) {
+        stop("unknown genome - '", result, "'")
+    }
+    
+    if ( ! missing(value) ) {
        
-        if ( ! genome %in% names(const$seqinfo) ) {
-            stop("unknown genome - '", genome, "'")
+        if ( ! value %in% names(const$seqinfo) ) {
+            stop("unknown genome - '", value, "'")
         }
         
-        options(shmootl.genome=genome)
-        
-        result <- invisible()
-        
-    } else {
-        
-        genome <- getOption('shmootl.genome', default=const$default$genome)
-        
-        if ( ! genome %in% names(const$seqinfo) ) {
-            stop("unknown genome - '", genome, "'")
-        }
-        
-        result <- genome
+        options(shmootl.genome=value)
     }
     
     return(result)
