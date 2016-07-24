@@ -43,45 +43,6 @@
 #' @name HDF5 Utilities
 NULL
 
-# getGroupMemberNamesHDF5 ------------------------------------------------------
-#' Get HDF5 group member names.
-#' 
-#' @param infile An input HDF5 file.
-#' @param h5name HDF5 group name.
-#' 
-#' @return Vector of group member names. Returns \code{NULL}
-#' if group is not present or has no members.
-#' 
-#' @importFrom methods new
-#' @importFrom rhdf5 H5Lexists
-#' @importFrom rhdf5 h5ls
-#' @keywords internal
-#' @rdname getGroupMemberNamesHDF5
-getGroupMemberNamesHDF5 <- function(infile, h5name) {
-    
-    stopifnot( isSingleString(infile) )
-    stopifnot( file.exists(infile) )
-    h5name <- resolveH5ObjectName(h5name)
-    
-    member.names <- NULL
-    
-    h5stack <- methods::new('H5Stack', infile, h5name)
-    
-    on.exit( closeStack(h5stack) )
-    
-    if( ! rhdf5::H5Lexists(fileID(h5stack), h5name) ) {
-        stop("HDF5 object ('", h5name, "') not found in file - '",  infile, "'")
-    }
-
-    group.info <- rhdf5::h5ls(peek(h5stack), recursive=FALSE)
-    
-    if ( nrow(group.info) > 0 ) {
-        member.names <- group.info$name
-    }
-    
-    return(member.names)
-}
-
 # getMapNamesHDF5 --------------------------------------------------------------
 #' Get names of maps in HDF5 file.
 #' 
@@ -93,7 +54,7 @@ getGroupMemberNamesHDF5 <- function(infile, h5name) {
 #' @keywords internal
 #' @rdname getMapNamesHDF5
 getMapNamesHDF5 <- function(infile) {
-    return( getGroupMemberNamesHDF5(infile, 'Maps') )
+    return( getObjectNamesHDF5(infile, 'Maps', relative=TRUE) )
 }
 
 # getObjectClassHDF5 -----------------------------------------------------------
@@ -220,7 +181,7 @@ getPhenotypesHDF5 <- function(infile) {
     
     phenotypes <- NULL
     
-    result.names <- getGroupMemberNamesHDF5(infile, 'Results')
+    result.names <- getObjectNamesHDF5(infile, 'Results', relative=TRUE)
     
     if ( ! is.null(result.names) ) {
         
@@ -248,7 +209,7 @@ getPhenotypesHDF5 <- function(infile) {
 getResultNamesHDF5 <- function(infile, phenotype) {
     stopifnot( phenotype %in% getPhenotypesHDF5(infile) )
     h5name <- joinH5ObjectNameParts( c('Results', phenotype) )
-    phenotype.results <- getGroupMemberNamesHDF5(infile, h5name)
+    phenotype.results <- getObjectNamesHDF5(infile, h5name, relative=TRUE)
     return(phenotype.results)
 }
 
@@ -642,7 +603,7 @@ readDatasetHDF5.list <- function(infile, h5name, ...) {
     original.names <- dataset.attrs[['names']]
     original.names[ original.names == 'NA' ] <- NA
     
-    child.names <- getGroupMemberNamesHDF5(infile, h5name)
+    child.names <- getObjectNamesHDF5(infile, h5name, relative=TRUE)
     
     ordered.names <- makeGroupObjectNames(group.names=original.names, 
         group.size=length(child.names) )
