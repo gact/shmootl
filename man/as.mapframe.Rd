@@ -5,6 +5,7 @@
 \alias{as.mapframe.data.frame}
 \alias{as.mapframe.list}
 \alias{as.mapframe.map}
+\alias{as.mapframe.mapframe}
 \alias{as.mapframe.scanone}
 \title{Coerce object to \code{mapframe}.}
 \usage{
@@ -15,6 +16,8 @@ as.mapframe(from, map.unit = NULL)
 \method{as.mapframe}{list}(from, map.unit = NULL)
 
 \method{as.mapframe}{map}(from, map.unit = NULL)
+
+\method{as.mapframe}{mapframe}(from, map.unit = NULL)
 
 \method{as.mapframe}{scanone}(from, map.unit = NULL)
 }

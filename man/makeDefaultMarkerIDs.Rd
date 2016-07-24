@@ -7,7 +7,7 @@
 makeDefaultMarkerIDs(loc, sep = c(":", "-"))
 }
 \arguments{
-\item{loc}{Locus \code{mapframe} specifying physical map positions.}
+\item{loc}{Locus \code{data.frame} specifying physical map positions.}
 
 \item{sep}{Separator between the two parts of a default marker ID.}
 }

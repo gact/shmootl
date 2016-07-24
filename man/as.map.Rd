@@ -4,6 +4,7 @@
 \alias{as.map}
 \alias{as.map.data.frame}
 \alias{as.map.list}
+\alias{as.map.map}
 \alias{as.map.mapframe}
 \alias{as.map.scanone}
 \title{Coerce object to \code{map}.}
@@ -13,6 +14,8 @@ as.map(from, map.unit = NULL)
 \method{as.map}{data.frame}(from, map.unit = NULL)
 
 \method{as.map}{list}(from, map.unit = NULL)
+
+\method{as.map}{map}(from, map.unit = NULL)
 
 \method{as.map}{mapframe}(from, map.unit = NULL)
 

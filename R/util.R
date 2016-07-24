@@ -14,6 +14,21 @@ allKwargs <- function(...) {
     return( length(args) == 0 || hasNames(args) )
 }
 
+# anyKwargs --------------------------------------------------------------------
+#' Test if any ellipsis arguments are keyword arguments.
+#' 
+#' @param ... Ellipsis arguments.
+#' 
+#' @return TRUE if any ellipsis arguments are keyword arguments; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname anyKwargs
+anyKwargs <- function(...) {
+    args <- list(...)
+    return( length(args) > 0 && ! is.null( names(args) ) &&
+        any( ! is.na(names(args)) & names(args) != '' ) )
+}
+
 # allNA ------------------------------------------------------------------------
 #' Test if all elements are NA values.
 #' 
@@ -1412,7 +1427,7 @@ loadVector <- function(line=NULL, file=NULL, type=NULL) {
 # makeDefaultMarkerIDs ---------------------------------------------------------
 #' Make default marker IDs for loci.
 #'   
-#' @param loc Locus \code{mapframe} specifying physical map positions.
+#' @param loc Locus \code{data.frame} specifying physical map positions.
 #' @param sep Separator between the two parts of a default marker ID.
 #'      
 #' @return Character vector of default marker IDs.
@@ -1421,27 +1436,36 @@ loadVector <- function(line=NULL, file=NULL, type=NULL) {
 #' @rdname makeDefaultMarkerIDs
 makeDefaultMarkerIDs <- function(loc, sep=c(':', '-')) {
     
-    stopifnot( isPhysicalMapframe(loc) )
+    stopifnot( is.data.frame(loc) )
     stopifnot( nrow(loc) > 0 )
     
     sep <- match.arg(sep)
     
-    # Scale locus positions to base-pair units. 
-    if ( getMapUnit(loc) != 'bp' ) {
-        loc <- setMapUnit(loc, 'bp')
+    # Check map unit is physical, if present.
+    map.unit <- getMapUnit(loc)
+    if ( ! is.na(map.unit) ) {
+        
+        stopifnot( isPhysicalMapUnit(map.unit) )
+        
+        # Scale locus positions to base-pair units, if needed.
+        basic.unit <- const$basic.map.unit[['pmap']]
+        if ( map.unit != basic.unit ) {
+            loc <- setMapUnit(loc, basic.unit)
+        }
     }
     
+    # Get locus sequences and positions.
+    loc.seqs <- normSeq( pullLocusSeq(loc) )
+    loc.pos <- pullLocusPos(loc)
+    
     # TODO: validate positions from genome sequence lengths.
-    exrange <- loc$pos[ loc$pos < 1 | loc$pos > 9999999 ]
+    exrange <- loc.pos[ loc.pos < 1 | loc.pos > 9999999 ]
     if ( length(exrange) > 0 ) {
         stop("cannot make default marker IDs for positions '", toString(exrange), "'")
     }
     
-    # Get locus sequences as character vector.
-    loc.seqs <- as.character(loc$chr)
-    
     # Format locus positions.
-    loc.pos <- sprintf('%07d', loc$pos)
+    loc.pos <- sprintf('%07d', loc.pos)
 
     return( paste0("c", loc.seqs, sep, loc.pos) )
 }
@@ -1449,7 +1473,7 @@ makeDefaultMarkerIDs <- function(loc, sep=c(':', '-')) {
 # makeDefaultQTLNames ----------------------------------------------------------
 #' Make default QTL names for the specified loci.
 #'  
-#' @param loc Locus \code{mapframe} specifying genetic map positions.
+#' @param loc Locus \code{data.frame} specifying genetic map positions.
 #' @param step Map step size.
 #'      
 #' @return Character vector of default QTL names.
@@ -1458,9 +1482,15 @@ makeDefaultMarkerIDs <- function(loc, sep=c(':', '-')) {
 #' @rdname makeDefaultQTLNames
 makeDefaultQTLNames <- function(loc, step=0) {
     
-    stopifnot( isGeneticMapframe(loc) )
+    stopifnot( is.data.frame(loc) )
     stopifnot( nrow(loc) > 0 )
     stopifnot( isSingleNonNegativeNumber(step) )
+    
+    # Check map unit is genetic, if present.
+    map.unit <- getMapUnit(loc)
+    if ( ! is.na(map.unit) ) {
+        stopifnot( isGeneticMapUnit(map.unit) )
+    }
     
     # Adjust number of digits in map position. 
     # NB: based on code in R/qtl::makeqtl
@@ -1469,11 +1499,12 @@ makeDefaultQTLNames <- function(loc, step=0) {
         digits <- max( digits, -floor( log10(step) ) )
     }
     
-    # Get locus sequences as character vector.
-    loc.seqs <- as.character(loc$chr)
+    # Get locus sequences and positions.
+    loc.seqs <- normSeq( pullLocusSeq(loc) )
+    loc.pos <- pullLocusPos(loc)
     
     # Format locus positions.
-    loc.pos <- sprintf(paste0('%.', digits, 'f'), loc$pos)
+    loc.pos <- sprintf(paste0('%.', digits, 'f'), loc.pos)
     
     return( paste(loc.seqs, loc.pos, sep='@') )
 }
@@ -1511,16 +1542,28 @@ makeNumbers <- function(x) {
 # makePseudomarkerIDs ----------------------------------------------------------
 #' Make pseudomarker IDs for the specified loci.
 #'  
-#' @param loc Locus \code{mapframe} specifying map positions.
+#' @param loc Locus \code{data.frame} specifying map positions.
 #'      
 #' @return Character vector of pseudomarker IDs.
 #'  
 #' @export
 #' @rdname makePseudomarkerIDs
 makePseudomarkerIDs <- function(loc) {
-    stopifnot( isGeneticMapframe(loc) )
+    
+    stopifnot( is.data.frame(loc) )
     stopifnot( nrow(loc) > 0 )
-    return( paste0('c', as.character(loc$chr), '.loc', loc$pos) )
+    
+    # Check map unit is genetic, if present.
+    map.unit <- getMapUnit(loc)
+    if ( ! is.na(map.unit) ) {
+        stopifnot( isGeneticMapUnit(map.unit) )
+    }
+    
+    # Get locus sequences and positions.
+    loc.seqs <- normSeq( pullLocusSeq(loc) )
+    loc.pos <- pullLocusPos(loc)
+    
+    return( paste0('c', loc.seqs, '.loc', loc.pos) )
 }
 
 # otherattributes --------------------------------------------------------------

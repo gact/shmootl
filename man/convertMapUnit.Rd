@@ -2,15 +2,9 @@
 % Please edit documentation in R/map.R
 \name{convertMapUnit}
 \alias{convertMapUnit}
-\alias{convertMapUnit.data.frame}
-\alias{convertMapUnit.map}
 \title{Convert map unit and rescale map positions.}
 \usage{
 convertMapUnit(x, map.unit)
-
-\method{convertMapUnit}{data.frame}(x, map.unit)
-
-\method{convertMapUnit}{map}(x, map.unit)
 }
 \arguments{
 \item{x}{Object containing map data.}

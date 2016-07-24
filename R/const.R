@@ -310,7 +310,7 @@ with(const, {
     param.groups <- c('positional', 'optional', 'flag', 'choice', 'compound')
 })
 
-# Lock constants ---------------------------------------------------------------
-lockEnvironment(const, bindings=TRUE)
+
+
 
 # End of const.R ###############################################################

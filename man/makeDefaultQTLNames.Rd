@@ -7,7 +7,7 @@
 makeDefaultQTLNames(loc, step = 0)
 }
 \arguments{
-\item{loc}{Locus \code{mapframe} specifying genetic map positions.}
+\item{loc}{Locus \code{data.frame} specifying genetic map positions.}
 
 \item{step}{Map step size.}
 }

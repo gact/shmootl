@@ -23,11 +23,11 @@ NULL
 
 # as.data.frame.map ------------------------------------------------------------
 #' Coerce \code{map} to \code{data.frame}.
-#'  
+#' 
 #' @param x An \pkg{R/qtl} \code{map} object.
 #' @param ... Unused arguments.
 #' @param map.unit Explicitly sets \code{'map.unit'}.
-#'     
+#' 
 #' @return A \code{data.frame} corresponding to the input \code{map} object.
 #' 
 #' @export
@@ -222,6 +222,22 @@ as.map.list <- function(from, map.unit=NULL) {
     return(to)
 }
 
+
+# as.map.map -------------------------------------------------------------------
+#' @export
+#' @method as.map map
+#' @rdname as.map
+as.map.map <- function(from, map.unit=NULL) {
+    
+    if ( ! is.null(map.unit) ) {
+        from <- setMapUnit(from, map.unit)
+    }
+    
+    validateMap(from)
+    
+    return(from)
+}
+
 # as.map.mapframe --------------------------------------------------------------
 #' @export
 #' @method as.map mapframe
@@ -322,6 +338,21 @@ as.mapframe.map <- function(from, map.unit=NULL) {
     return( as.mapframe( as.data.frame(from), map.unit=map.unit ) )
 }
 
+# as.mapframe.mapframe ---------------------------------------------------------
+#' @export
+#' @method as.mapframe mapframe
+#' @rdname as.mapframe
+as.mapframe.mapframe <- function(from, map.unit=NULL) {
+    
+    if ( ! is.null(map.unit) ) {
+        from <- setMapUnit(from, map.unit)
+    }
+    
+    validateMapframe(from)
+    
+    return(from)
+}
+
 # as.mapframe.scanone ----------------------------------------------------------
 #' @export
 #' @method as.mapframe scanone
@@ -344,154 +375,38 @@ as.mapframe.scanone <- function(from, map.unit=NULL) {
 #' @keywords internal
 #' @rdname convertMapUnit
 convertMapUnit <- function(x, map.unit) {
-    validateMapUnit(map.unit)
-    UseMethod('convertMapUnit', x)
-}
-
-# convertMapUnit.data.frame ----------------------------------------------------
-#' @rdname convertMapUnit
-convertMapUnit.data.frame <- function(x, map.unit) {
     
-    # Get position column index.
-    poscol.index <- getPosColIndex(x)
-    
-    # Get old and new map units.
-    from <- getMapUnit(x)
-    to <- map.unit
-    
-    if ( is.na(from) ) {
-        stop("map unit not found")
-    }
-    
-    if ( nrow(x) > 0 ) {
+    # If object is a data-frame, check that map units have
+    # been removed from position column names and data.
+    if ( is.data.frame(x) ) {
         
-        # Rescale map positions if new map unit differs from old map unit.
-        if ( to != from ) {
-            
-            # Get old and new map types.
-            from.map.type <- const$known.map.types[from]
-            to.map.type <- const$known.map.types[to]
-            
-            # Get basic units of old and new map types.
-            from.basic.unit <- const$basic.map.unit[from.map.type]
-            to.basic.unit <- const$basic.map.unit[to.map.type]
-            
-            # Get sequences of map loci.
-            x.seqs <- pullLocusSeq(x)
-            
-            # Get map sequences.
-            map.seqs <- unique(x.seqs)
-            
-            # Get vector mapping original sequence labels to their normalised form.
-            map2res <- structure(normSeq(map.seqs), names=map.seqs)
-            
-            # Rescale map positions on each sequence.
-            for ( map.seq in map.seqs ) {
-                
-                indices <- which( x.seqs == map.seq )
-                
-                # Express map positions in terms of basic units, if needed.
-                if ( from != from.basic.unit ) {
-                    from.factor <- const$map.info[[from.map.type]][from, 'factor']
-                    x[indices, poscol.index] <- x[indices, poscol.index] * from.factor
-                }
-                
-                # Convert map positions from one map type to another, if needed.
-                if ( from.basic.unit != to.basic.unit ) {
-                    
-                    genome <- genomeOpt()
-                    i <- which( const$seqinfo[[genome]]$seqids == map2res[map.seq] )
-                    glen <- const$seqinfo[[genome]]$maplengths[i]
-                    plen <- const$seqinfo[[genome]]$seqlengths[i]
-                    
-                    if ( from.basic.unit == 'cM' && to.basic.unit == 'bp' ) {
-                        x[indices, poscol.index] <- as.integer(
-                            round( (x[indices, poscol.index] * plen) / glen ) )
-                    } else if ( from.basic.unit == 'bp' && to.basic.unit == 'cM' ) {
-                        x[indices, poscol.index] <- (x[indices, poscol.index] * glen) / plen
-                    } else {
-                        stop("no conversion defined between ", from, " and ", to)
-                    }
-                }
-                
-                # Express map positions in terms of the specified units, if needed.
-                if ( to.basic.unit != to ) {
-                    to.factor <- const$map.info[[to.map.type]][to, 'factor']
-                    x[indices, poscol.index] <- x[indices, poscol.index] / to.factor
-                }
-            }
+        if ( ! is.na( getPosColNameMapUnit(x) ) ) {
+            stop("function 'convertMapUnit' cannot take object with map unit ",
+                "in column name - consider calling 'setMapUnit' instead")
+        }
+        
+        if ( ! is.na( getPosColDataMapUnit(x) ) ) {
+            stop("function 'convertMapUnit' cannot take object with map unit ",
+                "in map positions - consider calling 'setMapUnit' instead")
         }
     }
     
+    # Get current mapkey.
+    map.key <- mapkeyOpt()
+    
+    # Pull locus mapframe from object.
+    loc <- pullLoci(x)
+    
+    # Apply mapkey to loci.
+    loc <- map.key(loc, map.unit)
+    
+    # Set map unit directly.
+    # NB: map unit of object must match the locus mapframe, but we
+    # cannot set this through setMapUnit as it calls this function.
     attr(x, 'map.unit') <- map.unit
     
-    return(x)
-}
-
-# convertMapUnit.map -----------------------------------------------------------
-#' @rdname convertMapUnit
-convertMapUnit.map <- function(x, map.unit) {
-    
-    # Get old and new map units.
-    from <- getMapUnit(x)
-    to <- map.unit
-    
-    if ( is.na(from) ) {
-        stop("map unit not found")
-    }
-    
-    # Rescale map positions if new map unit differs from old map unit.
-    if ( to != from ) {
-        
-        # Get old and new map types.
-        from.map.type <- const$known.map.types[from]
-        to.map.type <- const$known.map.types[to]
-        
-        # Get basic units of old and new map types.
-        from.basic.unit <- const$basic.map.unit[from.map.type]
-        to.basic.unit <- const$basic.map.unit[to.map.type]
-        
-        # Get map sequences.
-        map.seqs <- names(x)
-        
-        # Get vector mapping original sequence labels to their normalised form.
-        map2res <- structure(normSeq(map.seqs), names=map.seqs)
-        
-        # Rescale map positions on each sequence.
-        for ( map.seq in map.seqs ) {
-            
-            # Express map positions in terms of basic units, if needed.
-            if ( from != from.basic.unit ) {
-                from.factor <- const$map.info[[from.map.type]][from, 'factor']
-                x[[map.seq]] <- x[[map.seq]] * from.factor
-            }
-            
-            # Convert map positions from one map type to another, if needed.
-            if ( from.basic.unit != to.basic.unit ) {
-                
-                genome <- genomeOpt()
-                i <- which( const$seqinfo[[genome]]$seqids == map2res[map.seq] )
-                glen <- const$seqinfo[[genome]]$maplengths[i]
-                plen <- const$seqinfo[[genome]]$seqlengths[i]
-                
-                if ( from.basic.unit == 'cM' && to.basic.unit == 'bp' ) {
-                    x[[map.seq]] <- as.integer( round( (x[[map.seq]] * plen) / glen ) )
-                } else if ( from.basic.unit == 'bp' && to.basic.unit == 'cM' ) {
-                    x[[map.seq]] <- (x[[map.seq]] * glen) / plen
-                } else {
-                    stop("no conversion defined between ", from, " and ", to)
-                }
-            }
-            
-            # Express map positions in terms of the specified units, if needed.
-            if ( to.basic.unit != to ) {
-                to.factor <- const$map.info[[to.map.type]][to, 'factor']
-                x[[map.seq]] <- x[[map.seq]] / to.factor
-            }
-        }
-    }
-    
-    attr(x, 'map.unit') <- map.unit
+    # Replace loci of object.
+    x <- pushLoci(x, loc)
     
     return(x)
 }
@@ -1740,6 +1655,222 @@ mapframe <- function(map.unit=NULL, ...) {
     return( as.mapframe(x, map.unit=map.unit) )
 }
 
+# mapkey -----------------------------------------------------------------------
+#' Make new \code{mapkey} rescaling function.
+#' 
+#' This function takes as input one or more maps - one of each supported
+#' map type - and returns a function that can be used to rescale a locus
+#' \code{mapframe} of map positions. The input maps must be comparable,
+#' having the same set of markers on the same chromosomes, although the
+#' marker names may be different. As in \pkg{R/qtl}, map positions are
+#' interpolated if they are within the bounds of the component maps, and
+#' extrapolated otherwise.
+#' 
+#' @param ... One or more component maps, all with comparable marker loci.
+#' 
+#' @return A \code{mapkey} function similar to the \pkg{R/qtl} function
+#' \code{interpPositions}, taking a locus \code{mapframe} and map unit
+#' parameter, and returning a \code{mapframe} that has been rescaled in
+#' terms of the given map unit.
+#' 
+#' @export
+#' @rdname mapkey
+mapkey <- function(...) {
+    
+    stopif( anyKwargs(...) )
+    
+    maps <- list(...)
+    
+    # If component maps specified, generate mapkey object..
+    if ( length(maps) > 0 ) {
+        
+        # Ensure all maps are valid map objects,
+        # converting to a map object if necessary.
+        maps <- lapply(maps, as.map)
+        
+        # Ensure all maps have normalised sequence labels.
+        maps <- lapply(maps, normSeq)
+        
+        # Get map units.
+        map.units <- unname( sapply(maps, getMapUnit) )
+        
+        if ( anyNA(map.units) ) {
+            stop("mapkey component maps must have valid map units")
+        }
+        
+        # TODO: relax limitation of maps to basic map units.
+        if ( ! all(map.units %in% const$basic.map.unit) ) {
+            stop("mapkey component maps must be in basic map units")
+        }
+        
+        # Get map types from map unit information.
+        map.types <- unname( sapply(map.units, function(map.unit)
+            const$known.map.types[[map.unit]]) )
+        
+        # Check that each map type is represented only once.
+        stopif( anyDuplicated(map.types) )
+        
+        # Set mapkey names from map units.
+        names(maps) <- map.units # NB: assumes all maps use different units
+        
+        # Check that all maps contain the same sequences in the same order.
+        if ( ! all( sapply(maps[-1], function(m)
+            identical(names(m), names(maps[[1]])) ) ) ) {
+            stop("sequence mismatch between mapkey component maps")
+        }
+        
+        # Check that all maps have a consistent number of markers in each sequence.
+        if ( ! all( sapply(maps[-1], function(m)
+            identical(lengths(m), lengths(maps[[1]])) ) ) ) {
+            stop("marker count mismatch between mapkey component maps")
+        }
+        
+        map.key <- function(loc, map.unit) {
+            
+            stopifnot( 'mapframe' %in% class(loc) )
+            validateMapUnit(map.unit)
+            
+            seqcol.index <- getSeqColIndex(loc)
+            poscol.index <- getPosColIndex(loc)
+            
+            # Get old and new map units.
+            old.map.unit <- getMapUnit(loc)
+            validateMapUnit(old.map.unit)
+            new.map.unit <- map.unit
+            
+            # Get old and new map types.
+            old.map.type <- const$known.map.types[old.map.unit]
+            new.map.type <- const$known.map.types[new.map.unit]
+            
+            # Get basic units of old and new map types.
+            old.basic.unit <- const$basic.map.unit[old.map.type]
+            new.basic.unit <- const$basic.map.unit[new.map.type]
+            
+            stopifnot( old.basic.unit %in% names(maps) )
+            stopifnot( new.basic.unit %in% names(maps) )
+            
+            # Get old and new maps.
+            oldmap <- maps[[old.basic.unit]]
+            newmap <- maps[[new.basic.unit]]
+            
+            # Check that all sequences are in mapkey.
+            loc.seqs <- unique(loc[, seqcol.index])
+            missing.seqs <- loc.seqs[ ! loc.seqs %in% names(oldmap) ]
+            if ( length(missing.seqs) > 0 ) {
+                stop("sequences not found in mapkey - '", toString(missing.seqs), "'")
+            }
+            
+            # Convert each locus position.
+            for ( i in getRowIndices(loc) ) {
+                
+                # Get this locus position.
+                x <- loc[i, poscol.index]
+                
+                # Convert locus position to basic units, if needed.
+                if ( old.map.unit != old.basic.unit ) {
+                    x <- x * const$map.info[[old.map.type]][old.map.unit, 'factor']
+                }
+                
+                # Convert locus position from one map type to another, if needed.
+                if ( old.basic.unit != new.basic.unit ) {
+                    
+                    locus.seq <- loc[i, seqcol.index]
+                    old.pos <- oldmap[[locus.seq]]
+                    new.pos <- newmap[[locus.seq]]
+                    
+                    # If locus is within the range of the old map,
+                    # interpolate its position on the new map..
+                    if ( inRange(x, range(old.pos)) ) {
+                        
+                        # Get index of lower flanking locus.
+                        xld <- x - old.pos
+                        lower.indices <- which( xld == min( xld[ xld >= 0 ] ) )
+                        lower.index <- lower.indices[ length(lower.indices) ]
+                        
+                        # Get index of upper flanking locus.
+                        xud <- old.pos - x
+                        upper.indices <- which( xud == min( xud[ xud >= 0 ] ) )
+                        upper.index <- upper.indices[1]
+                        
+                        # Get flanking loci in old and new maps.
+                        x1 <- old.pos[lower.index]
+                        x2 <- old.pos[upper.index]
+                        y1 <- new.pos[lower.index]
+                        y2 <- new.pos[upper.index]
+                        
+                        # Interpolate between flanking loci.
+                        x <- y1 + (x - x1) * (y2 - y1) / (x2 - x1)
+                        
+                    } else { # ..otherwise extrapolate its position from map endpoints.
+                        
+                        # Get terminal loci in old and new maps.
+                        x1 <- old.pos[1]
+                        x2 <- old.pos[ length(old.pos) ]
+                        y1 <- new.pos[1]
+                        y2 <- new.pos[ length(new.pos) ]
+                        
+                        # Extrapolate from map endpoints.
+                        if ( x < x1 ) {
+                            x <- y1 - (x1 - x) * (y2 - y1) / (x2 - x1)
+                        } else { # x > x2
+                            x <- y2 + (x - x2) * (y2 - y1) / (x2 - x1)
+                        }
+                    }
+                }
+                
+                # Convert locus position from basic units, if needed.
+                if ( new.map.unit != new.basic.unit ) {
+                    x <- x / const$map.info[[new.map.type]][new.map.unit, 'factor']
+                }
+                
+                loc[i, poscol.index] <- unname(x)
+            }
+            
+            attr(loc, 'map.unit') <- map.unit
+            
+            return(loc)
+        }
+        
+        class(map.key) <- c('mapkey', 'function')
+
+    } else { # ..otherwise return default mapkey object.
+        
+        # Get name of current genome.
+        genome <- genomeOpt()
+        
+        # Get default mapkey of current genome.
+        map.key <- const$default$mapkeys[[genome]]
+    }
+    
+    return(map.key)
+}
+
+# mapkeyOpt --------------------------------------------------------------------
+#' Set/get \pkg{shmootl} \code{mapkey} option.
+#' 
+#' This function returns the current \pkg{shmootl} \code{mapkey}. If a new
+#' \code{mapkey} is specified, the \pkg{shmootl} \code{mapkey} option is
+#' updated with the given \code{mapkey} function.
+#' 
+#' @param value New \code{mapkey} function.
+#' 
+#' @return Current \code{mapkey} function.
+#' 
+#' @export
+#' @rdname mapkeyOpt
+mapkeyOpt <- function(value) {
+    
+    result <- getOption('shmootl.mapkey', default=mapkey())
+    stopifnot( 'mapkey' %in% class(result) )
+    
+    if ( ! missing(value) ) {
+        stopifnot( 'mapkey' %in% class(value) )
+        options(shmootl.mapkey=value)
+    }
+    
+    return(result)
+}
+
 # matchLoci --------------------------------------------------------------------
 #' Get object loci matching those specified.
 #' 
@@ -1922,10 +2053,18 @@ orderMap.map <- function(x) {
 #' @keywords internal
 #' @rdname pullLoci
 pullLoci <- function(x) {
+    
     x.seqs <- pullLocusSeq(x)
+    
     x.pos <- pullLocusPos(x)
-    map.unit <- getMapUnit(x)
-    return( mapframe(chr=x.seqs, pos=x.pos, map.unit=map.unit) )
+    
+    loc <- data.frame(chr=x.seqs, pos=x.pos)
+    
+    class(loc) <- c('mapframe', 'data.frame')
+    
+    attr(loc, 'map.unit') <- getMapUnit(x)
+    
+    return(loc)
 }
 
 # pullLocusSeq -----------------------------------------------------------------
@@ -1952,6 +2091,7 @@ pullLocusSeq.data.frame <- function(x) {
 #' @method pullLocusSeq list
 #' @rdname pullLocusSeq
 pullLocusSeq.list <- function(x) {
+    validateMap(x)
     return( pullLocusSeq.map(x) )
 }
 
@@ -1987,6 +2127,7 @@ pullLocusIDs.data.frame <- function(x) {
 #' @method pullLocusIDs list
 #' @rdname pullLocusIDs
 pullLocusIDs.list <- function(x) {
+    validateMap(x)
     return( pullLocusIDs.map(x) )
 }
   
@@ -2030,6 +2171,7 @@ pullLocusPos.data.frame <- function(x) {
 #' @method pullLocusPos list
 #' @rdname pullLocusPos
 pullLocusPos.list <- function(x) {
+    validateMap(x)
     return( pullLocusPos.map(x) )
 }
 
@@ -2066,6 +2208,301 @@ pullMap <- function(x) {
 pullMap.geno <- function(x) {
     return( as.map( lapply(x, function(obj)
         obj$map), map.unit='cM' ) )
+}
+
+# pushLoci ---------------------------------------------------------------------
+#' Replace loci of object.
+#' 
+#' @param x Object containing map data.
+#' @return loc Locus mapframe of individual loci.
+#' 
+#' @return Input object with individual loci replaced.
+#' 
+#' @keywords internal
+#' @rdname pushLoci
+pushLoci <- function(x, loc) {
+    
+    stopifnot( 'mapframe' %in% class(loc) )
+    stopifnot( ncol(loc) == 2 )
+    
+    object.mapunit <- getMapUnit(x)
+    loc.mapunit <- getMapUnit(loc)
+    
+    if ( ! is.na(object.mapunit) && loc.mapunit != object.mapunit ) {
+        stop("map unit mismatch")
+    }
+    
+    x <- pushLocusSeq(x, pullLocusSeq(loc))
+    x <- pushLocusPos(x, pullLocusPos(loc))
+    
+    if ( is.na(object.mapunit) ) {
+        attr(x, 'map.unit') <- loc.mapunit
+    }
+    
+    return(x)
+}
+
+# pushLocusSeq -----------------------------------------------------------------
+#' Replace sequence labels of individual loci.
+#' 
+#' @param x Object containing map data.
+#' @param value Character vector of sequence labels for individual loci.
+#' 
+#' @return Input object with individual locus sequence labels replaced.
+#' 
+#' @keywords internal
+#' @rdname pushLocusSeq
+pushLocusSeq <- function(x, value) {
+    stopifnot( all( isValidID(value) ) )
+    UseMethod('pushLocusSeq', x)
+}
+
+# pushLocusSeq.data.frame ------------------------------------------------------
+#' @method pushLocusSeq data.frame
+#' @rdname pushLocusSeq
+pushLocusSeq.data.frame <- function(x, value) {
+    
+    seqcol.index <- getSeqColIndex(x)
+    
+    # Get key info about object.
+    x.runs <- rle(x[, seqcol.index]) # run-length encoding
+    x.nmar <- x.runs$lengths         # number of markers by sequence
+    x.totmar <- nrow(x)              # total number of markers
+    
+    # Get key info about value.
+    value.runs <- rle(value)         # run-length encoding
+    value.nmar <- value.runs$lengths # number of markers by sequence
+    value.totmar <- length(value)    # total number of markers
+    
+    if ( value.totmar != x.totmar ) {
+        stop("cannot push ", value.totmar, " locus sequences into ", x.totmar, " loci")
+    }
+    
+    if ( ! identical(value.nmar, x.nmar) ) { # NB: checks equal number of sequences
+        stop("cannot push locus sequences - sequence boundaries not preserved")
+    }
+    
+    x[, seqcol.index] <- value
+    
+    return(x)
+}
+
+# pushLocusSeq.list ------------------------------------------------------------
+#' @method pushLocusSeq list
+#' @rdname pushLocusSeq
+pushLocusSeq.list <- function(x, value) {
+    validateMap(x)
+    return( pushLocusSeq.map(x, value) )
+}
+
+# pushLocusSeq.map -------------------------------------------------------------
+#' @method pushLocusSeq map
+#' @rdname pushLocusSeq
+pushLocusSeq.map <- function(x, value) {
+    
+    # Get key info about object.
+    x.nmar <- lengths(x)             # number of markers by sequence
+    x.totmar <- sum(x.nmar)          # total number of markers
+    
+    # Get key info about value.
+    value.runs <- rle(value)         # run-length encoding
+    value.nmar <- value.runs$lengths # number of markers by sequence
+    value.totmar <- length(value)    # total number of markers
+    
+    if ( value.totmar != x.totmar ) {
+        stop("cannot push ", value.totmar, " locus sequences into ", x.totmar, " loci")
+    }
+    
+    if ( ! identical(value.nmar, x.nmar) ) { # NB: checks equal number of sequences
+        stop("cannot push locus sequences - sequence boundaries not preserved")
+    }
+    
+    names(x) <- value.runs$values
+    
+    return(x)
+}
+
+# pushLocusIDs -----------------------------------------------------------------
+#' Replace individual locus IDs.
+#' 
+#' @param x Object containing map data.
+#' @param value Character vector of individual locus IDs.
+#' 
+#' @return Input object with individual locus IDs replaced.
+#' 
+#' @keywords internal
+#' @rdname pushLocusIDs
+pushLocusIDs <- function(x, value) {
+    stopifnot( all( isValidID(value) ) )
+    stopif( anyDuplicated(value) )
+    UseMethod('pushLocusIDs', x)
+}
+
+# pushLocusIDs.data.frame ------------------------------------------------------
+#' @method pushLocusIDs data.frame
+#' @rdname pushLocusIDs
+pushLocusIDs.data.frame <- function(x, value) {
+    
+    # Get total number of markers in object.
+    x.totmar <- nrow(x)
+
+    # Get total number of markers in value.
+    value.totmar <- length(value)
+    
+    if ( value.totmar != x.totmar ) {
+        stop("cannot push ", value.totmar, " locus IDs into ", x.totmar, " loci")
+    }
+    
+    rownames(x) <- value
+    
+    return(x)
+}
+
+# pushLocusIDs.list ------------------------------------------------------------
+#' @method pushLocusIDs list
+#' @rdname pushLocusIDs
+pushLocusIDs.list <- function(x, value) {
+    validateMap(x)
+    return( pushLocusIDs.map(x, value) )
+}
+
+# pushLocusIDs.map -------------------------------------------------------------
+#' @method pushLocusIDs map
+#' @rdname pushLocusIDs
+pushLocusIDs.map <- function(x, value) {
+    
+    # Get total number of markers in object.
+    x.totmar <- sum( lengths(x) )
+    
+    # Get total number of markers in value.
+    value.totmar <- length(value)
+    
+    if ( value.totmar != x.totmar ) {
+        stop("cannot push ", value.totmar, " locus IDs into ", x.totmar, " loci")
+    }
+    
+    map.seqs <- names(x)
+    
+    seq.index.list <- getRunIndexList( unlist( lapply( seq_along(x), function(i)
+        rep_len(map.seqs[i], length(x[[i]])) ) ) )
+    
+    for ( map.seq in map.seqs ) {
+        names(x[[map.seq]]) <- value[ seq.index.list[[map.seq]] ]
+    }
+    
+    return(x)
+}
+
+# pushLocusPos -----------------------------------------------------------------
+#' Replace individual locus positions.
+#' 
+#' @param x Object containing map data.
+#' @param value Numeric vector of individual locus positions.
+#' 
+#' @return Input object with individual locus positions replaced.
+#' 
+#' @keywords internal
+#' @rdname pushLocusPos
+pushLocusPos <- function(x, value) {
+    UseMethod('pushLocusPos', x)
+}
+
+# pushLocusPos.data.frame ------------------------------------------------------
+#' @method pushLocusPos data.frame
+#' @rdname pushLocusPos
+pushLocusPos.data.frame <- function(x, value) {
+    
+    object.mapunit <- getMapUnit(x)
+    
+    value.mapunit <- getPosColDataMapUnit(value)
+    
+    if ( ! is.na(object.mapunit) && ! is.na(value.mapunit) &&
+        value.mapunit != object.mapunit ) {
+        stop("map unit mismatch")
+    }
+    
+    value <- setPosColDataMapUnit(value, NULL)
+    stopifnot( is.numeric(value) )
+    
+    # Get total number of markers in object.
+    x.totmar <- nrow(x)
+    
+    # Get total number of markers in value.
+    value.totmar <- length(value)
+    
+    if ( value.totmar != x.totmar ) {
+        stop("cannot push ", value.totmar, " locus positions into ", x.totmar, " loci")
+    }
+    
+    poscol.index <- getPosColIndex(x)
+    
+    x[, poscol.index] <- value
+    
+    stopifnot( inMapOrder(x) )
+    
+    if ( is.na(object.mapunit) ) {
+        attr(x, 'map.unit') <- value.mapunit
+    }
+    
+    return(x)
+}
+
+# pushLocusPos.list ------------------------------------------------------------
+#' @method pushLocusPos list
+#' @rdname pushLocusPos
+pushLocusPos.list <- function(x, value) {
+    validateMap(x)
+    return( pushLocusPos.map(x, value) )
+}
+
+# pushLocusPos.map -------------------------------------------------------------
+#' @method pushLocusPos map
+#' @rdname pushLocusPos
+pushLocusPos.map <- function(x, value) {
+    
+    object.mapunit <- getMapUnit(x)
+    
+    value.mapunit <- getPosColDataMapUnit(value)
+    
+    if ( ! is.na(object.mapunit) && ! is.na(value.mapunit) &&
+        value.mapunit != object.mapunit ) {
+        stop("map unit mismatch")
+    }
+    
+    value <- setPosColDataMapUnit(value, NULL)
+    stopifnot( is.numeric(value) )
+    
+    # Get total number of markers in object.
+    x.totmar <- sum( lengths(x) )
+    
+    # Get total number of markers in value.
+    value.totmar <- length(value)
+    
+    if ( value.totmar != x.totmar ) {
+        stop("cannot push ", value.totmar, " locus positions into ", x.totmar, " loci")
+    }
+    
+    map.seqs <- names(x)
+    
+    seq.index.list <- getRunIndexList( unlist( lapply( seq_along(x), function(i)
+        rep_len(map.seqs[i], length(x[[i]])) ) ) )
+    
+    for ( map.seq in map.seqs ) {
+        
+        seq.pos <- value[ seq.index.list[[map.seq]] ]
+        
+        attributes(seq.pos) <- attributes(x[[map.seq]])
+        
+        x[[map.seq]] <- seq.pos
+    }
+    
+    stopifnot( inMapOrder(x) )
+    
+    if ( is.na(object.mapunit) ) {
+        attr(x, 'map.unit') <- value.mapunit
+    }
+    
+    return(x)
 }
 
 # pushMap ----------------------------------------------------------------------
@@ -2380,6 +2817,106 @@ setPosColNameMapUnit.character <- function(x, map.unit) {
     }
     
     return(x)
+}
+
+# setupDefaultMapkeys ----------------------------------------------------------
+#' Setup default \code{mapkey} objects.
+#' 
+#' Default \code{mapkey} objects are generated from genome sequence info. Simple
+#' component maps are created from sequence length info: a genetic map from the
+#' \code{'maplengths'} column, and a physical map from the \code{'seqlengths'}
+#' column. These are used to create a basic \code{mapkey} object for each genome.
+#' 
+#' @include const.R
+#' @keywords internal
+#' @rdname setupDefaultMapkeys
+setupDefaultMapkeys <- function() {
+    
+    stopifnot( exists('const') )
+    stopif( environmentIsLocked(const) )
+    
+    known.map.types <- unique(const$known.map.types)
+    
+    default.mapkeys <- list()
+    
+    # Create default mapkey for each genome.
+    for ( genome in names(const$seqinfo) ) {
+        
+        seqinfo <- const$seqinfo[[genome]]
+        
+        map.seqs <- seqinfo$seqids
+        
+        cmaps <- vector('list', length(known.map.types))
+        
+        # Create component map for each known map type.
+        for ( i in seq_along(known.map.types) ) {
+            
+            map.type <- known.map.types[i]
+            
+            # Get basic map unit for this map type.
+            map.unit <- const$basic.map.unit[map.type]
+            
+            # Get key map info.
+            if ( map.type == 'gmap' ) {
+                makeLocusIDs <- makePseudomarkerIDs
+                map.starts <- rep_len(0, length(map.seqs))
+                map.ends <- seqinfo$maplengths
+            } else if ( map.type == 'pmap' ) {
+                makeLocusIDs <- makeDefaultMarkerIDs
+                map.starts <- rep_len(1, length(map.seqs))
+                map.ends <- seqinfo$seqlengths
+            } else {
+                stop("unknown map type - '", map.type, "'")
+            }
+            
+            # Create map data-frame from sequence start- and end-points.
+            map.table <- data.frame( chr=c(map.seqs, map.seqs),
+                                     pos=c(map.starts, map.ends) )
+            map.table <- map.table[ order(rankSeq(map.table$chr), map.table$pos), ]
+            rownames(map.table) <- makeLocusIDs(map.table)
+            
+            # Get locus info.
+            locus.seqs <- pullLocusSeq(map.table)
+            locus.pos <- pullLocusPos(map.table)
+            locus.ids <- pullLocusIDs(map.table)
+            
+            cmap <- list()
+            
+            # Set map data for each sequence.
+            for ( map.seq in map.seqs ) {
+                
+                # Get indices for this sequence.
+                indices <- which( locus.seqs == map.seq )
+                
+                # Get map positions for this sequence.
+                seq.pos <- locus.pos[indices]
+                
+                # Set map position names from locus IDs.
+                names(seq.pos) <- locus.ids[indices]
+                
+                # Set class of map position vector.
+                class(seq.pos) <- 'A' # NB: assumes no 'X' chromosomes.
+                
+                # Set map positions for sequence.
+                cmap[[map.seq]] <- seq.pos
+            }
+            
+            # Set map unit of component map.
+            attr(cmap, 'map.unit') <- map.unit
+            
+            # Set class of component map.
+            class(cmap) <- 'map'
+            
+            cmaps[[i]] <- cmap
+        }
+        
+        # Create default mapkey from component maps.
+        default.mapkeys[[genome]] <- do.call(mapkey, cmaps)
+    }
+    
+    const$default[['mapkeys']] <- default.mapkeys
+    
+    return( invisible() )
 }
 
 # subsetMap --------------------------------------------------------------------

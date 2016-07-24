@@ -7,7 +7,7 @@
 makePseudomarkerIDs(loc)
 }
 \arguments{
-\item{loc}{Locus \code{mapframe} specifying map positions.}
+\item{loc}{Locus \code{data.frame} specifying map positions.}
 }
 \value{
 Character vector of pseudomarker IDs.
