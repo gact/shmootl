@@ -2722,7 +2722,7 @@ setPosColDataMapUnit.character <- function(x, map.unit) {
     }
     
     # Append map unit suffixes.
-    if ( ! is.null(map.unit) ) {
+    if ( length(res) > 0 && ! is.null(map.unit) ) {
         res <- paste(as.character(res), map.unit)
     }
     
@@ -3216,16 +3216,17 @@ validateMapframe.data.frame <- function(x) {
 # validateMapframe.mapframe ----------------------------------------------------
 #' @rdname validateMapframe
 validateMapframe.mapframe <- function(x) {
-
-    seqcol.index <- getSeqColIndex(x)
-    poscol.index <- getPosColIndex(x)
     
-    if ( seqcol.index != 1 ) {
-        stop("mapframe sequences must be in first column")
+    mapframe.colnames <- colnames(x)
+    
+    if ( mapframe.colnames[1] != 'chr' ) {
+        stop("name of first mapframe column must be 'chr', not '",
+            mapframe.colnames[1], "'")
     }
     
-    if ( poscol.index != 2 ) {
-        stop("mapframe positions must be in second column")
+    if ( mapframe.colnames[2] != 'pos' ) {
+        stop("name of second mapframe column must be 'pos', not '",
+             mapframe.colnames[2], "'")
     }
     
     if ( nrow(x) > 0 ) {
@@ -3251,6 +3252,11 @@ validateMapframe.mapframe <- function(x) {
         }
         
         x.pos <- pullLocusPos(x)
+        
+        if ( ! is.numeric(x.pos) ) {
+            stop("mapframe has non-numeric map positions")
+        }
+        
         if ( anyNA(x.pos) ) {
             stop("mapframe has invalid map positions")
         }
