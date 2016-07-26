@@ -2265,7 +2265,7 @@ pushLocusSeq.data.frame <- function(x, value) {
     seqcol.index <- getSeqColIndex(x)
     
     # Get key info about object.
-    x.runs <- rle(x[, seqcol.index]) # run-length encoding
+    x.runs <- rle( as.character(x[, seqcol.index]) ) # run-length encoding
     x.nmar <- x.runs$lengths         # number of markers by sequence
     x.totmar <- nrow(x)              # total number of markers
     
