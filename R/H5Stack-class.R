@@ -64,20 +64,21 @@ setGeneric('closeStack', function(h5stack) { standardGeneric('closeStack') })
 #' @rdname closeStack-methods
 setMethod('closeStack', signature='H5Stack', definition = function(h5stack) {
     
-    # Functions to close HDF5 objects.
-    closeH5Object <- list(
-        H5I_FILE=rhdf5::H5Fclose, 
-        H5I_GROUP=rhdf5::H5Gclose, 
-        H5I_DATASET=rhdf5::H5Dclose
-    )
-    
     while ( length(h5stack) > 0 ) {
         
         h5obj <- peek(h5stack)
         
         h5type <- as.character( rhdf5::H5Iget_type(h5obj) )
         
-        closeH5Object[[h5type]](h5obj)
+        if ( h5type == 'H5I_GROUP' ) {
+            rhdf5::H5Gclose(h5obj)
+        } else if ( h5type == 'H5I_DATASET' ) {
+            rhdf5::H5Dclose(h5obj)
+        } else if ( h5type == 'H5I_FILE' ) {
+            rhdf5::H5Fclose(h5obj)
+        } else if ( ! h5type %in% 'H5I_BADID' ) {
+            stop("unknown HDF5 object type - '", h5type, "'")
+        }
         
         h5stack <- pop(h5stack)
     }
