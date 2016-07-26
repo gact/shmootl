@@ -2616,11 +2616,11 @@ setMapUnit.data.frame <- function(x, map.unit) {
     positions.mapunit <- getPosColDataMapUnit(x)
     
     if ( ! is.na(heading.mapunit) ) {
-        setPosColNameMapUnit(x, NULL)
+        x <- setPosColNameMapUnit(x, NULL)
     }
     
     if ( ! is.na(positions.mapunit) ) {
-        setPosColDataMapUnit(x, NULL)
+        x <- setPosColNameMapUnit(x, NULL)
     }
     
     if ( ! is.na(existing.mapunit) ) {
@@ -2630,11 +2630,11 @@ setMapUnit.data.frame <- function(x, map.unit) {
     }
     
     if ( ! is.na(heading.mapunit) ) {
-        setPosColNameMapUnit(x, map.unit)
+        x <- setPosColNameMapUnit(x, map.unit)
     }
     
     if ( ! is.na(positions.mapunit) ) {
-        setPosColDataMapUnit(x, map.unit)
+        x <- setPosColNameMapUnit(x, map.unit)
     }
     
     return(x)
