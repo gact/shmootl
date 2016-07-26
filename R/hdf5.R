@@ -43,6 +43,148 @@
 #' @name HDF5 Utilities
 NULL
 
+# copyObjectsHDF5 --------------------------------------------------------------
+#' Copy objects between HDF5 files.
+#' 
+#' @param infile Input HDF5 file.
+#' @param outfile Output HDF5 file.
+#' @param h5names Names of HDF5 objects to copy. If none are specified,
+#' every HDF5 object in the input file is copied to the output file.
+#' 
+#' @importFrom methods new
+#' @importFrom rhdf5 H5Adelete
+#' @importFrom rhdf5 H5Dclose
+#' @importFrom rhdf5 H5Dopen
+#' @importFrom rhdf5 H5Gcreate
+#' @importFrom rhdf5 H5Gopen
+#' @importFrom rhdf5 H5Lexists
+#' @importFrom rhdf5 h5ls
+#' @importFrom rhdf5 h5read
+#' @importFrom rhdf5 h5readAttributes
+#' @importFrom rhdf5 h5writeAttribute
+#' @importFrom rhdf5 h5writeDataset
+#' @include H5Stack-class.R
+#' @keywords internal
+#' @rdname copyObjectsHDF5
+copyObjectsHDF5 <- function(infile, outfile, h5names=NULL) {
+    
+    stopifnot( isSingleString(infile) )
+    stopifnot( file.exists(infile) )
+    stopifnot( isSingleString(outfile) )
+    
+    if ( ! is.null(h5names) ) {
+        stopifnot( is.character(h5names) )
+        stopifnot( length(h5names) > 0 )
+        h5names <- sapply(unique(h5names), resolveH5ObjectName)
+    }
+    
+    # Open root HDF5 object of input file.
+    h5stack <- methods::new('H5Stack', infile)
+    
+    # Ensure last opened HDF5 stack will be closed on exit.
+    on.exit( closeStack(h5stack) )
+    
+    # Get info on all objects in HDF5 file.
+    h5info <- rhdf5::h5ls(peek(h5stack), datasetinfo=FALSE, recursive=TRUE)
+    
+    # Close input HDF5 file.
+    h5stack <- closeStack(h5stack)
+    
+    # Get HDF5 name and type for every object in HDF5 file.
+    h5info <- data.frame(
+        h5name = sapply( getRowIndices(h5info), function(i)
+            joinH5ObjectNameParts( c(h5info$group[i], h5info$name[i]) ) ),
+        h5type = as.character(h5info$otype), stringsAsFactors=FALSE )
+    
+    # Add HDF5 name and type of root group.
+    h5info <- rbind(h5info, c('/', 'H5I_GROUP'))
+    
+    err.h5types <- h5info$h5type[ ! h5info$h5type %in% c('H5I_GROUP', 'H5I_DATASET') ]
+    if ( length(err.h5types) > 0 ) {
+        stop("cannot copy HDF5 objects - unsupported types (",
+            toString(err.h5types), ")")
+    }
+    
+    err.h5names <- h5names[ ! h5names %in% h5info$h5name ]
+    if ( length(err.h5names) > 0 ) {
+        stop( "HDF5 objects not found - ",
+            paste0("'", err.h5names, "'", collapse=', ') )
+    }
+    
+    # If HDF5 object names given, keep only specified HDF5 object names.
+    if ( ! is.null(h5names) ) {
+        h5info <- h5info[h5info$h5name %in% h5names, ]
+    }
+    
+    # Get sorted vector of HDF5 group names.
+    # NB: sorting ensures that ancestral groups are copied before their descendants.
+    group.h5names <- sort( h5info$h5name[ h5info$h5type == 'H5I_GROUP' ] )
+    
+    # Copy HDF5 groups from input to output file.
+    for ( group.h5name in group.h5names ) {
+        
+        # Get attributes of this HDF5 group in input file.
+        input.attrs <- rhdf5::h5readAttributes(infile, group.h5name)
+        
+        # Get attributes of this HDF5 group in output file, if present.
+        if ( file.exists(outfile) && hasObjectHDF5(outfile, group.h5name) ) {
+            output.attrs <- rhdf5::h5readAttributes(outfile, group.h5name)
+        } else {
+            output.attrs <- list()
+        }
+        
+        # Open output HDF5 group.
+        h5stack <- methods::new('H5Stack', outfile, group.h5name)
+        
+        # Get HDF5 group object.
+        h5group <- peek(h5stack)
+        
+        # Remove existing attributes of output group.
+        for ( k in names(output.attrs) ) {
+            rhdf5::H5Adelete(h5group, k)
+        }
+        
+        # Copy input group attributes to output group.
+        for ( i in seq_along(input.attrs) ) {
+            rhdf5::h5writeAttribute(h5obj=h5group, name=names(input.attrs)[i],
+                attr=input.attrs[[i]])
+        }
+        
+        # Close output HDF5 group.
+        h5stack <- closeStack(h5stack)
+    }
+    
+    # Get HDF5 dataset names.
+    dataset.h5names <- h5info$h5name[ h5info$h5type == 'H5I_DATASET' ]
+    
+    # Copy HDF5 datasets from input to output file.
+    for ( dataset.h5name in dataset.h5names ) {
+        
+        # Read dataset from input file.
+        dataset <- rhdf5::h5read(file=infile, name=dataset.h5name,
+            read.attributes=TRUE)
+        
+        # Open output HDF5 file.
+        h5stack <- methods::new('H5Stack', outfile)
+        
+        # Get HDF5 root object.
+        h5root <- peek(h5stack)
+        
+        # Write dataset to output file.
+        rhdf5::h5writeDataset(h5loc=h5root, name=dataset.h5name, obj=dataset)
+        
+        # Copy input dataset attributes to output dataset.
+        h5obj <- rhdf5::H5Dopen(h5root, dataset.h5name)
+        h5writeAttributes(dataset, h5obj)
+        rhdf5::H5Dclose(h5obj)
+        
+        # Close output HDF5 file.
+        h5stack <- closeStack(h5stack)
+    }
+    
+    return( invisible() )
+}
+
 # getMapNamesHDF5 --------------------------------------------------------------
 #' Get names of maps in HDF5 file.
 #' 
@@ -121,7 +263,7 @@ getObjectClassHDF5 <- function(infile, h5name) {
 #' @keywords internal
 #' @rdname getObjectNamesHDF5
 getObjectNamesHDF5 <- function(infile, h5name=NULL, include.requested=FALSE,
-                               relative=FALSE, recursive=FALSE) {
+    relative=FALSE, recursive=FALSE) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
@@ -130,7 +272,7 @@ getObjectNamesHDF5 <- function(infile, h5name=NULL, include.requested=FALSE,
     stopifnot( isBOOL(recursive) )
     h5name <- resolveH5ObjectName(h5name)
     
-    object.names <- NULL
+    object.h5names <- NULL
     
     h5stack <- methods::new('H5Stack', infile, h5name)
     
@@ -144,27 +286,27 @@ getObjectNamesHDF5 <- function(infile, h5name=NULL, include.requested=FALSE,
     
     if ( nrow(h5info) > 0 ) {
         
-        object.names <- character( nrow(h5info) )
+        object.h5names <- character( nrow(h5info) )
         
         for ( i in getRowIndices(h5info) ) {
             
             h5parts <- c(h5info$group[i], h5info$name[i])
             
             if (relative) {
-                object.name <- joinH5ObjectNameParts(h5parts, relative=TRUE)
+                object.h5name <- joinH5ObjectNameParts(h5parts, relative=TRUE)
             } else { # absolute
-                object.name <- joinH5ObjectNameParts( c(h5name, h5parts) )
+                object.h5name <- joinH5ObjectNameParts( c(h5name, h5parts) )
             }
             
-            object.names[i] <- object.name
+            object.h5names[i] <- object.h5name
         }
     }
     
     if (include.requested) {
-        object.names <- c(h5name, object.names)
+        object.h5names <- c(h5name, object.h5names)
     }
     
-    return(object.names)
+    return(object.h5names)
 }
 
 # getPhenotypesHDF5 ------------------------------------------------------------
