@@ -60,7 +60,7 @@ for which a QTL interval should be returned.}
 }
 \value{
 An object of class \code{qtlintervals}, which is essentially a list
-of \code{mapframe} objects, each containing three rows of information about
+of \code{data.frame} objects, each containing three rows of information about
 the lower QTL interval limit, QTL peak, and upper QTL interval limit, 
 respectively. Returns an empty \code{qtlintervals} object if there are no
 significant QTLs.

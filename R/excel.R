@@ -145,20 +145,20 @@ writeDigestExcel <- function(scanfiles, digest) {
                         
                         # Set row of info for this QTL interval.
                         row <- matrix( c(
-                            scanfile,               # File
-                            phenotype,              # Phenotype
-                            interval.seq,           # Chromosome
-                            qtl.interval[2, 'lod'], # Peak LOD
-                            threshold,              # LOD Threshold
-                            alpha,                  # alpha
-                            fdr,                    # FDR
-                            interval.type,          # Interval Type
-                            qtl.interval[1, 'pos'], # Start (cM)
-                            qtl.interval[2, 'pos'], # Peak (cM)
-                            qtl.interval[3, 'pos'], # End (cM)
-                            NA_integer_,            # Start (bp)
-                            NA_integer_,            # End (bp)
-                            NA_character_           # Features
+                            scanfile,                    # File
+                            phenotype,                   # Phenotype
+                            interval.seq,                # Chromosome
+                            qtl.interval[2, 'lod'],      # Peak LOD
+                            threshold,                   # LOD Threshold
+                            alpha,                       # alpha
+                            fdr,                         # FDR
+                            interval.type,               # Interval Type
+                            qtl.interval[1, 'pos (cM)'], # Start (cM)
+                            qtl.interval[2, 'pos (cM)'], # Peak (cM)
+                            qtl.interval[3, 'pos (cM)'], # End (cM)
+                            NA_integer_,                 # Start (bp)
+                            NA_integer_,                 # End (bp)
+                            NA_character_                # Features
                         ), nrow=1, ncol=length(headings),
                         dimnames=list(NULL, colnames(tab)))
                         

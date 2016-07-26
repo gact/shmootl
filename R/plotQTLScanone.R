@@ -233,7 +233,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
             
             # Get size of QTL interval in centiMorgans.
             interval.widths <- sapply(qtl.intervals, function(qtl.interval)
-                diff(qtl.interval[c(1,3), 'pos']) )
+                diff(qtl.interval[c(1,3), 'pos (cM)']) )
             
             # Get default bullet width.
             bullet.inches <- 0.06944444 # default bullet width in inches (family='sans', cex=1)
@@ -268,7 +268,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
                     interval.offset <- seq.par[interval.seqs[[i]], 'offset']
                     
                     # Get horizontal positions of QTL interval parts.
-                    interval.xpos <- qtl.interval[, 'pos'] + interval.offset
+                    interval.xpos <- qtl.interval[, 'pos (cM)'] + interval.offset
                     
                     # Get peak LOD value for this QTL interval.
                     peak.lod <- qtl.interval[2, 'lod']

@@ -2620,7 +2620,12 @@ setMapUnit.data.frame <- function(x, map.unit) {
     }
     
     if ( ! is.na(positions.mapunit) ) {
-        x <- setPosColNameMapUnit(x, NULL)
+        x <- setPosColDataMapUnit(x, NULL)
+    }
+    
+    # Ensure that existing map unit is explicit attribute.
+    if ( ! 'map.unit' %in% names( attributes(x) ) ) {
+        attr(x, 'map.unit') <- map.unit
     }
     
     if ( ! is.na(existing.mapunit) ) {
@@ -2634,7 +2639,7 @@ setMapUnit.data.frame <- function(x, map.unit) {
     }
     
     if ( ! is.na(positions.mapunit) ) {
-        x <- setPosColNameMapUnit(x, map.unit)
+        x <- setPosColDataMapUnit(x, map.unit)
     }
     
     return(x)

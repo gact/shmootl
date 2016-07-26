@@ -32,11 +32,11 @@
 #' for which a QTL interval should be returned. 
 #'   
 #' @return An object of class \code{qtlintervals}, which is essentially a list
-#' of \code{mapframe} objects, each containing three rows of information about
+#' of \code{data.frame} objects, each containing three rows of information about
 #' the lower QTL interval limit, QTL peak, and upper QTL interval limit, 
 #' respectively. Returns an empty \code{qtlintervals} object if there are no
 #' significant QTLs.
-#'  
+#' 
 #' @export
 #' @rdname getQTLIntervals
 getQTLIntervals <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...) {
@@ -210,7 +210,8 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
         
         merged.interval <- merged.intervals[r, ]
         
-        interval <- as.mapframe(x[merged.interval, ], map.unit='cM')
+        interval <- as.data.frame(x[merged.interval, ])
+        colnames(interval)[2] <- 'pos (cM)'
         
         # If peak coincides with start of interval, 
         # rename start of interval to 'ci.low'.
@@ -230,8 +231,8 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
     }
 
     # Get interval peaks.
-    interval.peaks <- as.mapframe( do.call( rbind, lapply(intervals, 
-        function(interval) interval[ ci['peak'], ]) ), map.unit='cM' )
+    interval.peaks <- do.call( rbind, lapply(intervals,
+        function(interval) interval[ ci['peak'], ]) )
      
     # Get locus IDs at interval peaks.
     peak.ids <- rownames(interval.peaks)
@@ -284,7 +285,7 @@ getQTLIntervals.qtl <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
     intervals <- list( length(qtl.peaks) )
     for ( i in getIndices(qtl.peaks) ) {
         lod.profile <- getLODProfile(x, qtl.index=qtl.indices[i])
-        interval.result <- getQTLIntervals(lod.profile, drop=drop, 
+        interval.result <- getQTLIntervals(lod.profile, drop=drop,
             expandtomarkers=expandtomarkers, qtl.peaks=qtl.peaks[[i]])
         intervals[[i]] <- interval.result[[1]]
         names(intervals)[i] <- names(interval.result)[1]
