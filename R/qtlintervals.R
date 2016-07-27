@@ -17,7 +17,14 @@
 #' @rdname estPhysicalPositions
 estPhysicalPositions <- function(qtl.intervals, map.key=NULL) {
     
-    stopifnot( 'qtlintervals' %in% class(qtl.intervals) )
+    # Remove any existing physical locus positions.
+    if ( hasPhysicalPositions(qtl.intervals) ) {
+        
+        for ( i in seq_along(qtl.intervals) ) {
+            qtl.intervals[[i]] <- deleteColumn(qtl.intervals[[i]],
+                col.name='pos (bp)')
+        }
+    }
     
     # Set mapkey option within this function, if specified.
     if ( ! is.null(map.key) ) {
@@ -38,6 +45,52 @@ estPhysicalPositions <- function(qtl.intervals, map.key=NULL) {
     }
     
     return(qtl.intervals)
+}
+
+# hasPhysicalPositions ---------------------------------------------------------
+#' Test if QTL intervals contain physical positions.
+#' 
+#' @param qtl.intervals A \code{qtlintervals} object.
+#' 
+#' @return TRUE if \code{qtlintervals} object contains physical positions
+#' in terms of base-pair units; FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname hasPhysicalPositions
+hasPhysicalPositions <- function(qtl.intervals) {
+    
+    stopifnot( 'qtlintervals' %in% class(qtl.intervals) )
+    
+    poscol.index.list <- lapply(qtl.intervals, function(qtl.interval)
+        which( colnames(qtl.interval) == 'pos (bp)' ) )
+    
+    poscol.index.lengths <- lengths(poscol.index.list)
+    
+    if ( any( poscol.index.lengths > 1 ) ) {
+        stop("QTL intervals have multiple physical position columns")
+    }
+    
+    if ( all( poscol.index.lengths == 1 ) ) {
+        
+        if ( all( unlist(poscol.index.list) == 3 ) ) {
+            
+            status <- TRUE
+            
+        } else {
+            
+            stop("QTL intervals have physical positions in unexpected columns")
+        }
+        
+    } else if ( any( poscol.index.lengths == 1 )) {
+        
+        stop("QTL intervals have incomplete physical position data")
+        
+    } else {
+        
+        status <- FALSE
+    }
+    
+    return(status)
 }
 
 # qtlintervals -----------------------------------------------------------------
