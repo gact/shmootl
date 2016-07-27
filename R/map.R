@@ -1101,18 +1101,21 @@ getPosColDataMapUnit.numeric <- function(x) {
 #' Get \code{mapframe} position column index.
 #' 
 #' Get position column index for a \code{mapframe} or equivalent \code{data.frame}.
-#' The position column is taken to be the leftmost column whose heading contains
-#' the word 'pos'. This can also be in uppercase (i.e. 'POS'), but can't be part
-#' of a larger word, such as 'position'. An error is raised if a position column
-#' cannot be found.
+#' The position column is taken to be the leftmost matching column, where a
+#' matching column has a heading containing the word 'pos'. This can also be
+#' in uppercase (i.e. 'POS'), but can't be part of a larger word, such as
+#' 'position'. An error is raised if a position column cannot be found.
 #' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame}.
+#' @param nmax Maximum number of matching position columns. If specified, an
+#' error is raised if the number of matching position columns is greater than
+#' this maximum.
 #' 
 #' @return Position column index.
 #' 
 #' @keywords internal
 #' @rdname getPosColIndex
-getPosColIndex <- function(x) {
+getPosColIndex <- function(x, nmax=NULL) {
     
     stopifnot( is.data.frame(x) )
     stopif( anyDuplicated( colnames(x) ) )
@@ -1122,6 +1125,16 @@ getPosColIndex <- function(x) {
     
     if ( length(poscol.indices) == 0 ) {
         stop("pos column not found")
+    }
+    
+    if ( ! is.null(nmax) ) {
+        
+        stopifnot( isSinglePositiveWholeNumber(nmax) )
+            
+        if ( length(poscol.indices) > nmax ) {
+            stop("number of matching pos columns (", length(poscol.indices),
+                ") exceeds maximum (", nmax, ")")
+        }
     }
    
     return(poscol.indices[1])
