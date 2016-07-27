@@ -1799,8 +1799,13 @@ mapkey <- function(...) {
                         y1 <- new.pos[lower.index]
                         y2 <- new.pos[upper.index]
                         
-                        # Interpolate between flanking loci.
-                        x <- y1 + (x - x1) * (y2 - y1) / (x2 - x1)
+                        # If flanking loci effectively coincide,
+                        # simply take the lower flanking value..
+                        if ( abs(x2 - x1) < .Machine$double.eps^0.5 ) {
+                            x <- x1
+                        } else { # ..otherwise interpolate flanking loci.
+                            x <- y1 + (x - x1) * (y2 - y1) / (x2 - x1)
+                        }
                         
                     } else { # ..otherwise extrapolate its position from map endpoints.
                         
