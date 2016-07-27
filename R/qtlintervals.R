@@ -1,5 +1,45 @@
 # Start of qtlIntervals.R ######################################################
 
+# estPhysicalPositions ---------------------------------------------------------
+#' Add estimated physical positions to QTL intervals.
+#' 
+#' @param qtl.intervals  A \code{qtlintervals} object.
+#' @param map.key An optional \code{mapkey} function for converting genetic map
+#' positions to physical map positions. If none is specified, the default
+#' \code{mapkey} for the current genome is used to estimate physical positions.
+#' 
+#' @return A copy of the input \code{qtlintervals} object, with an additional
+#' column - \code{'pos (bp)'} - containing physical map positions of the QTL
+#' intervals, as estimated from their genetic map positions.
+#' 
+#' @export
+#' @include map.R
+#' @rdname estPhysicalPositions
+estPhysicalPositions <- function(qtl.intervals, map.key=NULL) {
+    
+    stopifnot( 'qtlintervals' %in% class(qtl.intervals) )
+    
+    # Set mapkey option within this function, if specified.
+    if ( ! is.null(map.key) ) {
+        prev.mapkey <- mapkeyOpt(map.key)
+        on.exit( mapkeyOpt(prev.mapkey) )
+    }
+    
+    # Get copy of QTL intervals rescaled in physical (base-pair) units.
+    physical.intervals <- lapply(qtl.intervals, setMapUnit, 'bp')
+    
+    # Insert physical locus positions in each QTL interval.
+    for ( i in seq_along(qtl.intervals) ) {
+        
+        physical.positions <- pullLocusPos(physical.intervals[[i]])
+        
+        qtl.intervals[[i]] <- insertColumn(qtl.intervals[[i]], col.index=3,
+            col.name='pos (bp)', data=physical.positions)
+    }
+    
+    return(qtl.intervals)
+}
+
 # qtlintervals -----------------------------------------------------------------
 #' Create an empty \code{qtlintervals} object.
 #' 
