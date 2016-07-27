@@ -1730,8 +1730,9 @@ mapkey <- function(...) {
             stopifnot( 'mapframe' %in% class(loc) )
             validateMapUnit(map.unit)
             
-            seqcol.index <- getSeqColIndex(loc)
-            poscol.index <- getPosColIndex(loc)
+            # Get locus info.
+            locus.seqs <- pullLocusSeq(loc)
+            locus.pos <- pullLocusPos(loc)
             
             # Get old and new map units.
             old.map.unit <- getMapUnit(loc)
@@ -1754,7 +1755,7 @@ mapkey <- function(...) {
             newmap <- maps[[new.basic.unit]]
             
             # Check that all sequences are in mapkey.
-            loc.seqs <- unique(loc[, seqcol.index])
+            loc.seqs <- unique(locus.seqs)
             missing.seqs <- loc.seqs[ ! loc.seqs %in% names(oldmap) ]
             if ( length(missing.seqs) > 0 ) {
                 stop("sequences not found in mapkey - '", toString(missing.seqs), "'")
@@ -1764,7 +1765,7 @@ mapkey <- function(...) {
             for ( i in getRowIndices(loc) ) {
                 
                 # Get this locus position.
-                x <- loc[i, poscol.index]
+                x <- locus.pos[i]
                 
                 # Convert locus position to basic units, if needed.
                 if ( old.map.unit != old.basic.unit ) {
@@ -1774,7 +1775,7 @@ mapkey <- function(...) {
                 # Convert locus position from one map type to another, if needed.
                 if ( old.basic.unit != new.basic.unit ) {
                     
-                    locus.seq <- loc[i, seqcol.index]
+                    locus.seq <- locus.seqs[i]
                     old.pos <- oldmap[[locus.seq]]
                     new.pos <- newmap[[locus.seq]]
                     
@@ -1823,9 +1824,10 @@ mapkey <- function(...) {
                     x <- x / const$map.info[[new.map.type]][new.map.unit, 'factor']
                 }
                 
-                loc[i, poscol.index] <- unname(x)
+                locus.pos[i] <- unname(x)
             }
             
+            loc <- pushLocusPos(loc, locus.pos)
             attr(loc, 'map.unit') <- map.unit
             
             return(loc)
@@ -2876,7 +2878,7 @@ setupDefaultMapkeys <- function() {
             
             # Create map data-frame from sequence start- and end-points.
             map.table <- data.frame( chr=c(map.seqs, map.seqs),
-                                     pos=c(map.starts, map.ends) )
+                pos=c(map.starts, map.ends) )
             map.table <- map.table[ order(rankSeq(map.table$chr), map.table$pos), ]
             rownames(map.table) <- makeLocusIDs(map.table)
             
