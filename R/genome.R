@@ -21,7 +21,7 @@ genomeOpt <- function(value) {
         stop("unknown genome - '", result, "'")
     }
     
-    if ( ! missing(value) ) {
+    if ( ! missing(value) && ! is.null(value) ) {
        
         if ( ! value %in% names(const$seqinfo) ) {
             stop("unknown genome - '", value, "'")
