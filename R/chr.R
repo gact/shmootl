@@ -20,12 +20,12 @@ formatChr <- function(x, prefix=c('', 'c', 'chr'), use.roman=TRUE) {
     if ( length(x) > 0 ) {
         
         # Ensure all chromosomes are normalised.
-        unresolved <- is.na(x) | ! x %in% const$chrinfo$seqids
+        unresolved <- is.na(x) | ! x %in% const$chrtab$seqids
         x[unresolved] <- normChr(x[unresolved])
         
         if (use.roman) {
-            indices <- match(x, const$chrinfo$seqids)
-            x <- const$chrinfo$seqnames[indices]
+            indices <- match(x, const$chrtab$seqids)
+            x <- const$chrtab$seqnames[indices]
         }
         
         x <- paste0(prefix, x)
@@ -45,7 +45,7 @@ formatChr <- function(x, prefix=c('', 'c', 'chr'), use.roman=TRUE) {
 #' @rdname isNormChr
 isNormChr <-function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
-    return( ! is.na(x) & x %in% const$chrinfo$seqids )
+    return( ! is.na(x) & x %in% const$chrtab$seqids )
 }
 
 # normChr ----------------------------------------------------------------------
@@ -81,10 +81,10 @@ normChr <- function(x) {
         chr.numbers <- suppressWarnings( as.integer(chr.strings) )
         
         # Get indices of known chromosome seqnames matching chromosome strings.
-        chr.str.indices <- match(chr.strings, const$chrinfo$seqnames)
+        chr.str.indices <- match(chr.strings, const$chrtab$seqnames)
         
         # Get indices of known chromosome seqids matching chromosome strings.
-        chr.num.indices <- match(chr.numbers, as.integer(const$chrinfo$seqids))
+        chr.num.indices <- match(chr.numbers, as.integer(const$chrtab$seqids))
         
         # Get combined indices of known chromosomes matching those specified.
         indices <- rep(NA_integer_, length(x))
@@ -98,7 +98,7 @@ normChr <- function(x) {
             stop("cannot normalise chromosomes - '", toString(unresolved), "'")
         }
         
-        res <- const$chrinfo$seqids[indices]
+        res <- const$chrtab$seqids[indices]
     
     } else {
         
@@ -119,7 +119,7 @@ normChr <- function(x) {
 #' @rdname orderChr
 orderChr <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
-    return( order( match(normChr(x), const$chrinfo$seqids) ) )
+    return( order( match(normChr(x), const$chrtab$seqids) ) )
 }
 
 # rankChr ----------------------------------------------------------------------
@@ -133,7 +133,7 @@ orderChr <- function(x) {
 #' @rdname rankChr
 rankChr <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
-    return( match(normChr(x), const$chrinfo$seqids))
+    return( match(normChr(x), const$chrtab$seqids))
 }
 
 # sortChr ----------------------------------------------------------------------
@@ -147,7 +147,7 @@ rankChr <- function(x) {
 #' @rdname sortChr
 sortChr <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
-    return( x[ order( match(normChr(x), const$chrinfo$seqids) ) ] )
+    return( x[ order( match(normChr(x), const$chrtab$seqids) ) ] )
 }
 
 # End of chr.R #################################################################

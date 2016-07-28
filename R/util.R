@@ -1164,7 +1164,7 @@ isWholeNumber <- function(n, tol=.Machine$double.eps^0.5) {
     return( is.numeric(n) & is.finite(n) & abs(n - round(n)) < abs(tol) )
 }
 
-# loadChrInfo ------------------------------------------------------------------
+# loadChrTable -----------------------------------------------------------------
 #' Load chromosome info.
 #' 
 #' This function loads standard chromosome info.
@@ -1173,18 +1173,18 @@ isWholeNumber <- function(n, tol=.Machine$double.eps^0.5) {
 #' 
 #' @importFrom utils read.csv
 #' @keywords internal
-#' @rdname loadChrInfo
-loadChrInfo <- function() {
+#' @rdname loadChrTable
+loadChrTable <- function() {
     
-    filepath <- requestPkgDataPath('extdata', 'genomes', 'chrinfo.csv')
+    filepath <- requestPkgDataPath('extdata', 'genomes', 'chrtab.csv')
     
     column.classes <- c(seqids='character', seqnames='character', aliases='character', 
         isCircular='logical', genome='character')
     
-    chrinfo <- utils::read.csv(filepath, quote='', stringsAsFactors=FALSE,
+    chrtab <- utils::read.csv(filepath, quote='', stringsAsFactors=FALSE,
         strip.white=TRUE, na.strings='', colClasses=column.classes)
     
-    return(chrinfo)
+    return(chrtab)
 }
 
 # loadMapping ------------------------------------------------------------------

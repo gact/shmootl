@@ -168,18 +168,18 @@ with(const, {
     # Chromosome/sequence info -------------------------------------------------
     
     # Load chromosome info.
-    chrinfo <- loadChrInfo()
+    chrtab <- loadChrTable()
     
     # Load sequence info.
     seqinfo <- loadSeqInfo()
     
     # Get mapping of sequence aliases to standard names.
-    alias2chrom <- unlist( lapply(getRowIndices(chrinfo), function(i) {
+    alias2chrom <- unlist( lapply(getRowIndices(chrtab), function(i) {
         aliasmap <- character()
-        if ( ! is.na(chrinfo$aliases[i]) ) {
-            for ( alias in strsplit(chrinfo$aliases[i], paste0('[^', 
+        if ( ! is.na(chrtab$aliases[i]) ) {
+            for ( alias in strsplit(chrtab$aliases[i], paste0('[^',
                 paste(id.charset,  collapse=''), ']'))[[1]] ) {
-                aliasmap[[ toupper(alias) ]] <- chrinfo$seqnames[i]
+                aliasmap[[ toupper(alias) ]] <- chrtab$seqnames[i]
             }
         }
         return(aliasmap)
