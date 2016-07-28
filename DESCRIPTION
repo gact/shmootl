@@ -18,6 +18,7 @@ Imports:
     argparser,
     BiocGenerics,
     GenomeInfoDb,
+    GenomicRanges,
     IRanges,
     methods,
     parallel,
@@ -51,16 +52,17 @@ Collate:
     'geno.R'
     'getLODProfile.R'
     'getLODValues.R'
+    'map.R'
+    'qtlintervals.R'
+    'getQTLFeatures.R'
     'getQTLIntervals.R'
     'getQTLPeaks.R'
     'seq.R'
     'gff.R'
     'hasEnumGenotypes.R'
-    'map.R'
     'pheno.R'
     'pipeline.R'
     'plotQTLScanone.R'
-    'qtlintervals.R'
     'run.R'
     'run_digest.R'
     'run_estimap.R'
