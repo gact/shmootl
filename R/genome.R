@@ -17,13 +17,13 @@ genomeOpt <- function(value) {
     
     result <- getOption('shmootl.genome', default=const$default$genome)
     
-    if ( ! result %in% names(const$seqinfo) ) {
+    if ( ! result %in% names(const$seqtab) ) {
         stop("unknown genome - '", result, "'")
     }
     
     if ( ! missing(value) && ! is.null(value) ) {
        
-        if ( ! value %in% names(const$seqinfo) ) {
+        if ( ! value %in% names(const$seqtab) ) {
             stop("unknown genome - '", value, "'")
         }
         
@@ -41,7 +41,7 @@ genomeOpt <- function(value) {
 #' @keywords internal
 #' @rdname getGenomes
 getGenomes <- function() {
-    return( names(const$seqinfo) )
+    return( names(const$seqtab) )
 }
 
 # End of genome.R ##############################################################

@@ -171,7 +171,7 @@ with(const, {
     chrtab <- loadChrTable()
     
     # Load sequence info.
-    seqinfo <- loadSeqInfo()
+    seqtab <- loadSeqTables()
     
     # Get mapping of sequence aliases to standard names.
     alias2chrom <- unlist( lapply(getRowIndices(chrtab), function(i) {

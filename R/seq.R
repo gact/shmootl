@@ -34,7 +34,7 @@ formatSeq <- function(x, prefix=c('', 'c', 'chr'), use.roman=TRUE) {
 isNormSeq <-function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
     genome <- genomeOpt()
-    return( ! is.na(x) & x %in% const$seqinfo[[genome]]$seqids )
+    return( ! is.na(x) & x %in% const$seqtab[[genome]]$seqids )
 }
 
 # joinSeqLabels ----------------------------------------------------------------
@@ -92,7 +92,8 @@ normSeq.character <- function(x) {
         res <- joinSeqLabels(lu)
         
         genome <- genomeOpt()
-        res[ ! res %in% const$seqinfo[[genome]]$seqids ] <- NA
+        
+        res[ ! res %in% const$seqtab[[genome]]$seqids ] <- NA
         
         # Check all elements were normalised to a known sequence.
         unresolved <- unique(x[ is.na(res) ])
@@ -166,7 +167,7 @@ normSeq.numeric <- function(x) {
 orderSeq <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
     genome <- genomeOpt()
-    return( order( match(normChr(x), const$seqinfo[[genome]]$seqids) ) )
+    return( order( match(normChr(x), const$seqtab[[genome]]$seqids) ) )
 }
 
 # rankSeq ----------------------------------------------------------------------
@@ -181,7 +182,7 @@ orderSeq <- function(x) {
 rankSeq <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
     genome <- genomeOpt()
-    return( match(normChr(x), const$seqinfo[[genome]]$seqids))
+    return( match(normChr(x), const$seqtab[[genome]]$seqids))
 }
 
 # sortSeq ----------------------------------------------------------------------
@@ -196,7 +197,7 @@ rankSeq <- function(x) {
 sortSeq <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
     genome <- genomeOpt()
-    return( x[ order( match(normChr(x), const$seqinfo[[genome]]$seqids) ) ] )
+    return( x[ order( match(normChr(x), const$seqtab[[genome]]$seqids) ) ] )
 }
 
 # splitSeqLabels ---------------------------------------------------------------

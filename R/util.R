@@ -1246,19 +1246,21 @@ loadMapping <- function(line=NULL, file=NULL) {
     return(x)
 }
 
-# loadSeqInfo ------------------------------------------------------------------
-#' Load genome sequence info.
+# loadSeqTables ----------------------------------------------------------------
+#' Load genome sequence info tables.
 #' 
-#' This function loads the sequence info of genomes for which package data
-#' is available.
+#' This function loads the sequence info tables of genomes for which package
+#' data is available.
 #' 
 #' @return A \code{list} of \code{data.frame} objects, each element named for a
-#' given genome and containing sequence info for that genome.
+#' given genome and containing sequence info for that genome. Each such
+#' \code{data.frame} object can be used to create, but is distinct from,
+#' a \pkg{GenomeInfoDb} \code{Seqinfo} object.
 #' 
 #' @importFrom utils read.csv
 #' @keywords internal
-#' @rdname loadSeqInfo
-loadSeqInfo <- function() {
+#' @rdname loadSeqTables
+loadSeqTables <- function() {
     
     column.classes <- c(seqids='character', seqnames='character', 
         seqlengths='integer', maplengths='numeric', isCircular='logical', 
@@ -1268,19 +1270,19 @@ loadSeqInfo <- function() {
     
     genomes <- list.dirs(genome.root, full.names=FALSE, recursive=FALSE)
     
-    seqinfo <- vector('list', length(genomes))
-    names(seqinfo) <- genomes
+    seqtab <- vector('list', length(genomes))
+    names(seqtab) <- genomes
     
     for ( genome in genomes ) {
         
-        filepath <- file.path(genome.root, genome, 'seqinfo.csv')
+        filepath <- file.path(genome.root, genome, 'seqtab.csv')
         
-        seqinfo[[genome]] <- utils::read.csv(filepath, quote='',
+        seqtab[[genome]] <- utils::read.csv(filepath, quote='',
             stringsAsFactors=FALSE, strip.white=TRUE, na.strings='', 
             colClasses=column.classes)
     }
     
-    return(seqinfo)
+    return(seqtab)
 }
 
 # loadVector -------------------------------------------------------------------

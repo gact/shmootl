@@ -2865,11 +2865,11 @@ setupDefaultMapkeys <- function() {
     default.mapkeys <- list()
     
     # Create default mapkey for each genome.
-    for ( genome in names(const$seqinfo) ) {
+    for ( genome in names(const$seqtab) ) {
         
-        seqinfo <- const$seqinfo[[genome]]
+        seqtab <- const$seqtab[[genome]]
         
-        map.seqs <- seqinfo$seqids
+        map.seqs <- seqtab$seqids
         
         cmaps <- vector('list', length(known.map.types))
         
@@ -2885,11 +2885,11 @@ setupDefaultMapkeys <- function() {
             if ( map.type == 'gmap' ) {
                 makeLocusIDs <- makePseudomarkerIDs
                 map.starts <- rep_len(0, length(map.seqs))
-                map.ends <- seqinfo$maplengths
+                map.ends <- seqtab$maplengths
             } else if ( map.type == 'pmap' ) {
                 makeLocusIDs <- makeDefaultMarkerIDs
                 map.starts <- rep_len(1, length(map.seqs))
-                map.ends <- seqinfo$seqlengths
+                map.ends <- seqtab$seqlengths
             } else {
                 stop("unknown map type - '", map.type, "'")
             }

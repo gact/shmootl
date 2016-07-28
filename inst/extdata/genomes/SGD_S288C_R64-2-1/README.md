@@ -4,7 +4,7 @@ This directory contains information about the SGD reference genome SGD_S288C_R64
 
 Reference sequence information is contained in the following file:
 
-## seqinfo.csv 
+## seqtab.csv
 
 This CSV file contains information about reference sequences under the headings:
 
