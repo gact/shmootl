@@ -1815,9 +1815,9 @@ mapkey <- function(...) {
                         # If flanking loci effectively coincide,
                         # simply take the lower flanking value..
                         if ( abs(x2 - x1) < .Machine$double.eps^0.5 ) {
-                            x <- x1
+                            y <- y1
                         } else { # ..otherwise interpolate flanking loci.
-                            x <- y1 + (x - x1) * (y2 - y1) / (x2 - x1)
+                            y <- y1 + (x - x1) * (y2 - y1) / (x2 - x1)
                         }
                         
                     } else { # ..otherwise extrapolate its position from map endpoints.
@@ -1830,19 +1830,19 @@ mapkey <- function(...) {
                         
                         # Extrapolate from map endpoints.
                         if ( x < x1 ) {
-                            x <- y1 - (x1 - x) * (y2 - y1) / (x2 - x1)
+                            y <- y1 - (x1 - x) * (y2 - y1) / (x2 - x1)
                         } else { # x > x2
-                            x <- y2 + (x - x2) * (y2 - y1) / (x2 - x1)
+                            y <- y2 + (x - x2) * (y2 - y1) / (x2 - x1)
                         }
                     }
                 }
                 
                 # Convert locus position from basic units, if needed.
                 if ( new.map.unit != new.basic.unit ) {
-                    x <- x / const$map.info[[new.map.type]][new.map.unit, 'factor']
+                    y <- y / const$map.info[[new.map.type]][new.map.unit, 'factor']
                 }
                 
-                locus.pos[i] <- unname(x)
+                locus.pos[i] <- unname(y)
             }
             
             loc <- pushLocusPos(loc, locus.pos)
