@@ -23,6 +23,8 @@ Imports:
     parallel,
     qtl,
     rhdf5,
+    rtracklayer,
+    S4Vectors,
     VariantAnnotation,
     xlsx,
     yaml
@@ -51,6 +53,8 @@ Collate:
     'getLODValues.R'
     'getQTLIntervals.R'
     'getQTLPeaks.R'
+    'seq.R'
+    'gff.R'
     'hasEnumGenotypes.R'
     'map.R'
     'pheno.R'
@@ -69,7 +73,6 @@ Collate:
     'run_report.R'
     'run_scanone.R'
     'scan.R'
-    'seq.R'
     'shmootl.R'
     'subsetByLoci.R'
     'subsetByLocusID.R'

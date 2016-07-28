@@ -273,6 +273,59 @@ with(const, {
         )
     )
     
+    # Annotation settings ------------------------------------------------------
+    
+    anno <- list(
+        
+        # Standard GFF column headings that are (currently)
+        # relevant to QTL interval annotation.
+        columns = c(
+            'seqid',              # factor
+            'source',             # factor
+            'type',               # factor
+            'start',              # integer
+            'end',                # integer
+            'strand'              # character
+        ),
+        
+        # Selected GFF3 attribute tags that are (currently)
+        # relevant to QTL interval annotation.
+        tags = c(
+            'ID',                 # character
+            'dbxref',             # character
+            'Note',               # CharacterList
+            'Ontology_term',      # CharacterList
+            'orf_classification', # character
+            'Parent',             # CharacterList
+            'Alias'               # CharacterList
+        ),
+        
+        # Feature types that are not (currently)
+        # relevant to QTL interval annotation.
+        irrelevant = c('chromosome', 'contig', 'remark'),
+        
+        # Supported headings of feature table.
+        supported.headings = c(
+            'chr',                # character
+            'start',              # integer
+            'end',                # integer
+            'strand',             # character
+            'ID',                 # character
+            'Alias',              # character
+            'type',               # character
+            'orf_classification', # character
+            'source',             # character
+            'dbxref',             # character
+            'Ontology_term',      # character
+            'Note'                # character
+        ),
+        
+        # Required headings of feature table.
+        # NB: minimum information required to check
+        # if a feature lies within a QTL interval.
+        required.headings = c('chr', 'start', 'end', 'ID')
+    )
+    
     # Scan function arguments --------------------------------------------------
     
     # Set documented scan function arguments.
