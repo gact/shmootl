@@ -502,6 +502,53 @@ getRunIndices <- function(x) {
     return( if ( num.runs > 0 ) { 1:num.runs } else { integer() } )
 }
 
+# getSeqinfo -------------------------------------------------------------------
+#' Get \pkg{GenomeInfoDb} \code{Seqinfo} object.
+#' 
+#' @param genome Genome for which a \pkg{GenomeInfoDb} \code{Seqinfo} object
+#' should be returned. If this is not specified, a \code{Seqinfo} object is
+#' returned for the current genome.
+#' 
+#' @return A \code{Seqinfo} object for the given genome.
+#'
+#' @importFrom GenomeInfoDb Seqinfo
+#' @keywords internal
+#' @rdname getSeqinfo
+getSeqinfo <- function(genome=NULL) {
+    
+    seqtab <- getSeqTable(genome)
+    
+    seqinfo <- GenomeInfoDb::Seqinfo(
+        seqnames   = seqtab$seqids,
+        seqlengths = seqtab$seqlengths,
+        isCircular = seqtab$isCircular,
+        genome     = seqtab$genome
+    )
+    
+    return(seqinfo)
+}
+
+# getSeqTable ------------------------------------------------------------------
+#' Get genome sequence info table.
+#' 
+#' @param genome Genome for which sequence info should be returned. If this
+#' is not specified, sequence info is returned for the current genome.
+#' 
+#' @return A \code{data.frame} containing sequence info for the given genome.
+#' This can be used to create, but is distinct from, a \pkg{GenomeInfoDb}
+#' \code{Seqinfo} object.
+#'
+#' @include const.R
+#' @include genome.R
+#' @keywords internal
+#' @rdname getSeqTable
+getSeqTable <- function(genome=NULL) {
+    prev.genome <- genomeOpt(genome)
+    on.exit( genomeOpt(prev.genome) )
+    seqtab <- const$seqtab[[ genomeOpt() ]]
+    return(seqtab)
+}
+
 # getSpecialAttributeNames -----------------------------------------------------
 #' Get special attributes for the given object.
 #' 
