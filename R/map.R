@@ -1883,7 +1883,7 @@ mapkeyOpt <- function(value) {
     result <- getOption('shmootl.mapkey', default=mapkey())
     stopifnot( 'mapkey' %in% class(result) )
     
-    if ( ! missing(value) ) {
+    if ( ! missing(value) && ! is.null(value) ) {
         stopifnot( 'mapkey' %in% class(value) )
         options(shmootl.mapkey=value)
     }
