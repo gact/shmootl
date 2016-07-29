@@ -355,6 +355,23 @@ getResultNamesHDF5 <- function(infile, phenotype) {
     return(phenotype.results)
 }
 
+# hasMapHDF5 -------------------------------------------------------------------
+#' Test if HDF5 file contains the named map.
+#' 
+#' @param infile An input HDF5 file.
+#' @param name Map name.
+#' 
+#' @return TRUE if the given HDF5 file contains the named map;
+#' FALSE otherwise.
+#' 
+#' @keywords internal
+#' @rdname hasMapHDF5
+hasMapHDF5 <- function(infile, name) {
+    stopifnot( isSingleString(name) )
+    mapnames <- getMapNamesHDF5(infile)
+    return( name %in% mapnames )
+}
+
 # hasObjectHDF5 ----------------------------------------------------------------
 #' Test if HDF5 file contains the named object.
 #' 
