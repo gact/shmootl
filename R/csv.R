@@ -474,7 +474,40 @@ readGenoCSV <- function(infile, require.mapunit=TRUE) {
 #' @family csv utilities
 #' @rdname readMapCSV
 readMapCSV <- function(infile, require.mapunit=TRUE) {
-    return( as.map( readMapframeCSV(infile, require.mapunit=require.mapunit) ) )
+    
+    stopifnot( isBOOL(require.mapunit) )
+    
+    guess <- sniffCSV(infile)
+    
+    if ( is.null(guess) ) {
+        stop("unknown input data in file - '", infile,"'")
+    }
+    
+    if ( ! hasMapCSV(infile) ) {
+        stop("no map data found in file - '", infile,"'")
+    }
+    
+    if ( guess == 'cross' ) {
+        
+        cross <- readCrossCSV(infile, require.mapunit=require.mapunit)
+        cross.map <- qtl::pull.map(cross)
+        
+    } else if ( guess == 'geno' ) {
+        
+        geno <- readGenoCSV(infile, require.mapunit=require.mapunit)
+        cross.map <- pullMap(geno)
+        
+    } else if ( guess == 'map' ) {
+        
+        cross.map <- as.map( readMapframeCSV(infile,
+            require.mapunit=require.mapunit) )
+        
+    } else {
+        
+        stop("cannot read map from ", guess," file - '", infile,"'")
+    }
+    
+    return(cross.map)
 }
 
 # readMapframeCSV --------------------------------------------------------------
@@ -491,32 +524,60 @@ readMapCSV <- function(infile, require.mapunit=TRUE) {
 #' @rdname readMapframeCSV
 readMapframeCSV <- function(infile, require.mapunit=TRUE) {
     
-    stopifnot( isSingleString(infile) )
-    stopifnot( file.exists(infile) )
+    stopifnot( isBOOL(require.mapunit) )
     
-    # Read mapframe from CSV file.
-    x <- utils::read.csv(infile, check.names=FALSE, quote='', strip.white=TRUE,
-        comment.char='', stringsAsFactors=FALSE, colClasses='character',
-        na.strings='')
+    guess <- sniffCSV(infile)
     
-    # Validate map unit information.
-    map.unit <- getMapUnit(x)
+    params <- getMetadataCSV(infile)
     
-    if ( is.na(map.unit) ) {
+    if ( is.null(guess) ) {
+        stop("unknown input data in file - '", infile,"'")
+    }
+    
+    if ( ! hasMapCSV(infile) ) {
+        stop("no map data found in file - '", infile,"'")
+    }
+    
+    if ( guess %in% c('cross', 'geno') ) {
         
-        if (require.mapunit) {
-            stop("input map must include map unit information (e.g. 'pos (cM)', '30 kb')")
+        cross.map <- as.mapframe( readMapCSV(infile,
+            require.mapunit=require.mapunit) )
+        
+    } else if ( guess == 'map' ) {
+        
+        # Read mapframe from CSV file.
+        x <- utils::read.csv(infile, check.names=FALSE, quote='',
+            strip.white=TRUE, comment.char='', stringsAsFactors=FALSE,
+            colClasses='character', na.strings='')
+        
+        # Trim any blank rows/columns from the bottom/right, respectively.
+        x <- bstripBlankRows( rstripBlankCols(x) )
+        
+        # Validate map unit information.
+        map.unit <- getMapUnit(x)
+        
+        if ( is.na(map.unit) ) {
+            
+            if (require.mapunit) {
+                stop("input map must include map unit information (e.g. 'pos (cM)', '30 kb')")
+            }
+            
+            map.unit <- 'cM'
         }
         
-        map.unit <- 'cM'
+        # Set locus IDs from an input 'id' column, if present.
+        if ( 'id' %in% colnames(x) ) {
+            x <- setRownamesFromColumn(x, col.name='id')
+        }
+        
+        cross.map <- as.mapframe(x, map.unit=map.unit)
+        
+    } else {
+        
+        stop("cannot read mapframe from ", guess," file - '", infile,"'")
     }
     
-    # Set locus IDs from an input 'id' column, if present.
-    if ( 'id' %in% colnames(x) ) {
-        x <- setRownamesFromColumn(x, col.name='id')
-    }
-    
-    return( as.mapframe(x, map.unit=map.unit) )
+    return(cross.map)
 }
 
 # readPhenoCSV -----------------------------------------------------------------
@@ -853,8 +914,54 @@ writeGenoCSV <- function(geno, outfile, chr=NULL, digits=NULL,
 #' @family csv utilities
 #' @rdname writeMapCSV
 writeMapCSV <- function(map, outfile, include.mapunit=TRUE) {
+    
     stopifnot( 'map' %in% class(map) )
-    writeMapframeCSV(as.mapframe(map), outfile, include.mapunit=include.mapunit)
+    stopifnot( isSingleString(outfile) )
+    stopifnot( isBOOL(include.mapunit) )
+    
+    # Assume that we are not pushing map into output file.
+    pushing <- FALSE
+    
+    # If output file exists and is a cross or geno CSV
+    # file, we are pushing map into output file.
+    if ( file.exists(outfile) ) {
+        guess <- sniffCSV(outfile)
+        if ( ! is.null(guess) && guess %in% c('cross', 'geno') ) {
+            pushing <- TRUE
+        }
+    }
+    
+    # If pushing map, push into cross or geno object and write result to file..
+    if (pushing) {
+        
+        # Create output temp file.
+        tmp <- tempfile()
+        on.exit( file.remove(tmp) )
+        
+        if ( guess == 'cross' ) {
+            
+            cross <- readCrossCSV(outfile, require.mapunit=FALSE)
+            cross <- qtl::replace.map(cross, map)
+            writeCrossCSV(cross, tmp, include.mapunit=include.mapunit)
+            
+        } else { # guess == 'geno'
+            
+            geno <- readGenoCSV(outfile, require.mapunit=FALSE)
+            geno <- pushMap(geno, map)
+            writeGenoCSV(geno, tmp, include.mapunit=include.mapunit)
+        }
+        
+        # Move temp file to final output file.
+        # NB: file.copy is used here instead of file.rename because the latter
+        # can sometimes fail when moving files between different file systems.
+        file.copy(tmp, outfile, overwrite=TRUE)
+        
+    } else { # ..otherwise convert to mapframe and write to file.
+        
+        writeMapframeCSV(as.mapframe(map), outfile,
+            include.mapunit=include.mapunit)
+    }
+    
     return( invisible() )
 }
 
@@ -875,21 +982,41 @@ writeMapframeCSV <- function(x, outfile, include.mapunit=TRUE) {
     stopifnot( isSingleString(outfile) )
     stopifnot( isBOOL(include.mapunit) )
     
-    x <- as.data.frame(x)
+    # Assume that we are not pushing mapframe into output file.
+    pushing <- FALSE
     
-    # If including map unit, append a map 
-    # unit suffix to each map position.
-    if (include.mapunit) {
-        x <- setPosColNameMapUnit(x, getMapUnit(x))
+    # If output file exists and is a cross or geno CSV
+    # file, we are pushing mapframe into output file.
+    if ( file.exists(outfile) ) {
+        guess <- sniffCSV(outfile)
+        if ( ! is.null(guess) && guess %in% c('cross', 'geno') ) {
+            pushing <- TRUE
+        }
     }
     
-    # Set 'id' column from locus IDs, if present.
-    if ( hasRownames(x) ) {
-        x <- setColumnFromRownames(x, col.name='id')
+    # If pushing mapframe, convert to map and push into output file..
+    if (pushing) {
+        
+        writeMapCSV(as.map(x), outfile, include.mapunit=include.mapunit)
+        
+    } else { # ..otherwise write mapframe to file.
+        
+        x <- as.data.frame(x)
+        
+        # If including map unit, append a map
+        # unit suffix to each map position.
+        if (include.mapunit) {
+            x <- setPosColNameMapUnit(x, getMapUnit(x))
+        }
+        
+        # Set 'id' column from locus IDs, if present.
+        if ( hasRownames(x) ) {
+            x <- setColumnFromRownames(x, col.name='id')
+        }
+        
+        # Write mapframe to CSV file.
+        utils::write.csv(x, file=outfile, quote=FALSE, row.names=FALSE)
     }
-    
-    # Write mapframe to CSV file.
-    utils::write.csv(x, file=outfile, quote=FALSE, row.names=FALSE)
     
     return( invisible() )
 }

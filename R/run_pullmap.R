@@ -18,31 +18,9 @@ run_pullmap <- function(datafile, mapfile, require.mapunit=TRUE,
     
     stopifnot( isSingleString(mapfile) )
     
-    guess <- sniffCSV(datafile)
+    cross.map <- readMapCSV(datafile, require.mapunit=require.mapunit)
     
-    if ( is.null(guess) ) {
-        stop("cannot pull map - unknown input data")
-    }
-    
-    if ( ! hasMapCSV(datafile) ) {
-        stop("no map data found in file '", datafile,"'")
-    }
-    
-    if ( guess == 'cross' ) {
-        
-        cross <- readCrossCSV(datafile, require.mapunit=require.mapunit)
-        cross.map <- qtl::pull.map(cross)
-        
-    } else if ( guess == 'geno' ) {
-        
-        geno <- readGenoCSV(datafile, require.mapunit=require.mapunit)
-        cross.map <- pullMap(geno)
-        
-    } else {
-        
-        stop("cannot pull map from ", guess," data")
-    }
-    
+    # Create output temp file.
     tmp <- tempfile()
     on.exit( file.remove(tmp) )
     

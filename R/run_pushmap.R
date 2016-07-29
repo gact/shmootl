@@ -16,37 +16,28 @@
 run_pushmap <- function(mapfile, datafile, require.mapunit=TRUE,
     include.mapunit=TRUE) {
     
-    guess <- sniffCSV(datafile)
-    
-    if ( is.null(guess) ) {
-        stop("cannot push map - unknown input data")
-    }
-    
-    map <- readMapCSV(mapfile)
-    
+    # Create output temp file.
     tmp <- tempfile()
     on.exit( file.remove(tmp) )
     
-    if ( guess == 'cross' ) {
-        
-        cross <- readCrossCSV(datafile, require.mapunit=require.mapunit)
-        
-        cross <- qtl::replace.map(cross, map)
-        
-        writeCrossCSV(cross, tmp, include.mapunit=include.mapunit)
-        
-    } else if ( guess == 'geno' ) {
-        
-        geno <- readGenoCSV(datafile, require.mapunit=require.mapunit)
-        
-        geno <- pushMap(geno, map)
-        
-        writeGenoCSV(geno, tmp, include.mapunit=include.mapunit)
-        
-    } else {
-        
-        stop("cannot push map into ", guess," data file")
+    # Copy datafile to temp file.
+    file.copy(datafile, tmp)
+    
+    guess <- sniffCSV(datafile)
+    
+    if ( is.null(guess) ) {
+        stop("unknown data in file - '", datafile,"'")
     }
+    
+    if ( ! guess %in% c('cross', 'geno') ) {
+        stop("cannot push map into ", guess," file - '", datafile,"'")
+    }
+    
+    # Read map from mapfile.
+    cross.map <- readMapCSV(mapfile, require.mapunit=require.mapunit)
+    
+    # Push map into temp file.
+    writeMapCSV(cross.map, tmp, include.mapunit=include.mapunit)
     
     # Move temp file to final output file.
     # NB: file.copy is used here instead of file.rename because the latter
