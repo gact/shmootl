@@ -196,7 +196,8 @@ copyObjectsHDF5 <- function(infile, outfile, h5names=NULL) {
 #' @keywords internal
 #' @rdname getMapNamesHDF5
 getMapNamesHDF5 <- function(infile) {
-    return( getObjectNamesHDF5(infile, 'Maps', relative=TRUE) )
+    return( getObjectNamesHDF5(infile, 'Maps', relative=TRUE,
+        min.depth=1, max.depth=1) )
 }
 
 # getObjectClassHDF5 -----------------------------------------------------------
@@ -245,64 +246,101 @@ getObjectClassHDF5 <- function(infile, h5name) {
 #' Get names of HDF5 objects from HDF5 file and name.
 #' 
 #' @param infile An input HDF5 file.
-#' @param h5name Requested HDF5 object name. By default, results
-#' are returned with respect to the HDF5 root object.
-#' @param include.requested Include the name of the
-#' requested HDF5 object among returned object names.
-#' @param relative Option indicating that the returned HDF5 object
-#' names should be given relative to the requested HDF5 object.
-#' @param recursive Option indicating whether
-#' to get HDF5 object names recursively.
+#' @param h5name Name of HDF5 object to use as a starting-point. By
+#' default, results are returned with respect to the HDF5 root object.
+#' @param relative Option indicating that the returned HDF5 object names should
+#' be given relative to the starting-point. By default, absolute HDF5 object
+#' names are returned.
+#' @param min.depth Minimum recursion depth (relative to starting-point) from
+#' which to return object names. If not specified, no minimum depth constraint
+#' is applied, and the results include the starting-point HDF5 object (if all
+#' other constraints are satisfied).
+#' @param max.depth Maximum recursion depth (relative to starting-point) from
+#' which to return object names. If not specified, no maximum depth constraint
+#' is applied, and the results include every HDF5 object below the
+#' starting-point (for which all other constraints are satisfied).
 #' 
-#' @return Character vector of names of HDF5 objects
-#' that lie below the requested HDF5 object.
+#' @return Character vector of names of HDF5 objects that lie within the section
+#' of the HDF5 file defined by the starting-point HDF5 object and any specified
+#' constraints.
 #' 
 #' @importFrom methods new
 #' @importFrom rhdf5 H5Lexists
 #' @importFrom rhdf5 h5ls
 #' @keywords internal
 #' @rdname getObjectNamesHDF5
-getObjectNamesHDF5 <- function(infile, h5name=NULL, include.requested=FALSE,
-    relative=FALSE, recursive=FALSE) {
+getObjectNamesHDF5 <- function(infile, h5name=NULL, relative=FALSE,
+    min.depth=0, max.depth=NULL) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
-    stopifnot( isBOOL(include.requested) )
     stopifnot( isBOOL(relative) )
-    stopifnot( isBOOL(recursive) )
+    stopifnot( isSingleNonNegativeWholeNumber(min.depth) )
+    
+    if ( ! is.null(max.depth) ) {
+        stopifnot( isSingleNonNegativeWholeNumber(max.depth) )
+    }
+    
     h5name <- resolveH5ObjectName(h5name)
     
-    object.h5names <- NULL
-    
+    # Open HDF5 file.
     h5stack <- methods::new('H5Stack', infile, h5name)
-    
     on.exit( closeStack(h5stack) )
     
+    # Check that starting-point HDF5 object exists.
+    # TODO: handle situation in which 'h5name' refers to a dataset.
     if( ! rhdf5::H5Lexists(fileID(h5stack), h5name) ) {
         stop("HDF5 object ('", h5name, "') not found in file - '",  infile, "'")
     }
     
-    h5info <- rhdf5::h5ls(peek(h5stack), datasetinfo=FALSE, recursive=recursive)
+    # Init vector of HDF5 object names.
+    object.h5names <- character()
     
-    if ( nrow(h5info) > 0 ) {
+    # If maximum depth is greater than zero, get
+    # names of HDF5 objects below starting-point.
+    if ( is.null(max.depth) || max.depth > 0 ) {
         
-        object.h5names <- character( nrow(h5info) )
+        # Get recursive listing if maximum depth is greater than one.
+        if ( is.null(max.depth) || max.depth > 1 ) {
+            recursive <- TRUE
+        } else {
+            recursive <- FALSE
+        }
         
+        # Get data-frame listing HDF5 objects below starting-point.
+        h5info <- rhdf5::h5ls(peek(h5stack), datasetinfo=FALSE,
+            recursive=recursive)
+        
+        # Get relative depths of HDF5 objects from number
+        # of component separators in returned group name.
+        object.depths <- unlist( lapply( strsplit(h5info$group, ''),
+            function(x) length( grep('/', x, fixed=TRUE) ) ) )
+        
+        # If maximum depth not specified, get actual maximum depth.
+        if ( is.null(max.depth) ) {
+            max.depth <- max(object.depths)
+        }
+        
+        # Append each HDF5 object satisfying the specified constraints.
         for ( i in getRowIndices(h5info) ) {
             
-            h5parts <- c(h5info$group[i], h5info$name[i])
-            
-            if (relative) {
-                object.h5name <- joinH5ObjectNameParts(h5parts, relative=TRUE)
-            } else { # absolute
-                object.h5name <- joinH5ObjectNameParts( c(h5name, h5parts) )
+            if ( object.depths[i] >= min.depth && object.depths[i] <= max.depth ) {
+                
+                h5parts <- c(h5info$group[i], h5info$name[i])
+                
+                if (relative) {
+                    object.h5name <- joinH5ObjectNameParts(h5parts, relative=TRUE)
+                } else { # absolute
+                    object.h5name <- joinH5ObjectNameParts( c(h5name, h5parts) )
+                }
+                
+                object.h5names <- c(object.h5names, object.h5name)
             }
-            
-            object.h5names[i] <- object.h5name
         }
     }
     
-    if (include.requested) {
+    # If minimum depth includes starting-point, add this to HDF5 object names.
+    if ( min.depth == 0 ) {
         object.h5names <- c(h5name, object.h5names)
     }
     
@@ -323,7 +361,8 @@ getPhenotypesHDF5 <- function(infile) {
     
     phenotypes <- NULL
     
-    result.names <- getObjectNamesHDF5(infile, 'Results', relative=TRUE)
+    result.names <- getObjectNamesHDF5(infile, 'Results', relative=TRUE,
+        min.depth=1, max.depth=1)
     
     if ( ! is.null(result.names) ) {
         
@@ -351,7 +390,8 @@ getPhenotypesHDF5 <- function(infile) {
 getResultNamesHDF5 <- function(infile, phenotype) {
     stopifnot( phenotype %in% getPhenotypesHDF5(infile) )
     h5name <- joinH5ObjectNameParts( c('Results', phenotype) )
-    phenotype.results <- getObjectNamesHDF5(infile, h5name, relative=TRUE)
+    phenotype.results <- getObjectNamesHDF5(infile, h5name, relative=TRUE,
+        min.depth=1, max.depth=1)
     return(phenotype.results)
 }
 
@@ -762,7 +802,8 @@ readDatasetHDF5.list <- function(infile, h5name, ...) {
     original.names <- dataset.attrs[['names']]
     original.names[ original.names == 'NA' ] <- NA
     
-    child.names <- getObjectNamesHDF5(infile, h5name, relative=TRUE)
+    child.names <- getObjectNamesHDF5(infile, h5name, relative=TRUE,
+        min.depth=1, max.depth=1)
     
     ordered.names <- makeGroupObjectNames(group.names=original.names, 
         group.size=length(child.names) )

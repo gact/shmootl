@@ -4,27 +4,33 @@
 \alias{getObjectNamesHDF5}
 \title{Get names of HDF5 objects from HDF5 file and name.}
 \usage{
-getObjectNamesHDF5(infile, h5name = NULL, include.requested = FALSE,
-  relative = FALSE, recursive = FALSE)
+getObjectNamesHDF5(infile, h5name = NULL, relative = FALSE, min.depth = 0,
+  max.depth = NULL)
 }
 \arguments{
 \item{infile}{An input HDF5 file.}
 
-\item{h5name}{Requested HDF5 object name. By default, results
-are returned with respect to the HDF5 root object.}
+\item{h5name}{Name of HDF5 object to use as a starting-point. By
+default, results are returned with respect to the HDF5 root object.}
 
-\item{include.requested}{Include the name of the
-requested HDF5 object among returned object names.}
+\item{relative}{Option indicating that the returned HDF5 object names should
+be given relative to the starting-point. By default, absolute HDF5 object
+names are returned.}
 
-\item{relative}{Option indicating that the returned HDF5 object
-names should be given relative to the requested HDF5 object.}
+\item{min.depth}{Minimum recursion depth (relative to starting-point) from
+which to return object names. If not specified, no minimum depth constraint
+is applied, and the results include the starting-point HDF5 object (if all
+other constraints are satisfied).}
 
-\item{recursive}{Option indicating whether
-to get HDF5 object names recursively.}
+\item{max.depth}{Maximum recursion depth (relative to starting-point) from
+which to return object names. If not specified, no maximum depth constraint
+is applied, and the results include every HDF5 object below the
+starting-point (for which all other constraints are satisfied).}
 }
 \value{
-Character vector of names of HDF5 objects
-that lie below the requested HDF5 object.
+Character vector of names of HDF5 objects that lie within the section
+of the HDF5 file defined by the starting-point HDF5 object and any specified
+constraints.
 }
 \description{
 Get names of HDF5 objects from HDF5 file and name.
