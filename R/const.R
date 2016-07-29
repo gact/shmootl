@@ -65,6 +65,15 @@ with(const, {
         )
     )
     
+    # File extensions ----------------------------------------------------------
+    
+    ext <- list(
+        csv = 'csv',
+        excel = c('xls', 'xlsx'),
+        hdf5 = c('hdf', 'h5', 'hdf5', 'he5'),
+        pdf = 'pdf'
+    )
+    
     # Item IDs -----------------------------------------------------------------
     reserved.characters <- c(
         "'", # single quote: quote character

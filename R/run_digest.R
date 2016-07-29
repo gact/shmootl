@@ -7,6 +7,8 @@
 #' @param digest scan digest file
 #' 
 #' @export
+#' @importFrom tools file_ext
+#' @include const.R
 #' @rdname run_digest
 run_digest <- function(h5list=character(), digest=NA_character_) {
     
@@ -23,7 +25,7 @@ run_digest <- function(h5list=character(), digest=NA_character_) {
     tmp <- tempfile( fileext=paste0('.', digest.ext) ) 
     on.exit( file.remove(tmp), add=TRUE )
     
-    if ( digest.ext %in% c('xls', 'xlsx') ) {
+    if ( digest.ext %in% const$ext$excel ) {
         writeDigestExcel(h5list, tmp)
     } else {
         stop("cannot create digest - unknown extension on file '", digest, "'")

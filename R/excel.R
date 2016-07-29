@@ -25,7 +25,7 @@ writeDigestExcel <- function(scanfiles, digest) {
     stopifnot( length(scanfiles) > 0 )
     stopifnot( all( file.exists(scanfiles) ) )
     stopifnot( isSingleString(digest) )
-    stopifnot( tools::file_ext(digest) %in% c('xls', 'xlsx') )
+    stopifnot( tools::file_ext(digest) %in% const$ext$excel )
     
     # Attach required package namespaces ---------------------------------------
     
