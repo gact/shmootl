@@ -2,22 +2,25 @@
 % Please edit documentation in R/run_pullmap.R
 \name{run_pullmap}
 \alias{run_pullmap}
-\title{Pull map from cross/geno data.}
+\title{Pull map from data file.}
 \usage{
-run_pullmap(datafile, mapfile, require.mapunit = TRUE,
-  include.mapunit = TRUE)
+run_pullmap(datafile, mapfile, mapname = NA_character_,
+  require.mapunit = TRUE, include.mapunit = TRUE)
 }
 \arguments{
 \item{datafile}{cross/geno CSV file}
 
 \item{mapfile}{output map CSV file}
 
+\item{mapname}{name of map (if applicable)}
+
 \item{require.mapunit}{require map units in input}
 
 \item{include.mapunit}{include map units in output}
 }
 \description{
-This script pulls the map from an R/qtl cross or genotype file,
-and writes it to a separate map file.
+This script pulls the map from a CSV or HDF5 file, and writes it
+to a separate map CSV file. If a HDF5 data file contains multiple maps, the
+\code{mapname} parameter must be used to specify which map to pull.
 }
 
