@@ -7,7 +7,7 @@
 #' to a separate map CSV file. If a HDF5 data file contains multiple maps, the
 #' \code{mapname} parameter must be used to specify which map to pull.
 #' 
-#' @param datafile cross/geno CSV file
+#' @param datafile file containing map data
 #' @param mapfile output map CSV file
 #' @param mapname name of map (if applicable)
 #' @param require.mapunit require map units in input

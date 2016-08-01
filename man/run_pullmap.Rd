@@ -8,7 +8,7 @@ run_pullmap(datafile, mapfile, mapname = NA_character_,
   require.mapunit = TRUE, include.mapunit = TRUE)
 }
 \arguments{
-\item{datafile}{cross/geno CSV file}
+\item{datafile}{file containing map data}
 
 \item{mapfile}{output map CSV file}
 
