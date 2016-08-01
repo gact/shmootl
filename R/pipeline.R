@@ -565,12 +565,13 @@ procPipelineArgs <- function(ap, args) {
                         arg <- loadVector(file=farg, type=ptype)
                     }
                     
-                    args[[fp]] <- NULL
-                    
                 } else { # ..otherwise set default value.
                     
                     arg <- default
                 }
+                
+                # Remove file argument, as no longer needed.
+                args[[fp]] <- NULL
             }
         }
         
