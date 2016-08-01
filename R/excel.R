@@ -7,15 +7,6 @@
 #' @param digest Path of output digest Excel file.
 #' 
 #' @export
-#' @importFrom tools file_ext
-#' @importFrom xlsx addDataFrame
-#' @importFrom xlsx Alignment
-#' @importFrom xlsx autoSizeColumn
-#' @importFrom xlsx CellStyle
-#' @importFrom xlsx createSheet
-#' @importFrom xlsx createWorkbook
-#' @importFrom xlsx Font
-#' @importFrom xlsx saveWorkbook
 #' @include const.R
 #' @include hdf5.R
 #' @rdname writeDigestExcel
@@ -178,23 +169,23 @@ writeDigestExcel <- function(scanfiles, digest) {
     # Output Excel workbook ----------------------------------------------------
     
     # Create workbook, setting format from file extension.
-    workbook <- createWorkbook( type=tools::file_ext(digest) )
+    workbook <- xlsx::createWorkbook( type=tools::file_ext(digest) )
     
     # Setup table heading style.
-    heading.style <- CellStyle(workbook) + Alignment(horizontal='ALIGN_CENTER') +
-        Font(workbook, isBold=TRUE)
+    heading.style <- xlsx::CellStyle(workbook) + xlsx::Alignment(horizontal='ALIGN_CENTER') +
+        xlsx::Font(workbook, isBold=TRUE)
     
     # Add each worksheet to workbook.
     for ( i in seq_along(tables) ) {
-        worksheet <- createSheet(workbook, sheetName=sheet.names[i])
+        worksheet <- xlsx::createSheet(workbook, sheetName=sheet.names[i])
         stopifnot( is.data.frame(tables[[i]]) )
-        addDataFrame(tables[[i]], worksheet, col.names=TRUE,
+        xlsx::addDataFrame(tables[[i]], worksheet, col.names=TRUE,
             row.names=FALSE,  colnamesStyle=heading.style, showNA=FALSE)
-        autoSizeColumn(worksheet, getColIndices(tables[[i]]))
+        xlsx::autoSizeColumn(worksheet, getColIndices(tables[[i]]))
     }
     
     # Save workbook to file.
-    saveWorkbook(workbook, digest)
+    xlsx::saveWorkbook(workbook, digest)
     
     return( invisible() )
 }
