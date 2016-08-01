@@ -1200,6 +1200,8 @@ splitH5ObjectName <- function(h5name) {
 #' @param col.name For a \code{data.frame}, rownames are removed, and then
 #' inserted into a column of the main table, with its column name taken
 #' from this parameter.
+#' @param overwrite Option indicating whether to force overwrite of an
+#' existing dataset. By default, existing datasets cannot be overwritten.
 #' 
 #' @export
 #' @importFrom methods new
@@ -1224,7 +1226,7 @@ writeDatasetHDF5 <- function(dataset, outfile, h5name, ...) {
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5.array <- function(dataset, outfile, h5name, ...) {
     dataset <- aperm(dataset) # NB: R is column-major, HDF5 is row-major
-    writeDatasetHDF5.default(dataset, outfile, h5name)
+    writeDatasetHDF5.default(dataset, outfile, h5name, ...)
 }
 
 # writeDatasetHDF5.data.frame --------------------------------------------------
@@ -1251,7 +1253,7 @@ writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name,
     
     attr(dataset, 'R.colClasses') <- colClasses
     
-    writeDatasetHDF5.default(dataset, outfile, h5name)
+    writeDatasetHDF5.default(dataset, outfile, h5name, ...)
     
     return( invisible() )
 }
@@ -1259,25 +1261,56 @@ writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name,
 # writeDatasetHDF5.default -----------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.default <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.default <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
 
     stopifnot( isSingleString(outfile) )
     h5name <- resolveH5ObjectName(h5name)
     
+    # If output file exists and overwrite option is TRUE,
+    # prepare to overwrite the dataset via a temp file..
+    if ( file.exists(outfile) && overwrite ) {
+        sinkfile <- tempfile()
+        overwriting <- TRUE
+    } else { # ..otherwise prepare to write directly to output file.
+        sinkfile <- outfile
+        overwriting <- FALSE
+    }
+    
+    # Split dataset HDF5 object name into the name of the group
+    # containing the dataset, and the name of the dataset itself.
     name.parts <- splitH5ObjectName(h5name)
-
     h5loc.name <- joinH5ObjectNameParts(name.parts[ -length(name.parts) ])
     dataset.name <- name.parts[ length(name.parts) ]
     
-    h5stack <- methods::new('H5Stack', outfile, h5loc.name)
+    # Open new HDF5 stack.
+    h5stack <- methods::new('H5Stack', sinkfile, h5loc.name)
+    on.exit({ closeStack(h5stack); if (overwriting) { file.remove(sinkfile) } })
     
-    on.exit( closeStack(h5stack) )
-    
+    # Write dataset to HDF5.
     rhdf5::h5writeDataset(h5loc=peek(h5stack), name=dataset.name, obj=dataset)
-
+    
+    # Write dataset attributes to HDF5.
     h5stack <- push(h5stack, rhdf5::H5Dopen(peek(h5stack), dataset.name))
     h5writeAttributes(dataset, peek(h5stack))
-
+    
+    # If overwriting dataset via a temp file, transfer any remaining objects to
+    # the temp file, then copy the complete temp file to the final output file.
+    if (overwriting) {
+        
+        # Transfer all existing but unchanged objects
+        # from existing output file to temp file.
+        updated <- getObjectNamesHDF5(sinkfile)
+        existing <- getObjectNamesHDF5(outfile)
+        unchanged <- setdiff(existing, updated) # NB: guarantees unique
+        copyObjectsHDF5(outfile, sinkfile, h5names=unchanged)
+        
+        # Move temp file to final output file.
+        # NB: file.copy is used here instead of file.rename because the latter
+        # can sometimes fail when moving files between different file systems.
+        file.copy(sinkfile, outfile, overwrite=TRUE)
+    }
+    
     return( invisible() )
 }
 
@@ -1295,7 +1328,7 @@ writeDatasetHDF5.list <- function(dataset, outfile, h5name, ...) {
         
         child.h5name <- joinH5ObjectNameParts( c(h5name, child.names[i]) )
         
-        writeDatasetHDF5(dataset[[i]], outfile, child.h5name)
+        writeDatasetHDF5(dataset[[i]], outfile, child.h5name, ...)
     }
     
     return( invisible() )
@@ -1314,7 +1347,7 @@ writeDatasetHDF5.map <- function(dataset, outfile, h5name, ...) {
     
     attr(dataset, 'R.class') <- dataset.Rclass
     
-    writeDatasetHDF5.data.frame(dataset, outfile, h5name, col.name='id')
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name, col.name='id', ...)
     
     return( invisible() )
 }
@@ -1330,7 +1363,7 @@ writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name, ...) {
     
     dataset <- as.data.frame(dataset)
     
-    writeDatasetHDF5.data.frame(dataset, outfile, h5name, col.name='id')
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name, col.name='id', ...)
 
     return( invisible() )
 }
@@ -1340,7 +1373,7 @@ writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name, ...) {
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5.matrix <- function(dataset, outfile, h5name, ...) {
     dataset <- t(dataset) # NB: R is column-major, HDF5 is row-major
-    writeDatasetHDF5.default(dataset, outfile, h5name)
+    writeDatasetHDF5.default(dataset, outfile, h5name, ...)
 }
 
 # writeDatasetHDF5.scanone -----------------------------------------------------
@@ -1351,7 +1384,7 @@ writeDatasetHDF5.scanone <- function(dataset, outfile, h5name, ...) {
     num.phenotypes <- length( getDatColIndices(dataset) )
     stopifnot( num.phenotypes == 1 )
     
-    writeDatasetHDF5.mapframe(dataset, outfile, h5name)
+    writeDatasetHDF5.mapframe(dataset, outfile, h5name, ...)
     
     return( invisible() )
 }
@@ -1385,7 +1418,7 @@ writeDatasetHDF5.scanonebins <- function(dataset, outfile, h5name, ...) {
     
     attr(dataset, 'R.class') <- c('scanonebins', 'array')
     
-    writeDatasetHDF5.data.frame(dataset, outfile, h5name)
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name, ...)
     
     return( invisible() )
 }
@@ -1418,7 +1451,7 @@ writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name, ...) {
     attr(scanoneperm.dataset, 'R.class') <- 'scanoneperm'
     class(scanoneperm.dataset) <- 'data.frame'
     
-    writeDatasetHDF5.data.frame(scanoneperm.dataset, outfile, h5name)
+    writeDatasetHDF5.data.frame(scanoneperm.dataset, outfile, h5name, ...)
     
     return( invisible() )
 }
@@ -1451,7 +1484,7 @@ writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name, ...) {
     attr(dataset, 'R.class') <- class(dataset)
     class(dataset) <- 'list'
     
-    writeDatasetHDF5.list(dataset, outfile, h5name)
+    writeDatasetHDF5.list(dataset, outfile, h5name, ...)
     
     return( invisible() )
 }
@@ -1503,7 +1536,7 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name, ...) {
     attr(scantwoperm.dataset, 'R.class') <- c('scantwoperm', 'list')
     class(scantwoperm.dataset) <- 'data.frame'
     
-    writeDatasetHDF5.data.frame(scantwoperm.dataset, outfile, h5name)
+    writeDatasetHDF5.data.frame(scantwoperm.dataset, outfile, h5name, ...)
     
     return( invisible() )
 }

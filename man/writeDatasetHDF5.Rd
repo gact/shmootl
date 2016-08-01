@@ -28,7 +28,8 @@ writeDatasetHDF5(dataset, outfile, h5name, ...)
 \method{writeDatasetHDF5}{data.frame}(dataset, outfile, h5name,
   col.name = "rownames", ...)
 
-\method{writeDatasetHDF5}{default}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{default}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 
 \method{writeDatasetHDF5}{list}(dataset, outfile, h5name, ...)
 
@@ -60,6 +61,9 @@ writeDatasetHDF5(dataset, outfile, h5name, ...)
 \item{col.name}{For a \code{data.frame}, rownames are removed, and then
 inserted into a column of the main table, with its column name taken
 from this parameter.}
+
+\item{overwrite}{Option indicating whether to force overwrite of an
+existing dataset. By default, existing datasets cannot be overwritten.}
 }
 \description{
 Write R object to a HDF5 dataset.
