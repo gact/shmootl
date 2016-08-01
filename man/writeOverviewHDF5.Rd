@@ -4,12 +4,15 @@
 \alias{writeOverviewHDF5}
 \title{Write QTL analysis results overview to a HDF5 file.}
 \usage{
-writeOverviewHDF5(overview, outfile)
+writeOverviewHDF5(overview, outfile, overwrite = FALSE)
 }
 \arguments{
 \item{overview}{Object containing a QTL analysis results overview.}
 
 \item{outfile}{An output HDF5 file.}
+
+\item{overwrite}{Option indicating whether to force overwrite of an
+existing overview. By default, existing overviews cannot be overwritten.}
 }
 \description{
 Write QTL analysis results overview to a HDF5 file.

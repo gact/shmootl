@@ -4,7 +4,7 @@
 \alias{writeMapHDF5}
 \title{Write \code{map} to a HDF5 file.}
 \usage{
-writeMapHDF5(map, outfile, name = NULL)
+writeMapHDF5(map, outfile, name = NULL, overwrite = FALSE)
 }
 \arguments{
 \item{map}{An \pkg{R/qtl} \code{map} object.}
@@ -12,6 +12,9 @@ writeMapHDF5(map, outfile, name = NULL)
 \item{outfile}{An output HDF5 file.}
 
 \item{name}{Map name.}
+
+\item{overwrite}{Option indicating whether to force overwrite of an
+existing map. By default, existing maps cannot be overwritten.}
 }
 \description{
 Write \code{map} to a HDF5 file.

@@ -1265,6 +1265,7 @@ writeDatasetHDF5.default <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
 
     stopifnot( isSingleString(outfile) )
+    stopifnot( isBOOL(overwrite) )
     h5name <- resolveH5ObjectName(h5name)
     
     # If output file exists and overwrite option is TRUE,
@@ -1551,11 +1552,13 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name, ...) {
 #' @param map An \pkg{R/qtl} \code{map} object.
 #' @param outfile An output HDF5 file.
 #' @param name Map name.
+#' @param overwrite Option indicating whether to force overwrite of an
+#' existing map. By default, existing maps cannot be overwritten.
 #' 
 #' @export
 #' @keywords internal
 #' @rdname writeMapHDF5
-writeMapHDF5 <- function(map, outfile, name=NULL) {
+writeMapHDF5 <- function(map, outfile, name=NULL, overwrite=FALSE) {
     
     stopifnot( 'map' %in% class(map) )
     
@@ -1564,7 +1567,7 @@ writeMapHDF5 <- function(map, outfile, name=NULL) {
     }
     
     h5name <- joinH5ObjectNameParts( c('Maps', name) )
-    writeDatasetHDF5(map, outfile, h5name)
+    writeDatasetHDF5(map, outfile, h5name, overwrite=overwrite)
     
     return( invisible() )
 }
@@ -1597,11 +1600,13 @@ writeObjectAttributesHDF5 <- function(x, outfile, h5name) {
 #'    
 #' @param overview Object containing a QTL analysis results overview.
 #' @param outfile An output HDF5 file.
+#' @param overwrite Option indicating whether to force overwrite of an
+#' existing overview. By default, existing overviews cannot be overwritten.
 #' 
 #' @export
 #' @keywords internal
 #' @rdname writeOverviewHDF5
-writeOverviewHDF5 <- function(overview, outfile) {
+writeOverviewHDF5 <- function(overview, outfile, overwrite=FALSE) {
     
     # TODO: review result overview format.
     
@@ -1612,7 +1617,7 @@ writeOverviewHDF5 <- function(overview, outfile) {
     stopifnot( is.character(overview[['Comments']]) )
     
     h5name <- joinH5ObjectNameParts( c('Results', 'Overview') )
-    writeDatasetHDF5(overview, outfile, h5name)
+    writeDatasetHDF5(overview, outfile, h5name, overwrite=overwrite)
     return( invisible() )
 }
 
@@ -1623,18 +1628,21 @@ writeOverviewHDF5 <- function(overview, outfile) {
 #' @param outfile An output HDF5 file.
 #' @param phenotype Name of phenotype (or equivalent analysis unit).
 #' @param name Name of QTL analysis result.
+#' @param overwrite Option indicating whether to force overwrite of an
+#' existing result. By default, existing results cannot be overwritten.
 #' 
 #' @export
 #' @keywords internal
 #' @rdname writeResultHDF5
-writeResultHDF5 <- function(result, outfile, phenotype, name=NULL) {
+writeResultHDF5 <- function(result, outfile, phenotype, name=NULL,
+    overwrite=FALSE) {
     
     if ( is.null(name) ) {
         name <- makeDefaultResultName(result)
     }
     
     h5name <- joinH5ObjectNameParts( c('Results', phenotype, name) )
-    writeDatasetHDF5(result, outfile, h5name)
+    writeDatasetHDF5(result, outfile, h5name, overwrite=overwrite)
     return( invisible() )
 }
 
