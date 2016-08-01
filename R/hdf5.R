@@ -1141,6 +1141,45 @@ resolveH5ObjectName <- function(h5name) {
     return(res)
 }
 
+# resolveMapNameHDF5 -----------------------------------------------------------
+#' Resolve map name in HDF5 file.
+#' 
+#' This function resolves the name of a map in the given HDF5 file: if the given
+#' map is present in the HDF5 file, that map name is returned. If no map name is
+#' specified and one map is found, the name of that map is returned by default;
+#' otherwise a map name must be given.
+#' 
+#' @param infile Input HDF5 file.
+#' @param name Map name.
+#' 
+#' @return Resolved map name.
+#' 
+#' @keywords internal
+#' @rdname resolveMapNameHDF5
+resolveMapNameHDF5 <- function(infile, name=NULL) {
+    
+    mapnames <- getMapNamesHDF5(infile)
+    
+    if ( ! is.null(name) ) {
+        
+        if ( ! name %in% mapnames ) {
+            stop("map ('", name, "') not found in HDF5 file - '", infile, "'")
+        }
+        
+    } else {
+        
+        if ( length(mapnames) == 1 ) {
+            name <- mapnames[1]
+        } else if ( length(mapnames) > 1 ) {
+            stop("cannot resolve multiple maps from HDF5 file - please choose one")
+        } else if ( length(mapnames) == 0 ) {
+            stop("no maps found in HDF5 file - '", infile, "'")
+        }
+    }
+    
+    return(name)
+}
+
 # splitH5ObjectName ------------------------------------------------------------
 #' Split HDF5 object name into component parts.
 #' 
