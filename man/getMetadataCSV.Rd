@@ -7,7 +7,7 @@
 getMetadataCSV(x)
 }
 \arguments{
-\item{x}{An \pkg{R/qtl} input data frame as read from a CSV file.}
+\item{x}{An \pkg{R/qtl} input data frame or a CSV filepath.}
 }
 \value{
 A list containing parameters of \pkg{R/qtl} input data.
