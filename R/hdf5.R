@@ -1340,9 +1340,16 @@ writeDatasetHDF5.default <- function(dataset, outfile, h5name,
     # the temp file, then copy the complete temp file to the final output file.
     if (overwriting) {
         
+        # Get HDF5 objects ancestral to the dataset, but not part of the dataset.
+        # NB: ensures attributes of ancestral groups copied from existing file.
+        h5loc.parts <- unlist( strsplit(h5loc.name, '/', fixed = TRUE) )
+        h5loc.prefixes <- sapply( seq_along(h5loc.parts), function(j)
+            resolveH5ObjectName( paste(h5loc.parts[1:j], collapse='/') ) )
+        
         # Transfer all existing but unchanged objects
         # from existing output file to temp file.
         updated <- getObjectNamesHDF5(sinkfile)
+        updated <- setdiff(updated, h5loc.prefixes) # NB: guarantees unique
         existing <- getObjectNamesHDF5(outfile)
         unchanged <- setdiff(existing, updated) # NB: guarantees unique
         copyObjectsHDF5(outfile, sinkfile, h5names=unchanged)
