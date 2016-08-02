@@ -93,7 +93,7 @@ getQTLFeatures <- function(qtl.intervals, features) {
         
         # Assign QTL features overlapping each QTL interval.
         for ( i in seq_along(qtl.intervals) ) {
-            row.indices <- qtl.overlaps@subjectHits[ qtl.overlaps@queryHits == i ]
+            row.indices <- qtl.overlaps@to[ qtl.overlaps@from == i ]
             qtl.features[[i]] <- features[row.indices, ]
             rownames(qtl.features[[i]]) <- NULL
         }
