@@ -218,6 +218,59 @@ hasMapCSV <- function(infile) {
     return(status)
 }
 
+# readCovarCSV -----------------------------------------------------------------
+#' Read covariate matrix from a CSV file.
+#' 
+#' This function reads a table of covariates (with optional 'ID' column) from a
+#' CSV file and returns a numeric \code{matrix} of covariate data. The contents
+#' of the input table do not need to be numeric, but they will be converted to
+#' numeric values when being read from file. For example, columns containing
+#' character values are read as factors, which are converted to their numeric
+#' representation.
+#' 
+#' @param infile Input CSV file path.
+#' 
+#' @return A numeric \code{matrix} of covariate data.
+#' 
+#' @export
+#' @family csv utilities
+#' @importFrom utils read.csv
+#' @importFrom utils type.convert
+#' @rdname readCovarCSV
+readCovarCSV <- function(infile) {
+    
+    stopifnot( isSingleString(infile) )
+    stopifnot( file.exists(infile) )
+    
+    # Read covariate data as character data-frame from CSV file.
+    covar.table <- utils::read.csv(infile, header=TRUE, check.names=FALSE,
+        quote='', stringsAsFactors=TRUE, strip.white=TRUE,
+        colClasses='character', na.strings=const$missing.value)
+    stopif( anyDuplicated( colnames(covar.table) ) )
+    
+    # Trim any blank rows/columns from the bottom/right, respectively.
+    covar.table <- bstripBlankRows( rstripBlankCols(covar.table) )
+    
+    # If 'id' column present, remove it from covariate table.
+    id.col <- which( tolower( colnames(covar.table) ) == 'id' )
+    if ( length(id.col) > 0 ) {
+        covar.table <- deleteColumn(covar.table, col.index=id.col)
+    }
+    
+    # Convert columns of covariate data-frame
+    # from character to appropriate datatypes.
+    covar.table <- do.call(cbind.data.frame,
+        lapply(covar.table, utils::type.convert))
+    stopifnot( all( sapply(covar.table, class) %in%
+        c('double', 'factor', 'integer', 'logical', 'numeric') ) )
+    
+    # Convert covariate table to numeric matrix.
+    # NB: converts factors to their numeric encoding.
+    covar.matrix <- data.matrix(covar.table, rownames.force=FALSE)
+    
+    return(covar.matrix)
+}
+
 # readCrossCSV -----------------------------------------------------------------
 #' Read yeast \code{cross} from a CSV file.
 #' 

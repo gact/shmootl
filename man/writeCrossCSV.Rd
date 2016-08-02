@@ -27,9 +27,9 @@ CSV file. Phenotype, genotype, and sample IDs are taken from the \code{'info'}
 attribute of the \code{cross}, if present.
 }
 \seealso{
-Other csv utilities: \code{\link{readCrossCSV}},
-  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
-  \code{\link{readMapframeCSV}},
+Other csv utilities: \code{\link{readCovarCSV}},
+  \code{\link{readCrossCSV}}, \code{\link{readGenoCSV}},
+  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
   \code{\link{readPhenoCSV}}, \code{\link{writeGenoCSV}},
   \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}},

@@ -18,10 +18,11 @@ A \code{mapframe} object.
 Read \code{mapframe} from a CSV file.
 }
 \seealso{
-Other csv utilities: \code{\link{readCrossCSV}},
-  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
-  \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
-  \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
+Other csv utilities: \code{\link{readCovarCSV}},
+  \code{\link{readCrossCSV}}, \code{\link{readGenoCSV}},
+  \code{\link{readMapCSV}}, \code{\link{readPhenoCSV}},
+  \code{\link{writeCrossCSV}}, \code{\link{writeGenoCSV}},
+  \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}},
   \code{\link{writePhenoCSV}}
 }

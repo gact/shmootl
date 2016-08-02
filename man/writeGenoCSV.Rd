@@ -25,9 +25,9 @@ number of digits.}
 Write yeast genotype data to a CSV file.
 }
 \seealso{
-Other csv utilities: \code{\link{readCrossCSV}},
-  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
-  \code{\link{readMapframeCSV}},
+Other csv utilities: \code{\link{readCovarCSV}},
+  \code{\link{readCrossCSV}}, \code{\link{readGenoCSV}},
+  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
   \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
   \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}},
