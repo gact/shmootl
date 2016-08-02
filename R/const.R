@@ -244,7 +244,8 @@ with(const, {
         'scanoneperm',         'Scanone Perms',
         'scanonebins',         'Scanone Perms',
         'scantwoperm',         'Scantwo Perms',
-        'qtlintervals',        'QTL Intervals'
+        'qtlintervals',        'QTL Intervals',
+        'qtlfeatures',          'QTL Features'
     ), ncol=2, byrow=TRUE, dimnames=list(NULL, c('class', 'name'))), 
     stringsAsFactors=FALSE)
     
