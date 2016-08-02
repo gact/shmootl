@@ -26,7 +26,7 @@ writeDigestExcel <- function(scanfiles, digest) {
     
     # Check scan files for results of interest ---------------------------------
     
-    results.sought <- 'QTL Intervals'
+    results.sought <- c('QTL Intervals', 'QTL Features')
     
     # Init per-scanfile info.
     result.info <- results.found <- pheno.info <- vector('list', length(scanfiles))
@@ -129,27 +129,63 @@ writeDigestExcel <- function(scanfiles, digest) {
                         interval.type <- NA_character_
                     }
                     
-                    for ( qtl.interval in qtl.intervals ) {
+                    # Check if QTL intervals object contains physical positions.
+                    physical.positions <- hasPhysicalPositions(qtl.intervals)
+                    
+                    # Get QTL interval features.
+                    qtl.features <- readResultHDF5(scanfile, phenotype, 'QTL Features')
+                    
+                    for ( i in seq_along(qtl.intervals) ) {
+                        
+                        # Get QTL interval.
+                        qtl.interval <- qtl.intervals[[i]]
+                        
+                        # Get name of this QTL interval.
+                        qtl.name <- names(qtl.intervals)[i]
                         
                         # Get reference sequence for this QTL interval.
                         interval.seq <- unique(qtl.interval[, 'chr'])
                         
+                        # Get peak LOD value in this QTL interval.
+                        peak.LOD <- qtl.interval[2, 'lod']
+                        
+                        # Get genetic map positions of this QTL interval.
+                        start.cM <- qtl.interval[1, 'pos (cM)']
+                        peak.cM <- qtl.interval[2, 'pos (cM)']
+                        end.cM <- qtl.interval[3, 'pos (cM)']
+                        
+                        # Get physical map positions of QTL interval, if available.
+                        if (physical.positions) {
+                            start.bp <- qtl.interval[1, 'pos (bp)']
+                            end.bp <- qtl.interval[3, 'pos (bp)']
+                        } else {
+                            start.bp <- end.bp <- NA_integer_
+                        }
+                        
+                        # Get QTL interval features, if available.
+                        if ( ! is.null(qtl.features) && qtl.name %in% names(qtl.features) ) {
+                            feature.ids <- paste(qtl.features[[qtl.name]]$ID, collapse=' ')
+                        } else {
+                            feature.ids <- NA_character_
+                        }
+                        
                         # Set row of info for this QTL interval.
                         row <- matrix( c(
-                            scanfile,                    # File
-                            phenotype,                   # Phenotype
-                            interval.seq,                # Chromosome
-                            qtl.interval[2, 'lod'],      # Peak LOD
-                            threshold,                   # LOD Threshold
-                            alpha,                       # alpha
-                            fdr,                         # FDR
-                            interval.type,               # Interval Type
-                            qtl.interval[1, 'pos (cM)'], # Start (cM)
-                            qtl.interval[2, 'pos (cM)'], # Peak (cM)
-                            qtl.interval[3, 'pos (cM)'], # End (cM)
-                            NA_integer_,                 # Start (bp)
-                            NA_integer_,                 # End (bp)
-                            NA_character_                # Features
+                            scanfile,      # File
+                            phenotype,     # Phenotype
+                            qtl.name,      # QTL Name
+                            interval.seq,  # Chromosome
+                            peak.LOD,      # Peak LOD
+                            threshold,     # LOD Threshold
+                            alpha,         # alpha
+                            fdr,           # FDR
+                            interval.type, # Interval Type
+                            start.cM,      # Start (cM)
+                            peak.cM,       # Peak (cM)
+                            end.cM,        # End (cM)
+                            start.bp,      # Start (bp)
+                            end.bp,        # End (bp)
+                            feature.ids    # Features
                         ), nrow=1, ncol=length(headings),
                         dimnames=list(NULL, colnames(tab)))
                         
@@ -180,7 +216,7 @@ writeDigestExcel <- function(scanfiles, digest) {
         worksheet <- xlsx::createSheet(workbook, sheetName=sheet.names[i])
         stopifnot( is.data.frame(tables[[i]]) )
         xlsx::addDataFrame(tables[[i]], worksheet, col.names=TRUE,
-            row.names=FALSE,  colnamesStyle=heading.style, showNA=FALSE)
+            row.names=FALSE, colnamesStyle=heading.style, showNA=FALSE)
         xlsx::autoSizeColumn(worksheet, getColIndices(tables[[i]]))
     }
     

@@ -276,8 +276,9 @@ with(const, {
                     'Genomic features within the QTL interval are included, if available.'
                 ),
                 
-                headings = c('File', 'Phenotype', 'Chromosome', 'Peak LOD', 'LOD Threshold',
-                    'alpha', 'FDR', 'Interval Type', 'Start (cM)', 'Peak (cM)', 'End (cM)',
+                headings = c('File', 'Phenotype', 'QTL Name', 'Chromosome',
+                    'Peak LOD', 'LOD Threshold', 'alpha', 'FDR',
+                    'Interval Type', 'Start (cM)', 'Peak (cM)', 'End (cM)',
                     'Start (bp)', 'End (bp)', 'Features')
             )
         )
