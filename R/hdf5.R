@@ -1317,7 +1317,7 @@ writeDatasetHDF5.default <- function(dataset, outfile, h5name,
     
     # If output file exists and overwrite option is TRUE,
     # prepare to overwrite the dataset via a temp file..
-    if ( file.exists(outfile) && overwrite ) {
+    if ( file.exists(outfile) && hasObjectHDF5(outfile, h5name) && overwrite ) {
         sinkfile <- tempfile()
         overwriting <- TRUE
     } else { # ..otherwise prepare to write directly to output file.
@@ -1341,6 +1341,8 @@ writeDatasetHDF5.default <- function(dataset, outfile, h5name,
     # Write dataset attributes to HDF5.
     h5stack <- push(h5stack, rhdf5::H5Dopen(peek(h5stack), dataset.name))
     h5writeAttributes(dataset, peek(h5stack))
+    
+    h5stack <- closeStack(h5stack)
     
     # If overwriting dataset via a temp file, transfer any remaining objects to
     # the temp file, then copy the complete temp file to the final output file.
