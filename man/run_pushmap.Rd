@@ -2,22 +2,27 @@
 % Please edit documentation in R/run_pushmap.R
 \name{run_pushmap}
 \alias{run_pushmap}
-\title{Push map into cross/geno data file.}
+\title{Push map into data file.}
 \usage{
-run_pushmap(mapfile, datafile, require.mapunit = TRUE,
-  include.mapunit = TRUE)
+run_pushmap(mapfile, datafile, mapname = NA_character_,
+  require.mapunit = TRUE, include.mapunit = TRUE)
 }
 \arguments{
 \item{mapfile}{input map CSV file}
 
-\item{datafile}{cross/geno CSV file}
+\item{datafile}{file with map data}
+
+\item{mapname}{name of map (if applicable)}
 
 \item{require.mapunit}{require map units in input}
 
 \item{include.mapunit}{include map units in output}
 }
 \description{
-This script replaces the map of the specified data file with the
-data from the given map file.
+Add or replace the map of the specified CSV or HDF5 file with
+the data from the given map file. If the \code{mapname} parameter is given
+for a HDF5 data file, the map is assigned that name and when being written
+to the HDF5 file. Otherwise, a default map name (e.g. \code{'Genetic Map'})
+is used.
 }
 

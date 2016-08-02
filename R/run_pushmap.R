@@ -1,39 +1,58 @@
 # Start of run_pushmap.R #######################################################
 
 # run_pushmap ------------------------------------------------------------------
-#' Push map into cross/geno data file.
+#' Push map into data file.
 #' 
-#' @description This script replaces the map of the specified data file with the
-#' data from the given map file.
+#' @description Add or replace the map of the specified CSV or HDF5 file with
+#' the data from the given map file. If the \code{mapname} parameter is given
+#' for a HDF5 data file, the map is assigned that name and when being written
+#' to the HDF5 file. Otherwise, a default map name (e.g. \code{'Genetic Map'})
+#' is used.
 #' 
 #' @param mapfile input map CSV file
-#' @param datafile cross/geno CSV file
+#' @param datafile file with map data
+#' @param mapname name of map (if applicable)
 #' @param require.mapunit require map units in input
 #' @param include.mapunit include map units in output
 #' 
 #' @export
 #' @rdname run_pushmap
-run_pushmap <- function(mapfile, datafile, require.mapunit=TRUE,
-    include.mapunit=TRUE) {
+run_pushmap <- function(mapfile, datafile, mapname=NA_character_,
+    require.mapunit=TRUE, include.mapunit=TRUE) {
+    
+    mapname <- if ( ! identical(mapname, NA_character_) ) { mapname } else { NULL }
+    
+    datafile.ext <- tools::file_ext(datafile)
     
     # Create output temp file.
     tmp <- tempfile()
     on.exit( file.remove(tmp) )
     
-    # Copy datafile to temp file.
-    file.copy(datafile, tmp)
-    
-    guess <- sniffCSV(datafile)
-    
-    if ( ! guess %in% c('cross', 'geno') ) {
-        stop("cannot push map into file with ", guess, " data - '", datafile,"'")
+    # If datafile exists, copy to temp file.
+    if ( file.exists(datafile) ) {
+        file.copy(datafile, tmp)
     }
     
     # Read map from mapfile.
     cross.map <- readMapCSV(mapfile, require.mapunit=require.mapunit)
     
     # Push map into temp file.
-    writeMapCSV(cross.map, tmp, include.mapunit=include.mapunit)
+    if ( datafile.ext %in% const$ext$csv ) {
+        
+        if ( ! is.null(mapname) ) {
+            stop("cannot specify map name for a CSV file")
+        }
+        
+        writeMapCSV(cross.map, tmp, include.mapunit=include.mapunit)
+        
+    } else if ( datafile.ext %in% const$ext$hdf5 ) {
+        
+        writeMapHDF5(cross.map, tmp, name=mapname, overwrite=TRUE)
+        
+    } else {
+        
+        stop("cannot push map - unknown extension on file '", datafile, "'")
+    }
     
     # Move temp file to final output file.
     # NB: file.copy is used here instead of file.rename because the latter
