@@ -12,7 +12,7 @@ sniffCSV(infile)
 \value{
 A string describing the type of data in the input CSV file. This can
 be \code{'cross'}, \code{'geno'}, \code{'pheno'}, or \code{'map'}. Returns
-\code{NULL} if the data could not be identified.
+\code{'unknown'} if the data could not be identified.
 }
 \description{
 Identify type of \pkg{R/qtl} data in CSV file.

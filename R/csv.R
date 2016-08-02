@@ -27,7 +27,8 @@ NULL
 #'  \item{\code{geno.cols}}{Indices of genotype columns, or NULL if none found.}
 #'  \item{\code{dat.rows}}{Row indices of data.}
 #'  \item{\code{map.present}}{TRUE if the data contains a map; FALSE otherwise.}
-#'  \item{\code{class}}{Expected class of the input data.}
+#'  \item{\code{class}}{Expected class of the input data.
+#'  This is \code{'unknown'} by default.}
 #' }
 #' 
 #' This information can then guide further processing of the input data.
@@ -41,6 +42,8 @@ NULL
 getMetadataCSV <- function(x) {
     
     stopifnot( is.data.frame(x) )
+    
+    data.class <- 'unknown'
     
     if ( nrow(x) < 2 ) {
         stop("data not found")
@@ -477,34 +480,30 @@ readMapCSV <- function(infile, require.mapunit=TRUE) {
     
     stopifnot( isBOOL(require.mapunit) )
     
-    guess <- sniffCSV(infile)
+    params <- getMetadataCSV(infile)
     
-    if ( is.null(guess) ) {
-        stop("unknown input data in file - '", infile,"'")
-    }
-    
-    if ( ! hasMapCSV(infile) ) {
+    if ( ! params$map.present ) {
         stop("no map data found in file - '", infile,"'")
     }
     
-    if ( guess == 'cross' ) {
+    if ( params$class == 'cross' ) {
         
         cross <- readCrossCSV(infile, require.mapunit=require.mapunit)
         cross.map <- qtl::pull.map(cross)
         
-    } else if ( guess == 'geno' ) {
+    } else if ( params$class == 'geno' ) {
         
         geno <- readGenoCSV(infile, require.mapunit=require.mapunit)
         cross.map <- pullMap(geno)
         
-    } else if ( guess == 'map' ) {
+    } else if ( params$class == 'map' ) {
         
         cross.map <- as.map( readMapframeCSV(infile,
             require.mapunit=require.mapunit) )
         
     } else {
         
-        stop("cannot read map from ", guess," file - '", infile,"'")
+        stop("cannot read map from ", params$class, " data file - '", infile,"'")
     }
     
     return(cross.map)
@@ -526,24 +525,18 @@ readMapframeCSV <- function(infile, require.mapunit=TRUE) {
     
     stopifnot( isBOOL(require.mapunit) )
     
-    guess <- sniffCSV(infile)
-    
     params <- getMetadataCSV(infile)
     
-    if ( is.null(guess) ) {
-        stop("unknown input data in file - '", infile,"'")
-    }
-    
-    if ( ! hasMapCSV(infile) ) {
+    if ( ! params$map.present ) {
         stop("no map data found in file - '", infile,"'")
     }
     
-    if ( guess %in% c('cross', 'geno') ) {
+    if ( params$class %in% c('cross', 'geno') ) {
         
         cross.map <- as.mapframe( readMapCSV(infile,
             require.mapunit=require.mapunit) )
         
-    } else if ( guess == 'map' ) {
+    } else if ( params$class == 'map' ) {
         
         # Read mapframe from CSV file.
         x <- utils::read.csv(infile, check.names=FALSE, quote='',
@@ -574,7 +567,7 @@ readMapframeCSV <- function(infile, require.mapunit=TRUE) {
         
     } else {
         
-        stop("cannot read mapframe from ", guess," file - '", infile,"'")
+        stop("cannot read mapframe from ", params$class, " data file - '", infile,"'")
     }
     
     return(cross.map)
@@ -703,7 +696,7 @@ recodeCSV <- function(infile, outfile, geno=NULL) {
 #'
 #' @return A string describing the type of data in the input CSV file. This can
 #' be \code{'cross'}, \code{'geno'}, \code{'pheno'}, or \code{'map'}. Returns
-#' \code{NULL} if the data could not be identified.
+#' \code{'unknown'} if the data could not be identified.
 #'
 #' @export
 #' @importFrom utils read.csv
@@ -719,7 +712,7 @@ sniffCSV <- function(infile) {
     
     x <- rstripBlankCols(x)
     
-    data.class <- NULL
+    data.class <- 'unknown'
     
     tryCatch({
         params <- getMetadataCSV(x)
@@ -925,9 +918,13 @@ writeMapCSV <- function(map, outfile, include.mapunit=TRUE) {
     # If output file exists and is a cross or geno CSV
     # file, we are pushing map into output file.
     if ( file.exists(outfile) ) {
+        
         guess <- sniffCSV(outfile)
-        if ( ! is.null(guess) && guess %in% c('cross', 'geno') ) {
+        
+        if ( guess %in% c('cross', 'geno') ) {
             pushing <- TRUE
+        } else if ( guess != 'map' ) {
+            stop("cannot write map to existing file with ", guess, " data - '", outfile,"'")
         }
     }
     
@@ -988,9 +985,13 @@ writeMapframeCSV <- function(x, outfile, include.mapunit=TRUE) {
     # If output file exists and is a cross or geno CSV
     # file, we are pushing mapframe into output file.
     if ( file.exists(outfile) ) {
+        
         guess <- sniffCSV(outfile)
-        if ( ! is.null(guess) && guess %in% c('cross', 'geno') ) {
+        
+        if ( guess %in% c('cross', 'geno') ) {
             pushing <- TRUE
+        } else if ( guess != 'map' ) {
+            stop("cannot write map to existing file with ", guess, " data - '", outfile,"'")
         }
     }
     

@@ -25,7 +25,8 @@ The returned list includes information on the following parameters:
  \item{\code{geno.cols}}{Indices of genotype columns, or NULL if none found.}
  \item{\code{dat.rows}}{Row indices of data.}
  \item{\code{map.present}}{TRUE if the data contains a map; FALSE otherwise.}
- \item{\code{class}}{Expected class of the input data.}
+ \item{\code{class}}{Expected class of the input data.
+ This is \code{'unknown'} by default.}
 }
 
 This information can then guide further processing of the input data.

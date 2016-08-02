@@ -30,12 +30,8 @@ run_prep <- function(datafile) {
     
     params <- getMetadataCSV(x)
     
-    if ( is.null(params$class) ) {
-        stop("cannot prep - unknown input data")
-    }
-    
     if ( ! params$class %in% c('cross', 'geno', 'pheno') ) {
-        stop("cannot prep ", params$class," data")
+        stop("cannot prep - ", params$class," input data")
     }
     
     # If file has genotype columns, ensure marker sequence IDs are normalised.

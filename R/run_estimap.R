@@ -24,10 +24,6 @@ run_estimap <- function(datafile, mapfile, n.cluster=1L, error.prob=0.0001,
     
     guess <- sniffCSV(datafile)
     
-    if ( is.null(guess) ) {
-        stop("cannot estimate map - unknown input data")
-    }
-    
     if ( guess == 'cross' ) {
         
         cross <- readCrossCSV(datafile, require.mapunit=FALSE)
@@ -44,7 +40,7 @@ run_estimap <- function(datafile, mapfile, n.cluster=1L, error.prob=0.0001,
         
     } else {
         
-        stop("cannot estimate map from ", guess," data")
+        stop("cannot estimate map from ", guess, " input data")
     }
     
     # Check for enumerated genotypes.

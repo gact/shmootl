@@ -25,12 +25,8 @@ run_pushmap <- function(mapfile, datafile, require.mapunit=TRUE,
     
     guess <- sniffCSV(datafile)
     
-    if ( is.null(guess) ) {
-        stop("unknown data in file - '", datafile,"'")
-    }
-    
     if ( ! guess %in% c('cross', 'geno') ) {
-        stop("cannot push map into ", guess," file - '", datafile,"'")
+        stop("cannot push map into file with ", guess, " data - '", datafile,"'")
     }
     
     # Read map from mapfile.
