@@ -265,6 +265,7 @@ getObjectClassHDF5 <- function(infile, h5name) {
 #' constraints.
 #' 
 #' @importFrom methods new
+#' @importFrom rhdf5 H5Iget_type
 #' @importFrom rhdf5 H5Lexists
 #' @importFrom rhdf5 h5ls
 #' @keywords internal
@@ -288,17 +289,22 @@ getObjectNamesHDF5 <- function(infile, h5name=NULL, relative=FALSE,
     on.exit( closeStack(h5stack) )
     
     # Check that starting-point HDF5 object exists.
-    # TODO: handle situation in which 'h5name' refers to a dataset.
     if( ! rhdf5::H5Lexists(fileID(h5stack), h5name) ) {
         stop("HDF5 object ('", h5name, "') not found in file - '",  infile, "'")
+    }
+    
+    h5type <- as.character( rhdf5::H5Iget_type( peek(h5stack) ) )
+    
+    if ( ! h5type %in% c('H5I_GROUP', 'H5I_DATASET', 'H5I_FILE') ) {
+        stop("unknown HDF5 object type - '", h5type, "'")
     }
     
     # Init vector of HDF5 object names.
     object.h5names <- character()
     
-    # If maximum depth is greater than zero, get
-    # names of HDF5 objects below starting-point.
-    if ( is.null(max.depth) || max.depth > 0 ) {
+    # If starting-point is not a HDF5 dataset, and maximum depth is greater
+    # than zero, get the names of HDF5 objects below the starting-point.
+    if ( h5type != 'H5I_DATASET' && ( is.null(max.depth) || max.depth > 0 ) ) {
         
         # Get recursive listing if maximum depth is greater than one.
         if ( is.null(max.depth) || max.depth > 1 ) {
