@@ -118,8 +118,8 @@ setMethod('fileID', signature='H5Stack', definition = function(h5stack) {
 #' @importFrom rhdf5 H5Fopen
 #' @importFrom rhdf5 H5Fcreate
 #' @importFrom rhdf5 H5Lexists
-#' @importFrom rhdf5 H5Gopen
 #' @importFrom rhdf5 H5Gcreate
+#' @importFrom rhdf5 H5Oopen
 #' @keywords internal
 #' @rdname openStack-methods
 setGeneric('openStack', function(h5stack, file, h5name=NULL) { 
@@ -151,16 +151,16 @@ setMethod('openStack', signature='H5Stack', definition =
     
     if ( h5name != '/' ) {
         
-        group.names <- splitH5ObjectName(h5name)
+        h5parts <- splitH5ObjectName(h5name)
     
-        for ( group.name in group.names ) {
+        for ( h5part in h5parts ) {
             
             prev.id <- peek(h5stack)
             
-            if ( rhdf5::H5Lexists(prev.id, group.name) ) {
-                curr.id <- rhdf5::H5Gopen(prev.id, group.name)
+            if ( rhdf5::H5Lexists(prev.id, h5part) ) {
+                curr.id <- rhdf5::H5Oopen(prev.id, h5part)
             } else {
-                curr.id <- rhdf5::H5Gcreate(prev.id, group.name)
+                curr.id <- rhdf5::H5Gcreate(prev.id, h5part)
             }   
             
             h5stack <- push(h5stack, curr.id)
