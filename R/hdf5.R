@@ -1131,7 +1131,9 @@ resolveH5ObjectName <- function(h5name) {
         
         res <- sub('^/?', '/', unname(h5name))
         
-        res <- sub('/$', '', res)
+        if ( res != '/' ) {
+            res <- sub('/$', '', res)
+        }
         
     } else {
         
