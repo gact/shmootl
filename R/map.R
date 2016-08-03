@@ -196,7 +196,7 @@ as.map.list <- function(from, map.unit=NULL) {
     
     # Get vector mapping normalised sequence labels to their original form.
     res2map <- structure(map.seqs, names=norm.map.seqs)
-
+    
     to <- list()
     
     # Set map data for each sequence.
@@ -2111,7 +2111,6 @@ pullLocusSeq.data.frame <- function(x) {
 #' @method pullLocusSeq list
 #' @rdname pullLocusSeq
 pullLocusSeq.list <- function(x) {
-    validateMap(x)
     return( pullLocusSeq.map(x) )
 }
 
@@ -2147,7 +2146,6 @@ pullLocusIDs.data.frame <- function(x) {
 #' @method pullLocusIDs list
 #' @rdname pullLocusIDs
 pullLocusIDs.list <- function(x) {
-    validateMap(x)
     return( pullLocusIDs.map(x) )
 }
   
@@ -2191,7 +2189,6 @@ pullLocusPos.data.frame <- function(x) {
 #' @method pullLocusPos list
 #' @rdname pullLocusPos
 pullLocusPos.list <- function(x) {
-    validateMap(x)
     return( pullLocusPos.map(x) )
 }
 
@@ -2311,7 +2308,6 @@ pushLocusSeq.data.frame <- function(x, value) {
 #' @method pushLocusSeq list
 #' @rdname pushLocusSeq
 pushLocusSeq.list <- function(x, value) {
-    validateMap(x)
     return( pushLocusSeq.map(x, value) )
 }
 
@@ -2382,7 +2378,6 @@ pushLocusIDs.data.frame <- function(x, value) {
 #' @method pushLocusIDs list
 #' @rdname pushLocusIDs
 pushLocusIDs.list <- function(x, value) {
-    validateMap(x)
     return( pushLocusIDs.map(x, value) )
 }
 
@@ -2471,7 +2466,6 @@ pushLocusPos.data.frame <- function(x, value) {
 #' @method pushLocusPos list
 #' @rdname pushLocusPos
 pushLocusPos.list <- function(x, value) {
-    validateMap(x)
     return( pushLocusPos.map(x, value) )
 }
 
