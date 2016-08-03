@@ -27,6 +27,8 @@
 #' @param step step size for genotype probabilities
 #' @param error.prob genotyping error rate 
 #' @param map.function genetic map function
+#' @param acovfile additive covariates file
+#' @param icovfile interactive covariates file
 #' 
 #' @export
 #' @rdname run_scanone
@@ -34,7 +36,8 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     chr=character(), pheno=character(), model=c('normal','binary','2part','np'),
     method=c('em','imp','hk','ehk','mr','mr-imp','mr-argmax'), n.perm=1000L,
     n.cluster=1L, alpha=NA_real_, fdr=NA_real_, step=0, error.prob=0.0001,
-    map.function=c('haldane','kosambi','c-f','morgan')) {
+    map.function=c('haldane','kosambi','c-f','morgan'),
+    acovfile=NA_character_, icovfile=NA_character_) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
@@ -50,6 +53,8 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     pheno <- if ( ! identical(pheno, character()) ) { pheno } else { NULL }
     alpha <- if ( ! identical(alpha, NA_real_) ) { alpha } else { NULL }
     fdr <- if ( ! identical(fdr, NA_real_) ) { fdr } else { NULL }
+    addcovar <- if ( ! is.na(acovfile) ) { readCovarCSV(acovfile) } else { NULL }
+    intcovar <- if ( ! is.na(icovfile) ) { readCovarCSV(icovfile) } else { NULL }
     
     if ( ! is.null(alpha) && ! is.null(fdr) ) {
         stop("cannot set both significance level (alpha) and FDR")
@@ -106,12 +111,13 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     
     # Run single QTL analysis using R/qtl.
     scanone.result <- batchPhenoScanone(cross, chr=sequences, 
-        pheno.col=pheno.col, model=model, method=method, n.cluster=n.cluster)
+        pheno.col=pheno.col, model=model, method=method, n.cluster=n.cluster,
+        addcovar=addcovar, intcovar=intcovar)
     
     # Run permutation scans.
     scanone.perms <- batchPermScanone(cross, chr=sequences, pheno.col=pheno.col, 
         model=model, method=method, n.perm=n.perm, n.cluster=n.cluster,
-        perm.type=perm.type)
+        perm.type=perm.type, addcovar=addcovar, intcovar=intcovar)
     
     # Get LOD thresholds from permutation results. 
     if ( ! is.null(alpha) ) {

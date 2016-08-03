@@ -9,7 +9,8 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
   "2part", "np"), method = c("em", "imp", "hk", "ehk", "mr", "mr-imp",
   "mr-argmax"), n.perm = 1000L, n.cluster = 1L, alpha = NA_real_,
   fdr = NA_real_, step = 0, error.prob = 1e-04,
-  map.function = c("haldane", "kosambi", "c-f", "morgan"))
+  map.function = c("haldane", "kosambi", "c-f", "morgan"),
+  acovfile = NA_character_, icovfile = NA_character_)
 }
 \arguments{
 \item{infile}{input cross file}
@@ -37,6 +38,10 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
 \item{error.prob}{genotyping error rate}
 
 \item{map.function}{genetic map function}
+
+\item{acovfile}{additive covariates file}
+
+\item{icovfile}{interactive covariates file}
 }
 \description{
 This script will read cross data from the specified cross input
