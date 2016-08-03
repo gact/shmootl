@@ -11,7 +11,6 @@
 #' of a feature. Additional feature annotation is included, if available.
 #' 
 #' @export
-#' @importFrom rtracklayer readGFF
 #' @importFrom S4Vectors unstrsplit
 #' @include const.R
 #' @include seq.R
@@ -26,9 +25,35 @@ readFeaturesGFF <- function(annofile) {
     supp.hdgs <- const$anno$supported.headings
     req.hdgs <- const$anno$required.headings
     
-    # Read annotation DataFrame from GFF file.
-    anno <- rtracklayer::readGFF(annofile, columns=const$anno$columns,
-        tags=const$anno$tags)
+    # If rtracklayer version 1.30 or greater, read
+    # features from file with function `readGFF`..
+    version <- utils::packageVersion('rtracklayer')
+    if ( version$major > 1 || ( version$major == 1 && version$minor >= 30 ) ) {
+        
+        # Read GFF file to DataFrame.
+        anno <- rtracklayer::readGFF(annofile,
+            columns=const$anno$columns, tags=const$anno$tags)
+        
+    } else { # ..otherwise use the older `import.gff` function.
+        
+        # Read GFF file to GRanges object.
+        x <- rtracklayer::import.gff(annofile,
+            colnames=c(const$anno$columns, const$anno$tags))
+        
+        # Get feature ranges.
+        anno.ranges <- S4Vectors::DataFrame(
+            seqid  = GenomicRanges::seqnames(x),
+            start  = GenomicRanges::start(x),
+            end    = GenomicRanges::end(x),
+            strand = GenomicRanges::strand(x)
+        )
+        
+        # Get feature metadata.
+        anno.metadata <- GenomicRanges::elementMetadata(x)
+        
+        # Merge feature annotation into one DataFrame.
+        anno <- cbind(anno.ranges, anno.metadata)
+    }
     
     # Identify and remove unwanted features.
     irrelevant <- anno$type %in% const$anno$irrelevant
@@ -40,16 +65,16 @@ readFeaturesGFF <- function(annofile) {
     features <- as.data.frame( matrix( nrow=nrow(anno), ncol=length(supp.hdgs),
         dimnames=list(NULL, supp.hdgs) ), stringsAsFactors=FALSE )
     
-    features$chr <- normSeq(anno$seqid)
+    features$chr <- normSeq( as.character(anno$seqid) )
     features$start <- anno$start
     features$end <- anno$end
-    features$strand <- anno$strand
-    features$ID <- anno$ID
+    features$strand <- as.character(anno$strand)
+    features$ID <- as.character(anno$ID)
     features$Alias <- S4Vectors::unstrsplit(anno$Alias, '; ')
     features$type <- as.character(anno$type)
-    features$orf_classification <- anno$orf_classification
+    features$orf_classification <- as.character(anno$orf_classification)
     features$source <- as.character(anno$source)
-    features$dbxref <- anno$dbxref
+    features$dbxref <- as.character(anno$dbxref)
     features$Ontology_term <- S4Vectors::unstrsplit(anno$Ontology_term, ' ')
     features$Note <- S4Vectors::unstrsplit(anno$Note, '...')
     
