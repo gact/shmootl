@@ -2317,7 +2317,7 @@ pushLocusSeq.list <- function(x, value) {
 pushLocusSeq.map <- function(x, value) {
     
     # Get key info about object.
-    x.nmar <- lengths(x)             # number of markers by sequence
+    x.nmar <- unname( lengths(x) )   # number of markers by sequence
     x.totmar <- sum(x.nmar)          # total number of markers
     
     # Get key info about value.
