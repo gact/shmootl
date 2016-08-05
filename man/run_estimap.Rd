@@ -5,7 +5,8 @@
 \title{Estimate map from cross/geno data.}
 \usage{
 run_estimap(datafile, mapfile, n.cluster = 1L, error.prob = 1e-04,
-  map.function = c("haldane", "kosambi", "c-f", "morgan"))
+  map.function = c("haldane", "kosambi", "c-f", "morgan"),
+  jittermap = FALSE)
 }
 \arguments{
 \item{datafile}{input cross/geno CSV file}
@@ -17,6 +18,8 @@ run_estimap(datafile, mapfile, n.cluster = 1L, error.prob = 1e-04,
 \item{error.prob}{genotyping error rate}
 
 \item{map.function}{genetic map function}
+
+\item{jittermap}{jitter map positions}
 }
 \description{
 This script reads an R/qtl cross or genotype file, and outputs a

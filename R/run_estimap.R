@@ -13,14 +13,16 @@
 #' @param n.cluster number of threads
 #' @param error.prob genotyping error rate
 #' @param map.function genetic map function
+#' @param jittermap jitter map positions
 #' 
 #' @export
 #' @rdname run_estimap
 run_estimap <- function(datafile, mapfile, n.cluster=1L, error.prob=0.0001,
-    map.function=c("haldane","kosambi","c-f","morgan")) {
+    map.function=c("haldane","kosambi","c-f","morgan"), jittermap=FALSE) {
     
     stopifnot( isSingleString(mapfile) )
     stopifnot( isSinglePositiveNumber(n.cluster) )
+    stopifnot( isBOOL(jittermap) )
     
     guess <- sniffCSV(datafile)
     
@@ -51,12 +53,14 @@ run_estimap <- function(datafile, mapfile, n.cluster=1L, error.prob=0.0001,
     cross.map <- qtl::est.map(cross, error.prob=error.prob,
         map.function=map.function, offset=0, n.cluster=n.cluster)
     
-    cross.map <- as.mapframe(cross.map)
+    if (jittermap) {
+        cross.map <- qtl::jittermap(cross.map)
+    }
     
     tmp <- tempfile()
     on.exit( file.remove(tmp) )
     
-    writeMapframeCSV(cross.map, tmp)
+    writeMapCSV(cross.map, tmp)
     
     # Move temp file to final map file.
     # NB: file.copy is used here instead of file.rename because the latter
