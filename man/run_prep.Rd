@@ -4,17 +4,33 @@
 \alias{run_prep}
 \title{Prepare data in \pkg{R/qtl} CSV file.}
 \usage{
-run_prep(datafile)
+run_prep(datafile, jittermap = FALSE, normseq = FALSE,
+  replace.missing = FALSE, require.mapunit = FALSE,
+  include.mapunit = TRUE)
 }
 \arguments{
 \item{datafile}{\pkg{R/qtl} CSV file}
+
+\item{jittermap}{jitter map positions}
+
+\item{normseq}{normalise map sequence labels}
+
+\item{replace.missing}{make missing values explicit}
+
+\item{require.mapunit}{require map units in input}
+
+\item{include.mapunit}{include map units in output}
 }
 \description{
 This script will take an \pkg{R/qtl} input data file, and
-prepare it for input to \pkg{shmootl}. Marker sequence IDs are resolved,
-and empty cells are replaced with a missing value symbol. If a genetic
-map is present, map positions are jittered and map units are added. It
-is the responsibility of the user to ensure that these changes are valid
-for a given input file.
+prepare it for input to \pkg{shmootl}. Possible prep actions include
+resolving map sequence labels (\code{'normseq'}), jittering map positions
+(with the \pkg{R/qtl} function \code{jittermap}), and replacing empty cells
+with an explicit missing value symbol (\code{'replace.missing'}). If no prep
+actions are specified, all are applied. Other options include
+\code{'require.mapunit'}, which indicates if the input file must contain
+explicit map units; and \code{'include.mapunit'}, which indicates if explicit
+map units should be included in the output file. It is the responsibility
+of the user to ensure that these changes are valid for a given input file.
 }
 

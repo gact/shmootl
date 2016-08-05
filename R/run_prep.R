@@ -4,22 +4,49 @@
 #' Prepare data in \pkg{R/qtl} CSV file.
 #' 
 #' @description This script will take an \pkg{R/qtl} input data file, and
-#' prepare it for input to \pkg{shmootl}. Marker sequence IDs are resolved,
-#' and empty cells are replaced with a missing value symbol. If a genetic
-#' map is present, map positions are jittered and map units are added. It
-#' is the responsibility of the user to ensure that these changes are valid
-#' for a given input file.
+#' prepare it for input to \pkg{shmootl}. Possible prep actions include
+#' resolving map sequence labels (\code{'normseq'}), jittering map positions
+#' (with the \pkg{R/qtl} function \code{jittermap}), and replacing empty cells
+#' with an explicit missing value symbol (\code{'replace.missing'}). If no prep
+#' actions are specified, all are applied. Other options include
+#' \code{'require.mapunit'}, which indicates if the input file must contain
+#' explicit map units; and \code{'include.mapunit'}, which indicates if explicit
+#' map units should be included in the output file. It is the responsibility
+#' of the user to ensure that these changes are valid for a given input file.
 #' 
 #' @param datafile \pkg{R/qtl} CSV file
+#' @param jittermap jitter map positions
+#' @param normseq normalise map sequence labels
+#' @param replace.missing make missing values explicit
+#' @param require.mapunit require map units in input
+#' @param include.mapunit include map units in output
 #' 
 #' @export
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
 #' @rdname run_prep
-run_prep <- function(datafile) {
+run_prep <- function(datafile, jittermap=FALSE, normseq=FALSE,
+    replace.missing=FALSE, require.mapunit=FALSE, include.mapunit=TRUE) {
     
     stopifnot( isSingleString(datafile) )
     stopifnot( file.exists(datafile) )
+    stopifnot( isBOOL(jittermap) )
+    stopifnot( isBOOL(normseq) )
+    stopifnot( isBOOL(replace.missing) )
+    stopifnot( isBOOL(require.mapunit) )
+    stopifnot( isBOOL(include.mapunit) )
+    
+    # Set prep actions from corresponding options.
+    actions = c(
+        jittermap       = jittermap,
+        normseq         = normseq,
+        replace.missing = replace.missing
+    )
+    
+    # If none of the prep actions were specified, perform all prep actions.
+    if ( all( actions == FALSE ) ) {
+        actions <- replace(actions, seq_along(actions), TRUE)
+    }
     
     # Read input CSV file.
     x <- utils::read.csv(datafile, header=FALSE, check.names=FALSE, quote='',
@@ -34,52 +61,61 @@ run_prep <- function(datafile) {
         stop("cannot prep - ", params$class," input data")
     }
     
-    # If file has genotype columns, ensure marker sequence IDs are normalised.
-    if ( ! is.null(params$geno.cols) ) {
-        x[2, params$geno.cols] <- normSeq( as.character(x[2, params$geno.cols]) )
-    }
-    
     # If this is a cross/geno data file, ensure genetic map units present..
     if ( params$class %in% c('cross', 'geno') ) {
         
-        # TODO: estimate map if not present
+        # TODO: estimate map if not present ('estimap' option)
+        
+        # If specified, ensure sequence labels are normalised.
+        if (actions['normseq']) {
+            x[2, params$geno.cols] <- normSeq( as.character(x[2, params$geno.cols]) )
+        }
         
         if (params$map.present) {
             
-            head.rows <- 1:3
-            
             # Create map table from initial rows.
-            map.table <- as.data.frame( t(x[head.rows, params$geno.cols]),
+            map.table <- as.data.frame( t(x[1:3, params$geno.cols]),
                 stringsAsFactors=FALSE)
-            colnames(map.table) <- const$maptable.colnames[head.rows]
+            colnames(map.table) <- const$maptable.colnames[1:3]
             map.table <- setRownamesFromColumn(map.table, col.name='id')
             
             # Get map unit from map positions.
             map.unit <- getPosColDataMapUnit(map.table)
             
-            # Check map unit if present.
-            if ( ! is.na(map.unit) && map.unit != 'cM' ) {
-                stop("map positions must be in centiMorgans (e.g. '47 cM')")
+            if ( ! is.na(map.unit) ) {
+                if ( map.unit != 'cM' ) {
+                    stop("map positions must be in centiMorgans (e.g. '47 cM')")
+                }
+            } else {
+                if (require.mapunit) {
+                    stop("map positions must include map units (e.g. '47 cM')")
+                }
             }
             
             # Convert map table to genetic map object.
             gmap <- as.map(map.table, map.unit='cM')
             
-            # Ensure no coinciding markers.
-            gmap <- qtl::jittermap(gmap)
+            # If specified, ensure no coinciding markers.
+            if (actions['jittermap']) {
+                gmap <- qtl::jittermap(gmap)
+            }
             
-            # Replace map in initial rows.
-            map.table <- setPosColDataMapUnit(as.data.frame(gmap), 'cM')
+            # Replace map markers/positions in initial rows,
+            # including explicit map units if specified.
+            output.mapunit <- if (include.mapunit) { 'cM' } else { NULL }
+            map.table <- setPosColDataMapUnit(as.data.frame(gmap), output.mapunit)
             map.table <- setColumnFromRownames(map.table, col.name='id')
-            x[head.rows, params$geno.cols] <- t(map.table)
+            x[c(1,3), params$geno.cols] <- t(map.table)[c(1,3), ]
         }
     }
     
-    # Replace empty cells in data with NA values.
-    # NB: this will effectively insert the missing value symbol.
-    x.data <- x[params$dat.rows, ]
-    x.data[ x.data == '' ] <- NA
-    x[params$dat.rows, ] <- x.data
+    # If specified, replace empty cells in data with NA values.
+    # NB: this effectively inserts the explicit missing value symbol.
+    if (actions['replace.missing']) {
+        x.data <- x[params$dat.rows, ]
+        x.data[ x.data == '' ] <- NA
+        x[params$dat.rows, ] <- x.data
+    }
     
     # Create temp file.
     tmp <- tempfile()
