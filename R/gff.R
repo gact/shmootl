@@ -51,13 +51,14 @@ readFeaturesGFF <- function(annofile) {
         # Get feature metadata.
         anno.metadata <- GenomicRanges::elementMetadata(x)
         
-        # Merge feature annotation into one DataFrame.
-        anno <- cbind(anno.ranges, anno.metadata)
+        # Merge feature annotation into one DataFrame
+        stopif( any( colnames(anno.ranges) %in% colnames(anno.metadata) ) )
+        anno <- S4Vectors::DataFrame(anno.ranges, anno.metadata)
     }
     
     # Identify and remove unwanted features.
     irrelevant <- anno$type %in% const$anno$irrelevant
-    secondary <- lengths(anno$Parent) > 0
+    secondary <- lengths( as.list(anno$Parent) ) > 0
     unidentified <- is.na(anno$ID)
     anno <- anno[ ! ( unidentified | secondary | irrelevant ), ]
     
