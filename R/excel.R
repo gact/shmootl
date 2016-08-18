@@ -196,9 +196,10 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
                         # Get physical map positions of QTL interval, if available.
                         if (physical.positions) {
                             start.bp <- qtl.interval[1, 'pos (bp)']
+                            peak.bp <- qtl.interval[2, 'pos (bp)']
                             end.bp <- qtl.interval[3, 'pos (bp)']
                         } else {
-                            start.bp <- end.bp <- NA_integer_
+                            start.bp <- peak.bp <- end.bp <- NA_integer_
                         }
                         
                         # Get QTL interval features, if available.
@@ -223,6 +224,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
                             peak.cM,       # Peak (cM)
                             end.cM,        # End (cM)
                             start.bp,      # Start (bp)
+                            peak.bp,       # Peak (bp)
                             end.bp,        # End (bp)
                             feature.ids    # Features
                         ), nrow=1, ncol=length(headings),
