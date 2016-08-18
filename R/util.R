@@ -1708,6 +1708,66 @@ parseDefaultQTLNames <- function(qtl.names) {
     return( gmapframe(chr=qtl.seqs, pos=qtl.pos, row.names=qtl.names) )
 }
 
+# parseFilenames ---------------------------------------------------------------
+#' Parse filenames by pattern matching.
+#' 
+#' @param filenames Character vector of filenames to parse.
+#' @param filename.pattern Filename pattern, which must be a valid Perl regex
+#' with named capture groups. Neither the capture groups nor the regex itself
+#' are required to match any given filename, but all capture groups must have
+#' a unique name.
+#' 
+#' @return Character matrix in which each row contains the values of capture
+#' groups for a given filename, and each column contains values of a given
+#' capture group across files. NA values represent unmatched capture groups.
+#' 
+#' @keywords internal
+#' @rdname parseFilenames
+parseFilenames <- function(filenames, pattern) {
+    
+    stopifnot( is.character(filenames) )
+    stopifnot( isSingleString(pattern) )
+    
+    parsed <- as.list( structure(rep(NA_character_,
+        length(filenames)), names=filenames) )
+    
+    capture.names <- NULL
+    
+    # Parse each filename.
+    for ( filename in filenames ) {
+        
+        # Apply regular expression to filename.
+        pattern.match <- regexpr(pattern, filename, perl=TRUE)
+        
+        # Get capture-group names of pattern match.
+        capture.names <- attr(pattern.match, 'capture.names')
+        stopifnot( length(capture.names) > 0 )
+        stopif( any( capture.names == '' ) )
+        
+        # Get first indices of capture groups.
+        capture.first <- attr(pattern.match, 'capture.start')[1, ]
+        capture.first[ capture.first %in% c(-1, 0) ] <- NA_integer_
+        
+        # Get lengths of capture groups.
+        capture.length <- attr(pattern.match, 'capture.length')[1, ]
+        capture.length[ capture.length %in% c(-1, 0) ] <- NA_integer_
+        
+        # Get last indices of capture groups.
+        capture.last <- capture.first + capture.length - 1
+        
+        # Get capture-group strings.
+        parsed[[filename]] <- substring(filename, capture.first, capture.last)
+        names(parsed[[filename]]) <- attr(pattern.match, 'capture.names')
+    }
+    
+    parsed <- matrix( unlist(parsed), nrow=length(parsed),
+        byrow=TRUE, dimnames=list(filenames, capture.names) )
+    
+    
+    
+    return(parsed)
+}
+
 # parsePseudomarkerIDs ---------------------------------------------------------
 #' Parse pseudomarker IDs.
 #'    

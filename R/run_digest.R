@@ -5,17 +5,23 @@
 #' 
 #' @param h5list list of scan result files
 #' @param digest scan digest file
+#' @param scanfile.pattern scan file name pattern
 #' 
 #' @export
 #' @importFrom tools file_ext
 #' @include const.R
 #' @rdname run_digest
-run_digest <- function(h5list=character(), digest=NA_character_) {
+run_digest <- function(h5list=character(), digest=NA_character_,
+    scanfile.pattern=NA_character_) {
     
     stopifnot( is.character(h5list) )
     stopifnot( length(h5list) > 0 )
     stopifnot( all( file.exists(h5list) ) )
     stopifnot( isSingleString(digest) )
+    
+    if ( identical(scanfile.pattern, NA_character_) ) {
+        scanfile.pattern <- NULL
+    }
     
     # Get digest file extension.
     digest.ext <- tools::file_ext(digest)
@@ -26,7 +32,7 @@ run_digest <- function(h5list=character(), digest=NA_character_) {
     on.exit( file.remove(tmp), add=TRUE )
     
     if ( digest.ext %in% const$ext$excel ) {
-        writeDigestExcel(h5list, tmp)
+        writeDigestExcel(h5list, tmp, scanfile.pattern=scanfile.pattern)
     } else {
         stop("cannot create digest - unknown extension on file '", digest, "'")
     }

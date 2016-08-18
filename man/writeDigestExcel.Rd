@@ -4,12 +4,19 @@
 \alias{writeDigestExcel}
 \title{Write an Excel digest of QTL scan results.}
 \usage{
-writeDigestExcel(scanfiles, digest)
+writeDigestExcel(scanfiles, digest, scanfile.pattern = NULL)
 }
 \arguments{
 \item{scanfiles}{One or more QTL scan result HDF5 files.}
 
 \item{digest}{Path of output digest Excel file.}
+
+\item{scanfile.pattern}{Optional pattern for extracting experiment info from
+scan file names. This must be a valid Perl regex with named capture groups.
+Neither the capture groups nor the pattern itself are required to match any
+given scan file, but all capture groups must have a name. Each such name is
+used in the digest file, as a heading for a column that contains matches to
+that capture group in the scan file names.}
 }
 \description{
 Write an Excel digest of QTL scan results.

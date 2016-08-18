@@ -5,18 +5,57 @@
 #' 
 #' @param scanfiles One or more QTL scan result HDF5 files.
 #' @param digest Path of output digest Excel file.
+#' @param scanfile.pattern Optional pattern for extracting experiment info from
+#' scan file names. This must be a valid Perl regex with named capture groups.
+#' Neither the capture groups nor the pattern itself are required to match any
+#' given scan file, but all capture groups must have a name. Each such name is
+#' used in the digest file, as a heading for a column that contains matches to
+#' that capture group in the scan file names.
 #' 
 #' @export
 #' @include const.R
 #' @include hdf5.R
+#' @include util.R
 #' @rdname writeDigestExcel
-writeDigestExcel <- function(scanfiles, digest) {
+writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     
     stopifnot( is.character(scanfiles) )
     stopifnot( length(scanfiles) > 0 )
+    stopif( anyDuplicated(scanfiles) )
     stopifnot( all( file.exists(scanfiles) ) )
     stopifnot( isSingleString(digest) )
     stopifnot( tools::file_ext(digest) %in% const$ext$excel )
+    
+    # If scanfile pattern specified, get scanfile info from scan file names.
+    scanfile.info <- NULL
+    if ( ! is.null(scanfile.pattern) ) {
+        
+        stopifnot( isSingleString(scanfile.pattern) )
+        
+        # Parse scan file names by the given pattern.
+        parsed <- parseFilenames(scanfiles, scanfile.pattern)
+        
+        # Set reserved headings that cannot be used as capture-group names.
+        # NB: this should include headings for all
+        # tables that will include scan file info.
+        reserved.headings <- const$excel$digest[['QTL Intervals']]$headings
+        
+        # Check for capture-group names clashing with reserved headings.
+        clashing <- colnames(parsed)[ colnames(parsed) %in% reserved.headings ]
+        if ( length(clashing) > 0 ) {
+            stop("scan file capture-group names clash with headings - '",
+                toString(clashing), "'")
+        }
+        
+        # Remove empty columns.
+        nonempty <- sapply( getColIndices(parsed),
+            function(i) ! allNA(parsed[, i]) )
+        parsed <- parsed[, nonempty]
+        
+        if ( ncol(parsed) > 0 ) {
+            scanfile.info <- parsed
+        }
+    }
     
     # Attach required package namespaces ---------------------------------------
     
@@ -196,10 +235,27 @@ writeDigestExcel <- function(scanfiles, digest) {
             }
         }
         
-        # Set table from nonempty columns.
-        nonempty <- sapply( getColIndices(tab), function(i) ! allNA(tab[, i]) )
-        tables[['QTL Intervals']] <- data.frame(tab[, nonempty],
-            check.names=FALSE, stringsAsFactors=FALSE)
+        # Remove empty columns.
+        nonempty <- sapply( getColIndices(tab),
+            function(i) ! allNA(tab[, i]) )
+        tab <- tab[, nonempty]
+        
+        # Add scanfile info, if available.
+        if ( ! is.null(scanfile.info) ) {
+            
+            row.indices <- sapply( getRowIndices(tab), function(i)
+                which( rownames(scanfile.info) == tab[i, 'File'] ) )
+            
+            scanfile.table <- scanfile.info[row.indices, ]
+            rownames(scanfile.table) <- NULL
+            
+            tab <- cbind(tab[, 1, drop=FALSE], scanfile.table,
+                tab[, -1, drop=FALSE])
+        }
+        
+        # Set QTL intervals table.
+        tables[['QTL Intervals']] <- data.frame(tab, check.names=FALSE,
+            stringsAsFactors=FALSE)
     }
     
     # Output Excel workbook ----------------------------------------------------
