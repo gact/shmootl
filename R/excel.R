@@ -226,7 +226,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
                             start.bp,      # Start (bp)
                             peak.bp,       # Peak (bp)
                             end.bp,        # End (bp)
-                            feature.ids    # Features
+                            feature.ids    # QTL Features
                         ), nrow=1, ncol=length(headings),
                         dimnames=list(NULL, colnames(tab)))
                         

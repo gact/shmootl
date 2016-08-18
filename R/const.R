@@ -279,7 +279,7 @@ with(const, {
                 headings = c('File', 'Phenotype', 'QTL Name', 'Chromosome',
                     'Peak LOD', 'LOD Threshold', 'alpha', 'FDR',
                     'Interval Type', 'Start (cM)', 'Peak (cM)', 'End (cM)',
-                    'Start (bp)', 'Peak (bp)', 'End (bp)', 'Features')
+                    'Start (bp)', 'Peak (bp)', 'End (bp)', 'QTL Features')
             )
         )
     )
