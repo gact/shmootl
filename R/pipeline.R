@@ -569,10 +569,13 @@ procPipelineArgs <- function(ap, args) {
                     
                     arg <- default
                 }
-                
-                # Remove file argument, as no longer needed.
-                args[[fp]] <- NULL
             }
+        }
+        
+        # If parameter is compound, remove file
+        # argument, as no longer needed.
+        if ( group == 'compound' ) {
+            args[[fp]] <- NULL
         }
         
         args[[p]] <- arg
