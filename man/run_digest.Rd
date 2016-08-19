@@ -17,4 +17,7 @@ run_digest(h5list = character(), digest = NA_character_,
 \description{
 Create digest of QTL analysis results.
 }
+\concept{
+shmootl:pipelines
+}
 

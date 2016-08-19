@@ -6,6 +6,7 @@
 #' @param h5file scan result file
 #' @param report scan report file
 #' 
+#' @concept shmootl:pipelines
 #' @export
 #' @importFrom grDevices cairo_pdf
 #' @importFrom grDevices dev.cur

@@ -33,4 +33,7 @@ explicit map units; and \code{'include.mapunit'}, which indicates if explicit
 map units should be included in the output file. It is the responsibility
 of the user to ensure that these changes are valid for a given input file.
 }
+\concept{
+shmootl:utilities
+}
 

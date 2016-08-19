@@ -6,6 +6,7 @@
 #' @param datafile cross/geno CSV file
 #' @param geno recode genotypes from mapping
 #' 
+#' @concept shmootl:utilities
 #' @export
 #' @rdname run_recode
 run_recode <- function(datafile, geno=mapping()) {

@@ -14,4 +14,7 @@ run_report(h5file = NA_character_, report = NA_character_)
 \description{
 Create report of \pkg{R/qtl} analysis results.
 }
+\concept{
+shmootl:pipelines
+}
 

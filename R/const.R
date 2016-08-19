@@ -48,6 +48,9 @@ with(const, {
     # Fixed missing value in cross data files.
     missing.value <- '-'
     
+    # Pipeline groups for command-line interface.
+    pipeline.groups <- c('pipelines', 'utilities', 'misc')
+    
     # Missing value in VCF data.
     vcf.missing.value <- '.'
     
@@ -103,7 +106,10 @@ with(const, {
     # Defaults -----------------------------------------------------------------
     
     default = list(
-        genome = 'SGD_S288C_R64-1-1'
+        
+        genome = 'SGD_S288C_R64-1-1',
+        
+        pipeline.group = 'misc'
     )
     
     # LOD bin settings ---------------------------------------------------------
@@ -156,6 +162,9 @@ with(const, {
         
         # Package pipeline functions.
         pipe.func = '^run_([[:alpha:]][[:alpha:]._]*)$',
+        
+        # Package pipeline group tag.
+        pipe.group = paste0('^shmootl:(', paste(pipeline.groups, collapse='|'), ')$'),
         
         # Mapframe position column heading.
         poscol = '(?:^|^.*[^[:alpha:]])pos(?:[^[:alpha:]].*$|$)',

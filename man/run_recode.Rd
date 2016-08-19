@@ -14,4 +14,7 @@ run_recode(datafile, geno = mapping())
 \description{
 Recode data in \pkg{R/qtl} CSV file.
 }
+\concept{
+shmootl:utilities
+}
 

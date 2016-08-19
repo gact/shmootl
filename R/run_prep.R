@@ -21,6 +21,7 @@
 #' @param require.mapunit require map units in input
 #' @param include.mapunit include map units in output
 #' 
+#' @concept shmootl:utilities
 #' @export
 #' @importFrom utils read.csv
 #' @importFrom utils write.table

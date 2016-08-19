@@ -15,6 +15,7 @@
 #' @param require.mapunit require map units in input
 #' @param include.mapunit include map units in output
 #' 
+#' @concept shmootl:utilities
 #' @export
 #' @rdname run_pushmap
 run_pushmap <- function(mapfile, datafile, mapname=NA_character_,

@@ -56,4 +56,7 @@ level (\code{alpha}), or the false-discovery rate (\code{fdr}), but not both.
 If neither is specified, a significance level \code{alpha} of \code{0.05} is
 used by default.
 }
+\concept{
+shmootl:pipelines
+}
 

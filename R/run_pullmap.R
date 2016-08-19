@@ -13,6 +13,7 @@
 #' @param require.mapunit require map units in input
 #' @param include.mapunit include map units in output
 #' 
+#' @concept shmootl:utilities
 #' @export
 #' @rdname run_pullmap
 run_pullmap <- function(datafile, mapfile, mapname=NA_character_,

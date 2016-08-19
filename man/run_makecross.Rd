@@ -17,4 +17,7 @@ run_makecross(genfile, phefile, crossfile)
 This script combines separate genotype and 
 phenotype files into a single cross data file.
 }
+\concept{
+shmootl:utilities
+}
 

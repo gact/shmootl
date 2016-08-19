@@ -22,4 +22,7 @@ run_makegeno(datafile, genfile, fdrfile = NA_character_,
 This script will read genotype data from the specified VCF 
 files, then write that genotype data to an \pkg{R/qtl} genotype CSV file.
 }
+\concept{
+shmootl:utilities
+}
 

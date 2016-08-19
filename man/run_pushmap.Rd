@@ -25,4 +25,7 @@ for a HDF5 data file, the map is assigned that name and when being written
 to the HDF5 file. Otherwise, a default map name (e.g. \code{'Genetic Map'})
 is used.
 }
+\concept{
+shmootl:utilities
+}
 

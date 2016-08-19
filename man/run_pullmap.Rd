@@ -23,4 +23,7 @@ This script pulls the map from a CSV or HDF5 file, and writes it
 to a separate map CSV file. If a HDF5 data file contains multiple maps, the
 \code{mapname} parameter must be used to specify which map to pull.
 }
+\concept{
+shmootl:utilities
+}
 

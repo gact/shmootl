@@ -15,6 +15,7 @@
 #' @param map.function genetic map function
 #' @param jittermap jitter map positions
 #' 
+#' @concept shmootl:utilities
 #' @export
 #' @rdname run_estimap
 run_estimap <- function(datafile, mapfile, n.cluster=1L, error.prob=0.0001,

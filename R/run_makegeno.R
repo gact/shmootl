@@ -12,6 +12,7 @@
 #' @param alleles founder allele symbols
 #' @param digits numeric precision [default: unrounded]
 #' 
+#' @concept shmootl:utilities
 #' @export
 #' @rdname run_makegeno
 run_makegeno <- function(datafile, genfile, fdrfile=NA_character_,

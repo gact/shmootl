@@ -14,6 +14,7 @@
 #' @param annofile GFF annotation file
 #' @param outfile annotated scan file
 #' 
+#' @concept shmootl:pipelines
 #' @export
 #' @include qtlfeatures.R
 #' @rdname run_annoqtl

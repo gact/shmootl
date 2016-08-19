@@ -27,4 +27,7 @@ map estimated from the input genotype data. Note that a genetic map cannot be
 estimated from enumerated genotypes, as these are generated independently for
 each marker.
 }
+\concept{
+shmootl:utilities
+}
 

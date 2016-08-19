@@ -22,4 +22,7 @@ intervals must be present, either directly in the QTL intervals themselves,
 or indirectly by pairing coordinates in genetic and physical maps for the
 cross data.
 }
+\concept{
+shmootl:pipelines
+}
 

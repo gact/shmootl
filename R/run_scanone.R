@@ -30,6 +30,7 @@
 #' @param acovfile additive covariates file
 #' @param icovfile interactive covariates file
 #' 
+#' @concept shmootl:pipelines
 #' @export
 #' @rdname run_scanone
 run_scanone <- function(infile=NA_character_, h5file=NA_character_,

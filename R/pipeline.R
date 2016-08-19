@@ -42,6 +42,7 @@ getPipelineFunction <- function(pipeline) {
 #' 
 #' @return A \code{list} containing info for the given \pkg{shmootl} pipeline.
 #' 
+#' @include const.R
 #' @keywords internal
 #' @rdname getPipelineInfo
 getPipelineInfo <- function(pipeline) {
@@ -329,8 +330,47 @@ getPipelineInfo <- function(pipeline) {
         stop(err.msg)
     }
     
-    return( list(command=command, title=title, description=description, 
-        details=details, params=params) )
+    # Get concept tags.
+    concept.index <- which( rd.tags == '\\concept' )
+    if ( length(concept.index) == 1 ) {
+        
+        # Get concept lines from Rd content.
+        concept.lines <- lapply( rd.content[[concept.index]], function(line)
+            gsub('(?:^[[:space:]]+)|(?:[[:space:]]+$)', '', as.character(line) ) )
+        
+        # Filter empty concept lines.
+        concept.lines <- concept.lines[ sapply(concept.lines, nzchar) ]
+        
+        # Get concept tags from concept lines.
+        concepts <- unlist( lapply(concept.lines, strsplit, '[[:space:]]+') )
+        
+    } else if ( length(concept.index) == 0 ) {
+        concepts <- character()
+    } else {
+        stop(err.msg)
+    }
+    
+    # Get any pipeline groups in concept tags.
+    # NB: assumes one capture group in pattern.
+    pattern.match <- regexpr(const$pattern$pipe.group, concepts, perl=TRUE)
+    indices <- which(pattern.match != -1)
+    capture.first <- as.integer( attr(pattern.match, 'capture.start') )[indices]
+    capture.length <- as.integer( attr(pattern.match, 'capture.length') )[indices]
+    capture.last <- capture.first + capture.length - 1
+    pipeline.groups <- substring(concepts[indices], capture.first, capture.last)
+    
+    # Assign pipeline to group.
+    if ( length(pipeline.groups) == 1 ) {
+        group <- pipeline.groups[1]
+    } else if ( length(pipeline.groups) == 0 ) {
+        group <- const$default$pipeline.group
+    } else {
+        stop("pipeline '", pipeline, "' assigned to multiple groups - '",
+            pipeline.groups, "'")
+    }
+    
+    return( list(command=command, title=title, group=group,
+        description=description, details=details, params=params) )
 }
 
 # getPipelines -----------------------------------------------------------------
@@ -368,28 +408,41 @@ getPipelineUsage <- function() {
     
     usage <- paste0(
     "usage: Rscript -e 'library(shmootl)' -e 'run()' <pipeline> [-h] ... \n\n",
-    "Run the given shmootl pipeline.\n\n",
-    "pipelines:\n")
+    "Run the given shmootl pipeline.\n")
 
     pipelines <- getPipelines()
     
+    # Get pipeline padding strings.
     pipeline.widths <- nchar(pipelines)
-    
     field.width <- max(pipeline.widths) + 6
-    
     padding.widths <- field.width - pipeline.widths
-    
     paddings <- sapply( padding.widths, function(w) 
         paste( rep(' ', w), collapse='') )
     
-    titles <- sapply(pipelines, function(p) getPipelineInfo(p)$title)
+    # Get pipeline info for each pipeline.
+    pinfo <- lapply(pipelines, getPipelineInfo)
+    names(pinfo) <- pipelines
     
-    pipeline.listing <- paste0("  ", pipelines, paddings, 
-        titles, "\n", collapse='')
+    # Get title of each pipeline.
+    pipeline.titles <- unlist( lapply(pipelines, function(p) pinfo[[p]]$title) )
     
-    usage <- paste0(usage, pipeline.listing)
+    # Get group name of each pipeline.
+    pipeline.groups <- unlist( lapply(pipelines, function(p) pinfo[[p]]$group) )
     
-    return(usage)
+    # Get non-redundant vector of pipeline group names.
+    groups <- const$pipeline.groups[ const$pipeline.groups %in% pipeline.groups ]
+    
+    # Create grouped pipeline listings.
+    pipeline.listings <- structure(character( length(groups) ), names=groups)
+    for ( group in groups ) {
+        indices <- which( pipeline.groups == group )
+        group.head <- paste0("\n", group, ":\n")
+        group.body <- paste0("  ", pipelines[indices], paddings[indices],
+            pipeline.titles[indices], "\n", collapse='')
+        pipeline.listings[group] <- paste0(group.head, group.body)
+    }
+    
+    return( paste0( c(usage, pipeline.listings) ) )
 }
 
 # prepPipelineArgparser --------------------------------------------------------

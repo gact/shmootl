@@ -10,6 +10,7 @@
 #' @param phefile input phenotype CSV file
 #' @param crossfile output cross CSV file
 #' 
+#' @concept shmootl:utilities
 #' @export
 #' @rdname run_makecross
 run_makecross <- function(genfile, phefile, crossfile) {

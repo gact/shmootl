@@ -7,6 +7,7 @@
 #' @param digest scan digest file
 #' @param scanfile.pattern scan file name pattern
 #' 
+#' @concept shmootl:pipelines
 #' @export
 #' @importFrom tools file_ext
 #' @include const.R
