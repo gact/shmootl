@@ -747,8 +747,6 @@ interpTimeSeries <- function(cross, tol=1e-5) {
 #' @rdname makeCross
 makeCross <- function(geno, pheno) {
     
-    # TODO: handle replicate phenotype measurements
-    
     stopifnot( 'geno' %in% class(geno) )
     stopifnot( 'pheno' %in% class(pheno) )
     
@@ -787,8 +785,8 @@ makeCross <- function(geno, pheno) {
     # Get sample IDs from phenotype info.
     pheno.samples <- getSamples(pheno.info)
     
-    if ( ! setequal(geno.samples, pheno.samples) ) {
-        stop("cannot make cross - sample mismatch")
+    if ( length( intersect(geno.samples, pheno.samples) ) == 0 ) {
+        stop("cannot make cross - no matching samples")
     }
     
     if ( is.na(geno.info@crosstype) ) {
