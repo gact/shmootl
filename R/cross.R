@@ -752,13 +752,20 @@ makeCross <- function(geno, pheno) {
     stopifnot( 'geno' %in% class(geno) )
     stopifnot( 'pheno' %in% class(pheno) )
     
-    # Get alleles of geno.
-    alleles <- attr(geno, 'alleles')
-    attr(geno, 'alleles') <- NULL
+    # Get sequences from geno object.
+    geno.seqs <- names(geno)
     
-    # Get CrossInfo for geno data.
+    # Get alleles from geno object.
+    alleles <- attr(geno, 'alleles')
+    
+    # Get CrossInfo from geno object.
     geno.info <- attr(geno, 'info')
+    
+    # Validate CrossInfo of geno object.
     compareCrossInfo(geno, geno.info)
+    
+    # Clear unneeded attributes of geno object.
+    attr(geno, 'alleles') <- NULL
     attr(geno, 'info') <- NULL
 
     # Get CrossInfo for pheno data.
@@ -774,7 +781,13 @@ makeCross <- function(geno, pheno) {
         stop("cannot make cross - no phenotype sample IDs")
     }
     
-    if ( any(getSamples(geno.info) != getSamples(pheno.info)) ) {
+    # Get sample IDs from genotype info.
+    geno.samples <- getSamples(geno.info)
+    
+    # Get sample IDs from phenotype info.
+    pheno.samples <- getSamples(pheno.info)
+    
+    if ( ! setequal(geno.samples, pheno.samples) ) {
         stop("cannot make cross - sample mismatch")
     }
     
@@ -782,12 +795,38 @@ makeCross <- function(geno, pheno) {
         stop("cannot make cross - unknown cross type")
     }
     
+    # Check that genotype replicates have identical genotype data.
+    run.index.list <- getRunIndexList(geno.samples)
+    for ( run.indices in run.index.list ) {
+        if ( length(run.indices) > 1 ) {
+            for ( geno.seq in names(geno) ) {
+                run.data <- geno[[geno.seq]]$data[run.indices, ]
+                if ( ! all( duplicated(run.data)[-1] ) ) {
+                    stop("genotype replicates have conflicting data")
+                }
+            }
+        }
+    }
+    
+    # Get indices of phenotype samples in genotype data.
+    gindices <- match(pheno.samples, geno.samples)
+    
+    # Expand genotype data to match phenotype samples.
+    for ( geno.seq in names(geno) ) {
+        geno[[geno.seq]]$data <- geno[[geno.seq]]$data[gindices, ]
+    }
+    
+    # Expand sample table from geno object to match phenotype samples.
+    sample.table <- geno.info@samples[gindices, ]
+    rownames(sample.table) <- sample.table$sample.index <- getRowIndices(sample.table)
+    
     # Create CrossInfo object from genotype and phenotype info.
-    cross.info <- methods::new('CrossInfo', seq=geno.info@seq,
+    cross.info <- methods::new('CrossInfo',
+        seq       = geno.info@seq,
         pheno     = pheno.info@pheno,
         markers   = geno.info@markers,
-        samples   = geno.info@samples,
-        alleles   = geno.info@alleles,
+        samples   = sample.table,
+        alleles   = alleles,
         genotypes = geno.info@genotypes,
         crosstype = geno.info@crosstype
     )
