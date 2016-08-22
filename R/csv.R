@@ -526,6 +526,9 @@ readGenoCSV <- function(infile, require.mapunit=TRUE) {
         stop("ID column is incomplete in genotype data file - '", infile, "'")
     }
     
+    # Normalise sequence IDs.
+    geno.table[2, -id.col] <- normSeq( as.character(geno.table[2, -id.col]) )
+    
     return( as.geno(geno.table, require.mapunit=require.mapunit) )
 }
 
