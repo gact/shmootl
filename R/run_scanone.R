@@ -71,11 +71,16 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         alpha <- 0.05
     }
     
-    # Attach required package namespaces ---------------------------------------
+    # Attach required package namespaces (if needed) ---------------------------
     
-    req.pkgs <- c('qtl')
-    sapply(req.pkgs, attachNamespace)
-    on.exit( sapply(paste0('package:', req.pkgs), detach, character.only=TRUE) )
+    req.pkgs <- 'qtl'
+    for ( req.pkg in req.pkgs ) {
+        pkg.name <- paste0('package:', req.pkg)
+        if ( ! pkg.name %in% search() ) {
+            attachNamespace(req.pkg)
+            on.exit( detach(pkg.name, character.only=TRUE), add=TRUE )
+        }
+    }
     
     # --------------------------------------------------------------------------
     
@@ -133,7 +138,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     
     # Create temp output file, ensure will be removed.
     tmp <- tempfile()
-    on.exit( file.remove(tmp) )
+    on.exit( file.remove(tmp), add=TRUE )
     
     # Write map to temp output file.
     writeMapHDF5(cross.map, tmp)
