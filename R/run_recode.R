@@ -5,16 +5,17 @@
 #' 
 #' @param datafile cross/geno CSV file
 #' @param geno recode genotypes from mapping
+#' @param enum.geno recode to enumerated genotypes
 #' 
 #' @concept shmootl:utilities
 #' @export
 #' @rdname run_recode
-run_recode <- function(datafile, geno=mapping()) {
+run_recode <- function(datafile, geno=mapping(), enum.geno=FALSE) {
     
     tmp <- tempfile()
     on.exit( file.remove(tmp) )
     
-    recodeCSV(datafile, tmp, geno=geno)
+    recodeCSV(datafile, tmp, geno=geno, enum.geno=enum.geno)
     
     # Move temp file to final output file.
     # NB: file.copy is used here instead of file.rename because the latter

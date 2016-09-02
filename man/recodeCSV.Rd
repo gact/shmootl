@@ -4,7 +4,7 @@
 \alias{recodeCSV}
 \title{Recode \pkg{R/qtl} data in CSV file.}
 \usage{
-recodeCSV(infile, outfile, geno = NULL)
+recodeCSV(infile, outfile, geno = NULL, enum.geno = FALSE)
 }
 \arguments{
 \item{infile}{Input CSV file path.}
@@ -13,7 +13,10 @@ recodeCSV(infile, outfile, geno = NULL)
 
 \item{geno}{Named vector of genotype symbols, with vector names containing
 existing genotype symbols, and vector elements containing their replacement
-values.}
+values (incompatible with \code{enum.geno}).}
+
+\item{enum.geno}{Option indicating if genotype data should be recoded as
+enumerated genotypes (incompatible with \code{geno}).}
 }
 \description{
 Recode \pkg{R/qtl} data in CSV file.

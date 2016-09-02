@@ -680,22 +680,33 @@ readPhenoCSV <- function(infile) {
 #' @param outfile Output CSV file path.
 #' @param geno Named vector of genotype symbols, with vector names containing
 #' existing genotype symbols, and vector elements containing their replacement
-#' values.
+#' values (incompatible with \code{enum.geno}).
+#' @param enum.geno Option indicating if genotype data should be recoded as
+#' enumerated genotypes (incompatible with \code{geno}).
 #'
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
 #' @include mapping.R
 #' @keywords internal
 #' @rdname recodeCSV
-recodeCSV <- function(infile, outfile, geno=NULL) {
+recodeCSV <- function(infile, outfile, geno=NULL, enum.geno=FALSE) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     stopifnot( isSingleString(outfile) )
+    stopifnot( isBOOL(enum.geno) )
+    
+    # Check if genotype recoding specified.
+    recode.geno <- ! is.null(geno) && length(geno) > 0
     
     # At least one recoding parameter must be specified.
-    if ( is.null(geno) ) {
-        stop("cannot recode - no recoding specified")
+    if ( ! ( recode.geno || enum.geno ) ) {
+        stop("cannot recode - no recoding option specified")
+    }
+    
+    # Check no more than one genotype recoding option specified.
+    if ( recode.geno && enum.geno ) {
+        stop("multiple genotype recoding options specified")
     }
     
     # Read input CSV file.
@@ -707,7 +718,7 @@ recodeCSV <- function(infile, outfile, geno=NULL) {
     
     params <- getMetadataCSV(x)
     
-    if ( ! is.null(geno) ) {
+    if (recode.geno) {
         
         stopifnot( is.mapping(geno) )
         
@@ -749,7 +760,44 @@ recodeCSV <- function(infile, outfile, geno=NULL) {
         
         # Replace genotype data.
         x[params$dat.rows, params$geno.cols] <- recoded.geno
-    } 
+        
+    } else if (enum.geno) {
+        
+        # Get original genotype data.
+        original.geno <- x[params$dat.rows, params$geno.cols]
+        
+        # Init recoded genotype data.
+        recoded.geno <- matrix(NA_integer_, nrow=nrow(original.geno),
+            ncol=ncol(original.geno), dimnames=dimnames(original.geno) )
+        
+        # Recode each column independently.
+        for ( i in getColIndices(original.geno) ) {
+            
+            # Get sample symbols and genotypes for this locus.
+            locus.symbols <- original.geno[, i]
+            locus.levels <- unique(locus.symbols)
+            locus.genotypes <- locus.levels[ locus.levels != const$missing.value ]
+            
+            # Skip loci with more genotypes than can be represented.
+            if ( length(locus.genotypes) > length(const$enum.geno.charset) ) {
+                next
+            }
+            
+            # Set genotype numbers for this locus.
+            recoded.geno[, i] <- match(locus.symbols, locus.genotypes)
+        }
+        
+        # Get number of null loci in recoded genotype data.
+        null.count <- sum( apply(recoded.geno, 2, function(column)
+            allNA( as.vector(column) ) ) )
+        
+        if ( null.count > 0 ) {
+            warning("enumerated genotype data contains ", null.count, " null loci")
+        }
+        
+        # Replace genotype data.
+        x[params$dat.rows, params$geno.cols] <- recoded.geno
+    }
     
     # Write recoded data to file.
     utils::write.table(x, file=outfile, na=const$missing.value, sep=',',
