@@ -60,13 +60,10 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     # Attach required package namespaces (if needed) ---------------------------
     
     req.pkgs <- c('rJava', 'xlsxjars', 'xlsx')
-    for ( req.pkg in req.pkgs ) {
-        pkg.name <- paste0('package:', req.pkg)
-        if ( ! pkg.name %in% search() ) {
-            attachNamespace(req.pkg)
-            on.exit( detach(pkg.name, character.only=TRUE), add=TRUE )
-        }
-    }
+    names(req.pkgs) <- paste0('package:', req.pkgs)
+    att.pkgs <- req.pkgs[ ! names(req.pkgs) %in% search() ]
+    sapply(att.pkgs, attachNamespace)
+    on.exit( sapply(names(att.pkgs), detach, character.only=TRUE), add=TRUE )
     
     # Check scan files for results of interest ---------------------------------
     
