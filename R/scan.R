@@ -66,10 +66,19 @@ batchScan <- function(x, scanfunction, cross, n.cluster=1, iseed=NULL, ...) {
     # Request nodes.
     nodes <- requestNodes(n.cluster)
     
-    # If running on local host, run fork cluster locally..
+    # If running on local host, run cluster locally..
     if ( all(nodes == 'localhost') ) 
     {
-        cl <- parallel::makeForkCluster( length(nodes) )
+        # If running on a Unix-alike platform, run a fork cluster..
+        if ( .Platform$OS.type == 'unix' )
+        {
+            cl <- parallel::makeForkCluster( length(nodes) )
+        }
+        # ..otherwise run a parallel socket cluster.
+        else
+        {
+            cl <- parallel::makePSOCKcluster( length(nodes) )
+        }
     } 
     # ..otherwise run in parallel cluster.
     else
