@@ -19,20 +19,59 @@ readGenoVCF(..., samples, founders = NULL, alleles = NULL)
 An \pkg{R/qtl} \code{cross} \code{geno} object.
 }
 \description{
-This function reads SNP genotype data from one or more VCF files, and returns
-these as an \pkg{R/qtl} \code{cross} \code{geno} object.
+This function reads SNP genotype data from one or more VCF files, and
+returns these as an \pkg{R/qtl} \code{cross} \code{geno} object.
 }
 \details{
 If no founder samples are specified, this function assigns enumerated
 genotypes at each locus according to the observed raw SNP genotype. So
-for example, if the SNVs at a given locus are 'A' and 'C', samples are
-assigned the genotypes '1' and '2', respectively. The enumeration of
-genotypes is performed independently for each locus, so a given
-enumerated genotype does not have the same meaning across loci.
+for example, if the raw SNP alleles at a given locus are \code{'A'} and
+\code{'C'}, samples are assigned the genotypes \code{'1'} and \code{'2'},
+respectively.
 
 If founder samples are specified, this function assigns a genotype symbol
-from the \code{alleles} parameter, or otherwise from a default symbol. In
-the case of founder genotypes, a given genotype represents the same founder
-strain across markers.
+corresponding to a specific founder. The actual symbol used is taken from
+the \code{alleles} parameter if available; otherwise it is taken from the
+letters of the alphabet (i.e. \code{'A'}, \code{'B'} etc.).
+}
+\section{Raw Alleles and Genotypes}{
+
+
+A raw allele is the original marker value. Single-nucleotide variants (i.e.
+\code{'A'}, \code{'C'}, \code{'G'}, or \code{'T'}) are commonly used, and
+are the only kind of marker supported by the \pkg{shmootl} package. These
+must be converted into another kind of allele before doing QTL analysis.
+
+For a given ploidy \code{N}, a raw genotype is the concatenation of the set
+of \code{N} raw alleles. For example, given two \code{'A'} alleles at a
+homozygous diploid marker, the genotype is \code{'AA'}.
+}
+
+\section{Enumerated Alleles/Genotypes}{
+
+
+An enumerated allele/genotype is a number representing the order of
+occurrence of raw or founder genotypes at a specific marker (e.g. \code{'1'}
+for the first observed allele, \code{'2'} for the second). Enumerated alleles
+and genotypes are identical, regardless of ploidy. The process of enumerating
+genotypes is done independently for each marker, so a given enumerated
+genotype does not have the same meaning across markers.
+}
+
+\section{Founder Alleles and Genotypes}{
+
+
+A founder allele is a single letter corresponding to a specific founder
+strain, indicating that the region containing the marker derives from that
+founder. For example, \code{'W'} might be used to represent the Western
+Africa founder strain \code{DBVPG6044}, or \code{'S'} might be used for
+the Sake strain \code{Y12}).
+
+For a given ploidy \code{N}, a founder genotype is the concatenation of the
+set of \code{N} founder alleles. For example, given one founder allele
+\code{'W'} and another \code{'S'}, the founder genotype is \code{'WS'}.
+}
+\seealso{
+Other VCF functions: \code{\link{getSamplesVCF}}
 }
 

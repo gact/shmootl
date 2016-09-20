@@ -2,7 +2,7 @@
 % Please edit documentation in R/geno.R
 \name{as.data.frame.geno}
 \alias{as.data.frame.geno}
-\title{Coerce \code{geno} object to \code{data.frame}.}
+\title{Convert \code{geno} object to \code{data.frame}.}
 \usage{
 \method{as.data.frame}{geno}(x, ..., chr = NULL, digits = NULL,
   include.mapunit = TRUE)
@@ -25,7 +25,7 @@ number of digits.}
 A \code{data.frame} corresponding to the input \code{geno} object.
 }
 \description{
-Coerce \code{geno} object to \code{data.frame}.
+Convert \code{geno} object to \code{data.frame}.
 }
 \keyword{internal}
 

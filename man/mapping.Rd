@@ -13,10 +13,15 @@ not set, the names of this vector are used as the keys of the mapping.}
 \item{keys}{Character vector of mapping keys.}
 }
 \value{
-A \code{mapping} of unique string keys to individual values.
+A \code{mapping} of unique string keys to
+individual values; equivalent to a named list in
+which each element is a vector with one element.
 }
 \description{
 Create a \code{mapping} object.
 }
-\keyword{internal}
+\seealso{
+Other mapping object functions: \code{\link{as.mapping}},
+  \code{\link{is.mapping}}, \code{\link{values}}
+}
 

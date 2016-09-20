@@ -2,7 +2,7 @@
 % Please edit documentation in R/cross.R
 \name{pull.ind}
 \alias{pull.ind}
-\title{Pull individual IDs from \pkg{R/qtl} \code{cross}.}
+\title{Pull individual sample IDs from \pkg{R/qtl} \code{cross}.}
 \usage{
 pull.ind(cross)
 }
@@ -10,20 +10,22 @@ pull.ind(cross)
 \item{cross}{An \pkg{R/qtl} \code{cross} object.}
 }
 \value{
-Vector of individual IDs in the \code{cross} object.
+Vector of individual sample IDs in the \code{cross} object.
 }
 \description{
-Pull individual IDs from \pkg{R/qtl} \code{cross}.
+Pull individual sample IDs from \pkg{R/qtl} \code{cross}.
 }
 \seealso{
-Other cross utilities: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
+  \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
   \code{\link{inferTetradIndices}},
   \code{\link{inferTimeStep}},
   \code{\link{interpTimeSeries}},
   \code{\link{padTimeSeries}}, \code{\link{permCross}},
-  \code{\link{pull.alleles}}, \code{\link{pull.chr}},
-  \code{\link{pull.crosstype}}
+  \code{\link{permIndices}}, \code{\link{pull.alleles}},
+  \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
+  \code{\link{readCrossCSV}}, \code{\link{writeCrossCSV}}
 }
 

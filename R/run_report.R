@@ -3,11 +3,15 @@
 # run_report -------------------------------------------------------------------
 #' Create report of \pkg{R/qtl} analysis results.
 #' 
+#' Given a scan result HDF5 file, create a
+#' report of the results of the QTL analysis.
+#' 
 #' @param h5file scan result file
 #' @param report scan report file
 #' 
 #' @concept shmootl:pipelines
 #' @export
+#' @family pipeline functions
 #' @importFrom grDevices cairo_pdf
 #' @importFrom grDevices dev.cur
 #' @importFrom grDevices dev.off

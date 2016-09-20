@@ -16,9 +16,9 @@ R class of HDF5 object.
 }
 \description{
 If possible, the R class of the specified object is obtained from the
-attributes 'R.class' and 'class', in that order. If neither attribute
-is available, the object is loaded from the HDF5 file and its R class
-determined from the resulting R object.
+attributes \code{'R.class'} and \code{'class'}, in that order. If neither
+attribute is available, the object is loaded from the HDF5 file and its R
+class determined from the resulting R object.
 }
 \keyword{internal}
 

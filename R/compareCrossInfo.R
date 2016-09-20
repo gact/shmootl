@@ -1,19 +1,18 @@
 # Start of compareCrossInfo.R ##################################################
 
 # compareCrossInfo -------------------------------------------------------------
-#' Compare object with associated \code{CrossInfo}.
+#' Compare object with associated \code{\linkS4class{CrossInfo}}.
 #'
-#' @description Test concordance of an object with its associated 
-#' \code{CrossInfo} object. If no \code{CrossInfo} object is specified,
-#' it will be extracted from the test object.
+#' @description Test concordance of an object with its associated
+#' \code{\linkS4class{CrossInfo}} object. If no \code{\linkS4class{CrossInfo}}
+#' object is specified, it will be extracted from the test object.
 #' 
 #' @param x Test object to be compared.
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if \code{CrossInfo} and test object are concordant; otherwise
-#' returns a character vector of mismatch errors.
+#' @return \code{TRUE} if \code{\linkS4class{CrossInfo}} and test object are
+#' concordant; otherwise returns a character vector of mismatch errors.
 #' 
-#' @include CrossInfo-class.R
 #' @keywords internal
 #' @rdname compareCrossInfo
 #' @seealso \code{\linkS4class{CrossInfo}}

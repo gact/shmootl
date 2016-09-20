@@ -3,16 +3,17 @@
 # run_prep ---------------------------------------------------------------------
 #' Prepare data in \pkg{R/qtl} CSV file.
 #' 
-#' @description This script will take an \pkg{R/qtl} input data file, and
-#' prepare it for input to \pkg{shmootl}. Possible prep actions include
-#' resolving map sequence labels (\code{'normseq'}), jittering map positions
-#' (with the \pkg{R/qtl} function \code{jittermap}), and replacing empty cells
-#' with an explicit missing value symbol (\code{'replace.missing'}). If no prep
-#' actions are specified, all are applied. Other options include
+#' This script will take an \pkg{R/qtl} input data file, and prepare it
+#' for input to \pkg{shmootl}. Possible prep actions include resolving
+#' map sequence labels (\code{'normseq'}), jittering map positions (with
+#' the \pkg{R/qtl} function \code{jittermap}), and replacing empty cells
+#' with an explicit missing value symbol (\code{'replace.missing'}). If
+#' no prep actions are specified, all are applied. Other options include
 #' \code{'require.mapunit'}, which indicates if the input file must contain
-#' explicit map units; and \code{'include.mapunit'}, which indicates if explicit
-#' map units should be included in the output file. It is the responsibility
-#' of the user to ensure that these changes are valid for a given input file.
+#' explicit map units; and \code{'include.mapunit'}, which indicates if
+#' explicit map units should be included in the output file. It is the
+#' responsibility of the user to ensure that these changes are valid for
+#' a given input file.
 #' 
 #' @param datafile \pkg{R/qtl} CSV file
 #' @param jittermap jitter map positions
@@ -23,6 +24,7 @@
 #' 
 #' @concept shmootl:utilities
 #' @export
+#' @family pipeline functions
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
 #' @rdname run_prep

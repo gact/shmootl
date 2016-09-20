@@ -42,7 +42,6 @@ getPipelineFunction <- function(pipeline) {
 #' 
 #' @return A \code{list} containing info for the given \pkg{shmootl} pipeline.
 #' 
-#' @include const.R
 #' @keywords internal
 #' @rdname getPipelineInfo
 getPipelineInfo <- function(pipeline) {
@@ -514,7 +513,6 @@ prepPipelineArgparser <- function(pipeline) {
 #' 
 #' @return Processed pipeline arguments.
 #' 
-#' @include const.R
 #' @keywords internal
 #' @rdname procPipelineArgs
 procPipelineArgs <- function(ap, args) {

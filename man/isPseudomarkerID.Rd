@@ -10,9 +10,17 @@ isPseudomarkerID(loc.ids)
 \item{loc.ids}{Vector of locus IDs.}
 }
 \value{
-Logical vector indicating which elements are pseudomarker IDs.
+Logical vector indicating which elements are valid IDs that follow
+the pattern of a pseudomarker ID.
 }
 \description{
 Test for pseudomarker IDs.
+}
+\section{Pseudomarker IDs}{
+
+
+Pseudomarker IDs are used by \pkg{R/qtl} for inter-marker loci. They indicate
+the reference sequence and genetic map position of the locus (e.g.
+\code{'c04.loc33'} for a locus at position 33cM on chromosome IV).
 }
 

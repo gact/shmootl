@@ -20,8 +20,13 @@ for a single phenotype.
 \description{
 Run \code{qtl::scanone} on a single phenotype of a \code{cross} object.
 }
+\references{
+Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
+in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
+}
 \seealso{
-Other scan utilities: \code{\link{batchPermScanoneF}},
+Other scan utility functions: \code{\link{batchPermScanoneF}},
   \code{\link{batchPermScanone}},
   \code{\link{batchPermScantwoF}},
   \code{\link{batchPermScantwo}},

@@ -10,7 +10,8 @@ isBOOL(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if object is a single logical value; FALSE otherwise.
+\code{TRUE} if object is a single logical value;
+\code{FALSE} otherwise.
 }
 \description{
 Test for a single logical value.

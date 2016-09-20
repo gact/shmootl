@@ -1,48 +1,5 @@
 # Start of hdf5.R ##############################################################
 
-# HDF5 Utilities ---------------------------------------------------------------
-#' HDF5 input/output utilities.
-#' 
-#' @description Functions for HDF5 input and output. These should only be
-#' used internally. External HDF5 input/output should be done through an
-#' exported package function (e.g. \code{\link{run_scanone}}).
-#' 
-#' @details HDF5 files are assumed to have one or more of the following root 
-#' groups.
-#' 
-#' \subsection{Maps}{ This group contains genetic or physical maps, which can 
-#' be read with \code{\link{readMapHDF5}}, or written with 
-#' \code{\link{writeMapHDF5}}.
-#' }
-#'   
-#' \subsection{Results}{ Each subgroup contains results for a single phenotype
-#' (or equivalent analysis unit). Phenotype names must be unique within each
-#' file. Results can be read with \code{\link{readResultHDF5}}, or written with
-#' \code{\link{writeResultHDF5}}.
-#' 
-#' This group can also contain a results overview dataset ('/Results/Overview'),
-#' which summarises the results for all phenotypes. A results overview can be
-#' read with \code{\link{readOverviewHDF5}}), or written with
-#' \code{\link{writeOverviewHDF5}}.
-#' }
-#' 
-#' If needed, datasets with a specified name can be read or written using the
-#' functions \code{\link{readDatasetHDF5}} or \code{\link{writeDatasetHDF5}},
-#' respectively. When reading or writing a matrix or array object, the object
-#' is transposed (with R function \code{t}) or permuted (with R function
-#' \code{aperm}), respectively. This is because HDF5 uses row-major order
-#' (like the C language) while R uses column-major order (like Fortran).
-#' For more information, see the
-#' \href{https://www.hdfgroup.org/HDF5/doc/}{HDF5 documentation}. 
-#' 
-#' Note that attribute order is not preserved when reading/writing HDF5 objects,
-#' and that datasets within a file cannot currently be overwritten.
-#' 
-#' @docType package
-#' @keywords internal
-#' @name HDF5 Utilities
-NULL
-
 # copyObjectsHDF5 --------------------------------------------------------------
 #' Copy objects between HDF5 files.
 #' 
@@ -63,7 +20,6 @@ NULL
 #' @importFrom rhdf5 h5readAttributes
 #' @importFrom rhdf5 h5writeAttribute
 #' @importFrom rhdf5 h5writeDataset
-#' @include H5Stack-class.R
 #' @keywords internal
 #' @rdname copyObjectsHDF5
 copyObjectsHDF5 <- function(infile, outfile, h5names=NULL) {
@@ -204,9 +160,9 @@ getMapNamesHDF5 <- function(infile) {
 #' Get R class of a HDF5 object.
 #' 
 #' If possible, the R class of the specified object is obtained from the
-#' attributes 'R.class' and 'class', in that order. If neither attribute
-#' is available, the object is loaded from the HDF5 file and its R class
-#' determined from the resulting R object.
+#' attributes \code{'R.class'} and \code{'class'}, in that order. If neither
+#' attribute is available, the object is loaded from the HDF5 file and its R
+#' class determined from the resulting R object.
 #' 
 #' @param infile An input HDF5 file.
 #' @param h5name HDF5 object name.
@@ -407,8 +363,8 @@ getResultNamesHDF5 <- function(infile, phenotype) {
 #' @param infile An input HDF5 file.
 #' @param name Map name.
 #' 
-#' @return TRUE if the given HDF5 file contains the named map;
-#' FALSE otherwise.
+#' @return \code{TRUE} if the given HDF5 file contains the named map;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname hasMapHDF5
@@ -424,8 +380,8 @@ hasMapHDF5 <- function(infile, name) {
 #' @param infile An input HDF5 file.
 #' @param h5name HDF5 object name.
 #' 
-#' @return TRUE if the given HDF5 file contains the named object;
-#' FALSE otherwise.
+#' @return \code{TRUE} if the given HDF5 file contains the named object;
+#' \code{FALSE} otherwise.
 #' 
 #' @importFrom methods new
 #' @importFrom rhdf5 H5Lexists
@@ -555,10 +511,10 @@ joinH5ObjectNameParts <- function(components, relative=FALSE) {
 # makeDefaultElementNames ------------------------------------------------------
 #' Make default HDF5 group element names.
 #' 
-#' Following the convention of the \pkg{rhdf5} package, default HDF5 group 
-#' element names are of the form 'ELT1', where 1 can be any positive integer. 
-#' Leading zeros are used to pad element numbers, depending on the group size, 
-#' so that the generated name strings will sort in numerical order.
+#' Following the convention of the \pkg{rhdf5} package, default HDF5 group
+#' element names are of the form \code{'ELT1'}, where 1 can be any positive
+#' integer. Leading zeros are used to pad element numbers, depending on the
+#' group size, so that the generated name strings will sort in numerical order.
 #'  
 #' @param n Number of default group element names to generate.
 #'      
@@ -618,9 +574,9 @@ makeDefaultResultName <- function(result) {
 #' 
 #' Group names are made based on the proposed group names or the group size. 
 #' Default group element names will replace every group name that is either 
-#' an empty string or NA value. Default group element names are of the form 
-#' 'ELT1', where the number indicates the position of the element within the 
-#' given group. 
+#' an empty string or \code{NA} value. Default group element names are of the
+#' form \code{'ELT1'}, where the number indicates the position of the element
+#' within the given group.
 #' 
 #' @param group.names HDF5 group object names.
 #' @param group.size Number of elements in HDF5 group.
@@ -679,24 +635,21 @@ makeGroupObjectNames <- function(group.names=NULL, group.size=NULL) {
 # readDatasetHDF5 --------------------------------------------------------------
 #' Read HDF5 dataset.
 #'    
-#' The named HDF5 dataset is read from the specified HDF5 file using the method
-#' for the dataset type, as determined from the \code{'R.class'} or \code{'class'}
-#' attribute of the HDF5 object.
-#' 
-#' An \pkg{R/qtl} \code{map} object is not suited for HDF5 format, but can be 
-#' stored as a \code{mapframe} object, which can be read from file and then 
-#' converted back to a \code{map}.
+#' The named HDF5 dataset is read from the specified HDF5 file using the
+#' method for the dataset type, as determined from the \code{'R.class'}
+#' or \code{'class'} attribute of the HDF5 object.
 #'    
 #' @param infile An input HDF5 file.
 #' @param h5name HDF5 dataset name.
 #' @param ... Further arguments (see below).
-#' @param col.name For a \code{data.frame}, if any column has a name matching
-#' this parameter, that column is extracted from the \code{data.frame} and the
-#' rownames are set from its contents.
+#' @param rownames.column For a \code{data.frame}, if any column has a name that
+#' matches this parameter, that column is extracted from the \code{data.frame}
+#' and the rownames are set from its contents.
 #' 
 #' @return R object corresponding to the named HDF5 object.
 #' 
 #' @export
+#' @family HDF5 functions
 #' @importFrom rhdf5 h5read
 #' @keywords internal
 #' @rdname readDatasetHDF5
@@ -723,7 +676,7 @@ readDatasetHDF5.array <- function(infile, h5name, ...) {
 # readDatasetHDF5.data.frame ---------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.data.frame <- function(infile, h5name, col.name='rownames') {
+readDatasetHDF5.data.frame <- function(infile, h5name, rownames.column='rownames') {
     
     dataset <- readDatasetHDF5.default(infile, h5name)
     
@@ -733,8 +686,8 @@ readDatasetHDF5.data.frame <- function(infile, h5name, col.name='rownames') {
     dataset <- coerceDataFrame(dataset, colClasses)
     attr(dataset, 'R.colClasses') <- NULL
     
-    if ( col.name %in% colnames(dataset) && ! hasRownames(dataset) ) {
-        dataset <- setRownamesFromColumn(dataset, col.name=col.name)
+    if ( rownames.column %in% colnames(dataset) && ! hasRownames(dataset) ) {
+        dataset <- setRownamesFromColumn(dataset, col.name=rownames.column)
     } 
     
     return(dataset)
@@ -840,7 +793,7 @@ readDatasetHDF5.map <- function(infile, h5name, ...) {
     
     h5attrs <- readObjectAttributesHDF5(infile, h5name)
     
-    dataset <- readDatasetHDF5.data.frame(infile, h5name, col.name='id')
+    dataset <- readDatasetHDF5.data.frame(infile, h5name, rownames.column='id')
     
     stopifnot( 'R.class' %in% names(h5attrs) )
     stopifnot( 'map' %in% h5attrs[['R.class']] )
@@ -864,7 +817,7 @@ readDatasetHDF5.map <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.mapframe <- function(infile, h5name, ...) {
     
-    dataset <- readDatasetHDF5.data.frame(infile, h5name, col.name='id')
+    dataset <- readDatasetHDF5.data.frame(infile, h5name, rownames.column='id')
     
     stopifnot( 'R.class' %in% names( attributes(dataset) ) )
     
@@ -1022,8 +975,8 @@ readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
 # readMapHDF5 ------------------------------------------------------------------
 #' Read \code{map} from a HDF5 file.
 #'   
-#' @details A \code{mapframe} dataset is read from the 'Maps' group at the root
-#' of the HDF5 file, and converted to an \pkg{R/qtl} \code{map} object.
+#' @details A \code{mapframe} dataset is read from the \code{'Maps'} group at
+#' the root of the HDF5 file, and converted to an \pkg{R/qtl} \code{map} object.
 #' 
 #' @param infile An input HDF5 file.
 #' @param name Map name.
@@ -1032,6 +985,8 @@ readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
 #' if no map is found with the specified name.
 #' 
 #' @export
+#' @family HDF5 functions
+#' @family map utility functions
 #' @keywords internal
 #' @rdname readMapHDF5
 readMapHDF5 <- function(infile, name) {
@@ -1052,7 +1007,7 @@ readMapHDF5 <- function(infile, name) {
 #' Read HDF5 object attributes.
 #'   
 #' @param infile An input HDF5 file.
-#' @param h5name HDF5 object name. 
+#' @param h5name HDF5 object name.
 #' 
 #' @return List of attributes of the named HDF5 object.
 #'  
@@ -1071,9 +1026,10 @@ readObjectAttributesHDF5 <- function(infile, h5name) {
 #'    
 #' @param infile An input HDF5 file.
 #' 
-#' @return A \code{data.frame} containing QTL analysis results overview.
+#' @return A \code{data.frame} containing a QTL analysis results overview.
 #' 
 #' @export
+#' @family HDF5 functions
 #' @keywords internal
 #' @rdname readOverviewHDF5
 readOverviewHDF5 <- function(infile) {
@@ -1101,6 +1057,7 @@ readOverviewHDF5 <- function(infile) {
 #' if the given phenotype has no result with the specified name.
 #' 
 #' @export
+#' @family HDF5 functions
 #' @keywords internal
 #' @rdname readResultHDF5
 readResultHDF5 <- function(infile, phenotype, name) {
@@ -1235,22 +1192,21 @@ splitH5ObjectName <- function(h5name) {
 # writeDatasetHDF5 -------------------------------------------------------------
 #' Write R object to a HDF5 dataset.
 #'   
-#' The given R object is written to the named HDF5 dataset using the method for 
-#' the dataset type, as determined by the class of the R object. Note that 
-#' although \pkg{R/qtl} \code{map} objects are not ideally suited for HDF5 
-#' format, they can be written to a HDF5 file as a \code{mapframe} object.
+#' The given R object is written to the named HDF5 dataset using the method
+#' for the given dataset type, as determined by the class of the R object.
 #'  
 #' @param dataset R object.
 #' @param outfile An output HDF5 file.
 #' @param h5name HDF5 dataset name.
 #' @param ... Further arguments (see below).
-#' @param col.name For a \code{data.frame}, rownames are removed, and then
-#' inserted into a column of the main table, with its column name taken
-#' from this parameter.
+#' @param rownames.column For a \code{data.frame}, any rownames are removed,
+#' and then inserted into a column of the main table, with its column name
+#' taken from this parameter.
 #' @param overwrite Option indicating whether to force overwrite of an
 #' existing dataset. By default, existing datasets cannot be overwritten.
 #' 
 #' @export
+#' @family HDF5 functions
 #' @importFrom methods new
 #' @importFrom rhdf5 H5Dopen
 #' @importFrom rhdf5 h5writeDataset
@@ -1262,7 +1218,6 @@ splitH5ObjectName <- function(h5name) {
 #' @importFrom rhdf5 h5writeDataset.list
 #' @importFrom rhdf5 h5writeDataset.logical
 #' @importFrom rhdf5 h5writeDataset.matrix
-#' @keywords internal
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5 <- function(dataset, outfile, h5name, ...) {
     UseMethod('writeDatasetHDF5', dataset)
@@ -1280,7 +1235,7 @@ writeDatasetHDF5.array <- function(dataset, outfile, h5name, ...) {
 #' @export
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name,
-    col.name='rownames', ...) {
+    rownames.column='rownames', ...) {
 
     stopif( 'R.colClasses' %in% names( attributes(dataset) ) )
     
@@ -1288,7 +1243,7 @@ writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name,
     stopifnot( ncol(dataset) > 0 )
     
     if ( hasRownames(dataset) ) {
-        dataset <- setColumnFromRownames(dataset, col.name=col.name)
+        dataset <- setColumnFromRownames(dataset, col.name=rownames.column)
     }
     
     colClasses <- sapply(dataset, class)
@@ -1397,7 +1352,8 @@ writeDatasetHDF5.map <- function(dataset, outfile, h5name, ...) {
     
     attr(dataset, 'R.class') <- dataset.Rclass
     
-    writeDatasetHDF5.data.frame(dataset, outfile, h5name, col.name='id', ...)
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name,
+        rownames.column='id', ...)
     
     return( invisible() )
 }
@@ -1413,7 +1369,8 @@ writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name, ...) {
     
     dataset <- as.data.frame(dataset)
     
-    writeDatasetHDF5.data.frame(dataset, outfile, h5name, col.name='id', ...)
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name,
+        rownames.column='id', ...)
 
     return( invisible() )
 }
@@ -1462,7 +1419,8 @@ writeDatasetHDF5.scanonebins <- function(dataset, outfile, h5name, ...) {
     dataset <- data.frame(dataset, check.names=FALSE)
     colnames(dataset) <- bin.labels
     
-    dataset <- insertColumn(dataset, col.index=1, col.name='perm', data=perm.indices)
+    dataset <- insertColumn(dataset, col.index=1,
+        col.name='perm', data=perm.indices)
     
     otherattributes(dataset) <- others
     
@@ -1594,9 +1552,9 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name, ...) {
 # writeMapHDF5 -----------------------------------------------------------------
 #' Write \code{map} to a HDF5 file.
 #'   
-#' @details An \pkg{R/qtl} \code{map} object is written to the 'Maps' group at
-#' the root of the given HDF5 file. If no map name is specified, a default will
-#' be assigned based on whether it is a genetic or physical map.
+#' @details An \pkg{R/qtl} \code{map} object is written to the \code{'Maps'}
+#' group at the root of the given HDF5 file. If no map name is specified, a
+#' default will be assigned based on whether it is a genetic or physical map.
 #' 
 #' @param map An \pkg{R/qtl} \code{map} object.
 #' @param outfile An output HDF5 file.
@@ -1605,6 +1563,8 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name, ...) {
 #' existing map. By default, existing maps cannot be overwritten.
 #' 
 #' @export
+#' @family HDF5 functions
+#' @family map utility functions
 #' @keywords internal
 #' @rdname writeMapHDF5
 writeMapHDF5 <- function(map, outfile, name=NULL, overwrite=FALSE) {
@@ -1653,7 +1613,7 @@ writeObjectAttributesHDF5 <- function(x, outfile, h5name) {
 #' existing overview. By default, existing overviews cannot be overwritten.
 #' 
 #' @export
-#' @keywords internal
+#' @family HDF5 functions
 #' @rdname writeOverviewHDF5
 writeOverviewHDF5 <- function(overview, outfile, overwrite=FALSE) {
     
@@ -1681,7 +1641,7 @@ writeOverviewHDF5 <- function(overview, outfile, overwrite=FALSE) {
 #' existing result. By default, existing results cannot be overwritten.
 #' 
 #' @export
-#' @keywords internal
+#' @family HDF5 functions
 #' @rdname writeResultHDF5
 writeResultHDF5 <- function(result, outfile, phenotype, name=NULL,
     overwrite=FALSE) {

@@ -10,11 +10,28 @@ parseDefaultQTLNames(qtl.names)
 \item{qtl.names}{Vector of default QTL names.}
 }
 \value{
-Genetic \code{mapframe} with loci corresponding to the specified QTL
-names. Raises an error if any of the input values cannot be parsed as a
-default QTL name.
+Genetic \code{mapframe} with loci
+corresponding to the specified QTL names.
 }
 \description{
-Parse default QTL names.
+This function parses an input vector of default QTL names, and returns a
+genetic \code{mapframe} with the locus in each row derived from the
+corresponding QTL name in the input vector. An error is raised if any
+of the input values cannot be parsed as a default QTL name.
+}
+\section{QTL Names}{
+
+
+A QTL name can be any valid item ID (see
+\link[=shmootl-package]{package overview}). Default QTL names are of the
+form \code{'04@33.0'}. As with pseudomarker IDs, this indicates the
+chromosome and genetic map position of the QTL, where \code{'04'} is a
+chromosome ID and \code{'33.0'} is the position of the given QTL in
+centiMorgans.
+ 
+In a default QTL name, the minimum precision of the map position is one
+tenth of a centiMorgan. As in \pkg{R/qtl}, if the map step size is smaller
+than this, the default QTL name is adjusted to match the appropriate level
+of precision.
 }
 

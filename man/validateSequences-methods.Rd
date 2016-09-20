@@ -14,7 +14,8 @@ validateSequences(cross.info)
 \item{cross.info}{A \code{\link{CrossInfo}} object.}
 }
 \value{
-TRUE if sequences are valid; otherwise, returns first error.
+\code{TRUE} if sequences are valid;
+otherwise, returns first error.
 }
 \description{
 Validate sequence information.

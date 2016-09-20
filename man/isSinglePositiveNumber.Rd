@@ -10,8 +10,8 @@ isSinglePositiveNumber(n)
 \item{n}{Test object.}
 }
 \value{
-TRUE if the object is a single positive number; 
-FALSE otherwise.
+\code{TRUE} if the object is a single positive number;
+\code{FALSE} otherwise.
 }
 \description{
 Test for a single positive number.

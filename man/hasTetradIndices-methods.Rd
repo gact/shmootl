@@ -4,7 +4,7 @@
 \name{hasTetradIndices}
 \alias{hasTetradIndices}
 \alias{hasTetradIndices,CrossInfo-method}
-\title{Test if \code{CrossInfo} object has sample tetrad indices.}
+\title{Test if \code{\linkS4class{CrossInfo}} object has sample tetrad indices.}
 \usage{
 hasTetradIndices(cross.info)
 
@@ -14,10 +14,38 @@ hasTetradIndices(cross.info)
 \item{cross.info}{A \code{\link{CrossInfo}} object.}
 }
 \value{
-TRUE if sample tetrad indices are present; FALSE otherwise.
+\code{TRUE} if sample tetrad indices are present;
+\code{FALSE} otherwise.
 }
 \description{
-Test if \code{CrossInfo} object has sample tetrad indices.
+Test if \code{\linkS4class{CrossInfo}} object has sample tetrad indices.
+}
+\seealso{
+Other CrossInfo methods: \code{\link{getAlleles}},
+  \code{\link{getCrosstype}}, \code{\link{getGenotypes}},
+  \code{\link{getMarkerIndices}},
+  \code{\link{getMarkerNames}},
+  \code{\link{getMarkerSeqs}}, \code{\link{getMarkers}},
+  \code{\link{getNumMarkers}},
+  \code{\link{getNumPhenotypes}},
+  \code{\link{getNumSamples}}, \code{\link{getNumSeqs}},
+  \code{\link{getPhenotypeIndices}},
+  \code{\link{getPhenotypeNames}},
+  \code{\link{getPhenotypes}},
+  \code{\link{getSampleIndices}},
+  \code{\link{getSampleNames}}, \code{\link{getSamples}},
+  \code{\link{getSeqIndices}}, \code{\link{getSeqMarkers}},
+  \code{\link{getSeqNames}}, \code{\link{getSequences}},
+  \code{\link{getStrainIndices}},
+  \code{\link{getTetradIndices}},
+  \code{\link{hasMarkerSeqs}}, \code{\link{hasSampleIDs}},
+  \code{\link{hasStrainIndices}}, \code{\link{setAlleles}},
+  \code{\link{setCrosstype}}, \code{\link{setGenotypes}},
+  \code{\link{setMarkerSeqs}}, \code{\link{setMarkers}},
+  \code{\link{setPhenotypes}}, \code{\link{setSamples}},
+  \code{\link{setSequences}},
+  \code{\link{setStrainIndices}},
+  \code{\link{setTetradIndices}}
 }
 \keyword{internal}
 

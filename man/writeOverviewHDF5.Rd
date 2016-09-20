@@ -17,5 +17,12 @@ existing overview. By default, existing overviews cannot be overwritten.}
 \description{
 Write QTL analysis results overview to a HDF5 file.
 }
-\keyword{internal}
+\seealso{
+Other HDF5 functions: \code{\link{readDatasetHDF5}},
+  \code{\link{readMapHDF5}},
+  \code{\link{readOverviewHDF5}},
+  \code{\link{readResultHDF5}},
+  \code{\link{writeDatasetHDF5}},
+  \code{\link{writeMapHDF5}}, \code{\link{writeResultHDF5}}
+}
 

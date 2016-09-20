@@ -14,8 +14,8 @@ should be returned.}
 }
 \value{
 Flanking phenotype column indices. If the specified index refers to
-the first or last column, an NA value is returned for the lower or upper 
-flanking index, respectively.
+the first or last column, an \code{NA} value is returned for the lower or
+upper flanking index, respectively.
 }
 \description{
 Get the indices of the phenotype columns in the \code{cross} phenotype data 

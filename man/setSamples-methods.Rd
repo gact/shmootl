@@ -17,10 +17,38 @@ setSamples(cross.info, samples)
 sample IDs.}
 }
 \value{
-Input \code{CrossInfo} object with the given samples.
+Input \code{\linkS4class{CrossInfo}}
+object with the given samples.
 }
 \description{
 Set samples by index or sample ID.
+}
+\seealso{
+Other CrossInfo methods: \code{\link{getAlleles}},
+  \code{\link{getCrosstype}}, \code{\link{getGenotypes}},
+  \code{\link{getMarkerIndices}},
+  \code{\link{getMarkerNames}},
+  \code{\link{getMarkerSeqs}}, \code{\link{getMarkers}},
+  \code{\link{getNumMarkers}},
+  \code{\link{getNumPhenotypes}},
+  \code{\link{getNumSamples}}, \code{\link{getNumSeqs}},
+  \code{\link{getPhenotypeIndices}},
+  \code{\link{getPhenotypeNames}},
+  \code{\link{getPhenotypes}},
+  \code{\link{getSampleIndices}},
+  \code{\link{getSampleNames}}, \code{\link{getSamples}},
+  \code{\link{getSeqIndices}}, \code{\link{getSeqMarkers}},
+  \code{\link{getSeqNames}}, \code{\link{getSequences}},
+  \code{\link{getStrainIndices}},
+  \code{\link{getTetradIndices}},
+  \code{\link{hasMarkerSeqs}}, \code{\link{hasSampleIDs}},
+  \code{\link{hasStrainIndices}},
+  \code{\link{hasTetradIndices}}, \code{\link{setAlleles}},
+  \code{\link{setCrosstype}}, \code{\link{setGenotypes}},
+  \code{\link{setMarkerSeqs}}, \code{\link{setMarkers}},
+  \code{\link{setPhenotypes}}, \code{\link{setSequences}},
+  \code{\link{setStrainIndices}},
+  \code{\link{setTetradIndices}}
 }
 \keyword{internal}
 

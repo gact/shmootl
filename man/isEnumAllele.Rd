@@ -10,10 +10,21 @@ isEnumAllele(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if symbol is a valid enumerated allele; FALSE otherwise.
+\code{TRUE} if symbol is a valid enumerated allele;
+\code{FALSE} otherwise.
 }
 \description{
 Test if symbol is a valid enumerated allele.
+}
+\section{Enumerated Alleles/Genotypes}{
+
+
+An enumerated allele/genotype is a number representing the order of
+occurrence of raw or founder genotypes at a specific marker (e.g. \code{'1'}
+for the first observed allele, \code{'2'} for the second). Enumerated alleles
+and genotypes are identical, regardless of ploidy. The process of enumerating
+genotypes is done independently for each marker, so a given enumerated
+genotype does not have the same meaning across markers.
 }
 \keyword{internal}
 

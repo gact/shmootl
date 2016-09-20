@@ -7,24 +7,29 @@
 getMetadataCSV(x)
 }
 \arguments{
-\item{x}{An \pkg{R/qtl} input data frame or a CSV filepath.}
+\item{x}{An \pkg{R/qtl} input CSV file or
+an \pkg{R/qtl} input \code{data.frame}.}
 }
 \value{
 A list containing parameters of \pkg{R/qtl} input data.
 }
 \description{
-Given a data frame as loaded from an \pkg{R/qtl} input CSV file,
-this function determines the parameters of that data (e.g. phenotype columns).
+Given the path to an \pkg{R/qtl} input CSV file, or a \code{data.frame}
+loaded from such a file, this function determines the parameters of that
+data (e.g. phenotype columns).
 }
 \details{
 The returned list includes information on the following parameters:
 
 \itemize{
- \item{\code{pheno.cols}}{Indices of phenotype columns, or NULL if none found.}
- \item{\code{id.col}}{Index of ID column, or NA if not found.}
- \item{\code{geno.cols}}{Indices of genotype columns, or NULL if none found.}
+ \item{\code{pheno.cols}}{Indices of phenotype columns,
+ or \code{NULL} if none found.}
+ \item{\code{id.col}}{Index of ID column, or \code{NA} if not found.}
+ \item{\code{geno.cols}}{Indices of genotype columns,
+ or \code{NULL} if none found.}
  \item{\code{dat.rows}}{Row indices of data.}
- \item{\code{map.present}}{TRUE if the data contains a map; FALSE otherwise.}
+ \item{\code{map.present}}{\code{TRUE} if the data contains a map;
+ \code{FALSE} otherwise.}
  \item{\code{class}}{Expected class of the input data.
  This is \code{'unknown'} by default.}
 }

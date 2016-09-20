@@ -10,8 +10,8 @@ isPhysicalMapframe(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if object is a \code{mapframe} whose pos column contains
-physical map positions; FALSE otherwise.
+\code{TRUE} if object is a \code{mapframe} whose pos column contains
+physical map positions; \code{FALSE} otherwise.
 }
 \description{
 Test if object is a physical \code{mapframe}.

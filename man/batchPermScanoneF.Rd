@@ -15,12 +15,12 @@ performed. If specified, phenotypes should contain measurements for
 consecutive values of the parameter of the function-valued trait 
 (e.g. times). If no phenotypes are specified, all are used.}
 
-\item{n.cluster}{Number of nodes to request for parallel execution. Any 
-number of processes can be requested with the argument \code{n.cluster}, 
-but the number actually returned can be limited to the number of processes 
-available. On a local computer, this limit will the number of cores in the 
-computer. In a PBS batch system, the maximum number of processes will be set 
-from the PBS node file.}
+\item{n.cluster}{Number of nodes to request for parallel execution. Any
+number of processes can be requested with the argument \code{n.cluster},
+but the number actually returned can be limited to the number of processes
+available. On a local computer, this limit is the number of physical cores
+in the computer. In a PBS batch system, the maximum number of processes
+will be set from the PBS node file.}
 
 \item{iseed}{Seed for random number generator.}
 
@@ -39,8 +39,18 @@ for all permutations.
 \description{
 Run \code{funqtl::scanoneF} on a batch of permuted \code{cross} objects.
 }
+\references{
+Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
+in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
+
+Kwak IY, Moore CR, Spalding EP, Broman KW (2014) A simple
+regression-based method to map quantitative trait loci underlying
+function-valued phenotypes. \emph{Genetics} \bold{197}(4):1409-16.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/24931408}{PubMed})
+}
 \seealso{
-Other scan utilities: \code{\link{batchPermScanone}},
+Other scan utility functions: \code{\link{batchPermScanone}},
   \code{\link{batchPermScantwoF}},
   \code{\link{batchPermScantwo}},
   \code{\link{batchPhenoScanone}},

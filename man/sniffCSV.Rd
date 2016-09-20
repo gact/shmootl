@@ -10,12 +10,28 @@ sniffCSV(infile)
 \item{infile}{Input CSV file path.}
 }
 \value{
-A string describing the type of data in the input CSV file. This can
-be \code{'cross'}, \code{'geno'}, \code{'pheno'}, or \code{'map'}. Returns
-\code{'unknown'} if the data could not be identified.
+A string describing the type of data in the input CSV file.
 }
 \description{
-Identify type of \pkg{R/qtl} data in CSV file.
+This function identifies the type of data in the input CSV file. This can
+be \code{'cross'}, \code{'geno'}, \code{'pheno'}, or \code{'map'}.
+Alternatively, it can be \code{'unknown'} if the data cannot be identified.
 }
-\keyword{internal}
+\details{
+Note that this function should be used with some discretion, as some
+\pkg{R/qtl} input file types cannot be distinguished. For example, a
+covariate data file containing a sample ID column will be misidentified
+as containing phenotype data.
+}
+\seealso{
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},
+  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
+  \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{writeCrossCSV}}, \code{\link{writeGenoCSV}},
+  \code{\link{writeMapCSV}},
+  \code{\link{writeMapframeCSV}},
+  \code{\link{writePhenoCSV}}
+}
 

@@ -3,15 +3,16 @@
 # getLODValues -----------------------------------------------------------------
 #' Get LOD values.
 #' 
-#' Get the LOD value at the specified map positions in the given LOD profile.
+#' Get the LOD value at each of the specified
+#' map positions in the given LOD profile.
 #'
-#' @param x A \code{scanone} object or equivalent \code{data.frame} in which the 
-#' data columns contain LOD score values.
+#' @param x A \code{scanone} object or equivalent \code{data.frame}
+#' in which the data columns contain LOD score values.
 #' @param loc Locus \code{mapframe} specifying map positions.
 #' @template param-lodcolumn
 #' 
-#' @return Vector of LOD values. Returns NA if LOD score is not available at a 
-#' given position.
+#' @return Vector of LOD values. Returns \code{NA} if
+#' LOD score is not available at a given position.
 #' 
 #' @export
 #' @importFrom stats approx

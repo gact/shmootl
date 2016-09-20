@@ -21,4 +21,9 @@ intervals, as estimated from their genetic map positions.
 \description{
 Add estimated physical positions to QTL intervals.
 }
+\seealso{
+Other QTL functions: \code{\link{getQTLFeatures}},
+  \code{\link{getQTLIntervals}}, \code{\link{getQTLPeaks}},
+  \code{\link{plotQTLScanone}}
+}
 

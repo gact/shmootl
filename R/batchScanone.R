@@ -23,11 +23,12 @@
 #' and each slice corresponds to a LOD column. Each element contains
 #' the number of loci in the given bin interval for that LOD column
 #' in that permutation.
-#'  
+#' 
+#' @template ref-broman-2003
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @importFrom abind abind
-#' @include scanonebins.R
 #' @rdname batchPermScanone
 batchPermScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, 
     n.perm=1000, perm.pheno=TRUE, perm.geno=FALSE, perm.type=c('max', 'bins'), ...) {
@@ -78,8 +79,10 @@ batchPermScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
 #' @return A \code{scanone} object containing the results of \code{scanone} 
 #' for the given phenotypes.
 #' 
+#' @template ref-broman-2003
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @importFrom qtl phenames
 #' @rdname batchPhenoScanone
 batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, ...) {
@@ -137,9 +140,10 @@ batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, ..
 #' element contains the number of loci in the given bin interval
 #' for that LOD column in that permutation.
 #' 
+#' @template ref-broman-2003
+#' 
 #' @export
-#' @family scan utilities
-#' @include binLODValues.R
+#' @family scan utility functions
 #' @rdname nodePermScanone
 nodePermScanone <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE, 
     perm.geno=FALSE, perm.type=c('max', 'bins'), ...) {
@@ -241,8 +245,10 @@ nodePermScanone <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE,
 #' @return A \code{scanone} object containing the result of \code{scanone}
 #' for a single phenotype. 
 #' 
+#' @template ref-broman-2003
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @rdname nodePhenoScanone
 nodePhenoScanone <- function(pheno.col, cross, ...) {
     

@@ -16,13 +16,14 @@ orderMap(x)
 \item{x}{Object containing map data.}
 }
 \value{
-Input object ordered by sequence, then map position.
+Input object ordered by the normalised form of
+the reference sequence, then numerically by map position.
 }
 \description{
 Put object in map order.
 }
 \seealso{
-Other map utilities: \code{\link{as.data.frame.mapframe}},
+Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{as.data.frame.map}},
   \code{\link{as.mapframe}}, \code{\link{as.map}},
   \code{\link{extractMarkers}},
@@ -30,7 +31,11 @@ Other map utilities: \code{\link{as.data.frame.mapframe}},
   \code{\link{findFlanking}}, \code{\link{findLoci}},
   \code{\link{findMarkers}}, \code{\link{getMapSteps}},
   \code{\link{getMapUnit}}, \code{\link{gmapframe}},
-  \code{\link{inMapOrder}}, \code{\link{inferMapStep}},
-  \code{\link{mapframe}}, \code{\link{setMapUnit}}
+  \code{\link{hasMapCSV}}, \code{\link{inMapOrder}},
+  \code{\link{inferMapStep}}, \code{\link{mapframe}},
+  \code{\link{readMapCSV}}, \code{\link{readMapHDF5}},
+  \code{\link{readMapframeCSV}}, \code{\link{setMapUnit}},
+  \code{\link{writeMapCSV}}, \code{\link{writeMapHDF5}},
+  \code{\link{writeMapframeCSV}}
 }
 

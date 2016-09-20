@@ -5,7 +5,8 @@
 #' 
 #' @param x Object containing genotype data.
 #' 
-#' @return TRUE if object contains enumerated genotypes; FALSE otherwise.
+#' @return \code{TRUE} if object contains enumerated genotypes;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname hasEnumGenotypes

@@ -15,4 +15,12 @@ Logical vector indicating which sequence labels are normalised.
 \description{
 Test for normalised sequence labels.
 }
+\seealso{
+Other chromosome/sequence functions: \code{\link{formatChr}},
+  \code{\link{formatSeq}}, \code{\link{isNormChr}},
+  \code{\link{normChr}}, \code{\link{normSeq}},
+  \code{\link{orderChr}}, \code{\link{orderSeq}},
+  \code{\link{rankChr}}, \code{\link{rankSeq}},
+  \code{\link{sortChr}}, \code{\link{sortSeq}}
+}
 

@@ -11,15 +11,34 @@ recodeCSV(infile, outfile, geno = NULL, enum.geno = FALSE)
 
 \item{outfile}{Output CSV file path.}
 
-\item{geno}{Named vector of genotype symbols, with vector names containing
-existing genotype symbols, and vector elements containing their replacement
-values (incompatible with \code{enum.geno}).}
+\item{geno}{A simple \code{\link{mapping}} of old to new genotype symbols,
+with names containing existing genotype symbols, and elements containing
+their replacement values (incompatible with \code{enum.geno}).}
 
 \item{enum.geno}{Option indicating if genotype data should be recoded as
 enumerated genotypes (incompatible with \code{geno}).}
 }
 \description{
-Recode \pkg{R/qtl} data in CSV file.
+This function recodes the data in an \pkg{R/qtl} cross or genotype CSV file.
+Genotypes can be recoded by passing to the \code{geno} parameter a simple
+\code{\link{mapping}} of old to new genotypes. Alternatively, genotype data
+can be converted to enumerated genotypes by setting parameter
+\code{enum.geno} to \code{TRUE}.
 }
-\keyword{internal}
+\details{
+Any \code{\link{mapping}} of old to new symbols must be complete and
+unambiguous. All existing values must be mapped to a new value, and
+data with different input values cannot have the same output value.
+}
+\seealso{
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},
+  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
+  \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{sniffCSV}},
+  \code{\link{writeCrossCSV}}, \code{\link{writeGenoCSV}},
+  \code{\link{writeMapCSV}},
+  \code{\link{writeMapframeCSV}},
+  \code{\link{writePhenoCSV}}
+}
 

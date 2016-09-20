@@ -6,158 +6,53 @@
 \alias{shmootl-package}
 \title{QTL Analysis Utilities for Yeast}
 \description{
-The \pkg{shmootl} package contains pipelines and utilities for QTL analysis 
-in yeast. This package depends for QTL analysis on \pkg{R/qtl} and 
-\pkg{R/funqtl}. See below for links to these packages.
+The \pkg{shmootl} package contains pipelines and functions for QTL analysis
+in yeast. This package follows many of the conventions on \pkg{R/qtl}, and
+depends on that package for standard QTL analysis. It also depends on
+\pkg{R/funqtl} for QTL analysis with time-series phenotypes. See
+below for links to these packages, as well as key references.
 }
-\section{Pipelines}{
+\section{Item IDs}{
 
 
-Package pipelines can be run from a command line as follows:
-
-   \code{Rscript -e 'library(shmootl)' -e 'run()' <pipeline> [-h] [<args>]}
-
-...where \code{\link{run}} is the general \pkg{shmootl} pipeline-running 
-function, \code{<pipeline>} is the name of the pipeline to run, and 
-\code{<args>} represents any arguments to be passed to the given pipeline. 
-To see the available options for a pipeline, input the help flag (\code{-h}) 
-after the name of the pipeline.
+Various items in \pkg{shmootl} (e.g. chromosomes/sequences, markers, samples,
+phenotypes) have an associated identifier (ID). A valid item ID in
+\pkg{shmootl} is a string of nonzero length, containing any combination
+of printable ASCII characters (including letters and numbers), except for a
+single quote, double quotes, backtick, comma, forward slash, or backslash.
 }
 
-\section{Utilities}{
- 
-The main utility groups are:
-
-\describe{
-  \item{\link{Cross Utilities}:}{Handling \pkg{R/qtl} \code{cross} objects.}
-  \item{\link{Map Utilities}:}{Handling \pkg{R/qtl} \code{map} and 
-  \pkg{shmootl} \code{mapframe} objects.}
-  \item{\link{Scan Utilities}:}{QTL scan functions.}
-  \item{\link{CSV Utilities}:}{Reading and writing CSV files.}
-}
-}
-
-\section{Package Conventions}{
+\section{Syntactic Names}{
 
 
-\subsection{Item IDs}{
-Various items in \pkg{shmootl} (e.g. chromosomes/sequences, markers, 
-phenotypes) have an associated identifier (ID). A valid item ID in 
-\pkg{shmootl} is a string of nonzero length, containing any 
-combination of printable ASCII characters (including letters and 
-numbers), except a single quote (\code{\'}), double quotes (\code{\"}), 
-backtick (\code{\`}), comma (\code{,}), forward slash (\code{/}), 
-or backslash (\code{\\}). See also \code{\link{isValidID}}.
-}
-
-\subsection{Syntactic Names}{
-A syntactically valid R name contains only letters, numbers, dots, and 
-underscores. The name should start with a letter, or a dot that is not 
-followed by a number. In addition, specific reserved words are not 
-permitted. Many R packages and functions automatically render item names 
-syntactically valid, so for example, a phenotype name may be changed when 
+A syntactically valid R name contains only letters, numbers, dots, and
+underscores. The name should start with a letter, or a dot that is not
+followed by a number. In addition, specific reserved words are not
+permitted. Many R packages and functions automatically render item names
+syntactically valid, so for example, a phenotype name may be changed when
 added to an \pkg{R/qtl} \code{cross} object. For more information, see the
 relevant \href{https://cran.r-project.org/manuals.html}{R documentation}.
-See also \code{\link{isValidName}} and the R function \code{make.names} 
-on which it is based.
+See also the base R function \code{make.names}.
 }
 
-\subsection{Locus IDs}{
-Map locus IDs can be any valid item ID (see above), and are of two main 
-types: markers and pseudomarkers. A marker ID is any valid locus ID that 
-is not a pseudomarker ID. (See \code{\link{isMarkerID}}.)
-
-Pseudomarker IDs are used by \pkg{R/qtl} for inter-marker loci. They indicate
-the locus chromosome and genetic map position (e.g. \code{'c04.loc33'} for a 
-locus at position 33cM on chromosome IV). See also 
-\code{\link{isPseudomarkerID}} and \code{\link{makePseudomarkerIDs}}.
-
-Default marker IDs are assigned to loci of a physical map if no other marker 
-ID is available. These are of the form \code{'c04-0108900'}, where 
-\code{'04'} is a zero-padded two-digit chromosome number and \code{'0108900'} 
-is a zero-padded seven-digit number giving the physical map position of the 
-given locus (i.e. the nucleotide position of the locus in the reference 
-sequence). See also \code{\link{isDefaultMarkerID}} and 
-\code{\link{makeDefaultMarkerIDs}}.
-}
-
-\subsection{QTL Names}{
-A QTL name can be any valid item ID (see above). Default QTL names are of the 
-form \code{'04@33.0'}. As with pseudomarker IDs, this indicates the 
-chromosome and genetic map position of the QTL, where \code{'04'} is a 
-chromosome ID and \code{'33.0'} is the position of the given QTL in 
-centiMorgans. 
- 
-In a default QTL name, the minimum precision of the map position is one 
-tenth of a centiMorgan. As in \pkg{R/qtl}, if the map step size is smaller 
-than this, the default QTL name is adjusted to match the appropriate level 
-of precision. See also \code{\link{isDefaultQTLName}} and 
-\code{\link{makeDefaultQTLNames}}.
-}
-}
-
-\section{Chromosomes and Sequences}{
+\section{Package Pipelines}{
 
 
-Although for some yeast genome assemblies they are equivalent, chromosomes 
-(cell structures containing genetic material) are treated by \pkg{shmootl}
-as being distinct from sequences (linkage units that corresponding to all 
-or part of a chromosome). This distinction is necessary to allow for use of
-reference genomes in which multiple sequences map to a single chromosome.
-(See below for info on setting a reference genome.) While every sequence 
-must be mapped to a specific chromosome, sequences are used as the primary 
-linkage unit throughout this package.
+Within \pkg{\link{shmootl}}, package pipelines are fully-documented functions that
+follow specific conventions regarding function name and formal arguments.
+Pipeline function names are of the form \code{'run_<pipeline>'} (where
+\code{'<pipeline>'} is replaced by the pipeline name).
 
-\subsection{Chromosomes}{
-A yeast nuclear chromosome can be represented by an Arabic number in the 
-range \code{1} to \code{16}, inclusive; or by the Roman numeral corresponding
-to the chromosome number. The mitochondrial chromosome can be represented by 
-the number \code{17} or a capital \code{'M'}. A chromosome label can include 
-one of the optional prefixes \code{'c'} or \code{'chr'}. So for example, any 
-of the following can represent chromosome 4: 
+Package pipelines can be run from a command line with \code{Rscript} as follows:
 
-\itemize{
-\item{\code{4}:}{an Arabic number}
-\item{\code{IV}:}{a Roman numeral}
-\item{\code{c04}:}{a zero-padded Arabic number with prefix \code{'c'}}
-\item{\code{chrIV}:}{a Roman numeral with prefix \code{'chr'}}
-}
+\code{Rscript -e 'library(shmootl)' -e 'run()' <pipeline> [-h] [<args>]}
 
-Using the function \code{\link{normChr}}, all of these representations can 
-be normalised to one consistent form: a zero-padded Arabic number 
-(i.e. \code{'04'}). This is used internally by \pkg{shmootl} as a 
-normalised representation, and is recommended.
-}
-
-\subsection{Sequences}{
-For genomes in which every sequence represents a specific chromosome, the
-sequence label is identical to the chromosome label. In other cases, the
-sequence label should be a chromosome label followed by a sequence-specific 
-label (e.g. contig ID), separated by an underscore. For example, a contig 
-\code{'1D22'} that maps to chromosome 4 can be represented as follows:
-
-\itemize{
-\item{\code{4_1D22}}
-\item{\code{IV_1D22}}
-\item{\code{c04_1D22}}
-\item{\code{chrIV_1D22}}
-}
-
-Variations in chromosome representation are possible as before, but the 
-sequence-specific label must be consistent. As with chromosomes, the function 
-\code{\link{normSeq}} can be used to normalise all of these forms to
-one consistent representation: a zero-padded Arabic number followed by the 
-sequence-specific label (i.e. \code{'04_1D22'}). This representation is 
-recommended, as it is used internally by \pkg{shmootl} as a standard way to 
-label sequences in a genome lacking a one-to-one correspondence between 
-sequences and chromosomes.
-}
-
-\subsection{Genomes}{
-The \pkg{shmootl} package allows the reference genome to be set using the 
-function \code{\link{genomeOpt}}. There are currently two genomes available:
-\code{'SGD_S288C_R64-1-1'} and \code{'SGD_S288C_R64-2-1'}.
-}
+...where \code{\link{run}} is the general \pkg{shmootl} pipeline-running
+function, \code{<pipeline>} is the name of the pipeline to run, and
+\code{<args>} represents any arguments to be passed to the given pipeline.
+To see the available options for a pipeline, input the help flag (\code{-h})
+after the name of the pipeline. To list all available pipelines, input the
+help flag (\code{-h}) without a pipeline name. (See usage examples below.)
 }
 
 \section{See Also}{
@@ -168,5 +63,33 @@ function \code{\link{genomeOpt}}. There are currently two genomes available:
   \item{\href{https://github.com/ikwak2/funqtl}{R/funqtl on GitHub}}
   \item{\href{http://www.rqtl.org/}{R/qtl}}
 }
+}
+\examples{
+\dontrun{
+# To list available pipelines from the command line.
+Rscript -e 'library(shmootl)' -e 'run()' -h
+
+# To run the 'scanone' pipeline from the command line.
+Rscript -e 'library(shmootl)' -e 'run()' scanone \\
+    --infile input.csv --h5file output.hdf5
+
+# To run the 'scanone' pipeline from within R.
+run_scanone(infile='input.csv', h5file='output.hdf5')
+}
+}
+\references{
+Arends D, Prins P, Jansen RC, Broman KW (2010) R/qtl:
+high-throughput multiple QTL mapping. \emph{Bioinformatics}
+\bold{26}(26):2990-2.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/20966004}{PubMed})
+
+Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
+in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
+
+Kwak IY, Moore CR, Spalding EP, Broman KW (2014) A simple
+regression-based method to map quantitative trait loci underlying
+function-valued phenotypes. \emph{Genetics} \bold{197}(4):1409-16.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/24931408}{PubMed})
 }
 

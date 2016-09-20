@@ -19,4 +19,12 @@ Vector of formatted sequence labels.
 \description{
 Format sequence labels.
 }
+\seealso{
+Other chromosome/sequence functions: \code{\link{formatChr}},
+  \code{\link{isNormChr}}, \code{\link{isNormSeq}},
+  \code{\link{normChr}}, \code{\link{normSeq}},
+  \code{\link{orderChr}}, \code{\link{orderSeq}},
+  \code{\link{rankChr}}, \code{\link{rankSeq}},
+  \code{\link{sortChr}}, \code{\link{sortSeq}}
+}
 

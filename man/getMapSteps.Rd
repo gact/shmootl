@@ -19,22 +19,26 @@ getMapSteps(x)
 \item{x}{Object containing map data.}
 }
 \value{
-List of vectors, each giving the steps between markers on a given
-sequence.
+List of vectors, each element named for a given reference sequence,
+and containing a vector of the step sizes between markers on that sequence.
 }
 \description{
 Get steps between loci.
 }
 \seealso{
-Other map utilities: \code{\link{as.data.frame.mapframe}},
+Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{as.data.frame.map}},
   \code{\link{as.mapframe}}, \code{\link{as.map}},
   \code{\link{extractMarkers}},
   \code{\link{extractPseudomarkers}},
   \code{\link{findFlanking}}, \code{\link{findLoci}},
   \code{\link{findMarkers}}, \code{\link{getMapUnit}},
-  \code{\link{gmapframe}}, \code{\link{inMapOrder}},
-  \code{\link{inferMapStep}}, \code{\link{mapframe}},
-  \code{\link{orderMap}}, \code{\link{setMapUnit}}
+  \code{\link{gmapframe}}, \code{\link{hasMapCSV}},
+  \code{\link{inMapOrder}}, \code{\link{inferMapStep}},
+  \code{\link{mapframe}}, \code{\link{orderMap}},
+  \code{\link{readMapCSV}}, \code{\link{readMapHDF5}},
+  \code{\link{readMapframeCSV}}, \code{\link{setMapUnit}},
+  \code{\link{writeMapCSV}}, \code{\link{writeMapHDF5}},
+  \code{\link{writeMapframeCSV}}
 }
 

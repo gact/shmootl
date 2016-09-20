@@ -7,7 +7,8 @@
 makeDefaultMarkerIDs(loc, sep = c(":", "-"))
 }
 \arguments{
-\item{loc}{Locus \code{data.frame} specifying physical map positions.}
+\item{loc}{Locus \code{data.frame}, with columns \code{'chr'} and
+\code{'pos'}, specifying physical map positions.}
 
 \item{sep}{Separator between the two parts of a default marker ID.}
 }
@@ -16,5 +17,15 @@ Character vector of default marker IDs.
 }
 \description{
 Make default marker IDs for loci.
+}
+\section{Default Marker IDs}{
+
+
+Default marker IDs are assigned to loci of a physical map if no other marker
+ID is available. These are of the form \code{'c04:0108900'}, where
+\code{'04'} is a zero-padded two-digit chromosome number and \code{'0108900'}
+is a zero-padded seven-digit number giving the physical map position of the
+given locus (i.e. the nucleotide position of the locus in the reference
+sequence).
 }
 

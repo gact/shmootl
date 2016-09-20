@@ -10,26 +10,51 @@ readCrossCSV(infile, error.prob = 1e-04, map.function = c("haldane",
 \arguments{
 \item{infile}{Input CSV file path.}
 
-\item{error.prob}{Genotyping error rate (ignored unless estimating genetic map).}
+\item{error.prob}{Genotyping error rate.}
 
-\item{map.function}{Genetic map function (ignored unless estimating genetic map).}
+\item{map.function}{Genetic map function.}
 
 \item{require.mapunit}{Require map unit information in map positions.}
 }
 \value{
-An \pkg{R/qtl} \code{cross} object with an attribute \code{'info'} of 
-type \code{CrossInfo}.
+An \pkg{R/qtl} \code{cross} object with an attribute
+\code{'info'} of type \code{\linkS4class{CrossInfo}}.
 }
 \description{
-This function reads yeast cross data from an \pkg{R/qtl} CSV file and returns 
-an \pkg{R/qtl} \code{cross} object with an attribute \code{'info'} of type 
-\code{CrossInfo}.
+This function reads yeast cross data from an \pkg{R/qtl} CSV file and
+returns an \pkg{R/qtl} \code{cross} object. The returned \code{cross}
+has an attribute \code{'info'} of type \code{\linkS4class{CrossInfo}},
+which contains information about the input \code{cross}.
+}
+\details{
+If a genetic map is not present in the input file, this is estimated when
+loading the cross. In such cases, parameters \code{error.prob} and
+\code{map.function} are passed to \pkg{R/qtl} for map estimation.
+
+By default, any genetic map positions must include map units (i.e.
+\code{'cM'}). To read a cross without requiring map units, set
+parameter \code{require.mapunit} to \code{FALSE}. If map units
+are not required and not found, map positions are assumed to be
+in centiMorgans.
 }
 \seealso{
-Other csv utilities: \code{\link{readCovarCSV}},
-  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
-  \code{\link{readMapframeCSV}},
-  \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
+Other cross object functions: \code{\link{getIdColIndex}},
+  \code{\link{getPhenoColIndices}},
+  \code{\link{hasTimeSeriesPhenotypes}},
+  \code{\link{inferStrainIndices}},
+  \code{\link{inferTetradIndices}},
+  \code{\link{inferTimeStep}},
+  \code{\link{interpTimeSeries}},
+  \code{\link{padTimeSeries}}, \code{\link{permCross}},
+  \code{\link{permIndices}}, \code{\link{pull.alleles}},
+  \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
+  \code{\link{pull.ind}}, \code{\link{writeCrossCSV}}
+
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readGenoCSV}},
+  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
   \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}},
   \code{\link{writePhenoCSV}}

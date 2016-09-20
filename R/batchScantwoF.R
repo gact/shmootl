@@ -16,13 +16,17 @@
 #' @param ... Additional keyword arguments passed to \code{scantwoF}.
 #'     
 #' @return A \code{scantwoperm} list containing the results of \code{scantwoF}
-#' for all permutations. This has three elements - 'one', 'fullvadd', and 'fv1' 
-#' - each containing a matrix of permutation results for one of three models: 
-#' single QTL analysis, full-versus-additive QTL model, and full-versus-single 
+#' for all permutations. This has three elements - \code{'one'},
+#' \code{'fullvadd'}, and \code{'fv1'} - each containing a matrix
+#' of permutation results for one of three models: single QTL
+#' analysis, full-versus-additive QTL model, and full-versus-single
 #' QTL model, respectively.
-#'  
+#' 
+#' @template ref-broman-2003
+#' @template ref-kwak-2014
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @rdname batchPermScantwoF
 batchPermScantwoF <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
     n.perm=1000, perm.pheno=TRUE, perm.geno=FALSE, ...) {
@@ -73,8 +77,11 @@ batchPermScantwoF <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
 #' @return A \code{scantwoperm} list containing the results of \code{scantwoF}
 #' for a single permutation. 
 #' 
+#' @template ref-broman-2003
+#' @template ref-kwak-2014
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @rdname nodePermScantwoF
 nodePermScantwoF <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE, 
     perm.geno=FALSE, ...) {

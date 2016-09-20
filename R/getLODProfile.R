@@ -2,7 +2,7 @@
 
 # getLODProfile ----------------------------------------------------------------
 #' Get LOD profile.
-#'
+#' 
 #' @usage 
 #' ## Generic method.
 #' getLODProfile(x, ...)
@@ -10,11 +10,11 @@
 #' @param x Object containing LOD profile data.
 #' @param ... Further arguments (see below).
 #' @template param-lodcolumn
-#' @param qtl.index In a \code{qtl} object, this indicates the QTL for which a 
-#' LOD profile should be returned. 
+#' @param qtl.index In a \code{qtl} object, this indicates
+#' the QTL for which a LOD profile should be returned.
 #'   
-#' @return A \code{scanone} object containing a LOD profile for a single 
-#' phenotype.
+#' @return A \code{scanone} object containing
+#' a LOD profile for a single phenotype.
 #'   
 #' @export
 #' @rdname getLODProfile

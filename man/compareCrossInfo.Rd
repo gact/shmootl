@@ -5,7 +5,7 @@
 \alias{compareCrossInfo.cross}
 \alias{compareCrossInfo.geno}
 \alias{compareCrossInfo.pheno}
-\title{Compare object with associated \code{CrossInfo}.}
+\title{Compare object with associated \code{\linkS4class{CrossInfo}}.}
 \usage{
 compareCrossInfo(x, cross.info = NULL)
 
@@ -21,13 +21,13 @@ compareCrossInfo(x, cross.info = NULL)
 \item{cross.info}{A \code{\link{CrossInfo}} object.}
 }
 \value{
-TRUE if \code{CrossInfo} and test object are concordant; otherwise
-returns a character vector of mismatch errors.
+\code{TRUE} if \code{\linkS4class{CrossInfo}} and test object are
+concordant; otherwise returns a character vector of mismatch errors.
 }
 \description{
-Test concordance of an object with its associated 
-\code{CrossInfo} object. If no \code{CrossInfo} object is specified,
-it will be extracted from the test object.
+Test concordance of an object with its associated
+\code{\linkS4class{CrossInfo}} object. If no \code{\linkS4class{CrossInfo}}
+object is specified, it will be extracted from the test object.
 }
 \seealso{
 \code{\linkS4class{CrossInfo}}

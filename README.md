@@ -1,4 +1,4 @@
-# shmootl: QTL analysis utilities for yeast
+# ShmooTL: QTL analysis utilities for yeast
 
 This package contains pipelines and utilities for QTL analysis of yeast cross 
 data. Pipelines can be run from the command line or from within the R 

@@ -16,17 +16,15 @@
 \alias{writeDatasetHDF5.scantwoperm}
 \title{Write R object to a HDF5 dataset.
   
-The given R object is written to the named HDF5 dataset using the method for 
-the dataset type, as determined by the class of the R object. Note that 
-although \pkg{R/qtl} \code{map} objects are not ideally suited for HDF5 
-format, they can be written to a HDF5 file as a \code{mapframe} object.}
+The given R object is written to the named HDF5 dataset using the method
+for the given dataset type, as determined by the class of the R object.}
 \usage{
 writeDatasetHDF5(dataset, outfile, h5name, ...)
 
 \method{writeDatasetHDF5}{array}(dataset, outfile, h5name, ...)
 
 \method{writeDatasetHDF5}{data.frame}(dataset, outfile, h5name,
-  col.name = "rownames", ...)
+  rownames.column = "rownames", ...)
 
 \method{writeDatasetHDF5}{default}(dataset, outfile, h5name,
   overwrite = FALSE, ...)
@@ -58,9 +56,9 @@ writeDatasetHDF5(dataset, outfile, h5name, ...)
 
 \item{...}{Further arguments (see below).}
 
-\item{col.name}{For a \code{data.frame}, rownames are removed, and then
-inserted into a column of the main table, with its column name taken
-from this parameter.}
+\item{rownames.column}{For a \code{data.frame}, any rownames are removed,
+and then inserted into a column of the main table, with its column name
+taken from this parameter.}
 
 \item{overwrite}{Option indicating whether to force overwrite of an
 existing dataset. By default, existing datasets cannot be overwritten.}
@@ -68,10 +66,15 @@ existing dataset. By default, existing datasets cannot be overwritten.}
 \description{
 Write R object to a HDF5 dataset.
   
-The given R object is written to the named HDF5 dataset using the method for 
-the dataset type, as determined by the class of the R object. Note that 
-although \pkg{R/qtl} \code{map} objects are not ideally suited for HDF5 
-format, they can be written to a HDF5 file as a \code{mapframe} object.
+The given R object is written to the named HDF5 dataset using the method
+for the given dataset type, as determined by the class of the R object.
 }
-\keyword{internal}
+\seealso{
+Other HDF5 functions: \code{\link{readDatasetHDF5}},
+  \code{\link{readMapHDF5}},
+  \code{\link{readOverviewHDF5}},
+  \code{\link{readResultHDF5}}, \code{\link{writeMapHDF5}},
+  \code{\link{writeOverviewHDF5}},
+  \code{\link{writeResultHDF5}}
+}
 

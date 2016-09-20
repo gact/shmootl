@@ -12,13 +12,26 @@ readGenoCSV(infile, require.mapunit = TRUE)
 \item{require.mapunit}{Require map unit information in map positions.}
 }
 \description{
-Read yeast genotype data from a CSV file.
+This function reads yeast cross genotype data from an \pkg{R/qtl} CSV file
+and returns a \code{geno} object. The returned \code{geno} object has an
+attribute \code{'info'} of type \code{\linkS4class{CrossInfo}}. This
+\code{\linkS4class{CrossInfo}} object contains information about the
+genotype data, including sample IDs, which must be present in the
+input genotype data file.
+}
+\details{
+By default, any genetic map positions must include map units (i.e.
+\code{'cM'}). To read a genotype file without requiring map units,
+set parameter \code{require.mapunit} to \code{FALSE}. If map units
+are not required and not found, map positions are assumed to be in
+centiMorgans.
 }
 \seealso{
-Other csv utilities: \code{\link{readCovarCSV}},
-  \code{\link{readCrossCSV}}, \code{\link{readMapCSV}},
-  \code{\link{readMapframeCSV}},
-  \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},
+  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
   \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}},
   \code{\link{writePhenoCSV}}

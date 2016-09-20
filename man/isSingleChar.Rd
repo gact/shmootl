@@ -10,7 +10,8 @@ isSingleChar(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if the object is a single character; FALSE otherwise.
+\code{TRUE} if the object is a single character;
+\code{FALSE} otherwise.
 }
 \description{
 Test for a single character.

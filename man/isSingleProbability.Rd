@@ -10,8 +10,8 @@ isSingleProbability(n)
 \item{n}{Test object.}
 }
 \value{
-TRUE if the object is a single valid probability; 
-FALSE otherwise.
+\code{TRUE} if the object is a single valid probability;
+\code{FALSE} otherwise.
 }
 \description{
 Test for a single valid probability.

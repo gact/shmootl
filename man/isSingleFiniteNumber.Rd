@@ -10,8 +10,8 @@ isSingleFiniteNumber(n)
 \item{n}{Test object.}
 }
 \value{
-TRUE if the object is a single finite number;
-FALSE otherwise.
+\code{TRUE} if the object is a single finite number;
+\code{FALSE} otherwise.
 }
 \description{
 Test for a single finite number.

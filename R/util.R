@@ -5,7 +5,8 @@
 #' 
 #' @param ... Ellipsis arguments.
 #'     
-#' @return TRUE if all ellipsis arguments are keyword arguments; FALSE otherwise.
+#' @return \code{TRUE} if all ellipsis arguments are keyword arguments;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname allKwargs
@@ -19,7 +20,8 @@ allKwargs <- function(...) {
 #' 
 #' @param ... Ellipsis arguments.
 #' 
-#' @return TRUE if any ellipsis arguments are keyword arguments; FALSE otherwise.
+#' @return \code{TRUE} if any ellipsis arguments are keyword arguments;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname anyKwargs
@@ -30,12 +32,12 @@ anyKwargs <- function(...) {
 }
 
 # allNA ------------------------------------------------------------------------
-#' Test if all elements are NA values.
+#' Test if all elements are \code{NA} values.
 #' 
 #' @param x Test vector.
 #'     
-#' @return TRUE if vector is of length zero or contains only NA values;
-#' FALSE otherwise.
+#' @return \code{TRUE} if vector is of length zero or
+#' contains only \code{NA} values; \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname allNA
@@ -49,8 +51,8 @@ allNA <- function(x) {
 #' 
 #' @param x Character vector.
 #' 
-#' @return TRUE if character vector is of length zero or contains only
-#' whitespace characters; FALSE otherwise.
+#' @return \code{TRUE} if character vector is of length zero or
+#' contains only whitespace characters; \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname allWhite
@@ -242,7 +244,8 @@ dispatchFromClassS3 <- function(generic, class.vector, package) {
 #' 
 #' @param ... Ellipsis arguments.
 #' 
-#' @return TRUE if there are no ellipsis arguments; FALSE otherwise.
+#' @return \code{TRUE} if there are no ellipsis arguments;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname emptyArgs
@@ -303,56 +306,6 @@ getColIndices <- function(x) {
     num.cols <- ncol(x)
     stopifnot( isSingleNonNegativeWholeNumber(num.cols) )
     return( if ( num.cols > 0 ) { 1:num.cols } else { integer() } )
-}
-
-# getFilePrefix ----------------------------------------------------------------
-#' Get file prefixes.
-#' 
-#' @param x Character vector of file paths.
-#'     
-#' @return Vector in which each element contains the file prefix of the 
-#' corresponding element of the input vector, or the input file path if 
-#' no file extension was found.
-#' 
-#' @keywords internal
-#' @rdname getFilePrefix
-getFilePrefix <- function(x) {
-    
-    stopifnot( is.character(x) )
-    stopifnot( length(x) > 0 )
-    
-    m <- regexec(const$pattern$file.with.ext, x)
-    matches <- regmatches(x, m)
-    
-    prefixes <- sapply(getIndices(x), function(i) if ( length(matches[[i]]) > 0 ) 
-    { matches[[i]][2] } else { x[i] } )
-    
-    return(prefixes)
-}
-
-# getFileExtension -------------------------------------------------------------
-#' Get file extensions.
-#' 
-#' @param x Character vector of file paths.
-#'     
-#' @return Vector in which each element contains the file extension of the 
-#' corresponding element of the input vector, or an empty string if no file
-#' extension was found.
-#' 
-#' @keywords internal
-#' @rdname getFileExtension
-getFileExtension <- function(x) {
-    
-    stopifnot( is.character(x) )
-    stopifnot( length(x) > 0 )
-    
-    m <- regexec(const$pattern$file.with.ext, x)
-    matches <- regmatches(x, m)
-    
-    extensions <- sapply(getIndices(x), function(i) if ( length(matches[[i]]) > 0 ) 
-    { matches[[i]][3] } else { '' } )
-    
-    return(extensions)
 }
 
 # getIndices -------------------------------------------------------------------
@@ -537,9 +490,7 @@ getSeqinfo <- function(genome=NULL) {
 #' @return A \code{data.frame} containing sequence info for the given genome.
 #' This can be used to create, but is distinct from, a \pkg{GenomeInfoDb}
 #' \code{Seqinfo} object.
-#'
-#' @include const.R
-#' @include genome.R
+#' 
 #' @keywords internal
 #' @rdname getSeqTable
 getSeqTable <- function(genome=NULL) {
@@ -580,7 +531,8 @@ getSpecialAttributeNames <- function(x) {
 #' 
 #' @param x Test object.
 #'     
-#' @return TRUE if object has nonempty names with no NA values; FALSE otherwise.
+#' @return \code{TRUE} if object has nonempty names with no \code{NA} values;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname hasNames
@@ -593,7 +545,8 @@ hasNames <- function(x) {
 #' 
 #' @param x A \code{data.frame} or \code{matrix}.
 #'     
-#' @return TRUE if input object has non-default row names; FALSE otherwise.
+#' @return \code{TRUE} if input object has non-default row names;
+#' \code{FALSE} otherwise.
 #'    
 #' @keywords internal
 #' @rdname hasRownames
@@ -707,7 +660,7 @@ inRange <- function(n, interval) {
 #' @param col.index Column index of inserted column.
 #' @param col.name Column name of inserted column. If a column name is 
 #' specified, but the object has no existing column names, default names 
-#' (e.g. 'COL05') will be assigned to the existing columns. If a column 
+#' (e.g. \code{'COL05'}) will be assigned to the existing columns. If a column
 #' name is not specified, but the object has existing column names, the 
 #' inserted column will be assigned a default column name.
 #' @param data Optional vector of data to insert in the new column. The length 
@@ -765,7 +718,8 @@ insertColumn <- function(x, col.index, col.name=NULL, data=NA) {
 #' 
 #' @param x Test object.
 #'      
-#' @return TRUE if object is a single logical value; FALSE otherwise.
+#' @return \code{TRUE} if object is a single logical value;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isBOOL
@@ -778,9 +732,11 @@ isBOOL <- function(x) {
 #'  
 #' @param ids Vector of locus IDs.
 #'      
-#' @return Logical vector indicating which elements are valid IDs that follow 
-#' the pattern of a default marker ID.
-#'  
+#' @return Logical vector indicating which elements are valid
+#' IDs that follow the pattern of a default marker ID.
+#' 
+#' @template section-default-marker-ids
+#' 
 #' @export
 #' @rdname isDefaultMarkerID
 isDefaultMarkerID <- function(ids) {
@@ -792,8 +748,11 @@ isDefaultMarkerID <- function(ids) {
 #' 
 #' @param ids Vector of item IDs.
 #'      
-#' @return Logical vector indicating which elements are default QTL names. 
-#'  
+#' @return Logical vector indicating which elements are valid
+#' IDs that follow the pattern of a default QTL name.
+#' 
+#' @template section-qtl-names
+#' 
 #' @export
 #' @rdname isDefaultQTLName
 isDefaultQTLName <- function(ids) {
@@ -805,7 +764,10 @@ isDefaultQTLName <- function(ids) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if symbol is a valid enumerated allele; FALSE otherwise.
+#' @return \code{TRUE} if symbol is a valid enumerated allele;
+#' \code{FALSE} otherwise.
+#' 
+#' @template section-geno-enum
 #' 
 #' @keywords internal
 #' @rdname isEnumAllele
@@ -818,7 +780,10 @@ isEnumAllele <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if symbol is a valid enumerated genotype; FALSE otherwise.
+#' @return \code{TRUE} if symbol is a valid enumerated
+#'  genotype; \code{FALSE} otherwise.
+#' 
+#' @template section-geno-enum
 #' 
 #' @keywords internal
 #' @rdname isEnumGenotype
@@ -827,11 +792,12 @@ isEnumGenotype <- function(x) {
 }
 
 # isFALSE ----------------------------------------------------------------------
-#' Test for a single FALSE value.
+#' Test for a single \code{FALSE} value.
 #' 
 #' @param x Test object.
 #'      
-#' @return TRUE if object is a single FALSE value; FALSE otherwise.
+#' @return \code{TRUE} if object is a single \code{FALSE} value;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isFALSE
@@ -844,7 +810,10 @@ isFALSE <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if symbol is a valid founder allele; FALSE otherwise.
+#' @return \code{TRUE} if symbol is a valid founder allele;
+#' \code{FALSE} otherwise.
+#' 
+#' @template section-geno-founder
 #' 
 #' @keywords internal
 #' @rdname isFounderAllele
@@ -856,9 +825,12 @@ isFounderAllele <- function(x) {
 #' Test if symbol is a valid founder genotype.
 #' 
 #' @param x Test object.
-#' @param strict Return TRUE only for complete genotypes.
+#' @param strict Return \code{TRUE} only for complete genotypes.
 #' 
-#' @return TRUE if symbol is a valid founder genotype; FALSE otherwise.
+#' @return \code{TRUE} if symbol is a valid founder genotype;
+#' \code{FALSE} otherwise.
+#' 
+#' @template section-geno-founder
 #' 
 #' @keywords internal
 #' @rdname isFounderGenotype
@@ -889,8 +861,11 @@ isFounderGenotype <- function(x, strict=FALSE) {
 #'  
 #' @param loc.ids Vector of locus IDs.
 #'      
-#' @return Logical vector indicating which elements are marker IDs.
-#'  
+#' @return Logical vector indicating which elements are valid IDs that do
+#' \emph{not} follow the pattern of a pseudomarker ID.
+#' 
+#' @template section-marker-ids
+#' 
 #' @export
 #' @rdname isMarkerID
 isMarkerID <- function(loc.ids) {
@@ -957,8 +932,11 @@ isProbability <- function(n) {
 #'  
 #' @param loc.ids Vector of locus IDs.
 #'      
-#' @return Logical vector indicating which elements are pseudomarker IDs.
-#'  
+#' @return Logical vector indicating which elements are valid IDs that follow
+#' the pattern of a pseudomarker ID.
+#' 
+#' @template section-pseudomarker-ids
+#' 
 #' @export
 #' @rdname isPseudomarkerID
 isPseudomarkerID <- function(loc.ids) {
@@ -970,7 +948,8 @@ isPseudomarkerID <- function(loc.ids) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if symbol is a valid raw SNP allele; FALSE otherwise.
+#' @return \code{TRUE} if symbol is a valid raw SNP allele;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isRawAllele
@@ -982,9 +961,10 @@ isRawAllele <- function(x) {
 #' Test if symbol is a valid raw SNP genotype.
 #' 
 #' @param x Test object.
-#' @param strict Return TRUE only for complete genotypes.
+#' @param strict Return \code{TRUE} only for complete genotypes.
 #' 
-#' @return TRUE if symbol is a valid raw SNP genotype; FALSE otherwise.
+#' @return \code{TRUE} if symbol is a valid raw SNP genotype;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isRawGenotype
@@ -1015,7 +995,8 @@ isRawGenotype <- function(x, strict=FALSE) {
 #' 
 #' @param x Test object.
 #'      
-#' @return TRUE if the object is a single character; FALSE otherwise.
+#' @return \code{TRUE} if the object is a single character;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isSingleChar
@@ -1028,8 +1009,8 @@ isSingleChar <- function(x) {
 #' 
 #' @param n Test object.
 #' 
-#' @return TRUE if the object is a single finite number;
-#' FALSE otherwise.
+#' @return \code{TRUE} if the object is a single finite number;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isSingleFiniteNumber
@@ -1042,8 +1023,8 @@ isSingleFiniteNumber <- function(n) {
 #' 
 #' @param n Test object.
 #'      
-#' @return TRUE if the object is a single non-negative number; 
-#' FALSE otherwise.
+#' @return \code{TRUE} if the object is a single non-negative number;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isSingleNonNegativeNumber
@@ -1057,8 +1038,8 @@ isSingleNonNegativeNumber <- function(n) {
 #' @param n Test object.
 #' @param tol Numeric tolerance.
 #'      
-#' @return TRUE if the object is a single non-negative whole number; 
-#' FALSE otherwise.
+#' @return \code{TRUE} if the object is a single non-negative whole number;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isSingleNonNegativeWholeNumber
@@ -1072,8 +1053,8 @@ isSingleNonNegativeWholeNumber <- function(n, tol=.Machine$double.eps^0.5) {
 #' 
 #' @param n Test object.
 #'      
-#' @return TRUE if the object is a single positive number; 
-#' FALSE otherwise.
+#' @return \code{TRUE} if the object is a single positive number;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isSinglePositiveNumber
@@ -1087,8 +1068,8 @@ isSinglePositiveNumber <- function(n) {
 #' @param n Test object.
 #' @param tol Numeric tolerance.
 #'      
-#' @return TRUE if the object is a single positive whole number; 
-#' FALSE otherwise.
+#' @return \code{TRUE} if the object is a single positive whole number;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isSinglePositiveWholeNumber
@@ -1102,8 +1083,8 @@ isSinglePositiveWholeNumber <- function(n, tol=.Machine$double.eps^0.5) {
 #' 
 #' @param n Test object.
 #'      
-#' @return TRUE if the object is a single valid probability; 
-#' FALSE otherwise.
+#' @return \code{TRUE} if the object is a single valid probability;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isSingleProbability
@@ -1117,7 +1098,8 @@ isSingleProbability <- function(n) {
 #' 
 #' @param x Test object.
 #'      
-#' @return TRUE if the object is a single string; FALSE otherwise.
+#' @return \code{TRUE} if the object is a single string;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isSingleString
@@ -1131,7 +1113,8 @@ isSingleString <- function(x) {
 #' @param n Test object.
 #' @param tol Numeric tolerance.
 #'      
-#' @return TRUE if the object is a single whole number; FALSE otherwise.
+#' @return \code{TRUE} if the object is a single whole number;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isSingleWholeNumber
@@ -1145,8 +1128,11 @@ isSingleWholeNumber <- function(n, tol=.Machine$double.eps^0.5) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if symbol is a valid enumerated or founder allele;
-#' FALSE otherwise.
+#' @return \code{TRUE} if symbol is a valid enumerated or founder allele;
+#' \code{FALSE} otherwise.
+#' 
+#' @template section-geno-enum
+#' @template section-geno-founder
 #' 
 #' @keywords internal
 #' @rdname isValidAllele
@@ -1158,10 +1144,13 @@ isValidAllele <- function(x) {
 #' Test if symbol is a valid genotype.
 #' 
 #' @param x Test object.
-#' @param strict Return TRUE only for complete genotypes.
+#' @param strict Return \code{TRUE} only for complete genotypes.
 #' 
-#' @return TRUE if symbol is a valid enumerated or founder genotype;
-#' FALSE otherwise.
+#' @return \code{TRUE} if symbol is a valid enumerated or founder genotype;
+#' \code{FALSE} otherwise.
+#' 
+#' @template section-geno-enum
+#' @template section-geno-founder
 #' 
 #' @keywords internal
 #' @rdname isValidGenotype
@@ -1176,6 +1165,8 @@ isValidGenotype <- function(x, strict=FALSE) {
 #'      
 #' @return Logical vector indicating which elements are valid identifiers.
 #' 
+#' @template section-item-ids
+#' 
 #' @export
 #' @rdname isValidID
 isValidID <- function(x) {
@@ -1187,8 +1178,10 @@ isValidID <- function(x) {
 #'   
 #' @param x Test vector.
 #'      
-#' @return Logical vector indicating which elements are syntactically valid 
+#' @return Logical vector indicating which elements are syntactically valid R
 #' names.
+#' 
+#' @template section-syntactic-names
 #' 
 #' @export
 #' @rdname isValidName
@@ -1247,7 +1240,6 @@ loadChrTable <- function() {
 #' 
 #' @importFrom yaml yaml.load
 #' @importFrom yaml yaml.load_file
-#' @include mapping.R
 #' @keywords internal
 #' @rdname loadMapping
 loadMapping <- function(line=NULL, file=NULL) {
@@ -1476,11 +1468,14 @@ loadVector <- function(line=NULL, file=NULL, type=NULL) {
 # makeDefaultMarkerIDs ---------------------------------------------------------
 #' Make default marker IDs for loci.
 #'   
-#' @param loc Locus \code{data.frame} specifying physical map positions.
+#' @param loc Locus \code{data.frame}, with columns \code{'chr'} and
+#' \code{'pos'}, specifying physical map positions.
 #' @param sep Separator between the two parts of a default marker ID.
 #'      
 #' @return Character vector of default marker IDs.
-#'  
+#' 
+#' @template section-default-marker-ids
+#' 
 #' @export
 #' @rdname makeDefaultMarkerIDs
 makeDefaultMarkerIDs <- function(loc, sep=c(':', '-')) {
@@ -1522,11 +1517,14 @@ makeDefaultMarkerIDs <- function(loc, sep=c(':', '-')) {
 # makeDefaultQTLNames ----------------------------------------------------------
 #' Make default QTL names for the specified loci.
 #'  
-#' @param loc Locus \code{data.frame} specifying genetic map positions.
+#' @param loc Locus \code{data.frame}, with columns \code{'chr'} and
+#' \code{'pos'}, specifying genetic map positions.
 #' @param step Map step size.
 #'      
 #' @return Character vector of default QTL names.
-#'  
+#' 
+#' @template section-qtl-names
+#' 
 #' @export
 #' @rdname makeDefaultQTLNames
 makeDefaultQTLNames <- function(loc, step=0) {
@@ -1591,10 +1589,13 @@ makeNumbers <- function(x) {
 # makePseudomarkerIDs ----------------------------------------------------------
 #' Make pseudomarker IDs for the specified loci.
 #'  
-#' @param loc Locus \code{data.frame} specifying map positions.
+#' @param loc Locus \code{data.frame}, with columns \code{'chr'} and
+#' \code{'pos'}, specifying genetic map positions.
 #'      
 #' @return Character vector of pseudomarker IDs.
-#'  
+#' 
+#' @template section-pseudomarker-ids
+#' 
 #' @export
 #' @rdname makePseudomarkerIDs
 makePseudomarkerIDs <- function(loc) {
@@ -1661,12 +1662,18 @@ otherattributes <- function(x) {
 
 # parseDefaultMarkerIDs --------------------------------------------------------
 #' Parse default marker IDs.
+#' 
+#' This function parses an input vector of default marker IDs, and returns a
+#' physical \code{mapframe} with the locus in each row derived from the
+#' corresponding marker ID in the input vector. An error is raised if any
+#' of the input values cannot be parsed as a default marker ID.
 #'  
 #' @param marker.ids Vector of default marker IDs.
 #' 
-#' @return Physical \code{mapframe} with loci corresponding to the specified
-#' marker IDs. Raises an error if any of the input values cannot be parsed as
-#' a default marker ID.
+#' @return Physical \code{mapframe} with loci
+#' corresponding to the specified marker IDs.
+#' 
+#' @template section-default-marker-ids
 #' 
 #' @export
 #' @rdname parseDefaultMarkerIDs
@@ -1686,13 +1693,19 @@ parseDefaultMarkerIDs <- function(marker.ids) {
 
 # parseDefaultQTLNames ---------------------------------------------------------
 #' Parse default QTL names.
-#'    
+#' 
+#' This function parses an input vector of default QTL names, and returns a
+#' genetic \code{mapframe} with the locus in each row derived from the
+#' corresponding QTL name in the input vector. An error is raised if any
+#' of the input values cannot be parsed as a default QTL name.
+#' 
 #' @param qtl.names Vector of default QTL names.
 #' 
-#' @return Genetic \code{mapframe} with loci corresponding to the specified QTL
-#' names. Raises an error if any of the input values cannot be parsed as a
-#' default QTL name.
-#'  
+#' @return Genetic \code{mapframe} with loci
+#' corresponding to the specified QTL names.
+#' 
+#' @template section-qtl-names
+#' 
 #' @export
 #' @rdname parseDefaultQTLNames
 parseDefaultQTLNames <- function(qtl.names) {
@@ -1719,7 +1732,8 @@ parseDefaultQTLNames <- function(qtl.names) {
 #' 
 #' @return Character matrix in which each row contains the values of capture
 #' groups for a given filename, and each column contains values of a given
-#' capture group across files. NA values represent unmatched capture groups.
+#' capture group across files. Unmatched capture groups are represented by
+#' \code{NA} values.
 #' 
 #' @keywords internal
 #' @rdname parseFilenames
@@ -1763,20 +1777,24 @@ parseFilenames <- function(filenames, pattern) {
     parsed <- matrix( unlist(parsed), nrow=length(parsed),
         byrow=TRUE, dimnames=list(filenames, capture.names) )
     
-    
-    
     return(parsed)
 }
 
 # parsePseudomarkerIDs ---------------------------------------------------------
 #' Parse pseudomarker IDs.
-#'    
+#' 
+#' This function parses an input vector of pseudomarker IDs, and returns a
+#' genetic \code{mapframe} with the locus in each row derived from the
+#' corresponding pseudomarker ID in the input vector. An error is raised
+#' if any of the input values cannot be parsed as a pseudomarker ID.
+#' 
 #' @param loc.ids Vector of pseudomarker IDs.
 #' 
-#' @return Genetic \code{mapframe} with loci corresponding to the specified
-#' pseudomarker IDs. Raises an error if any input values cannot be parsed as
-#' a pseudomarker ID.
-#'  
+#' @return Genetic \code{mapframe} with loci
+#' corresponding to the input pseudomarker IDs.
+#' 
+#' @template section-pseudomarker-ids
+#' 
 #' @export
 #' @rdname parsePseudomarkerIDs
 parsePseudomarkerIDs <- function(loc.ids) {
@@ -1793,11 +1811,11 @@ parsePseudomarkerIDs <- function(loc.ids) {
 }
 
 # removeColsNA -----------------------------------------------------------------
-#' Remove columns containing only NA values.
+#' Remove columns containing only \code{NA} values.
 #'
 #' @param x A \code{data.frame} or \code{matrix}.
 #'
-#' @return Input object with NA-only columns removed.
+#' @return Input object without those columns that contain only \code{NA} values.
 #'
 #' @keywords internal
 #' @rdname removeColsNA
@@ -1810,11 +1828,11 @@ removeColsNA <- function(x) {
 }
 
 # removeRowsNA -----------------------------------------------------------------
-#' Remove rows containing only NA values.
+#' Remove rows containing only \code{NA} values.
 #'
 #' @param x A \code{data.frame} or \code{matrix}.
 #'
-#' @return Input object with NA-only rows removed.
+#' @return Input object without those rows that contain only \code{NA} values.
 #'
 #' @keywords internal
 #' @rdname removeRowsNA
@@ -2008,7 +2026,7 @@ setRownamesFromColumn <- function(x, col.name='rownames') {
 }
 
 # stopif -----------------------------------------------------------------------
-#' Stop if the expression is TRUE.
+#' Stop if the expression is \code{TRUE}.
 #' 
 #' @details This function is based on the R base function \code{stopifnot}, but  
 #' is defined only for the simple case of a single expression. It should be used

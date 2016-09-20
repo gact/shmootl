@@ -19,8 +19,28 @@ run_makegeno(datafile, genfile, fdrfile = NA_character_,
 \item{digits}{numeric precision [default: unrounded]}
 }
 \description{
-This script will read genotype data from the specified VCF 
-files, then write that genotype data to an \pkg{R/qtl} genotype CSV file.
+Read raw genotype data from the sample VCF file, encode the given genotype
+data as founder or enumerated genotypes, and write the encoded genotypes
+to an \pkg{R/qtl} genotype CSV file.
+}
+\details{
+If no founder VCF file is specified, markers are assigned enumerated
+genotypes, so that each raw allele is converted to a number in the order
+in which it is first observed at a given marker (i.e. \code{'1'},
+\code{'2'}, etc.).
+
+If a founder VCF file is given, markers are assigned a genotype symbol
+corresponding to a specific founder. If the \code{alleles} parameter is
+specified, each element of the \code{alleles} vector must denote a
+specific founder.
+}
+\seealso{
+Other pipeline functions: \code{\link{run_annoqtl}},
+  \code{\link{run_digest}}, \code{\link{run_estimap}},
+  \code{\link{run_makecross}}, \code{\link{run_prep}},
+  \code{\link{run_pullmap}}, \code{\link{run_pushmap}},
+  \code{\link{run_recode}}, \code{\link{run_report}},
+  \code{\link{run_scanone}}
 }
 \concept{
 shmootl:utilities

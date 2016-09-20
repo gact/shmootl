@@ -7,7 +7,8 @@
 #' 
 #' @return Vector of the sample IDs in the given VCF file.
 #'   
-#' @keywords internal
+#' @export
+#' @family VCF functions
 #' @rdname getSamplesVCF
 getSamplesVCF <- function(file) {
     stopifnot( isSingleString(file) )
@@ -21,8 +22,8 @@ getSamplesVCF <- function(file) {
 #' 
 #' @param file A VCF file path.
 #' 
-#' @return TRUE if the specified VCF file contains genotype quality (GQ) scores;
-#' FALSE otherwise.
+#' @return \code{TRUE} if the specified VCF file contains
+#' genotype quality (GQ) scores; \code{FALSE} otherwise.
 #'   
 #' @keywords internal
 #' @rdname hasGenoQualVCF
@@ -396,20 +397,19 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
 # readGenoVCF ------------------------------------------------------------------
 #' Read genotype data from a VCF file.
 #' 
-#' This function reads SNP genotype data from one or more VCF files, and returns
-#' these as an \pkg{R/qtl} \code{cross} \code{geno} object.
+#' This function reads SNP genotype data from one or more VCF files, and
+#' returns these as an \pkg{R/qtl} \code{cross} \code{geno} object.
 #' 
 #' If no founder samples are specified, this function assigns enumerated
 #' genotypes at each locus according to the observed raw SNP genotype. So
-#' for example, if the SNVs at a given locus are 'A' and 'C', samples are
-#' assigned the genotypes '1' and '2', respectively. The enumeration of
-#' genotypes is performed independently for each locus, so a given
-#' enumerated genotype does not have the same meaning across loci.
+#' for example, if the raw SNP alleles at a given locus are \code{'A'} and
+#' \code{'C'}, samples are assigned the genotypes \code{'1'} and \code{'2'},
+#' respectively.
 #' 
 #' If founder samples are specified, this function assigns a genotype symbol
-#' from the \code{alleles} parameter, or otherwise from a default symbol. In
-#' the case of founder genotypes, a given genotype represents the same founder
-#' strain across markers.
+#' corresponding to a specific founder. The actual symbol used is taken from
+#' the \code{alleles} parameter if available; otherwise it is taken from the
+#' letters of the alphabet (i.e. \code{'A'}, \code{'B'} etc.).
 #' 
 #' @param ... Input VCF file paths.
 #' @param samples Cross sample IDs.
@@ -418,7 +418,12 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
 #' 
 #' @return An \pkg{R/qtl} \code{cross} \code{geno} object.
 #' 
+#' @template section-geno-raw
+#' @template section-geno-enum
+#' @template section-geno-founder
+#' 
 #' @export
+#' @family VCF functions
 #' @rdname readGenoVCF
 readGenoVCF <- function(..., samples, founders=NULL, alleles=NULL) {
     

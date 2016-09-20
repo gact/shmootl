@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_pushmap.R
 \name{run_pushmap}
 \alias{run_pushmap}
-\title{Push map into data file.}
+\title{Push map into a data file.}
 \usage{
 run_pushmap(mapfile, datafile, mapname = NA_character_,
   require.mapunit = TRUE, include.mapunit = TRUE)
@@ -19,11 +19,19 @@ run_pushmap(mapfile, datafile, mapname = NA_character_,
 \item{include.mapunit}{include map units in output}
 }
 \description{
-Add or replace the map of the specified CSV or HDF5 file with
-the data from the given map file. If the \code{mapname} parameter is given
-for a HDF5 data file, the map is assigned that name and when being written
-to the HDF5 file. Otherwise, a default map name (e.g. \code{'Genetic Map'})
-is used.
+Add or replace the map of the specified CSV or HDF5 file with the
+data from the given map file. If the \code{mapname} parameter is
+given for a HDF5 data file, the map is assigned that name and when
+being written to the HDF5 file. Otherwise, a default map name
+(e.g. \code{'Genetic Map'}) is used.
+}
+\seealso{
+Other pipeline functions: \code{\link{run_annoqtl}},
+  \code{\link{run_digest}}, \code{\link{run_estimap}},
+  \code{\link{run_makecross}}, \code{\link{run_makegeno}},
+  \code{\link{run_prep}}, \code{\link{run_pullmap}},
+  \code{\link{run_recode}}, \code{\link{run_report}},
+  \code{\link{run_scanone}}
 }
 \concept{
 shmootl:utilities

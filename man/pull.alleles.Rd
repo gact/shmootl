@@ -16,14 +16,16 @@ Vector of alleles in the \code{cross} object.
 Pull alleles from \pkg{R/qtl} \code{cross}.
 }
 \seealso{
-Other cross utilities: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
+  \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
   \code{\link{inferTetradIndices}},
   \code{\link{inferTimeStep}},
   \code{\link{interpTimeSeries}},
   \code{\link{padTimeSeries}}, \code{\link{permCross}},
-  \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
-  \code{\link{pull.ind}}
+  \code{\link{permIndices}}, \code{\link{pull.chr}},
+  \code{\link{pull.crosstype}}, \code{\link{pull.ind}},
+  \code{\link{readCrossCSV}}, \code{\link{writeCrossCSV}}
 }
 

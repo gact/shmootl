@@ -17,4 +17,9 @@ This function returns the current \pkg{shmootl} \code{mapkey}. If a new
 \code{mapkey} is specified, the \pkg{shmootl} \code{mapkey} option is
 updated with the given \code{mapkey} function.
 }
+\seealso{
+Other mapkey functions: \code{\link{mapkey}}
+
+Other package option functions: \code{\link{genomeOpt}}
+}
 

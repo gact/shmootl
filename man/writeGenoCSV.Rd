@@ -2,7 +2,11 @@
 % Please edit documentation in R/csv.R
 \name{writeGenoCSV}
 \alias{writeGenoCSV}
-\title{Write yeast genotype data to a CSV file.}
+\title{Write yeast genotype data to a CSV file.
+  
+This function writes a yeast \code{geno} object to an \pkg{R/qtl} CSV file.
+The \code{geno} object must have an attribute \code{'info'} of type
+\code{\linkS4class{CrossInfo}}, from which genotype and sample IDs are taken.}
 \usage{
 writeGenoCSV(geno, outfile, chr = NULL, digits = NULL,
   include.mapunit = TRUE)
@@ -23,12 +27,18 @@ number of digits.}
 }
 \description{
 Write yeast genotype data to a CSV file.
+  
+This function writes a yeast \code{geno} object to an \pkg{R/qtl} CSV file.
+The \code{geno} object must have an attribute \code{'info'} of type
+\code{\linkS4class{CrossInfo}}, from which genotype and sample IDs are taken.
 }
 \seealso{
-Other csv utilities: \code{\link{readCovarCSV}},
-  \code{\link{readCrossCSV}}, \code{\link{readGenoCSV}},
-  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
-  \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},
+  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
+  \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
   \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}},
   \code{\link{writePhenoCSV}}

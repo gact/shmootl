@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_makecross.R
 \name{run_makecross}
 \alias{run_makecross}
-\title{Make cross from geno and pheno data.}
+\title{Make cross from genotype and phenotype data.}
 \usage{
 run_makecross(genfile, phefile, crossfile)
 }
@@ -14,8 +14,16 @@ run_makecross(genfile, phefile, crossfile)
 \item{crossfile}{output cross CSV file}
 }
 \description{
-This script combines separate genotype and 
-phenotype files into a single cross data file.
+Read separate genotype and phenotype data files,
+and combine these into a single cross data file.
+}
+\seealso{
+Other pipeline functions: \code{\link{run_annoqtl}},
+  \code{\link{run_digest}}, \code{\link{run_estimap}},
+  \code{\link{run_makegeno}}, \code{\link{run_prep}},
+  \code{\link{run_pullmap}}, \code{\link{run_pushmap}},
+  \code{\link{run_recode}}, \code{\link{run_report}},
+  \code{\link{run_scanone}}
 }
 \concept{
 shmootl:utilities

@@ -13,10 +13,10 @@ makeDefaultElementNames(n)
 Character vector of default group element names.
 }
 \description{
-Following the convention of the \pkg{rhdf5} package, default HDF5 group 
-element names are of the form 'ELT1', where 1 can be any positive integer. 
-Leading zeros are used to pad element numbers, depending on the group size, 
-so that the generated name strings will sort in numerical order.
+Following the convention of the \pkg{rhdf5} package, default HDF5 group
+element names are of the form \code{'ELT1'}, where 1 can be any positive
+integer. Leading zeros are used to pad element numbers, depending on the
+group size, so that the generated name strings will sort in numerical order.
 }
 \keyword{internal}
 

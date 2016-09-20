@@ -10,7 +10,8 @@ isSingleString(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if the object is a single string; FALSE otherwise.
+\code{TRUE} if the object is a single string;
+\code{FALSE} otherwise.
 }
 \description{
 Test for a single character string.

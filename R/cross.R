@@ -1,61 +1,18 @@
 # Start of cross.R #############################################################
 
-# TODO: improve identification of tetrads.
-
-# Cross Utilities --------------------------------------------------------------
-#' Utilities for handling \pkg{R/qtl} \code{cross} objects.
-#' 
-#' @description Cross utilities can query or modify an existing \pkg{R/qtl} 
-#' \code{cross} object.
-#'   
-#' @details An \pkg{R/qtl} \code{cross} object contains phenotype data for a set 
-#' of individual samples, along with genotype data for the same samples for 
-#' multiple marker loci across one or more sequences.
-#' 
-#' These utilities include functions to pull sequences
-#' (\code{\link{pull.chr}}), individual sample IDs (\code{\link{pull.ind}}), or
-#' alleles (\code{\link{pull.alleles}}). They also include functions to get
-#' column indices within an \pkg{R/qtl} \code{cross$pheno} \code{data.frame}, 
-#' for the ID column (\code{\link{getIdColIndex}}) and phenotype columns 
-#' \code{\link{getPhenoColIndices}}.
-#' 
-#' There are functions to infer tetrad indices 
-#' (\code{\link{inferTetradIndices}}) or strain indices 
-#' (\code{\link{inferStrainIndices}}) for a \code{cross} object, based on 
-#' sample IDs (if available) and genotype data.
-#' 
-#' A \code{cross} object can be modified by permuting either its phenotype or 
-#' genotype data (\code{\link{permCross}}). When permuting phenotypes, it may
-#' also be necessary to permute any associated data (e.g. covariates) in the 
-#' same way. In such cases, \code{\link{permIndices}} can be used to generate
-#' a set of permutation indices, which can in turn be passed to 
-#' \code{\link{permCross}} or used to permute associated data.
-#' 
-#' There are several functions for handling a \code{cross} with a time-series 
-#' phenotype, such that phenotypes have been observed at regular time points, 
-#' and successive phenotype columns are named for the respective observation 
-#' times (e.g. '0.0' for an observation at time zero). These allow for the time 
-#' step to be inferred automatically (\code{\link{inferTimeStep}}), for the 
-#' phenotype data to be padded in gaps of the time series 
-#' (\code{\link{padTimeSeries}}), and for the phenotype values to 
-#' be interpolated in time series gaps (\code{\link{interpTimeSeries}}).
-#' 
-#' @docType package
-#' @name Cross Utilities
-NULL
-
 # getIdColIndex ----------------------------------------------------------------
 #' Get sample ID column index.
 #' 
 #' Get the index of the sample ID column in the \code{cross} phenotype 
-#' \code{data.frame}.
+#' \code{data.frame}. This is column with the heading \code{'ID'}
+#' (case-insensitive).
 #' 
 #' @param cross An \pkg{R/qtl} \code{cross} object.
-#'     
+#' 
 #' @return Sample ID column index.
 #' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
 #' @rdname getIdColIndex
 getIdColIndex <- function(cross) {
     
@@ -82,10 +39,10 @@ getIdColIndex <- function(cross) {
 #' @param cross An \pkg{R/qtl} \code{cross} object.
 #' @param i Column index for which the flanking phenotype column indices 
 #' should be returned.
-#'     
+#' 
 #' @return Flanking phenotype column indices. If the specified index refers to
-#' the first or last column, an NA value is returned for the lower or upper 
-#' flanking index, respectively.
+#' the first or last column, an \code{NA} value is returned for the lower or
+#' upper flanking index, respectively.
 #' 
 #' @keywords internal
 #' @rdname getFlankingPhenoColIndices
@@ -122,20 +79,20 @@ getFlankingPhenoColIndices <- function(cross, i) {
 # getPhenoColIndices -----------------------------------------------------------
 #' Get phenotype column indices.
 #' 
-#' Get the indices of the phenotype columns in the \code{cross} phenotype data 
+#' Get the indices of the phenotype columns in the \code{cross} phenotype data
 #' frame, excluding special columns such as the sample ID column.
 #' 
 #' @param cross An \pkg{R/qtl} \code{cross} object.
-#' @param pheno.col Vector indicating the phenotype indices to return. This can 
-#' be an integer vector of phenotype column indices with respect to the columns 
-#' of the \code{cross} phenotype \code{data.frame}, or a character vector that 
-#' contains phenotype IDs or their syntactically valid names. If none are 
+#' @param pheno.col Vector indicating the phenotype indices to return. This can
+#' be an integer vector of phenotype column indices with respect to the columns
+#' of the \code{cross} phenotype \code{data.frame}, or a character vector that
+#' contains phenotype IDs or their syntactically valid names. If none are
 #' specified, all phenotype column indices are returned.
 #'     
 #' @return Phenotype column indices.
 #' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
 #' @rdname getPhenoColIndices
 getPhenoColIndices <- function(cross, pheno.col=NULL) {
 
@@ -203,21 +160,42 @@ getPhenoColIndices <- function(cross, pheno.col=NULL) {
     return(indices)
 }
 
+# hasTimeSeriesPhenotypes ------------------------------------------------------
+#' Test if \code{cross} contains time-series phenotypes.
+#' 
+#' @param cross An \pkg{R/qtl} \code{cross} object.
+#' @param allow.gaps Allow gaps in time series, provided
+#' that any gaps are a multiple of the inferred time step.
+#' @param tol Tolerance for time step equality.
+#' 
+#' @return \code{TRUE} if \code{cross} seems to have time-series phenotypes,
+#' given the specified constraints; \code{FALSE} otherwise.
+#' 
+#' @template section-time-series
+#' 
+#' @export
+#' @family cross object functions
+#' @family time-series functions
+#' @rdname hasTimeSeriesPhenotypes
+hasTimeSeriesPhenotypes <- function(cross, allow.gaps=TRUE, tol=1e-5) {
+    return( ! is.null( inferTimeStep(cross, allow.gaps=allow.gaps, tol=tol) ) )
+}
+
 # inferLodColNames -------------------------------------------------------------
 #' Infer \code{scanone} result LOD column names.
 #' 
-#' Given a \code{cross} and set of phenotypes, get the expected the LOD column 
+#' Given a \code{cross} and set of phenotypes, get the expected the LOD column
 #' names of the corresponding scanone result.
 #'
 #' @param cross An \pkg{R/qtl} \code{cross} object.
-#' @param pheno.col Vector indicating the phenotypes for which LOD column names 
-#' should be inferred.. This can be an integer vector of phenotype column 
-#' indices with respect to the columns of the \code{cross} phenotype 
-#' \code{data.frame}, or a character vector that contains phenotype IDs or their 
-#' syntactically valid names. If none are specified, LOD names are inferred for 
-#' all \code{cross} phenotypes.
+#' @param pheno.col Vector indicating the phenotypes for which LOD column names
+#' should be inferred. This can be an integer vector of phenotype column indices
+#' with respect to the columns of the \code{cross} phenotype \code{data.frame},
+#' or a character vector that contains phenotype IDs or their syntactically
+#' valid names. If none are specified, LOD names are inferred for all
+#' \code{cross} phenotypes.
 #'  
-#' @return Vector of the LOD column headings that would be expected in a 
+#' @return Vector of the LOD column headings that would be expected in a
 #' \code{scanone} result for the given \code{cross} and phenotypes.
 #' 
 #' @keywords internal
@@ -240,20 +218,22 @@ inferLodColNames <- function(cross, pheno.col=NULL) {
 # inferStrainIndices -----------------------------------------------------------
 #' Infer sample strain indices.
 #'
-#' Infers strain indices of a set of samples from the given object. A character 
-#' vector of sample IDs can be passed as an argument, in which case the strain 
-#' indices will be inferred from each set of identical consecutive sample IDs. 
-#' If a \code{cross} object is passed as an argument, strain indices will be 
-#' inferred from sample IDs, if present, or otherwise by comparison of sample 
-#' genotypes.
+#' Infers strain indices of a set of samples from the given object. A character
+#' vector of sample IDs can be passed as an argument, in which case the strain
+#' indices will be inferred from each set of identical consecutive sample IDs.
+#' If a \code{cross} object is passed as an argument, strain indices will be
+#' inferred from sample IDs, if present. Otherwise, strain indices are inferred
+#' from each set of identical consecutive sample genotypes.
 #'
-#' @param x An \pkg{R/qtl} \code{cross} object, or a character vector of sample
-#' IDs.
+#' @param x An \pkg{R/qtl} \code{cross} object,
+#' or a character vector of sample IDs.
 #'  
 #' @return Vector of sample strain indices inferred from the input object.
 #' 
+#' @template section-sample-ids
+#' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
 #' @rdname inferStrainIndices
 inferStrainIndices <- function (x) {
     UseMethod('inferStrainIndices', x)
@@ -319,24 +299,28 @@ inferStrainIndices.cross <- function(x) {
 # inferTetradIndices -----------------------------------------------------------
 #' Infer sample tetrad indices.
 #'
-#' @description Infers tetrad indices of a set of samples from the given object. 
-#' A character vector of sample IDs can be passed as the first argument, in 
-#' which case the tetrad indices will be inferred from the sample IDs themselves.
-#' If sample IDs have a numeric suffix, these are taken as segregant numbers 
-#' and used to infer which tetrad each sample ID might belong to. 
+#' @description Infers tetrad indices of a set of samples from the given object.
+#' A character vector of sample IDs can be passed as the first argument, in
+#' which case the tetrad indices will be inferred, where possible, from the
+#' sample IDs themselves.
 #'   
-#' If a \code{cross} is the first argument, tetrad indices will be inferred 
+#' If a \code{cross} is the first argument, tetrad indices will be inferred
 #' from sample IDs, if present, or otherwise by comparison of sample genotypes.
+#' 
+#' @template section-sample-ids
+#' @template section-tetradic-samples
 #'   
-#' @param x An \pkg{R/qtl} \code{cross} object, or a character vector of sample IDs.
+#' @param x An \pkg{R/qtl} \code{cross} object,
+#' or a character vector of sample IDs.
 #'  
 #' @return Vector of sample tetrad indices inferred from the input object. 
 #' Returns \code{NULL} if tetrad pattern could not be found.
 #' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
 #' @rdname inferTetradIndices
 inferTetradIndices <- function(x) {
+    # TODO: improve identification of tetrads.
     UseMethod('inferTetradIndices', x)
 }
 
@@ -568,14 +552,18 @@ inferTetradIndices.cross <- function(x) {
 #' Infer time step of time-series phenotypes.
 #' 
 #' @param cross An \pkg{R/qtl} \code{cross} object.
-#' @param allow.gaps Allow gaps in time series, provided that any gaps are a 
-#' multiple of the inferred time step. 
+#' @param allow.gaps Allow gaps in time series, provided
+#' that any gaps are a multiple of the inferred time step.
 #' @param tol Tolerance for time step equality.
 #'     
-#' @return Inferred time step. Returns \code{NULL} if time step could not be inferred.
+#' @return Inferred time step. Returns \code{NULL}
+#' if time step could not be inferred.
+#' 
+#' @template section-time-series
 #' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
+#' @family time-series functions
 #' @rdname inferTimeStep
 inferTimeStep <- function(cross, allow.gaps=TRUE, tol=1e-5) {
     
@@ -649,17 +637,20 @@ inferTimeStep <- function(cross, allow.gaps=TRUE, tol=1e-5) {
 # interpTimeSeries -------------------------------------------------------------
 #' Interpolate gaps in a time-series.
 #' 
-#' Interpolate values for gaps in time-series phenotypes of a \code{cross} 
-#' object.
+#' Interpolate values for gaps in time-series
+#' phenotypes of a \code{cross} object.
 #' 
 #' @param cross An \pkg{R/qtl} \code{cross} object.
 #' @param tol Tolerance for time step equality.
 #'     
-#' @return The input \code{cross} object is returned with gaps in time-series 
+#' @return The input \code{cross} object is returned with gaps in time-series
 #' phenotypes filled with values interpolated from the gap endpoints.
-#'  
+#' 
+#' @template section-time-series
+#' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
+#' @family time-series functions
 #' @importFrom stats approx
 #' @rdname interpTimeSeries
 interpTimeSeries <- function(cross, tol=1e-5) {
@@ -737,6 +728,16 @@ interpTimeSeries <- function(cross, tol=1e-5) {
 
 # makeCross --------------------------------------------------------------------
 #' Make an \pkg{R/qtl} \code{cross} object.
+#' 
+#' This function makes an \pkg{R/qtl} \code{cross} - essentially a list of two
+#' elements named \code{'geno'} and \code{'pheno'} - from the input \code{geno}
+#' and \code{pheno} objects. Both input objects must have an \code{'info'}
+#' attribute of class \code{\linkS4class{CrossInfo}} containing sample IDs. The
+#' output \code{cross} will be created from the intersection set of the samples
+#' in the input \code{geno} and \code{pheno} objects. Sample replicates in the
+#' input \code{pheno} object are preserved. Sample replicates in the input
+#' \code{geno} object must have identical genotypes, which will be replicated
+#' as needed to match the input phenotypes.
 #' 
 #' @param geno A \code{geno} object.
 #' @param pheno A \code{pheno} object.
@@ -854,11 +855,14 @@ makeCross <- function(geno, pheno) {
 #' @param cross An \pkg{R/qtl} \code{cross} object.
 #' @param tol Tolerance for time step equality.
 #'     
-#' @return The input \code{cross} object is returned with all gaps in 
-#' time-series phenotypes padded with NA values.
-#'  
+#' @return The input \code{cross} object is returned with all
+#' gaps in time-series phenotypes padded with \code{NA} values.
+#' 
+#' @template section-time-series
+#' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
+#' @family time-series functions
 #' @rdname padTimeSeries
 padTimeSeries <- function(cross, tol=1e-5) {
     
@@ -999,12 +1003,21 @@ padTimeSeries <- function(cross, tol=1e-5) {
 # permIndices ------------------------------------------------------------------
 #' Generate permutation indices for a \code{cross} object.
 #' 
+#' @description Given an input \code{cross} object with \code{N} samples, this
+#' function generates a non-redundant set of \code{N} permutation indices in
+#' the range \code{1-N}, which can be used to permute the phenotype or genotype
+#' data of a \code{cross} object, as well as any associated data.
+#' 
 #' @param cross An \pkg{R/qtl} \code{cross} object.
 #'     
-#' @return Vector of sample indices that can be used to permute a 
-#' \code{cross} object or associated data. 
+#' @return Vector of sample indices that can be used to permute a
+#' \code{cross} object or associated data.
+#' 
+#' @template section-permutations
 #' 
 #' @export
+#' @family cross object functions
+#' @family permutation functions
 #' @rdname permIndices
 permIndices <- function(cross) {
   
@@ -1024,14 +1037,18 @@ permIndices <- function(cross) {
         tetrad.indices <- inferTetradIndices(cross)
     }
     
-    if ( ! is.null(tetrad.indices) ) {
-        block.indices <- tetrad.indices
+    tetradic <- ! is.null(tetrad.indices)
+    
+    if (tetradic) {
+        sample.bindices <- tetrad.indices
     } else {
-        block.indices <- rep.int(1, num.samples)
+        sample.bindices <- rep.int(1, num.samples)
     }
     
-    blocks <- lapply( 1:max(block.indices), 
-        function(s) which( block.indices == s ) )
+    blocks <- lapply( 1:max(sample.bindices),
+        function(s) which( sample.bindices == s ) )
+    
+    imbalanced.tetrads <- imbalanced.replicates <- FALSE
     
     perm.indices <- rep(0, num.samples)
     
@@ -1041,8 +1058,19 @@ permIndices <- function(cross) {
         
         rep.freq <- sort(rep.freq, decreasing=TRUE)
         
+        if (tetradic) {
+            
+            if ( length(rep.freq) == 1 ) {
+                stop("cannot generate permutation indices - tetrads too imbalanced")
+            } else if ( length(rep.freq) != 4 ) {
+                imbalanced.tetrads <- TRUE
+            }
+        }
+        
         if( length(rep.freq) == 1 || rep.freq[1] > sum(rep.freq[2:length(rep.freq)]) ) {
-            stop("cannot generate permutation indices - imbalanced replicates")
+            stop("cannot generate permutation indices - replicates too imbalanced")
+        } else if ( length( unique(rep.freq) ) > 1 ) {
+            imbalanced.replicates <- TRUE
         }
         
         perm.block <- sample(sample.indices[block])
@@ -1054,33 +1082,55 @@ permIndices <- function(cross) {
         perm.indices[block] <- perm.block
     }
     
+    if (imbalanced.replicates) {
+        warning("sample replicates are imbalanced")
+    }
+    
+    if (imbalanced.tetrads) {
+        warning("tetrads are imbalanced")
+    }
+    
     return(perm.indices)
 }
     
-# permCross -----------------------------------------------------------------
+# permCross --------------------------------------------------------------------
 #' Permute \code{cross} phenotype or genotype data.
 #' 
-#' @details Given an input \code{cross} object, this function permutes either
-#' the phenotype or genotype data (but not both), and returns the permuted 
-#' \code{cross} object. Note that when permuting phenotypes, any covariates
-#' must also be permuted in the same way.
+#' @description Given an input \code{cross} object, this function permutes
+#' either the phenotype or genotype data (but not both), and returns the
+#' permuted \code{cross} object.
+#' 
+#' Note that when permuting phenotypes, any covariates must also be permuted
+#' in the same way. In such cases, it is recommended to generate permutation
+#' indices with \code{\link{permIndices}}, pass the result to the
+#' \code{perm.indices} parameter of this function, and use the same
+#' permutation indices to permute the covariate data.
+#' 
+#' When permuting genotypes, any derived data (e.g. genotype probabilities)
+#' are recalculated by default. To prevent recalculation of derived data,
+#' set the \code{refresh} parameter to \code{FALSE}.
 #' 
 #' @param cross An \pkg{R/qtl} \code{cross} object.
 #' @param perm.indices Permutation indices.
-#' @param perm.pheno Permute phenotype data.
-#' @param perm.geno Permute genotype data.
+#' @param perm.pheno Permute phenotype data (incompatible with \code{perm.geno}).
+#' @param perm.geno Permute genotype data (incompatible with \code{perm.pheno}).
+#' @param refresh Refresh any derived data.
 #'     
 #' @return Permuted \code{cross} object.
 #' 
+#' @template section-permutations
+#' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
+#' @family permutation functions
 #' @rdname permCross
-permCross <- function(cross, perm.indices=NULL, perm.pheno=TRUE, 
-    perm.geno=FALSE) {
+permCross <- function(cross, perm.indices=NULL, perm.pheno=TRUE,
+    perm.geno=FALSE, refresh=TRUE) {
 
     stopifnot( 'cross' %in% class(cross) )
     stopifnot( isBOOL(perm.pheno) )
     stopifnot( isBOOL(perm.geno) )
+    stopifnot( isBOOL(refresh) )
 
     if ( ! xor(perm.pheno, perm.geno) ) {
         stop("permCross must permute either cross phenotypes or cross genotypes")
@@ -1111,7 +1161,9 @@ permCross <- function(cross, perm.indices=NULL, perm.pheno=TRUE,
             cross$geno[[geno.seq]]$data <- cross$geno[[geno.seq]]$data[perm.indices, ]
         }
         
-        cross <- refreshCross(cross)
+        if (refresh) {
+            cross <- refreshCross(cross)
+        }
     }
     
     return(cross)
@@ -1125,7 +1177,7 @@ permCross <- function(cross, perm.indices=NULL, perm.pheno=TRUE,
 #' @return Vector of alleles in the \code{cross} object.
 #' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
 #' @rdname pull.alleles
 pull.alleles <- function(cross) {
     stopifnot( 'cross' %in% class(cross) )
@@ -1133,14 +1185,14 @@ pull.alleles <- function(cross) {
 }
 
 # pull.chr ---------------------------------------------------------------------
-#' Pull sequences from \pkg{R/qtl} \code{cross}.
+#' Pull chromosomes/sequences from \pkg{R/qtl} \code{cross}.
 #' 
 #' @param cross An \pkg{R/qtl} \code{cross} object.
 #'     
-#' @return Vector of sequences in the \code{cross} object.
+#' @return Vector of chromosomes/sequences in the \code{cross} object.
 #' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
 #' @rdname pull.chr
 pull.chr <- function(cross) {
     stopifnot( 'cross' %in% class(cross) )
@@ -1155,7 +1207,7 @@ pull.chr <- function(cross) {
 #' @return Cross type of the \code{cross} object.
 #' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
 #' @rdname pull.crosstype
 pull.crosstype <- function(cross) {
     stopifnot( 'cross' %in% class(cross)  )
@@ -1163,14 +1215,14 @@ pull.crosstype <- function(cross) {
 }
 
 # pull.ind ---------------------------------------------------------------------
-#' Pull individual IDs from \pkg{R/qtl} \code{cross}.
+#' Pull individual sample IDs from \pkg{R/qtl} \code{cross}.
 #' 
 #' @param cross An \pkg{R/qtl} \code{cross} object.
 #'     
-#' @return Vector of individual IDs in the \code{cross} object.
+#' @return Vector of individual sample IDs in the \code{cross} object.
 #' 
 #' @export
-#' @family cross utilities
+#' @family cross object functions
 #' @rdname pull.ind
 pull.ind <- function(cross) {
     

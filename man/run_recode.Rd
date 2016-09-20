@@ -14,7 +14,18 @@ run_recode(datafile, geno = mapping(), enum.geno = FALSE)
 \item{enum.geno}{recode to enumerated genotypes}
 }
 \description{
-Recode data in \pkg{R/qtl} CSV file.
+Recode data in an \pkg{R/qtl} cross or genotype CSV file. Genotypes can be
+recoded by passing to the \code{geno} parameter a YAML string (or file)
+mapping old to new genotypes. Alternatively, genotype data can be
+converted to enumerated genotypes with the \code{enum.geno} parameter.
+}
+\seealso{
+Other pipeline functions: \code{\link{run_annoqtl}},
+  \code{\link{run_digest}}, \code{\link{run_estimap}},
+  \code{\link{run_makecross}}, \code{\link{run_makegeno}},
+  \code{\link{run_prep}}, \code{\link{run_pullmap}},
+  \code{\link{run_pushmap}}, \code{\link{run_report}},
+  \code{\link{run_scanone}}
 }
 \concept{
 shmootl:utilities

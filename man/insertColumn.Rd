@@ -13,7 +13,7 @@ insertColumn(x, col.index, col.name = NULL, data = NA)
 
 \item{col.name}{Column name of inserted column. If a column name is 
 specified, but the object has no existing column names, default names 
-(e.g. 'COL05') will be assigned to the existing columns. If a column 
+(e.g. \code{'COL05'}) will be assigned to the existing columns. If a column
 name is not specified, but the object has existing column names, the 
 inserted column will be assigned a default column name.}
 

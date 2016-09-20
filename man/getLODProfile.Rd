@@ -24,12 +24,12 @@ or an index \emph{with respect to the set of LOD columns}. If no LOD column
 is specified and one such column is found, that column is used by default; 
 otherwise a LOD column must be specified.}
 
-\item{qtl.index}{In a \code{qtl} object, this indicates the QTL for which a 
-LOD profile should be returned.}
+\item{qtl.index}{In a \code{qtl} object, this indicates
+the QTL for which a LOD profile should be returned.}
 }
 \value{
-A \code{scanone} object containing a LOD profile for a single 
-phenotype.
+A \code{scanone} object containing
+a LOD profile for a single phenotype.
 }
 \description{
 Get LOD profile.

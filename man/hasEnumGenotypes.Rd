@@ -13,7 +13,8 @@ hasEnumGenotypes(x)
 \item{x}{Object containing genotype data.}
 }
 \value{
-TRUE if object contains enumerated genotypes; FALSE otherwise.
+\code{TRUE} if object contains enumerated genotypes;
+\code{FALSE} otherwise.
 }
 \description{
 Test if object contains enumerated genotypes.

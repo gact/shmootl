@@ -1,11 +1,11 @@
 # Start of run_pullmap.R #######################################################
 
 # run_pullmap ------------------------------------------------------------------
-#' Pull map from data file.
+#' Pull map from a data file.
 #' 
-#' @description This script pulls the map from a CSV or HDF5 file, and writes it
-#' to a separate map CSV file. If a HDF5 data file contains multiple maps, the
-#' \code{mapname} parameter must be used to specify which map to pull.
+#' Pull the map from a CSV or HDF5 file, and write it to a separate map CSV
+#' file. If a HDF5 data file contains multiple maps, the \code{mapname}
+#' parameter must specify which map to pull.
 #' 
 #' @param datafile file containing map data
 #' @param mapfile output map CSV file
@@ -15,6 +15,7 @@
 #' 
 #' @concept shmootl:utilities
 #' @export
+#' @family pipeline functions
 #' @rdname run_pullmap
 run_pullmap <- function(datafile, mapfile, mapname=NA_character_,
     require.mapunit=TRUE, include.mapunit=TRUE) {

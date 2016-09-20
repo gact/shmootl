@@ -12,8 +12,8 @@ hasMapHDF5(infile, name)
 \item{name}{Map name.}
 }
 \value{
-TRUE if the given HDF5 file contains the named map;
-FALSE otherwise.
+\code{TRUE} if the given HDF5 file contains the named map;
+\code{FALSE} otherwise.
 }
 \description{
 Test if HDF5 file contains the named map.

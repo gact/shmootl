@@ -1,7 +1,7 @@
 # Start of geno.R ##############################################################
 
 # as.data.frame.geno -----------------------------------------------------------
-#' Coerce \code{geno} object to \code{data.frame}.
+#' Convert \code{geno} object to \code{data.frame}.
 #' 
 #' @param x A \code{geno} object.
 #' @param ... Unused arguments.
@@ -92,7 +92,7 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
 }
 
 # as.geno ----------------------------------------------------------------------
-#' Coerce to \code{geno} object.
+#' Convert to \code{geno} object.
 #' 
 #' @param from Object containing genotype data.
 #' @param require.mapunit Require map unit information in map positions.
@@ -216,7 +216,7 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     colnames(map.table) <- const$maptable.colnames[head.rows]
     map.table <- setRownamesFromColumn(map.table, col.name='id')
     
-    # If map positions found, coerce map table to a map object..
+    # If map positions found, convert map table to a map object..
     if (map.present) {
         geno.map <- as.map(map.table, map.unit=map.unit)
     } else { # ..otherwise create a placeholder map, as in R/qtl.
@@ -233,7 +233,7 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     geno.seqs <- unique(locus.seqs)
     
     if ( length(geno.seqs) < const$min.spm  ) {
-        stop("cannot coerce data frame to cross geno - too few sequences (min=",
+        stop("cannot convert data frame to cross geno - too few sequences (min=",
              const$min.spm, ")")
     }
     
@@ -244,7 +244,7 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
     cross.info <- setAlleles(cross.info, alleles)
     cross.info <- setGenotypes(cross.info, genotypes)
-    cross.info <- setCrossType(cross.info, crosstype)
+    cross.info <- setCrosstype(cross.info, crosstype)
     cross.info <- setSamples(cross.info, samples)
     
     # Init cross genotype object.
@@ -260,7 +260,7 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
         class(seq.map) <- 'numeric'
         
         if ( length(seq.map) < const$min.lps ) {
-            stop("cannot coerce data frame to cross geno - sequence has too few loci - '",
+            stop("cannot convert data frame to cross geno - sequence has too few loci - '",
                 geno.seq, "'")
         }
         
@@ -429,10 +429,10 @@ makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
 #' Given input sample genotype data, this function creates an enumerated genotype
 #' matrix, in which each the genotype data at each locus are coded as numbers
 #' in order of occurrence. So for example, if the first sample at a locus has
-#' raw genotype 'A', and the second sample has raw genotype 'C', these will be
-#' assigned genotypes '1' and '2', respectively. The enumeration of genotypes
-#' is performed independently for each locus, so a given enumerated genotype
-#' does not have the same meaning across loci.
+#' raw genotype \code{'A'}, and the second sample has raw genotype \code{'C'},
+#' these will be assigned genotypes \code{'1'} and \code{'2'}, respectively.
+#' The enumeration of genotypes is performed independently for each locus,
+#' so a given enumerated genotype does not have the same meaning across loci.
 #' 
 #' @param x Raw sample genotype \code{array}.
 #'   
@@ -552,7 +552,7 @@ makeGeno <- function(x, y=NULL, alleles=NULL) {
     cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
     cross.info <- setAlleles(cross.info, alleles)
     cross.info <- setGenotypes(cross.info, genotypes)
-    cross.info <- setCrossType(cross.info, crosstype)
+    cross.info <- setCrosstype(cross.info, crosstype)
     cross.info <- setSamples(cross.info, sample.ids)
     cross.info <- setSequences(cross.info, geno.seqs)
     
@@ -592,8 +592,8 @@ makeGeno <- function(x, y=NULL, alleles=NULL) {
 #' 
 #' @param x Raw genotype \code{array}.
 #' 
-#' @return TRUE if object is an \code{array} containing raw genotype data in 
-#' expected form; otherwise, raises first error.
+#' @return \code{TRUE} if object is an \code{array} containing raw
+#' genotype data in expected form; otherwise, raises first error.
 #' 
 #' @keywords internal
 #' @rdname validateRawGenoArray

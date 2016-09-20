@@ -1,39 +1,31 @@
 # Start of csv.R ###############################################################
 
-# CSV Utilities ----------------------------------------------------------------
-#' CSV input/output utilities.
-#' 
-#' Functions for validated input and output of \pkg{R/qtl} data in CSV format.
-#' These include functions for reading (\code{\link{readCrossCSV}}) or writing 
-#' (\code{\link{writeCrossCSV}}) an \pkg{R/qtl} \code{cross} object. There are 
-#' also functions for reading (\code{\link{readMapCSV}}) or writing 
-#' (\code{\link{writeMapCSV}}) an \pkg{R/qtl} \code{map} object.
-#' 
-#' @docType package
-#' @name CSV Utilities
-NULL
-
 # getMetadataCSV -------------------------------------------------------------
 #' Get parameters of \pkg{R/qtl} input data.
 #' 
-#' @description Given a data frame as loaded from an \pkg{R/qtl} input CSV file,
-#' this function determines the parameters of that data (e.g. phenotype columns).
+#' Given the path to an \pkg{R/qtl} input CSV file, or a \code{data.frame}
+#' loaded from such a file, this function determines the parameters of that
+#' data (e.g. phenotype columns).
 #' 
 #' @details The returned list includes information on the following parameters:
 #' 
 #' \itemize{
-#'  \item{\code{pheno.cols}}{Indices of phenotype columns, or NULL if none found.}
-#'  \item{\code{id.col}}{Index of ID column, or NA if not found.}
-#'  \item{\code{geno.cols}}{Indices of genotype columns, or NULL if none found.}
+#'  \item{\code{pheno.cols}}{Indices of phenotype columns,
+#'  or \code{NULL} if none found.}
+#'  \item{\code{id.col}}{Index of ID column, or \code{NA} if not found.}
+#'  \item{\code{geno.cols}}{Indices of genotype columns,
+#'  or \code{NULL} if none found.}
 #'  \item{\code{dat.rows}}{Row indices of data.}
-#'  \item{\code{map.present}}{TRUE if the data contains a map; FALSE otherwise.}
+#'  \item{\code{map.present}}{\code{TRUE} if the data contains a map;
+#'  \code{FALSE} otherwise.}
 #'  \item{\code{class}}{Expected class of the input data.
 #'  This is \code{'unknown'} by default.}
 #' }
 #' 
 #' This information can then guide further processing of the input data.
 #' 
-#' @param x An \pkg{R/qtl} input data frame or a CSV filepath.
+#' @param x An \pkg{R/qtl} input CSV file or
+#' an \pkg{R/qtl} input \code{data.frame}.
 #'
 #' @return A list containing parameters of \pkg{R/qtl} input data.
 #' 
@@ -196,12 +188,12 @@ getMetadataCSV <- function(x) {
 #' 
 #' @param infile Input CSV file path.
 #'
-#' @return TRUE if CSV file contains map data in a known format;
-#' FALSE otherwise.
+#' @return \code{TRUE} if CSV file contains map data in a known format;
+#' \code{FALSE} otherwise.
 #'
 #' @export
-#' @importFrom utils read.csv
-#' @keywords internal
+#' @family CSV functions
+#' @family map utility functions
 #' @rdname hasMapCSV
 hasMapCSV <- function(infile) {
     
@@ -221,19 +213,21 @@ hasMapCSV <- function(infile) {
 # readCovarCSV -----------------------------------------------------------------
 #' Read covariate matrix from a CSV file.
 #' 
-#' This function reads a table of covariates (with optional 'ID' column) from a
-#' CSV file and returns a numeric \code{matrix} of covariate data. The contents
-#' of the input table do not need to be numeric, but they will be converted to
-#' numeric values when being read from file. For example, columns containing
-#' character values are read as factors, which are converted to their numeric
-#' representation.
+#' This function reads a table of covariates (with optional \code{'ID'} column)
+#' from a CSV file and returns a numeric \code{matrix} of covariate data. Sample
+#' IDs are not included in the returned matrix, as \pkg{R/qtl} matches the
+#' covariate matrix row-by-row to the sample rows of the \code{cross} object.
+#' The contents of the input table do not need to be numeric, but they will be
+#' converted to numeric values when being read from file. For example, columns
+#' containing character values are read as factors, which are converted to their
+#' numeric representation.
 #' 
 #' @param infile Input CSV file path.
 #' 
 #' @return A numeric \code{matrix} of covariate data.
 #' 
 #' @export
-#' @family csv utilities
+#' @family CSV functions
 #' @importFrom utils read.csv
 #' @importFrom utils type.convert
 #' @rdname readCovarCSV
@@ -274,20 +268,32 @@ readCovarCSV <- function(infile) {
 # readCrossCSV -----------------------------------------------------------------
 #' Read yeast \code{cross} from a CSV file.
 #' 
-#' This function reads yeast cross data from an \pkg{R/qtl} CSV file and returns 
-#' an \pkg{R/qtl} \code{cross} object with an attribute \code{'info'} of type 
-#' \code{CrossInfo}. 
+#' This function reads yeast cross data from an \pkg{R/qtl} CSV file and
+#' returns an \pkg{R/qtl} \code{cross} object. The returned \code{cross}
+#' has an attribute \code{'info'} of type \code{\linkS4class{CrossInfo}},
+#' which contains information about the input \code{cross}.
+#' 
+#' If a genetic map is not present in the input file, this is estimated when
+#' loading the cross. In such cases, parameters \code{error.prob} and
+#' \code{map.function} are passed to \pkg{R/qtl} for map estimation.
+#' 
+#' By default, any genetic map positions must include map units (i.e.
+#' \code{'cM'}). To read a cross without requiring map units, set
+#' parameter \code{require.mapunit} to \code{FALSE}. If map units
+#' are not required and not found, map positions are assumed to be
+#' in centiMorgans.
 #' 
 #' @param infile Input CSV file path.
-#' @param error.prob Genotyping error rate (ignored unless estimating genetic map).
-#' @param map.function Genetic map function (ignored unless estimating genetic map).
+#' @param error.prob Genotyping error rate.
+#' @param map.function Genetic map function.
 #' @param require.mapunit Require map unit information in map positions.
 #'  
-#' @return An \pkg{R/qtl} \code{cross} object with an attribute \code{'info'} of 
-#' type \code{CrossInfo}.
+#' @return An \pkg{R/qtl} \code{cross} object with an attribute
+#' \code{'info'} of type \code{\linkS4class{CrossInfo}}.
 #' 
 #' @export
-#' @family csv utilities
+#' @family CSV functions
+#' @family cross object functions
 #' @importFrom methods new
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
@@ -420,7 +426,7 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     cross.info <- setPhenotypes(cross.info, phenotypes)
     cross.info <- setAlleles(cross.info, alleles)
     cross.info <- setGenotypes(cross.info, genotypes)
-    cross.info <- setCrossType(cross.info, crosstype)
+    cross.info <- setCrosstype(cross.info, crosstype)
     cross.info <- setSamples(cross.info, samples)
     
     # Get normalised marker sequences, replace these in original table.
@@ -487,11 +493,24 @@ readCrossCSV <- function(infile, error.prob=0.0001,
 # readGenoCSV ------------------------------------------------------------------
 #' Read yeast genotype data from a CSV file.
 #' 
+#' This function reads yeast cross genotype data from an \pkg{R/qtl} CSV file
+#' and returns a \code{geno} object. The returned \code{geno} object has an
+#' attribute \code{'info'} of type \code{\linkS4class{CrossInfo}}. This
+#' \code{\linkS4class{CrossInfo}} object contains information about the
+#' genotype data, including sample IDs, which must be present in the
+#' input genotype data file.
+#' 
+#' By default, any genetic map positions must include map units (i.e.
+#' \code{'cM'}). To read a genotype file without requiring map units,
+#' set parameter \code{require.mapunit} to \code{FALSE}. If map units
+#' are not required and not found, map positions are assumed to be in
+#' centiMorgans.
+#' 
 #' @param infile Input CSV file path.
 #' @param require.mapunit Require map unit information in map positions.
 #' 
 #' @export
-#' @family csv utilities
+#' @family CSV functions
 #' @importFrom utils read.csv
 #' @rdname readGenoCSV
 readGenoCSV <- function(infile, require.mapunit=TRUE) {
@@ -535,13 +554,29 @@ readGenoCSV <- function(infile, require.mapunit=TRUE) {
 # readMapCSV -------------------------------------------------------------------
 #' Read \code{map} from a CSV file.
 #' 
+#' This function reads a yeast cross genetic or physical map from any
+#' \pkg{R/qtl} CSV file that contains map data, whether that file
+#' contains a map table, genotype data, or a full cross.
+#' 
+#' By default, the input map must include map unit information (e.g.
+#' \code{'cM'}, \code{'bp'}). In the case of a map table file, this information
+#' can be indicated in the map headings (e.g. \code{'pos (cM)'}) or in the map
+#' positions (e.g. \code{'47 cM'}). For a cross or genotype file, map units
+#' should be included with map positions.
+#' 
+#' To read an input file without requiring map units, set parameter
+#' \code{require.mapunit} to \code{FALSE}. If map units are not
+#' required and not found, map positions are assumed to be in
+#' centiMorgans.
+#' 
 #' @param infile Input CSV file path.
 #' @param require.mapunit Require map unit information.
 #'     
 #' @return An \pkg{R/qtl} \code{map} object.
 #' 
 #' @export
-#' @family csv utilities
+#' @family CSV functions
+#' @family map utility functions
 #' @rdname readMapCSV
 readMapCSV <- function(infile, require.mapunit=TRUE) {
     
@@ -579,13 +614,29 @@ readMapCSV <- function(infile, require.mapunit=TRUE) {
 # readMapframeCSV --------------------------------------------------------------
 #' Read \code{mapframe} from a CSV file.
 #' 
+#' This function reads a yeast cross genetic or physical mapframe from any
+#' \pkg{R/qtl} CSV file that contains map data, whether that file contains
+#' a map table, genotype data, or a full cross.
+#' 
+#' By default, the input mapframe must include map unit information (e.g.
+#' \code{'cM'}, \code{'bp'}). In the case of a map table file, this information
+#' can be indicated in the map headings (e.g. \code{'pos (cM)'}) or in the map
+#' positions (e.g. \code{'47 cM'}). For a cross or genotype file, map units
+#' should be included with map positions.
+#' 
+#' To read an input file without requiring map units, set parameter
+#' \code{require.mapunit} to \code{FALSE}. If map units are not
+#' required and not found, map positions are assumed to be in
+#' centiMorgans.
+#' 
 #' @param infile Input CSV file path.
 #' @param require.mapunit Require map unit information.
 #'     
 #' @return A \code{mapframe} object.
 #' 
 #' @export
-#' @family csv utilities
+#' @family CSV functions
+#' @family map utility functions
 #' @importFrom utils read.csv
 #' @rdname readMapframeCSV
 readMapframeCSV <- function(infile, require.mapunit=TRUE) {
@@ -643,10 +694,17 @@ readMapframeCSV <- function(infile, require.mapunit=TRUE) {
 # readPhenoCSV -----------------------------------------------------------------
 #' Read yeast phenotype data from a CSV file.
 #'
+#' This function reads yeast cross phenotype data from an \pkg{R/qtl} CSV file
+#' and returns a \code{pheno} object. The returned \code{pheno} object has an
+#' attribute \code{'info'} of type \code{\linkS4class{CrossInfo}}. This
+#' \code{\linkS4class{CrossInfo}} object contains information about the
+#' phenotype data, including sample IDs, which must be present in the
+#' input phenotype data file.
+#' 
 #' @param infile Input CSV file path.
 #'
 #' @export
-#' @family csv utilities
+#' @family CSV functions
 #' @importFrom utils read.csv
 #' @rdname readPhenoCSV
 readPhenoCSV <- function(infile) {
@@ -676,20 +734,34 @@ readPhenoCSV <- function(infile) {
 # recodeCSV --------------------------------------------------------------------
 #' Recode \pkg{R/qtl} data in CSV file.
 #' 
+#' This function recodes the data in an \pkg{R/qtl} cross or genotype CSV file.
+#' Genotypes can be recoded by passing to the \code{geno} parameter a simple
+#' \code{\link{mapping}} of old to new genotypes. Alternatively, genotype data
+#' can be converted to enumerated genotypes by setting parameter
+#' \code{enum.geno} to \code{TRUE}.
+#' 
+#' Any \code{\link{mapping}} of old to new symbols must be complete and
+#' unambiguous. All existing values must be mapped to a new value, and
+#' data with different input values cannot have the same output value.
+#' 
 #' @param infile Input CSV file path.
 #' @param outfile Output CSV file path.
-#' @param geno Named vector of genotype symbols, with vector names containing
-#' existing genotype symbols, and vector elements containing their replacement
-#' values (incompatible with \code{enum.geno}).
+#' @param geno A simple \code{\link{mapping}} of old to new genotype symbols,
+#' with names containing existing genotype symbols, and elements containing
+#' their replacement values (incompatible with \code{enum.geno}).
 #' @param enum.geno Option indicating if genotype data should be recoded as
 #' enumerated genotypes (incompatible with \code{geno}).
 #'
+#' @export
+#' @family CSV functions
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
-#' @include mapping.R
-#' @keywords internal
 #' @rdname recodeCSV
 recodeCSV <- function(infile, outfile, geno=NULL, enum.geno=FALSE) {
+    
+    # TODO: implement phenotype recoding
+    # TODO: implement sample recoding ?
+    # TODO: implement marker recoding ?
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
@@ -807,15 +879,21 @@ recodeCSV <- function(infile, outfile, geno=NULL, enum.geno=FALSE) {
 # sniffCSV ---------------------------------------------------------------------
 #' Identify type of \pkg{R/qtl} data in CSV file.
 #' 
+#' This function identifies the type of data in the input CSV file. This can
+#' be \code{'cross'}, \code{'geno'}, \code{'pheno'}, or \code{'map'}.
+#' Alternatively, it can be \code{'unknown'} if the data cannot be identified.
+#' 
+#' Note that this function should be used with some discretion, as some
+#' \pkg{R/qtl} input file types cannot be distinguished. For example, a
+#' covariate data file containing a sample ID column will be misidentified
+#' as containing phenotype data.
+#' 
 #' @param infile Input CSV file path.
 #'
-#' @return A string describing the type of data in the input CSV file. This can
-#' be \code{'cross'}, \code{'geno'}, \code{'pheno'}, or \code{'map'}. Returns
-#' \code{'unknown'} if the data could not be identified.
+#' @return A string describing the type of data in the input CSV file.
 #'
 #' @export
-#' @importFrom utils read.csv
-#' @keywords internal
+#' @family CSV functions
 #' @rdname sniffCSV
 sniffCSV <- function(infile) {
     
@@ -835,8 +913,8 @@ sniffCSV <- function(infile) {
 # writeCrossCSV ----------------------------------------------------------------
 #' Write yeast \code{cross} to a CSV file.
 #' 
-#' @description Function \code{writeCrossCSV} writes a yeast \code{cross} to a 
-#' CSV file. Phenotype, genotype, and sample IDs are taken from the \code{'info'}
+#' This function writes a yeast \code{cross} to an \pkg{R/qtl} CSV file.
+#' Phenotype, genotype, and sample IDs are taken from the \code{'info'}
 #' attribute of the \code{cross}, if present.
 #'  
 #' @param cross An \pkg{R/qtl} \code{cross} object.
@@ -844,12 +922,13 @@ sniffCSV <- function(infile) {
 #' @param chr Vector of sequences for which genotype data should be included in 
 #' the output file. If none are specified, genotype data are output for all 
 #' sequences.
-#' @param digits If specified, round genetic map positions and numeric phenotype 
-#' values to the specified number of digits.
+#' @param digits If specified, round genetic map positions and
+#' numeric phenotype values to the specified number of digits.
 #' @param include.mapunit Include map unit information in map positions.
 #'  
 #' @export
-#' @family csv utilities
+#' @family CSV functions
+#' @family cross object functions
 #' @importFrom utils write.table
 #' @rdname writeCrossCSV
 writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL, 
@@ -873,7 +952,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     # Take cross info from CrossInfo, if available..
     if ( ! is.null(cross.info) ) {
         compareCrossInfo(cross, cross.info)
-        crosstype <- getCrossType(cross.info)
+        crosstype <- getCrosstype(cross.info)
         phenotypes <- getPhenotypes(cross.info)
         alleles <- getAlleles(cross.info)
         markers <- getSeqMarkers(cross.info, normSeq(chr), simplify=TRUE)
@@ -972,6 +1051,10 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
 # writeGenoCSV -----------------------------------------------------------------
 #' Write yeast genotype data to a CSV file.
 #'   
+#' This function writes a yeast \code{geno} object to an \pkg{R/qtl} CSV file.
+#' The \code{geno} object must have an attribute \code{'info'} of type
+#' \code{\linkS4class{CrossInfo}}, from which genotype and sample IDs are taken.
+#' 
 #' @param geno An \pkg{R/qtl} \code{cross} \code{geno} object.
 #' @param outfile Output CSV file path.
 #' @param chr Vector of sequences for which genotype data should be included in 
@@ -982,7 +1065,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
 #' @param include.mapunit Include map unit information in map positions.
 #'  
 #' @export
-#' @family csv utilities
+#' @family CSV functions
 #' @importFrom utils write.table
 #' @rdname writeGenoCSV
 writeGenoCSV <- function(geno, outfile, chr=NULL, digits=NULL, 
@@ -1009,12 +1092,18 @@ writeGenoCSV <- function(geno, outfile, chr=NULL, digits=NULL,
 # writeMapCSV ------------------------------------------------------------------
 #' Write \code{map} to a CSV file.
 #' 
+#' This function writes a yeast \code{mapframe} object to any \pkg{R/qtl} CSV
+#' file that can contain map data, whether it is a map table file, genotype
+#' file, or a full cross file. If an output genotype or cross file already
+#' exists, the mapframe is written to the map portion of the output file.
+#' 
 #' @param map An \pkg{R/qtl} \code{map} object.
 #' @param outfile Output CSV file path.
-#' @param include.mapunit Include map unit information in map positions.
+#' @param include.mapunit Include map unit information in output file.
 #'  
 #' @export
-#' @family csv utilities
+#' @family CSV functions
+#' @family map utility functions
 #' @rdname writeMapCSV
 writeMapCSV <- function(map, outfile, include.mapunit=TRUE) {
     
@@ -1075,12 +1164,18 @@ writeMapCSV <- function(map, outfile, include.mapunit=TRUE) {
 # writeMapframeCSV -------------------------------------------------------------
 #' Write \code{mapframe} to a CSV file.
 #' 
+#' This function writes a yeast \code{mapframe} object to any \pkg{R/qtl} CSV
+#' file that can contain map data, whether it is a map table file, genotype
+#' file, or a full cross file. If an output genotype or cross file already
+#' exists, the mapframe is written to the map portion of the output file.
+#' 
 #' @param x A \code{mapframe} object.
 #' @param outfile Output CSV file path.
-#' @param include.mapunit Include map unit information in map positions.
+#' @param include.mapunit Include map unit information in output file.
 #'  
 #' @export
-#' @family csv utilities
+#' @family CSV functions
+#' @family map utility functions
 #' @importFrom utils write.csv
 #' @rdname writeMapframeCSV
 writeMapframeCSV <- function(x, outfile, include.mapunit=TRUE) {
@@ -1134,14 +1229,18 @@ writeMapframeCSV <- function(x, outfile, include.mapunit=TRUE) {
 
 # writePhenoCSV ----------------------------------------------------------------
 #' Write yeast pheno data to a CSV file.
-#'   
+#' 
+#' This function writes a yeast \code{pheno} object to an \pkg{R/qtl} CSV file.
+#' The \code{pheno} object must have an attribute \code{'info'} of type
+#' \code{\linkS4class{CrossInfo}}, from which phenotype and sample IDs are taken.
+#' 
 #' @param pheno An \pkg{R/qtl} \code{cross} \code{pheno} object.
 #' @param outfile Output CSV file path.
-#' @param digits If specified, round numeric phenotype values to the specified
-#' number of digits.
-#'  
+#' @param digits If specified, round numeric phenotype
+#' values to the specified number of digits.
+#' 
 #' @export
-#' @family csv utilities
+#' @family CSV functions
 #' @importFrom utils write.table
 #' @rdname writePhenoCSV
 writePhenoCSV <- function(pheno, outfile, digits=NULL) {

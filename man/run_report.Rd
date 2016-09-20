@@ -12,7 +12,16 @@ run_report(h5file = NA_character_, report = NA_character_)
 \item{report}{scan report file}
 }
 \description{
-Create report of \pkg{R/qtl} analysis results.
+Given a scan result HDF5 file, create a
+report of the results of the QTL analysis.
+}
+\seealso{
+Other pipeline functions: \code{\link{run_annoqtl}},
+  \code{\link{run_digest}}, \code{\link{run_estimap}},
+  \code{\link{run_makecross}}, \code{\link{run_makegeno}},
+  \code{\link{run_prep}}, \code{\link{run_pullmap}},
+  \code{\link{run_pushmap}}, \code{\link{run_recode}},
+  \code{\link{run_scanone}}
 }
 \concept{
 shmootl:pipelines

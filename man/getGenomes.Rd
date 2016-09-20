@@ -12,5 +12,7 @@ Character vector of \pkg{shmootl} genome names.
 \description{
 Get \pkg{shmootl} genome names.
 }
-\keyword{internal}
+\seealso{
+Other genome functions: \code{\link{genomeOpt}}
+}
 

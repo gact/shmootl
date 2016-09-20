@@ -13,30 +13,55 @@ inferTetradIndices(x)
 \method{inferTetradIndices}{cross}(x)
 }
 \arguments{
-\item{x}{An \pkg{R/qtl} \code{cross} object, or a character vector of sample IDs.}
+\item{x}{An \pkg{R/qtl} \code{cross} object,
+or a character vector of sample IDs.}
 }
 \value{
 Vector of sample tetrad indices inferred from the input object. 
 Returns \code{NULL} if tetrad pattern could not be found.
 }
 \description{
-Infers tetrad indices of a set of samples from the given object. 
-A character vector of sample IDs can be passed as the first argument, in 
-which case the tetrad indices will be inferred from the sample IDs themselves.
-If sample IDs have a numeric suffix, these are taken as segregant numbers 
-and used to infer which tetrad each sample ID might belong to. 
+Infers tetrad indices of a set of samples from the given object.
+A character vector of sample IDs can be passed as the first argument, in
+which case the tetrad indices will be inferred, where possible, from the
+sample IDs themselves.
   
-If a \code{cross} is the first argument, tetrad indices will be inferred 
+If a \code{cross} is the first argument, tetrad indices will be inferred
 from sample IDs, if present, or otherwise by comparison of sample genotypes.
 }
+\section{Sample IDs}{
+
+
+A sample ID can be any valid item ID (see
+\link[=shmootl-package]{package overview}). Duplicate sample IDs are
+permissible, but only if referring to replicate samples of the same strain.
+Different strains can have different numbers of replicates, but samples from
+a given strain must be in consecutive rows.
+}
+
+\section{Tetradic Samples}{
+
+
+Sample IDs can be used to indicate tetrad membership, even in a \code{cross}
+object with some missing samples. In a tetradic dataset, sample IDs with a
+numeric suffix (e.g. \code{'FS101'}) are taken as segregant numbers and used
+to infer the tetrad to which each sample ID belongs, assuming that tetrads
+are labelled sequentially, with four samples per tetrad. Sample IDs can also
+have an alphanumeric suffix (e.g. \code{'FS01A'}), where the numeric part is
+a tetrad number and the final letter (i.e. \code{'A'}, \code{'B'},
+\code{'C'}, or \code{'D'}) identifies the individual tetrad member.
+}
 \seealso{
-Other cross utilities: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
+  \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
   \code{\link{inferTimeStep}},
   \code{\link{interpTimeSeries}},
   \code{\link{padTimeSeries}}, \code{\link{permCross}},
-  \code{\link{pull.alleles}}, \code{\link{pull.chr}},
-  \code{\link{pull.crosstype}}, \code{\link{pull.ind}}
+  \code{\link{permIndices}}, \code{\link{pull.alleles}},
+  \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
+  \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
+  \code{\link{writeCrossCSV}}
 }
 

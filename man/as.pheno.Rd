@@ -3,7 +3,7 @@
 \name{as.pheno}
 \alias{as.pheno}
 \alias{as.pheno.data.frame}
-\title{Coerce to \code{pheno} object.}
+\title{Convert to \code{pheno} object.}
 \usage{
 as.pheno(from)
 
@@ -16,7 +16,7 @@ as.pheno(from)
 A \code{pheno} object corresponding to the input object.
 }
 \description{
-Coerce to \code{pheno} object.
+Convert to \code{pheno} object.
 }
 \keyword{internal}
 

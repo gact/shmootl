@@ -15,5 +15,7 @@ Vector of the sample IDs in the given VCF file.
 \description{
 Get sample IDs from VCF file.
 }
-\keyword{internal}
+\seealso{
+Other VCF functions: \code{\link{readGenoVCF}}
+}
 

@@ -20,9 +20,33 @@ existing map. By default, existing maps cannot be overwritten.}
 Write \code{map} to a HDF5 file.
 }
 \details{
-An \pkg{R/qtl} \code{map} object is written to the 'Maps' group at
-the root of the given HDF5 file. If no map name is specified, a default will
-be assigned based on whether it is a genetic or physical map.
+An \pkg{R/qtl} \code{map} object is written to the \code{'Maps'}
+group at the root of the given HDF5 file. If no map name is specified, a
+default will be assigned based on whether it is a genetic or physical map.
+}
+\seealso{
+Other HDF5 functions: \code{\link{readDatasetHDF5}},
+  \code{\link{readMapHDF5}},
+  \code{\link{readOverviewHDF5}},
+  \code{\link{readResultHDF5}},
+  \code{\link{writeDatasetHDF5}},
+  \code{\link{writeOverviewHDF5}},
+  \code{\link{writeResultHDF5}}
+
+Other map utility functions: \code{\link{as.data.frame.mapframe}},
+  \code{\link{as.data.frame.map}},
+  \code{\link{as.mapframe}}, \code{\link{as.map}},
+  \code{\link{extractMarkers}},
+  \code{\link{extractPseudomarkers}},
+  \code{\link{findFlanking}}, \code{\link{findLoci}},
+  \code{\link{findMarkers}}, \code{\link{getMapSteps}},
+  \code{\link{getMapUnit}}, \code{\link{gmapframe}},
+  \code{\link{hasMapCSV}}, \code{\link{inMapOrder}},
+  \code{\link{inferMapStep}}, \code{\link{mapframe}},
+  \code{\link{orderMap}}, \code{\link{readMapCSV}},
+  \code{\link{readMapHDF5}}, \code{\link{readMapframeCSV}},
+  \code{\link{setMapUnit}}, \code{\link{writeMapCSV}},
+  \code{\link{writeMapframeCSV}}
 }
 \keyword{internal}
 

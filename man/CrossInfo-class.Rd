@@ -8,56 +8,154 @@
 \description{
 A CrossInfo object holds yeast cross information for a specific \code{cross}
 object. The contents of its slots should match its corresponding object.
+To view documentation for any methods of this class, input the name of
+the method preceded by a question mark (e.g. \code{?getPhenotypes}).
 }
 \section{Slots}{
 
 \describe{
-\item{\code{seq}}{A character vector of sequence identifiers, with the name
-of each element being the name of the given sequence. These must be
-unique.}
+\item{\code{seq}}{A non-redundant character vector of sequence identifiers, with
+the name of each element being the name of the given sequence. See also
+\code{setSequences} and \code{getSequences}.}
 
-\item{\code{pheno}}{A vector of cross phenotypes, with the name of each element being 
-the syntactically valid name of the phenotype ID (as produced by the 
-function \code{make.names}). Phenotype IDs must be unique.}
+\item{\code{pheno}}{A non-redundant vector of cross phenotypes, with the name of each
+element being the syntactically valid name of the phenotype ID (as output by
+the function \code{make.names}). See also \code{setPhenotypes} and
+\code{getPhenotypes}.}
 
-\item{\code{markers}}{A \code{data.frame} with one required column - 'marker' - 
-containing the marker ID, and one optional column: 'seq'. If present, the 
-'seq' column contains the sequence corresponding to the given marker. 
-Each row name contains the syntactically valid name of the marker ID (as 
-produced by the function \code{make.names}). Marker IDs must be unique.}
+\item{\code{markers}}{A \code{data.frame} with information about the non-redundant
+set of markers in a \code{cross} (see \code{setMarkers} and
+\code{getMarkers}). This can optionally contain information about
+the sequences corresponding to each marker (see \code{setMarkerSeqs} and
+\code{getMarkerSeqs}).}
 
-\item{\code{samples}}{A \code{data.frame} with one required column - 'sample.index' - 
-that contains indices of the samples in the given cross dataset. Other optional 
-columns can be present, including 'sample.id', 'sample.name', 'strain.index' 
-and 'tetrad.index'. 
+\item{\code{samples}}{A \code{data.frame} with information about the samples in a
+\code{cross}. At minimum, this must contain indices of the samples in the
+given \code{cross} dataset. If relevant, it can contain information about
+sample IDs (see \code{setSamples} and \code{getSamples}), strain indices
+(see \code{setStrainIndices} and \code{getStrainIndices}), and tetrad
+indices (see \code{setTetradIndices} and \code{getTetradIndices}).}
 
-The 'sample.id' column contains sample IDs, which can be any valid item ID.
-If this column is present, another column called 'sample.name' will
-contain the syntactically valid name of the sample ID (as produced by the 
-function \code{make.names}). Duplicate sample IDs are permissible, but only
-if referring to replicate samples of the same strain. Different strains can 
-have different numbers of replicates, but samples from a given strain must 
-be in consecutive rows.
- 
-The 'strain.index' column, if present, contains strain indices denoting 
-which strain each sample is taken from. This is only necessary if the cross
-contains sample replicates. Replicate samples of a given strain must have 
-the same genotype data, and their sample IDs must match, if present. 
+\item{\code{alleles}}{A vector of cross allele symbols.
+See \code{setAlleles} and \code{getAlleles}.}
 
-If the samples are tetradic, this can also include a 'tetrad.index' column 
-containing the tetrad index of each sample, indicating which tetrad that 
-sample is from. Tetrads are assumed to be formed of each group of four 
-consecutive strains, unless sample IDs are present that indicate tetrad 
-membership. Samples can be missing from a tetrad, but in such cases the 
-sample IDs should be such that it is possible to assign each sample to
-a tetrad. In any case, samples from the same tetrad must be in consecutive 
-rows of the cross data.}
+\item{\code{genotypes}}{A vector of cross genotype symbols.
+See \code{setGenotypes} and \code{getGenotypes}.}
 
-\item{\code{alleles}}{A vector of cross allele symbols.}
-
-\item{\code{genotypes}}{A vector of cross genotype symbols.}
-
-\item{\code{crosstype}}{Cross type.}
+\item{\code{crosstype}}{Cross type. See \code{setCrosstype} and \code{getCrosstype}.}
 }}
-\keyword{internal}
+\section{Chromosomes and Sequences}{
+
+
+Although for some yeast genome assemblies they are equivalent, chromosomes
+(cell structures containing genetic material) are treated by \pkg{shmootl}
+as being distinct from sequences (linkage units that corresponding to all
+or part of a chromosome). This distinction is necessary to allow for use of
+reference genomes in which multiple sequences map to a single chromosome.
+(see \code{\link{genomeOpt}} for more on setting a reference genome.) While
+every sequence must be mapped to a specific chromosome, it is sequences,
+and not chromosomes, that are used as the primary linkage unit throughout
+this package.
+
+\subsection{Chromosomes}{
+A yeast nuclear chromosome can be represented by an Arabic number in the
+range \code{1} to \code{16}, inclusive; or by the Roman numeral corresponding
+to the chromosome number. The mitochondrial chromosome can be represented by
+the number \code{17} or a capital \code{'M'}. A chromosome label can include
+one of the optional prefixes \code{'c'} or \code{'chr'}. So for example, any
+of the following can represent chromosome 4:
+
+\itemize{
+\item{\code{4}:}{an Arabic number}
+\item{\code{IV}:}{a Roman numeral}
+\item{\code{c04}:}{a zero-padded Arabic number with prefix \code{'c'}}
+\item{\code{chrIV}:}{a Roman numeral with prefix \code{'chr'}}
+}
+
+Using the function \code{\link{normChr}}, all of these representations can
+be normalised to one consistent form: a zero-padded Arabic number
+(i.e. \code{'04'}). This is used internally by \pkg{shmootl} as a
+normalised representation, and is recommended.
+}
+
+\subsection{Sequences}{
+For genomes in which every sequence represents a specific chromosome, the
+sequence label is identical to the chromosome label. In other cases, the
+sequence label should be a chromosome label followed by a sequence-specific
+label (e.g. contig ID), separated by an underscore. For example, a contig
+\code{'1D22'} that maps to chromosome 4 can be represented as follows:
+
+\itemize{
+\item{\code{4_1D22}}
+\item{\code{IV_1D22}}
+\item{\code{c04_1D22}}
+\item{\code{chrIV_1D22}}
+}
+
+Variations in chromosome representation are possible as before, but the
+sequence-specific label must be consistent. As with chromosomes, the function
+\code{\link{normSeq}} can be used to normalise all of these forms to
+one consistent representation: a zero-padded Arabic number followed by the
+sequence-specific label (i.e. \code{'04_1D22'}). This representation is
+recommended, as it is used internally by \pkg{shmootl} as a standard way to
+label sequences in a genome lacking a one-to-one correspondence between
+sequences and chromosomes.
+}
+}
+
+\section{Phenotype IDs}{
+
+
+A phenotype ID can be any valid item ID (see
+\link[=shmootl-package]{package overview}), although it may be changed by
+\pkg{R/qtl} to ensure that it is syntactically valid. In such cases, the
+original phenotype ID can be obtained from the \code{'info'} attribute of
+a \code{cross} that has been loaded with \code{\link{readCrossCSV}}
+(see \code{\linkS4class{CrossInfo}}).
+}
+
+\section{Time-Series Phenotypes}{
+
+
+A set of phenotypes can be designated as a time-series by naming each
+phenotype with the time point at which phenotype observations were made
+(e.g. \code{'0.0'}, \code{'1.0'}, \code{'2.0'}). Time points can be in
+any unit, but must be non-negative, monotonically increasing, and have
+a consistent time step. If some time points are missing, the resulting
+gap in time must be a multiple of the time step.
+}
+
+\section{Locus IDs}{
+
+
+Map locus IDs can be any valid item ID (see
+\link[=shmootl-package]{package overview}), and are of two main types:
+markers and pseudomarkers. A marker ID is any valid locus ID that is not a
+pseudomarker ID. Pseudomarker IDs are used by \pkg{R/qtl} for inter-marker
+loci. They indicate the reference sequence and genetic map position of the
+locus (e.g. \code{'c04.loc33'}for a locus at position 33cM on chromosome IV).
+}
+
+\section{Sample IDs}{
+
+
+A sample ID can be any valid item ID (see
+\link[=shmootl-package]{package overview}). Duplicate sample IDs are
+permissible, but only if referring to replicate samples of the same strain.
+Different strains can have different numbers of replicates, but samples from
+a given strain must be in consecutive rows.
+}
+
+\section{Tetradic Samples}{
+
+
+Sample IDs can be used to indicate tetrad membership, even in a \code{cross}
+object with some missing samples. In a tetradic dataset, sample IDs with a
+numeric suffix (e.g. \code{'FS101'}) are taken as segregant numbers and used
+to infer the tetrad to which each sample ID belongs, assuming that tetrads
+are labelled sequentially, with four samples per tetrad. Sample IDs can also
+have an alphanumeric suffix (e.g. \code{'FS01A'}), where the numeric part is
+a tetrad number and the final letter (i.e. \code{'A'}, \code{'B'},
+\code{'C'}, or \code{'D'}) identifies the individual tetrad member.
+}
 

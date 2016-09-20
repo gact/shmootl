@@ -10,7 +10,8 @@ isGeneticMap(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if object is a genetic \code{map} object; FALSE otherwise.
+\code{TRUE} if object is a genetic \code{map} object;
+\code{FALSE} otherwise.
 }
 \description{
 Test if object is a genetic \code{map}.

@@ -14,16 +14,20 @@ Sample ID column index.
 }
 \description{
 Get the index of the sample ID column in the \code{cross} phenotype 
-\code{data.frame}.
+\code{data.frame}. This is column with the heading \code{'ID'}
+(case-insensitive).
 }
 \seealso{
-Other cross utilities: \code{\link{getPhenoColIndices}},
+Other cross object functions: \code{\link{getPhenoColIndices}},
+  \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
   \code{\link{inferTetradIndices}},
   \code{\link{inferTimeStep}},
   \code{\link{interpTimeSeries}},
   \code{\link{padTimeSeries}}, \code{\link{permCross}},
-  \code{\link{pull.alleles}}, \code{\link{pull.chr}},
-  \code{\link{pull.crosstype}}, \code{\link{pull.ind}}
+  \code{\link{permIndices}}, \code{\link{pull.alleles}},
+  \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
+  \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
+  \code{\link{writeCrossCSV}}
 }
 

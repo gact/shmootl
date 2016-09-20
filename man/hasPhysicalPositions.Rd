@@ -10,11 +10,10 @@ hasPhysicalPositions(qtl.intervals)
 \item{qtl.intervals}{A \code{qtlintervals} object.}
 }
 \value{
-TRUE if \code{qtlintervals} object contains physical positions
-in terms of base-pair units; FALSE otherwise.
+\code{TRUE} if \code{qtlintervals} object contains physical
+positions in terms of base-pair units; \code{FALSE} otherwise.
 }
 \description{
 Test if QTL intervals contain physical positions.
 }
-\keyword{internal}
 

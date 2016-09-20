@@ -9,19 +9,19 @@ inferLodColNames(cross, pheno.col = NULL)
 \arguments{
 \item{cross}{An \pkg{R/qtl} \code{cross} object.}
 
-\item{pheno.col}{Vector indicating the phenotypes for which LOD column names 
-should be inferred.. This can be an integer vector of phenotype column 
-indices with respect to the columns of the \code{cross} phenotype 
-\code{data.frame}, or a character vector that contains phenotype IDs or their 
-syntactically valid names. If none are specified, LOD names are inferred for 
-all \code{cross} phenotypes.}
+\item{pheno.col}{Vector indicating the phenotypes for which LOD column names
+should be inferred. This can be an integer vector of phenotype column indices
+with respect to the columns of the \code{cross} phenotype \code{data.frame},
+or a character vector that contains phenotype IDs or their syntactically
+valid names. If none are specified, LOD names are inferred for all
+\code{cross} phenotypes.}
 }
 \value{
-Vector of the LOD column headings that would be expected in a 
+Vector of the LOD column headings that would be expected in a
 \code{scanone} result for the given \code{cross} and phenotypes.
 }
 \description{
-Given a \code{cross} and set of phenotypes, get the expected the LOD column 
+Given a \code{cross} and set of phenotypes, get the expected the LOD column
 names of the corresponding scanone result.
 }
 \keyword{internal}

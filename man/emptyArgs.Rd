@@ -10,7 +10,8 @@ emptyArgs(...)
 \item{...}{Ellipsis arguments.}
 }
 \value{
-TRUE if there are no ellipsis arguments; FALSE otherwise.
+\code{TRUE} if there are no ellipsis arguments;
+\code{FALSE} otherwise.
 }
 \description{
 Test if ellipsis arguments are empty.

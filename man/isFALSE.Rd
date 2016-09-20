@@ -2,7 +2,7 @@
 % Please edit documentation in R/util.R
 \name{isFALSE}
 \alias{isFALSE}
-\title{Test for a single FALSE value.}
+\title{Test for a single \code{FALSE} value.}
 \usage{
 isFALSE(x)
 }
@@ -10,10 +10,11 @@ isFALSE(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if object is a single FALSE value; FALSE otherwise.
+\code{TRUE} if object is a single \code{FALSE} value;
+\code{FALSE} otherwise.
 }
 \description{
-Test for a single FALSE value.
+Test for a single \code{FALSE} value.
 }
 \keyword{internal}
 

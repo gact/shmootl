@@ -14,7 +14,7 @@ validateGenotypes(cross.info)
 \item{cross.info}{A \code{\link{CrossInfo}} object.}
 }
 \value{
-TRUE if genotypes are valid; otherwise, returns first error.
+\code{TRUE} if genotypes are valid; otherwise, returns first error.
 }
 \description{
 Validate genotype information.

@@ -289,7 +289,8 @@ summary.H5Stack <- function(object) {
 #' 
 #' @param object A \code{H5Stack} object.
 #' 
-#' @return TRUE if object is valid; otherwise, a character vector of errors.
+#' @return \code{TRUE} if object is valid;
+#' otherwise, a character vector of errors.
 #'
 #' @aliases setValidity,H5Stack-method
 #' @docType methods

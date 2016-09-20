@@ -3,11 +3,12 @@
 # plotQTLScanone ---------------------------------------------------------------
 #' Plot \pkg{R/qtl} \code{scanone} result.
 #' 
-#' Plotting function based on \pkg{R/qtl} \code{plot.scanone} and \pkg{qqman}
-#' \code{manhattan} (see references below). Plots a \code{scanone} result as
-#' a LOD curve (with \code{type} set to \code{'l'}) or as a Manhattan plot
-#' (with \code{type} set to \code{'p'}). If no plot type is specified, this
-#' is set automatically based on marker density.
+#' Plotting function based on \pkg{R/qtl} \code{plot.scanone} (Broman
+#' \emph{et al.} 2003) and \pkg{qqman} \code{manhattan} (Turner 2014).
+#' Plots a \code{scanone} result as a LOD curve (with \code{type} set
+#' to \code{'l'}) or as a Manhattan plot (with \code{type} set to
+#' \code{'p'}). If no plot type is specified, this is set automatically
+#' based on marker density.
 #'
 #' @param x An \pkg{R/qtl} \code{scanone} object.
 #' @param chr Vector indicating which sequences to plot. If no sequences are
@@ -26,14 +27,12 @@
 #' to \code{'p'} for a Manhattan plot of individual LOD scores.
 #' @param ... Unused arguments.
 #' 
-#' @references Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
-#' in experimental crosses. Bioinformatics 19:889-890.
-#' (\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
-#' @references Turner SD (2014) qqman: an R package for visualizing GWAS results
-#' using Q-Q and manhattan plots.
-#' (\href{http://dx.doi.org/10.1101/005165}{bioRXiv})
+#' @template ref-broman-2003
+#' @template ref-turner-2014
 #' 
 #' @export
+#' @family plot functions
+#' @family QTL functions
 #' @importFrom graphics abline
 #' @importFrom graphics axis
 #' @importFrom graphics box

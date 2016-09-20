@@ -10,8 +10,8 @@ validateRawGenoArray(x)
 \item{x}{Raw genotype \code{array}.}
 }
 \value{
-TRUE if object is an \code{array} containing raw genotype data in 
-expected form; otherwise, raises first error.
+\code{TRUE} if object is an \code{array} containing raw
+genotype data in expected form; otherwise, raises first error.
 }
 \description{
 Validate \code{array} as containing raw genotype data.

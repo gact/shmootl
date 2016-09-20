@@ -15,6 +15,7 @@
 #' features in a given QTL interval.
 #' 
 #' @export
+#' @family QTL functions
 #' @importFrom GenomeInfoDb seqlengths
 #' @importFrom GenomeInfoDb seqnames
 #' @importFrom IRanges IRanges
@@ -22,8 +23,6 @@
 #' @importFrom GenomicRanges findOverlaps
 #' @importFrom GenomicRanges GRanges
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
-#' @include const.R
-#' @include qtlintervals.R
 #' @rdname getQTLFeatures
 getQTLFeatures <- function(qtl.intervals, features) {
     

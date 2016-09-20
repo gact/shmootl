@@ -10,8 +10,8 @@ allWhite(x)
 \item{x}{Character vector.}
 }
 \value{
-TRUE if character vector is of length zero or contains only
-whitespace characters; FALSE otherwise.
+\code{TRUE} if character vector is of length zero or
+contains only whitespace characters; \code{FALSE} otherwise.
 }
 \description{
 Test if vector is all whitespace.

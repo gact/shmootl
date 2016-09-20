@@ -17,7 +17,8 @@ a unique name.}
 \value{
 Character matrix in which each row contains the values of capture
 groups for a given filename, and each column contains values of a given
-capture group across files. NA values represent unmatched capture groups.
+capture group across files. Unmatched capture groups are represented by
+\code{NA} values.
 }
 \description{
 Parse filenames by pattern matching.

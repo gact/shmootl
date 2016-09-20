@@ -7,8 +7,8 @@
 getLODValues(x, loc, lodcolumn = NULL)
 }
 \arguments{
-\item{x}{A \code{scanone} object or equivalent \code{data.frame} in which the 
-data columns contain LOD score values.}
+\item{x}{A \code{scanone} object or equivalent \code{data.frame}
+in which the data columns contain LOD score values.}
 
 \item{loc}{Locus \code{mapframe} specifying map positions.}
 
@@ -19,10 +19,11 @@ is specified and one such column is found, that column is used by default;
 otherwise a LOD column must be specified.}
 }
 \value{
-Vector of LOD values. Returns NA if LOD score is not available at a 
-given position.
+Vector of LOD values. Returns \code{NA} if
+LOD score is not available at a given position.
 }
 \description{
-Get the LOD value at the specified map positions in the given LOD profile.
+Get the LOD value at each of the specified
+map positions in the given LOD profile.
 }
 

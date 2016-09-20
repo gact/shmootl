@@ -19,8 +19,32 @@ if no map is found with the specified name.
 Read \code{map} from a HDF5 file.
 }
 \details{
-A \code{mapframe} dataset is read from the 'Maps' group at the root
-of the HDF5 file, and converted to an \pkg{R/qtl} \code{map} object.
+A \code{mapframe} dataset is read from the \code{'Maps'} group at
+the root of the HDF5 file, and converted to an \pkg{R/qtl} \code{map} object.
+}
+\seealso{
+Other HDF5 functions: \code{\link{readDatasetHDF5}},
+  \code{\link{readOverviewHDF5}},
+  \code{\link{readResultHDF5}},
+  \code{\link{writeDatasetHDF5}},
+  \code{\link{writeMapHDF5}},
+  \code{\link{writeOverviewHDF5}},
+  \code{\link{writeResultHDF5}}
+
+Other map utility functions: \code{\link{as.data.frame.mapframe}},
+  \code{\link{as.data.frame.map}},
+  \code{\link{as.mapframe}}, \code{\link{as.map}},
+  \code{\link{extractMarkers}},
+  \code{\link{extractPseudomarkers}},
+  \code{\link{findFlanking}}, \code{\link{findLoci}},
+  \code{\link{findMarkers}}, \code{\link{getMapSteps}},
+  \code{\link{getMapUnit}}, \code{\link{gmapframe}},
+  \code{\link{hasMapCSV}}, \code{\link{inMapOrder}},
+  \code{\link{inferMapStep}}, \code{\link{mapframe}},
+  \code{\link{orderMap}}, \code{\link{readMapCSV}},
+  \code{\link{readMapframeCSV}}, \code{\link{setMapUnit}},
+  \code{\link{writeMapCSV}}, \code{\link{writeMapHDF5}},
+  \code{\link{writeMapframeCSV}}
 }
 \keyword{internal}
 

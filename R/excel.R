@@ -13,9 +13,8 @@
 #' that capture group in the scan file names.
 #' 
 #' @export
-#' @include const.R
-#' @include hdf5.R
-#' @include util.R
+#' @family digest functions
+#' @family Excel functions
 #' @rdname writeDigestExcel
 writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     

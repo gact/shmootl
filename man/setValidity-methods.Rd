@@ -5,19 +5,21 @@
 \alias{setValidity}
 \alias{setValidity,CrossInfo-method}
 \alias{setValidity,H5Stack-method}
-\title{Validate \code{CrossInfo} object.}
+\title{Validate \code{\linkS4class{CrossInfo}} object.}
 \arguments{
-\item{object}{A \code{CrossInfo} object.}
+\item{object}{A \code{\linkS4class{CrossInfo}} object.}
 
 \item{object}{A \code{H5Stack} object.}
 }
 \value{
-TRUE if object is valid; otherwise, a character vector of errors.
+\code{TRUE} if object is valid;
+otherwise, a character vector of errors.
 
-TRUE if object is valid; otherwise, a character vector of errors.
+\code{TRUE} if object is valid;
+otherwise, a character vector of errors.
 }
 \description{
-Validate \code{CrossInfo} object.
+Validate \code{\linkS4class{CrossInfo}} object.
 
 Validate \code{H5Stack} object.
 }

@@ -15,8 +15,8 @@ Sequence column index.
 \description{
 Get sequence column index for a \code{mapframe} or equivalent
 \code{data.frame}. The sequence column is taken to be the column
-whose heading is 'chr'. An error is raised if there is not exactly
-one sequence column.
+whose heading is \code{'chr'}. An error is raised if there is not
+exactly one sequence column.
 }
 \keyword{internal}
 

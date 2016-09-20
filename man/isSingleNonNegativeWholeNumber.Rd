@@ -12,8 +12,8 @@ isSingleNonNegativeWholeNumber(n, tol = .Machine$double.eps^0.5)
 \item{tol}{Numeric tolerance.}
 }
 \value{
-TRUE if the object is a single non-negative whole number; 
-FALSE otherwise.
+\code{TRUE} if the object is a single non-negative whole number;
+\code{FALSE} otherwise.
 }
 \description{
 Test for a single non-negative whole number.

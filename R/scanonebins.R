@@ -3,6 +3,7 @@
 # TODO: plot.scanonebins
 
 # `[.scanonebins` --------------------------------------------------------------
+#' @export
 #' @keywords internal
 `[.scanonebins` <- function(x, i, j, k, drop=NULL) {
     stopifnot( is.null(drop) )
@@ -251,9 +252,9 @@ print.summary.scanonebins <- function(x, ...) {
 #' bin edges of the \code{scanonebins} object, and empirical false-discovery
 #' rates (FDRs) are calculated at these thresholds. For each false-discovery
 #' rate specified in the \code{fdr} parameter, the threshold with the closest
-#' FDR is returned. Summary results take NA values in cases where no sensible
-#' FDR can be returned (e.g. fewer loci above a threshold in the main scanone
-#' result than in the corresponding permutation results).
+#' FDR is returned. Summary results take \code{NA} values in cases where no
+#' sensible FDR can be returned (e.g. fewer loci above a threshold in the
+#' main scanone result than in the corresponding permutation results).
 #' 
 #' @param object A \code{scanonebins} object.
 #' @param scanone.result A \code{scanone} object created from the same data that
@@ -271,6 +272,7 @@ print.summary.scanonebins <- function(x, ...) {
 #' (\href{http://www.ncbi.nlm.nih.gov/pubmed/20966004}{PubMed})
 #' 
 #' @export
+#' @keywords internal
 #' @method summary scanonebins
 #' @rdname summary.scanonebins
 summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.01, ...) {

@@ -10,11 +10,35 @@ isValidAllele(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if symbol is a valid enumerated or founder allele;
-FALSE otherwise.
+\code{TRUE} if symbol is a valid enumerated or founder allele;
+\code{FALSE} otherwise.
 }
 \description{
 Test if symbol is a valid allele.
+}
+\section{Enumerated Alleles/Genotypes}{
+
+
+An enumerated allele/genotype is a number representing the order of
+occurrence of raw or founder genotypes at a specific marker (e.g. \code{'1'}
+for the first observed allele, \code{'2'} for the second). Enumerated alleles
+and genotypes are identical, regardless of ploidy. The process of enumerating
+genotypes is done independently for each marker, so a given enumerated
+genotype does not have the same meaning across markers.
+}
+
+\section{Founder Alleles and Genotypes}{
+
+
+A founder allele is a single letter corresponding to a specific founder
+strain, indicating that the region containing the marker derives from that
+founder. For example, \code{'W'} might be used to represent the Western
+Africa founder strain \code{DBVPG6044}, or \code{'S'} might be used for
+the Sake strain \code{Y12}).
+
+For a given ploidy \code{N}, a founder genotype is the concatenation of the
+set of \code{N} founder alleles. For example, given one founder allele
+\code{'W'} and another \code{'S'}, the founder genotype is \code{'WS'}.
 }
 \keyword{internal}
 

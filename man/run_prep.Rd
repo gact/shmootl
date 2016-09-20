@@ -22,16 +22,25 @@ run_prep(datafile, jittermap = FALSE, normseq = FALSE,
 \item{include.mapunit}{include map units in output}
 }
 \description{
-This script will take an \pkg{R/qtl} input data file, and
-prepare it for input to \pkg{shmootl}. Possible prep actions include
-resolving map sequence labels (\code{'normseq'}), jittering map positions
-(with the \pkg{R/qtl} function \code{jittermap}), and replacing empty cells
-with an explicit missing value symbol (\code{'replace.missing'}). If no prep
-actions are specified, all are applied. Other options include
+This script will take an \pkg{R/qtl} input data file, and prepare it
+for input to \pkg{shmootl}. Possible prep actions include resolving
+map sequence labels (\code{'normseq'}), jittering map positions (with
+the \pkg{R/qtl} function \code{jittermap}), and replacing empty cells
+with an explicit missing value symbol (\code{'replace.missing'}). If
+no prep actions are specified, all are applied. Other options include
 \code{'require.mapunit'}, which indicates if the input file must contain
-explicit map units; and \code{'include.mapunit'}, which indicates if explicit
-map units should be included in the output file. It is the responsibility
-of the user to ensure that these changes are valid for a given input file.
+explicit map units; and \code{'include.mapunit'}, which indicates if
+explicit map units should be included in the output file. It is the
+responsibility of the user to ensure that these changes are valid for
+a given input file.
+}
+\seealso{
+Other pipeline functions: \code{\link{run_annoqtl}},
+  \code{\link{run_digest}}, \code{\link{run_estimap}},
+  \code{\link{run_makecross}}, \code{\link{run_makegeno}},
+  \code{\link{run_pullmap}}, \code{\link{run_pushmap}},
+  \code{\link{run_recode}}, \code{\link{run_report}},
+  \code{\link{run_scanone}}
 }
 \concept{
 shmootl:utilities

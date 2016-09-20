@@ -9,27 +9,30 @@ getPhenoColIndices(cross, pheno.col = NULL)
 \arguments{
 \item{cross}{An \pkg{R/qtl} \code{cross} object.}
 
-\item{pheno.col}{Vector indicating the phenotype indices to return. This can 
-be an integer vector of phenotype column indices with respect to the columns 
-of the \code{cross} phenotype \code{data.frame}, or a character vector that 
-contains phenotype IDs or their syntactically valid names. If none are 
+\item{pheno.col}{Vector indicating the phenotype indices to return. This can
+be an integer vector of phenotype column indices with respect to the columns
+of the \code{cross} phenotype \code{data.frame}, or a character vector that
+contains phenotype IDs or their syntactically valid names. If none are
 specified, all phenotype column indices are returned.}
 }
 \value{
 Phenotype column indices.
 }
 \description{
-Get the indices of the phenotype columns in the \code{cross} phenotype data 
+Get the indices of the phenotype columns in the \code{cross} phenotype data
 frame, excluding special columns such as the sample ID column.
 }
 \seealso{
-Other cross utilities: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{getIdColIndex}},
+  \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
   \code{\link{inferTetradIndices}},
   \code{\link{inferTimeStep}},
   \code{\link{interpTimeSeries}},
   \code{\link{padTimeSeries}}, \code{\link{permCross}},
-  \code{\link{pull.alleles}}, \code{\link{pull.chr}},
-  \code{\link{pull.crosstype}}, \code{\link{pull.ind}}
+  \code{\link{permIndices}}, \code{\link{pull.alleles}},
+  \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
+  \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
+  \code{\link{writeCrossCSV}}
 }
 

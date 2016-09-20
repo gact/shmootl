@@ -1,10 +1,10 @@
 # Start of run_makecross.R #####################################################
 
 # run_makecross ----------------------------------------------------------------
-#' Make cross from geno and pheno data.
+#' Make cross from genotype and phenotype data.
 #' 
-#' @description This script combines separate genotype and 
-#' phenotype files into a single cross data file.
+#' Read separate genotype and phenotype data files,
+#' and combine these into a single cross data file.
 #' 
 #' @param genfile input genotype CSV file
 #' @param phefile input phenotype CSV file
@@ -12,6 +12,7 @@
 #' 
 #' @concept shmootl:utilities
 #' @export
+#' @family pipeline functions
 #' @rdname run_makecross
 run_makecross <- function(genfile, phefile, crossfile) {
     

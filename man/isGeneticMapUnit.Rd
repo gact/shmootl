@@ -10,7 +10,8 @@ isGeneticMapUnit(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if object is a known genetic map unit; FALSE otherwise.
+\code{TRUE} if object is a known genetic map unit;
+\code{FALSE} otherwise.
 }
 \description{
 Test if object is a known genetic map unit.

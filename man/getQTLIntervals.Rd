@@ -68,4 +68,9 @@ significant QTLs.
 \description{
 Get QTL intervals.
 }
+\seealso{
+Other QTL functions: \code{\link{estPhysicalPositions}},
+  \code{\link{getQTLFeatures}}, \code{\link{getQTLPeaks}},
+  \code{\link{plotQTLScanone}}
+}
 

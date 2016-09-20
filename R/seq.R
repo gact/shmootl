@@ -10,6 +10,7 @@
 #' @return Vector of formatted sequence labels.
 #' 
 #' @export
+#' @family chromosome/sequence functions
 #' @rdname formatSeq
 formatSeq <- function(x, prefix=c('', 'c', 'chr'), use.roman=TRUE) {
     
@@ -30,6 +31,7 @@ formatSeq <- function(x, prefix=c('', 'c', 'chr'), use.roman=TRUE) {
 #' @return Logical vector indicating which sequence labels are normalised.
 #' 
 #' @export
+#' @family chromosome/sequence functions
 #' @rdname isNormSeq
 isNormSeq <-function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
@@ -74,7 +76,10 @@ joinSeqLabels <- function(x) {
 #' 
 #' @return Input object with normalised sequence labels.
 #' 
+#' @template section-chr-seq
+#' 
 #' @export
+#' @family chromosome/sequence functions
 #' @rdname normSeq
 normSeq <- function(x) {
     UseMethod('normSeq', x)
@@ -160,9 +165,11 @@ normSeq.numeric <- function(x) {
 #'  
 #' @param x Vector of sequence labels.
 #'          
-#' @return Vector of ordered indices for the input sequence labels.
+#' @return Vector of indices for the input sequence labels,
+#' ordered with respect to their normalised form.
 #' 
 #' @export
+#' @family chromosome/sequence functions
 #' @rdname orderSeq
 orderSeq <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
@@ -175,9 +182,11 @@ orderSeq <- function(x) {
 #'  
 #' @param x Vector of sequence labels.
 #'          
-#' @return Vector of ranks for the input sequence labels.
+#' @return Vector of ranks for the normalised
+#' form of the input sequence labels.
 #' 
 #' @export
+#' @family chromosome/sequence functions
 #' @rdname rankSeq
 rankSeq <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
@@ -190,9 +199,11 @@ rankSeq <- function(x) {
 #'  
 #' @param x Vector of sequence labels.
 #'          
-#' @return Sorted vector of sequence labels.
+#' @return Input vector of sequence labels, sorted
+#' with respect to their normalised form.
 #' 
-#' @keywords internal
+#' @export
+#' @family chromosome/sequence functions
 #' @rdname sortSeq
 sortSeq <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
@@ -206,7 +217,7 @@ sortSeq <- function(x) {
 #' @param x Vector of sequence labels.
 #'      
 #' @return A \code{data.frame} representing split sequence labels.
-#'  
+#' 
 #' @keywords internal
 #' @rdname splitSeqLabels
 splitSeqLabels <- function(x) {

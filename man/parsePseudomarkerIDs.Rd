@@ -10,11 +10,20 @@ parsePseudomarkerIDs(loc.ids)
 \item{loc.ids}{Vector of pseudomarker IDs.}
 }
 \value{
-Genetic \code{mapframe} with loci corresponding to the specified
-pseudomarker IDs. Raises an error if any input values cannot be parsed as
-a pseudomarker ID.
+Genetic \code{mapframe} with loci
+corresponding to the input pseudomarker IDs.
 }
 \description{
-Parse pseudomarker IDs.
+This function parses an input vector of pseudomarker IDs, and returns a
+genetic \code{mapframe} with the locus in each row derived from the
+corresponding pseudomarker ID in the input vector. An error is raised
+if any of the input values cannot be parsed as a pseudomarker ID.
+}
+\section{Pseudomarker IDs}{
+
+
+Pseudomarker IDs are used by \pkg{R/qtl} for inter-marker loci. They indicate
+the reference sequence and genetic map position of the locus (e.g.
+\code{'c04.loc33'} for a locus at position 33cM on chromosome IV).
 }
 

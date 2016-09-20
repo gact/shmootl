@@ -2,7 +2,10 @@
 
 # Package Constants ------------------------------------------------------------
 #' Package constants for \pkg{shmootl}.
-#'  
+#' 
+#' This contains any objects or information that might be
+#' useful in more than one function within this package.
+#' 
 #' @docType package
 #' @include util.R
 #' @keywords internal

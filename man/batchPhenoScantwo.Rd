@@ -13,12 +13,12 @@ batchPhenoScantwo(cross, pheno.col = NULL, n.cluster = 1, iseed = NULL,
 \item{pheno.col}{Phenotype columns for which QTL analysis should be run. 
 If no phenotypes are specified, all are used.}
 
-\item{n.cluster}{Number of nodes to request for parallel execution. Any 
-number of processes can be requested with the argument \code{n.cluster}, 
-but the number actually returned can be limited to the number of processes 
-available. On a local computer, this limit will the number of cores in the 
-computer. In a PBS batch system, the maximum number of processes will be set 
-from the PBS node file.}
+\item{n.cluster}{Number of nodes to request for parallel execution. Any
+number of processes can be requested with the argument \code{n.cluster},
+but the number actually returned can be limited to the number of processes
+available. On a local computer, this limit is the number of physical cores
+in the computer. In a PBS batch system, the maximum number of processes
+will be set from the PBS node file.}
 
 \item{iseed}{Seed for random number generator.}
 
@@ -31,8 +31,13 @@ the given phenotypes.
 \description{
 Run \code{qtl::scantwo} on a batch of phenotypes.
 }
+\references{
+Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
+in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
+}
 \seealso{
-Other scan utilities: \code{\link{batchPermScanoneF}},
+Other scan utility functions: \code{\link{batchPermScanoneF}},
   \code{\link{batchPermScanone}},
   \code{\link{batchPermScantwoF}},
   \code{\link{batchPermScantwo}},

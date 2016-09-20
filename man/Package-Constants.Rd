@@ -6,7 +6,8 @@
 \alias{Package Constants-package}
 \title{Package constants for \pkg{shmootl}.}
 \description{
-Package constants for \pkg{shmootl}.
+This contains any objects or information that might be
+useful in more than one function within this package.
 }
 \keyword{internal}
 

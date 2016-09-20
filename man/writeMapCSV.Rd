@@ -11,18 +11,38 @@ writeMapCSV(map, outfile, include.mapunit = TRUE)
 
 \item{outfile}{Output CSV file path.}
 
-\item{include.mapunit}{Include map unit information in map positions.}
+\item{include.mapunit}{Include map unit information in output file.}
 }
 \description{
-Write \code{map} to a CSV file.
+This function writes a yeast \code{mapframe} object to any \pkg{R/qtl} CSV
+file that can contain map data, whether it is a map table file, genotype
+file, or a full cross file. If an output genotype or cross file already
+exists, the mapframe is written to the map portion of the output file.
 }
 \seealso{
-Other csv utilities: \code{\link{readCovarCSV}},
-  \code{\link{readCrossCSV}}, \code{\link{readGenoCSV}},
-  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
-  \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},
+  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
+  \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
   \code{\link{writeGenoCSV}},
   \code{\link{writeMapframeCSV}},
   \code{\link{writePhenoCSV}}
+
+Other map utility functions: \code{\link{as.data.frame.mapframe}},
+  \code{\link{as.data.frame.map}},
+  \code{\link{as.mapframe}}, \code{\link{as.map}},
+  \code{\link{extractMarkers}},
+  \code{\link{extractPseudomarkers}},
+  \code{\link{findFlanking}}, \code{\link{findLoci}},
+  \code{\link{findMarkers}}, \code{\link{getMapSteps}},
+  \code{\link{getMapUnit}}, \code{\link{gmapframe}},
+  \code{\link{hasMapCSV}}, \code{\link{inMapOrder}},
+  \code{\link{inferMapStep}}, \code{\link{mapframe}},
+  \code{\link{orderMap}}, \code{\link{readMapCSV}},
+  \code{\link{readMapHDF5}}, \code{\link{readMapframeCSV}},
+  \code{\link{setMapUnit}}, \code{\link{writeMapHDF5}},
+  \code{\link{writeMapframeCSV}}
 }
 

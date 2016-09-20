@@ -2,18 +2,22 @@
 % Please edit documentation in R/mapping.R
 \name{values}
 \alias{values}
-\title{Get values of vector object.}
+\title{Get values of a \code{mapping} object.}
 \usage{
 values(x)
 }
 \arguments{
-\item{x}{R vector object.}
+\item{x}{A \code{mapping} object.}
 }
 \value{
-Unnamed list of values in R vector object.
+Unnamed list of values in a \code{mapping} object.
 }
 \description{
-Get values of vector object.
+Get values of a \code{mapping} object.
+}
+\seealso{
+Other mapping object functions: \code{\link{as.mapping}},
+  \code{\link{is.mapping}}, \code{\link{mapping}}
 }
 \keyword{internal}
 

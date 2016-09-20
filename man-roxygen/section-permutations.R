@@ -1,0 +1,52 @@
+#' @section Permutations:
+#' 
+#' For \code{cross} permutations in \pkg{shmootl}, either the phenotypes or
+#' genotypes of the \code{cross} can be permuted (but not both). The actual
+#' pattern of permutations differs depending on the number of sample replicates
+#' used, whether samples (or sample replicates) are missing, and whether the
+#' samples are formed from sets of tetrads.
+#' 
+#' If samples are tetradic, permutations are stratified by tetrad, so that a
+#' given sample (or sample replicate) must be swapped with another member of
+#' the same tetrad. Previously described by Cubillos \emph{et al.} (2011),
+#' Salinas \emph{et al.} (2012), and Jara \emph{et al.} (2014), stratification
+#' within tetrads is done because individual samples from a tetrad are not
+#' independent, and therefore not exchangeable, which is an assumption of
+#' the permutation test (Churchill and Doerge 1994).
+#' 
+#' If one or two samples are missing from a tetrad, samples will be permuted
+#' within the remaining three or two samples, respectively. Complete tetrads
+#' should be used where possible, and a warning is output if any tetrads are
+#' incomplete. An error will result from trying to permute a tetrad with only
+#' one sample.
+#' 
+#' For non-tetradic data, samples are permuted within a single permutation
+#' stratum that includes all samples, which is equivalent to an unstratified
+#' permutation.
+#' 
+#' If sample replicates are present, each sample replicate is swapped with
+#' another sample replicate that does not originate from the same sample.
+#' When sample replicates are balanced (i.e. equal number of replicates for
+#' each sample), this is roughly equivalent to permuting each set of sample
+#' replicates as a unit. Sample replicates should be balanced where possible,
+#' although imbalanced replicates can be permuted (with a warning), provided
+#' that no single sample has more replicates than all other samples in a
+#' permutation stratum, in which case there is no valid permutation.
+#' 
+#' @references Churchill GA, Doerge RW (1994) Empirical threshold values for
+#' quantitative trait mapping. \emph{Genetics} \bold{138}(3):963-71.
+#' (\href{http://www.ncbi.nlm.nih.gov/pubmed/7851788}{PubMed})
+#' @references Cubillos FA, Billi E, Zorgo E, Parts L, Fargier P, Omholt S,
+#' Blomberg A, Warringer J, Louis EJ, Liti G (2011) Assessing the complex
+#' architecture of polygenic traits in diverged yeast populations.
+#' \emph{Molecular Ecology} \bold{20}(7):1401-13.
+#' (\href{http://www.ncbi.nlm.nih.gov/pubmed/21261765}{PubMed})
+#' @references Jara M, Cubillos FA, Garcia V, Salinas F, Aguilera O, Liti G,
+#' Martinez C (2014) Mapping genetic variants underlying differences in the
+#' central nitrogen metabolism in fermenter yeasts. \emph{PLoS One} \bold{9}(1):e86533.
+#' (\href{http://www.ncbi.nlm.nih.gov/pubmed/24466135}{PubMed})
+#' @references Salinas F, Cubillos FA, Soto D, Garcia V, Bergstrom A,
+#' Warringer J, Ganga MA, Louis EJ, Liti G, Martinez C (2014) The genetic basis
+#' of natural variation in oenological traits in Saccharomyces cerevisiae.
+#' \emph{PLoS One} \bold{7}(11):e49640.
+#' (\href{http://www.ncbi.nlm.nih.gov/pubmed/23185390}{PubMed})

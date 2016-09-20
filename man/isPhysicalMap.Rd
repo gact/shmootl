@@ -10,7 +10,8 @@ isPhysicalMap(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if object is a physical \code{map}; FALSE otherwise.
+\code{TRUE} if object is a physical \code{map};
+\code{FALSE} otherwise.
 }
 \description{
 Test if object is a physical \code{map}.

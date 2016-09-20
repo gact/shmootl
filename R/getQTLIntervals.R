@@ -38,6 +38,7 @@
 #' significant QTLs.
 #' 
 #' @export
+#' @family QTL functions
 #' @rdname getQTLIntervals
 getQTLIntervals <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...) {
     UseMethod('getQTLIntervals', x)

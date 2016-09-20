@@ -44,17 +44,25 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
 \item{icovfile}{interactive covariates file}
 }
 \description{
-This script will read cross data from the specified cross input
-file, run a single QTL analysis using \pkg{R/qtl} \code{scanone}, and write
-the results to the specified output file. If the input cross contains
-enumerated genotypes, marker regresion is performed regardless of the value
-of the \code{method} parameter.
+Read cross data from the specified cross input file, run a single QTL
+analysis using \pkg{R/qtl} \code{scanone}, and write the results of
+that scan to the specified output file. If the input cross contains
+enumerated genotypes, marker regresion is performed regardless of
+the value of the \code{method} parameter.
 }
 \details{
 LOD threshold stringency can be set through either the significance
-level (\code{alpha}), or the false-discovery rate (\code{fdr}), but not both.
-If neither is specified, a significance level \code{alpha} of \code{0.05} is
-used by default.
+level (\code{alpha}), or the false-discovery rate (\code{fdr}), but
+not both. If neither is specified, a significance level \code{alpha}
+of \code{0.05} is used by default.
+}
+\seealso{
+Other pipeline functions: \code{\link{run_annoqtl}},
+  \code{\link{run_digest}}, \code{\link{run_estimap}},
+  \code{\link{run_makecross}}, \code{\link{run_makegeno}},
+  \code{\link{run_prep}}, \code{\link{run_pullmap}},
+  \code{\link{run_pushmap}}, \code{\link{run_recode}},
+  \code{\link{run_report}}
 }
 \concept{
 shmootl:pipelines

@@ -15,15 +15,45 @@ readMapCSV(infile, require.mapunit = TRUE)
 An \pkg{R/qtl} \code{map} object.
 }
 \description{
-Read \code{map} from a CSV file.
+This function reads a yeast cross genetic or physical map from any
+\pkg{R/qtl} CSV file that contains map data, whether that file
+contains a map table, genotype data, or a full cross.
+}
+\details{
+By default, the input map must include map unit information (e.g.
+\code{'cM'}, \code{'bp'}). In the case of a map table file, this information
+can be indicated in the map headings (e.g. \code{'pos (cM)'}) or in the map
+positions (e.g. \code{'47 cM'}). For a cross or genotype file, map units
+should be included with map positions.
+
+To read an input file without requiring map units, set parameter
+\code{require.mapunit} to \code{FALSE}. If map units are not
+required and not found, map positions are assumed to be in
+centiMorgans.
 }
 \seealso{
-Other csv utilities: \code{\link{readCovarCSV}},
-  \code{\link{readCrossCSV}}, \code{\link{readGenoCSV}},
-  \code{\link{readMapframeCSV}},
-  \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},
+  \code{\link{readGenoCSV}}, \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
   \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}},
   \code{\link{writePhenoCSV}}
+
+Other map utility functions: \code{\link{as.data.frame.mapframe}},
+  \code{\link{as.data.frame.map}},
+  \code{\link{as.mapframe}}, \code{\link{as.map}},
+  \code{\link{extractMarkers}},
+  \code{\link{extractPseudomarkers}},
+  \code{\link{findFlanking}}, \code{\link{findLoci}},
+  \code{\link{findMarkers}}, \code{\link{getMapSteps}},
+  \code{\link{getMapUnit}}, \code{\link{gmapframe}},
+  \code{\link{hasMapCSV}}, \code{\link{inMapOrder}},
+  \code{\link{inferMapStep}}, \code{\link{mapframe}},
+  \code{\link{orderMap}}, \code{\link{readMapHDF5}},
+  \code{\link{readMapframeCSV}}, \code{\link{setMapUnit}},
+  \code{\link{writeMapCSV}}, \code{\link{writeMapHDF5}},
+  \code{\link{writeMapframeCSV}}
 }
 

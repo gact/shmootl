@@ -15,9 +15,11 @@
 #'     
 #' @return A \code{scantwoperm} list containing the results of the QTL scan for 
 #' all permutations.
-#'  
+#' 
+#' @template ref-broman-2003
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @rdname batchPermScantwo
 batchPermScantwo <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, 
     n.perm=1000, perm.pheno=TRUE, perm.geno=FALSE, ...) {
@@ -70,8 +72,10 @@ batchPermScantwo <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
 #' @return A \code{scantwo} object containing the results of the QTL scan for 
 #' the given phenotypes.
 #' 
+#' @template ref-broman-2003
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @rdname batchPhenoScantwo
 batchPhenoScantwo <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, 
     ...) {
@@ -125,8 +129,10 @@ batchPhenoScantwo <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
 #' @return A \code{scantwoperm} matrix containing the result of the QTL scan for
 #' a single permutation.
 #' 
+#' @template ref-broman-2003
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @rdname nodePermScantwo
 nodePermScantwo <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE, 
     perm.geno=FALSE, ...) {
@@ -215,8 +221,10 @@ nodePermScantwo <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE,
 #' @return A \code{scantwo} object containing the result of the QTL scan for 
 #' a single phenotype. 
 #' 
+#' @template ref-broman-2003
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @rdname nodePhenoScantwo
 nodePhenoScantwo <- function(pheno.col, cross, ...) {
     

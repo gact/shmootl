@@ -11,17 +11,21 @@ writePhenoCSV(pheno, outfile, digits = NULL)
 
 \item{outfile}{Output CSV file path.}
 
-\item{digits}{If specified, round numeric phenotype values to the specified
-number of digits.}
+\item{digits}{If specified, round numeric phenotype
+values to the specified number of digits.}
 }
 \description{
-Write yeast pheno data to a CSV file.
+This function writes a yeast \code{pheno} object to an \pkg{R/qtl} CSV file.
+The \code{pheno} object must have an attribute \code{'info'} of type
+\code{\linkS4class{CrossInfo}}, from which phenotype and sample IDs are taken.
 }
 \seealso{
-Other csv utilities: \code{\link{readCovarCSV}},
-  \code{\link{readCrossCSV}}, \code{\link{readGenoCSV}},
-  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
-  \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},
+  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
+  \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
   \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}}
 }

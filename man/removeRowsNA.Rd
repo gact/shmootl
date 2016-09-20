@@ -2,7 +2,7 @@
 % Please edit documentation in R/util.R
 \name{removeRowsNA}
 \alias{removeRowsNA}
-\title{Remove rows containing only NA values.}
+\title{Remove rows containing only \code{NA} values.}
 \usage{
 removeRowsNA(x)
 }
@@ -10,10 +10,10 @@ removeRowsNA(x)
 \item{x}{A \code{data.frame} or \code{matrix}.}
 }
 \value{
-Input object with NA-only rows removed.
+Input object without those rows that contain only \code{NA} values.
 }
 \description{
-Remove rows containing only NA values.
+Remove rows containing only \code{NA} values.
 }
 \keyword{internal}
 

@@ -10,7 +10,8 @@ allKwargs(...)
 \item{...}{Ellipsis arguments.}
 }
 \value{
-TRUE if all ellipsis arguments are keyword arguments; FALSE otherwise.
+\code{TRUE} if all ellipsis arguments are keyword arguments;
+\code{FALSE} otherwise.
 }
 \description{
 Test if ellipsis arguments are all keyword arguments.

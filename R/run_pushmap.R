@@ -1,13 +1,13 @@
 # Start of run_pushmap.R #######################################################
 
 # run_pushmap ------------------------------------------------------------------
-#' Push map into data file.
+#' Push map into a data file.
 #' 
-#' @description Add or replace the map of the specified CSV or HDF5 file with
-#' the data from the given map file. If the \code{mapname} parameter is given
-#' for a HDF5 data file, the map is assigned that name and when being written
-#' to the HDF5 file. Otherwise, a default map name (e.g. \code{'Genetic Map'})
-#' is used.
+#' Add or replace the map of the specified CSV or HDF5 file with the
+#' data from the given map file. If the \code{mapname} parameter is
+#' given for a HDF5 data file, the map is assigned that name and when
+#' being written to the HDF5 file. Otherwise, a default map name
+#' (e.g. \code{'Genetic Map'}) is used.
 #' 
 #' @param mapfile input map CSV file
 #' @param datafile file with map data
@@ -17,6 +17,7 @@
 #' 
 #' @concept shmootl:utilities
 #' @export
+#' @family pipeline functions
 #' @rdname run_pushmap
 run_pushmap <- function(mapfile, datafile, mapname=NA_character_,
     require.mapunit=TRUE, include.mapunit=TRUE) {

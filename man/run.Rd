@@ -7,55 +7,40 @@
 run()
 }
 \description{
-This is the general \pkg{shmootl} pipeline-running function, 
-which provides a basic interface for standard QTL analysis pipelines to be 
-run from a command line.
+This is the general \pkg{shmootl} pipeline-running function,
+which provides a basic interface for standard QTL analysis pipelines to be
+run from a command line. It cannot be called interactively within R.
 }
-\section{Pipeline Functions}{
+\section{Package Pipelines}{
 
 
-Pipelines are fully-documented \pkg{shmootl} package functions that follow 
-specific conventions regarding function name and formal arguments. They are
-intended to be run from the command line, but it should also be possible to
-run them from within the R environment. 
+Within \pkg{\link{shmootl}}, package pipelines are fully-documented functions that
+follow specific conventions regarding function name and formal arguments.
+Pipeline function names are of the form \code{'run_<pipeline>'} (where
+\code{'<pipeline>'} is replaced by the pipeline name).
 
-Pipeline function names are of the form \code{run_<pipeline>} (where 
-\code{<pipeline>} is replaced the pipeline name). Information about a given 
-pipeline is taken automatically from that pipeline's function definition 
-and documentation. 
- 
-Pipeline function arguments are handled by \pkg{argparser}, which groups 
-arguments into three main types:
+Package pipelines can be run from a command line with \code{Rscript} as follows:
 
-\itemize{
-\item{\strong{positional arguments}:}  {arguments identified by their position 
-(e.g. \code{'input.csv'}).}
-\item{\strong{optional arguments}:}  {arguments in keyword-value pairs, where
-the argument value follows the keyword (e.g. \code{'--alpha 0.01'}).}
-\item{\strong{flags}:}  {keyword-only arguments, where the presence of the keyword 
-toggles a specific option (e.g. \code{'--help'}). }
-}
+\code{Rscript -e 'library(shmootl)' -e 'run()' <pipeline> [-h] [<args>]}
 
-Pipeline arguments are assigned to one of these three groups depending on
-their default values in the pipeline function definition. Arguments without 
-a default value are taken to be positional arguments. Those with a default 
-value are taken to be an optional argument, unless the default value is 
-\code{FALSE}, in which case the argument is assumed to be \code{logical} 
-(i.e. either \code{TRUE} or \code{FALSE}) and is treated as a flag.
-
-Each argument's data type is set from its default value, if possible. An 
-argument will be taken to be of type \code{character} if it doesn't have a
-default value from which its data type can be guessed. Pipeline functions
-should be written to take such arguments as \code{character} variables.
+...where \code{\link{run}} is the general \pkg{shmootl} pipeline-running
+function, \code{<pipeline>} is the name of the pipeline to run, and
+\code{<args>} represents any arguments to be passed to the given pipeline.
+To see the available options for a pipeline, input the help flag (\code{-h})
+after the name of the pipeline. To list all available pipelines, input the
+help flag (\code{-h}) without a pipeline name. (See usage examples below.)
 }
 \examples{
 \dontrun{
-# To list available pipelines.
-Rscript -e 'library(shmootl)' -e 'run()'
+# To list available pipelines from the command line.
+Rscript -e 'library(shmootl)' -e 'run()' -h
 
-# To run the 'scanone' pipeline, which makes use of the qtl::scanone function.
-Rscript -e 'library(shmootl)' -e 'run()' scanone --n.cluster 8 input.csv output.hdf5
+# To run the 'scanone' pipeline from the command line.
+Rscript -e 'library(shmootl)' -e 'run()' scanone \\
+    --infile input.csv --h5file output.hdf5
+
+# To run the 'scanone' pipeline from within R.
+run_scanone(infile='input.csv', h5file='output.hdf5')
 }
-  
 }
 

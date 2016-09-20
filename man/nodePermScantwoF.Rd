@@ -30,8 +30,18 @@ for a single permutation.
 \description{
 Run \code{funqtl::scantwoF} on a single permutation of a \code{cross} object.
 }
+\references{
+Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
+in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
+
+Kwak IY, Moore CR, Spalding EP, Broman KW (2014) A simple
+regression-based method to map quantitative trait loci underlying
+function-valued phenotypes. \emph{Genetics} \bold{197}(4):1409-16.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/24931408}{PubMed})
+}
 \seealso{
-Other scan utilities: \code{\link{batchPermScanoneF}},
+Other scan utility functions: \code{\link{batchPermScanoneF}},
   \code{\link{batchPermScanone}},
   \code{\link{batchPermScantwoF}},
   \code{\link{batchPermScantwo}},

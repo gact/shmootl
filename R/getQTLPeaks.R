@@ -28,6 +28,7 @@
 #' \code{mapframe} if there are no significant QTLs.
 #'   
 #' @export
+#' @family QTL functions
 #' @rdname getQTLPeaks
 getQTLPeaks <- function(x, chr=NULL, ...) {
     UseMethod('getQTLPeaks', x)

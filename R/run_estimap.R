@@ -1,12 +1,12 @@
 # Start of run_estimap.R #######################################################
 
 # run_estimap ------------------------------------------------------------------
-#' Estimate map from cross/geno data.
+#' Estimate map from cross/genotype data.
 #' 
-#' @description This script reads an R/qtl cross or genotype file, and outputs a
-#' map estimated from the input genotype data. Note that a genetic map cannot be
-#' estimated from enumerated genotypes, as these are generated independently for
-#' each marker.
+#' This script reads an \pkg{R/qtl} cross or genotype file, and outputs
+#' a map estimated from the input genotype data. Note that a genetic map
+#' cannot be estimated from enumerated genotypes, as these are generated
+#' independently for each marker.
 #' 
 #' @param datafile input cross/geno CSV file
 #' @param mapfile output map CSV file
@@ -17,6 +17,7 @@
 #' 
 #' @concept shmootl:utilities
 #' @export
+#' @family pipeline functions
 #' @rdname run_estimap
 run_estimap <- function(datafile, mapfile, n.cluster=1L, error.prob=0.0001,
     map.function=c("haldane","kosambi","c-f","morgan"), jittermap=FALSE) {

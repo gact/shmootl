@@ -9,7 +9,8 @@
 #'          
 #' @return Vector of formatted chromosome labels.
 #' 
-#' @keywords internal
+#' @export
+#' @family chromosome/sequence functions
 #' @rdname formatChr
 formatChr <- function(x, prefix=c('', 'c', 'chr'), use.roman=TRUE) {
     
@@ -41,7 +42,8 @@ formatChr <- function(x, prefix=c('', 'c', 'chr'), use.roman=TRUE) {
 #'      
 #' @return Logical vector indicating which chromosome labels are normalised.
 #' 
-#' @keywords internal
+#' @export
+#' @family chromosome/sequence functions
 #' @rdname isNormChr
 isNormChr <-function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
@@ -50,12 +52,15 @@ isNormChr <-function(x) {
 
 # normChr ----------------------------------------------------------------------
 #' Normalise chromosome labels.
-#'   
+#' 
 #' @param x Vector of chromosome labels.
 #'          
 #' @return Vector of normalised chromosome labels.
 #' 
-#' @keywords internal
+#' @template section-chr-seq
+#' 
+#' @export
+#' @family chromosome/sequence functions
 #' @rdname normChr
 normChr <- function(x) {
     
@@ -113,9 +118,11 @@ normChr <- function(x) {
 #'  
 #' @param x Vector of chromosome labels.
 #'          
-#' @return Vector of ordered indices for the input chromosome labels.
+#' @return Vector of indices for the input chromosome labels,
+#' ordered with respect to their normalised form.
 #' 
-#' @keywords internal
+#' @export
+#' @family chromosome/sequence functions
 #' @rdname orderChr
 orderChr <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
@@ -127,9 +134,11 @@ orderChr <- function(x) {
 #'  
 #' @param x Vector of chromosome labels.
 #'          
-#' @return Vector of ranks for the input chromosome labels.
+#' @return Vector of ranks for the normalised
+#' form of the input chromosome labels.
 #' 
-#' @keywords internal
+#' @export
+#' @family chromosome/sequence functions
 #' @rdname rankChr
 rankChr <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )
@@ -141,9 +150,11 @@ rankChr <- function(x) {
 #'  
 #' @param x Vector of chromosome labels.
 #'          
-#' @return Sorted vector of chromosome labels.
+#' @return Input vector of chromosome labels, sorted
+#' with respect to their normalised form.
 #' 
-#' @keywords internal
+#' @export
+#' @family chromosome/sequence functions
 #' @rdname sortChr
 sortChr <- function(x) {
     stopifnot( is.vector(x) || is.factor(x) )

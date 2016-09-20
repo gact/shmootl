@@ -2,7 +2,7 @@
 % Please edit documentation in R/util.R
 \name{stopif}
 \alias{stopif}
-\title{Stop if the expression is TRUE.}
+\title{Stop if the expression is \code{TRUE}.}
 \usage{
 stopif(expression)
 }
@@ -10,7 +10,7 @@ stopif(expression)
 \item{expression}{R expression to be tested.}
 }
 \description{
-Stop if the expression is TRUE.
+Stop if the expression is \code{TRUE}.
 }
 \details{
 This function is based on the R base function \code{stopifnot}, but  

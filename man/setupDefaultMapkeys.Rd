@@ -8,9 +8,10 @@ setupDefaultMapkeys()
 }
 \description{
 Default \code{mapkey} objects are generated from genome sequence info. Simple
-component maps are created from sequence length info: a genetic map from the
-\code{'maplengths'} column, and a physical map from the \code{'seqlengths'}
-column. These are used to create a basic \code{mapkey} object for each genome.
+component maps are created from reference sequence length info: a genetic map
+from the \code{'maplengths'} column, and a physical map from the
+\code{'seqlengths'} column. These are used to create a basic
+\code{mapkey} object for each genome.
 }
 \keyword{internal}
 

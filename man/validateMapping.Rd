@@ -10,7 +10,7 @@ validateMapping(x)
 \item{x}{A \code{mapping} object.}
 }
 \value{
-TRUE if object is a valid \code{mapping};
+\code{TRUE} if object is a valid \code{mapping};
 otherwise, returns first error.
 }
 \description{

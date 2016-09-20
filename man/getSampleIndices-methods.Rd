@@ -32,14 +32,41 @@ logical vector of tetrads, or an integer vector of tetrad indices.}
 }
 \value{
 If samples are specified by strain or tetrad, and if the option 
-\code{simplify} is not TRUE, this method returns a list of integer vectors,
-each containing the sample indices corresponding to a given strain/tetrad.
-Otherwise, a vector of sample indices is returned.
+\code{simplify} is not \code{TRUE}, this method returns a list of integer
+vectors, each containing the sample indices corresponding to a given
+strain/tetrad. Otherwise, a vector of sample indices is returned.
 }
 \description{
 Get indices of the specified samples. Samples can be specified at one of the 
 following levels: sample, strain, or tetrad. If none are specified, all 
 sample indices are returned.
+}
+\seealso{
+Other CrossInfo methods: \code{\link{getAlleles}},
+  \code{\link{getCrosstype}}, \code{\link{getGenotypes}},
+  \code{\link{getMarkerIndices}},
+  \code{\link{getMarkerNames}},
+  \code{\link{getMarkerSeqs}}, \code{\link{getMarkers}},
+  \code{\link{getNumMarkers}},
+  \code{\link{getNumPhenotypes}},
+  \code{\link{getNumSamples}}, \code{\link{getNumSeqs}},
+  \code{\link{getPhenotypeIndices}},
+  \code{\link{getPhenotypeNames}},
+  \code{\link{getPhenotypes}},
+  \code{\link{getSampleNames}}, \code{\link{getSamples}},
+  \code{\link{getSeqIndices}}, \code{\link{getSeqMarkers}},
+  \code{\link{getSeqNames}}, \code{\link{getSequences}},
+  \code{\link{getStrainIndices}},
+  \code{\link{getTetradIndices}},
+  \code{\link{hasMarkerSeqs}}, \code{\link{hasSampleIDs}},
+  \code{\link{hasStrainIndices}},
+  \code{\link{hasTetradIndices}}, \code{\link{setAlleles}},
+  \code{\link{setCrosstype}}, \code{\link{setGenotypes}},
+  \code{\link{setMarkerSeqs}}, \code{\link{setMarkers}},
+  \code{\link{setPhenotypes}}, \code{\link{setSamples}},
+  \code{\link{setSequences}},
+  \code{\link{setStrainIndices}},
+  \code{\link{setTetradIndices}}
 }
 \keyword{internal}
 

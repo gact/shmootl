@@ -1,37 +1,16 @@
 # Start of map.R ###############################################################
 
-# Map Utilities ----------------------------------------------------------------
-#' Genetic and physical map utilities.
-#' 
-#' These utilities include functions for \pkg{R/qtl} \code{map} objects,
-#' \pkg{shmootl} \code{mapframe} objects. A \code{mapframe} can be created
-#' in a similar manner to a \code{data.frame} with \code{\link{mapframe}}.
-#' All arguments are passed to the \code{data.frame} constructor, except for
-#' an addition \code{map.unit} parameter, which can be used to set the map unit
-#' of the new \code{mapframe}. The function \code{\link{gmapframe}} creates a
-#' genetic \code{mapframe} with map unit set automatically to \code{'cM'}.
-#' Coercion functions exist to convert a \code{map} to a \code{mapframe}
-#' (\code{\link{as.mapframe}}), and vice versa (\code{\link{as.map}}).
-#' 
-#' @template map
-#' @template mapframe
-#' @template mapunits
-#' 
-#' @docType package
-#' @name Map Utilities
-NULL
-
 # as.data.frame.map ------------------------------------------------------------
-#' Coerce \code{map} to \code{data.frame}.
+#' Convert \code{map} to \code{data.frame}.
 #' 
 #' @param x An \pkg{R/qtl} \code{map} object.
 #' @param ... Unused arguments.
-#' @param map.unit Explicitly sets \code{'map.unit'}.
+#' @param map.unit Explicitly sets \code{'map.unit'} attribute.
 #' 
 #' @return A \code{data.frame} corresponding to the input \code{map} object.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @method as.data.frame map
 #' @rdname as.data.frame.map
 as.data.frame.map <- function(x, ..., map.unit=NULL) {
@@ -66,7 +45,7 @@ as.data.frame.map <- function(x, ..., map.unit=NULL) {
 }
 
 # as.data.frame.mapframe -------------------------------------------------------
-#' Coerce \code{mapframe} to \code{data.frame}.
+#' Convert \code{mapframe} to \code{data.frame}.
 #' 
 #' @param x A \code{mapframe} object.
 #' @param ... Unused arguments.
@@ -74,7 +53,7 @@ as.data.frame.map <- function(x, ..., map.unit=NULL) {
 #' @return A \code{data.frame} corresponding to the input \code{mapframe} object.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @method as.data.frame mapframe
 #' @rdname as.data.frame.mapframe
 as.data.frame.mapframe <- function(x, ...) {
@@ -83,16 +62,18 @@ as.data.frame.mapframe <- function(x, ...) {
 }
 
 # as.map -----------------------------------------------------------------------
-#' Coerce object to \code{map}.
+#' Convert object to \code{map}.
 #' 
 #' @param from Object containing map data.
-#' @param map.unit Explicitly sets \code{'map.unit'}. This must be specified if
-#' an object does not have an existing \code{'map.unit'} attribute.
+#' @param map.unit Explicitly sets \code{'map.unit'} attribute. This must be
+#' specified if an object does not have an existing \code{'map.unit'} attribute.
 #' 
 #' @return An \pkg{R/qtl} \code{map} corresponding to the input object.
 #' 
+#' @template section-map
+#' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname as.map
 as.map <- function(from, map.unit=NULL) {
     UseMethod('as.map', from)
@@ -222,7 +203,6 @@ as.map.list <- function(from, map.unit=NULL) {
     return(to)
 }
 
-
 # as.map.map -------------------------------------------------------------------
 #' @export
 #' @method as.map map
@@ -256,16 +236,18 @@ as.map.scanone <- function(from, map.unit=NULL) {
 }
 
 # as.mapframe ------------------------------------------------------------------
-#' Coerce object to \code{mapframe}.
+#' Convert object to \code{mapframe}.
 #' 
 #' @param from Object containing map data.
-#' @param map.unit Explicitly sets \code{'map.unit'}. This must be specified if
-#' an object does not have an existing \code{'map.unit'} attribute.
+#' @param map.unit Explicitly sets \code{'map.unit'} attribute. This must be
+#' specified if an object does not have an existing \code{'map.unit'} attribute.
 #' 
 #' @return A \code{mapframe} corresponding to the input object.
 #' 
+#' @template section-mapframe
+#' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname as.mapframe
 as.mapframe <- function(from, map.unit=NULL) {
     UseMethod('as.mapframe', from)
@@ -365,12 +347,12 @@ as.mapframe.scanone <- function(from, map.unit=NULL) {
 # convertMapUnit ---------------------------------------------------------------
 #' Convert map unit and rescale map positions.
 #' 
-#' @template mapunits
-#' 
 #' @param x Object containing map data.
 #' @param map.unit New map unit.
 #' 
 #' @return Input object with converted map unit and rescaled map positions.
+#' 
+#' @template section-mapunits
 #' 
 #' @keywords internal
 #' @rdname convertMapUnit
@@ -419,7 +401,7 @@ convertMapUnit <- function(x, map.unit) {
 #' @return Input object with pseudomarkers removed.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname extractMarkers
 extractMarkers <- function(x) {
     return( subsetByLocusID(x, isMarkerID) )
@@ -430,10 +412,10 @@ extractMarkers <- function(x) {
 #' 
 #' @param x Object containing map data.
 #' 
-#' @return Input object with markers removed.
+#' @return Input object with only pseudomarkers remaining.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname extractPseudomarkers
 extractPseudomarkers <- function(x) {
     return( subsetByLocusID(x, isPseudomarkerID) )
@@ -451,7 +433,7 @@ extractPseudomarkers <- function(x) {
 #' lower and upper limit of the flanking interval.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname findFlanking
 findFlanking <- function(x, loc, expandtomarkers=FALSE) {
     UseMethod('findFlanking', x)
@@ -645,7 +627,7 @@ findFlankingRowIndices <- function(x, loc, expandtomarkers=FALSE) {
 #' map position specified in the corresponding row of the locus \code{mapframe}.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname findLoci
 findLoci <- function(x, loc) {
     
@@ -708,7 +690,7 @@ findLocusRowIndices <- function(x, loc) {
 #' map position specified in the corresponding row of the locus \code{mapframe}.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname findMarkers
 findMarkers <- function(x, loc) {
     findLoci(extractMarkers(x), loc)
@@ -719,8 +701,8 @@ findMarkers <- function(x, loc) {
 #' 
 #' Get sequence column index for a \code{mapframe} or equivalent
 #' \code{data.frame}. The sequence column is taken to be the column
-#' whose heading is 'chr'. An error is raised if there is not exactly
-#' one sequence column.
+#' whose heading is \code{'chr'}. An error is raised if there is not
+#' exactly one sequence column.
 #' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame}.
 #' 
@@ -830,11 +812,11 @@ getDatColIndices <- function(x, datcolumns=NULL, strict=FALSE) {
 #' 
 #' @param x Object containing map data.
 #' 
-#' @return List of vectors, each giving the steps between markers on a given
-#' sequence.
+#' @return List of vectors, each element named for a given reference sequence,
+#' and containing a vector of the step sizes between markers on that sequence.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname getMapSteps
 getMapSteps <- function(x) {
     UseMethod('getMapSteps', x)
@@ -884,14 +866,14 @@ getMapSteps.scanone <- function(x) {
 #' position column is also checked for map unit information; an error is
 #' raised if \code{data.frame} map unit information is inconsistent.
 #' 
-#' @template mapunits
-#'  
 #' @param x Object containing map data.
 #' 
-#' @return Map unit. Returns NA if map unit information not found.
+#' @return Map unit. Returns \code{NA} if map unit information not found.
+#' 
+#' @template section-mapunits
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname getMapUnit
 getMapUnit <- function(x) {
     UseMethod('getMapUnit', x)
@@ -973,12 +955,12 @@ getMapUnit.scanone <- function(x) {
 # getMapUnitSuffix -------------------------------------------------------------
 #' Get map unit suffix from a vector of map positions.
 #' 
-#' @template mapunits
-#' 
 #' @param x A character vector of map positions.
 #' 
-#' @return Map unit indicated by the map positions. Returns NA if the map
-#' position vector does not contain map unit suffixes.
+#' @return Map unit indicated by the map positions. Returns \code{NA}
+#' if the map position vector does not contain map unit suffixes.
+#' 
+#' @template section-mapunits
 #' 
 #' @keywords internal
 #' @rdname getMapUnitSuffix
@@ -1065,13 +1047,13 @@ getMapUnitSuffix <- function(x) {
 # getPosColDataMapUnit ---------------------------------------------------------
 #' Get map unit from position column values.
 #' 
-#' @template mapunits
-#' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame},
 #' or a vector of map positions.
 #' 
-#' @return Map unit indicated by the position column data. Returns NA if map
-#' unit information not found in position column data.
+#' @return Map unit indicated by the position column data. Returns
+#' \code{NA} if map unit information not found in position column data.
+#' 
+#' @template section-mapunits
 #' 
 #' @keywords internal
 #' @rdname getPosColDataMapUnit
@@ -1102,9 +1084,10 @@ getPosColDataMapUnit.numeric <- function(x) {
 #' 
 #' Get position column index for a \code{mapframe} or equivalent \code{data.frame}.
 #' The position column is taken to be the leftmost matching column, where a
-#' matching column has a heading containing the word 'pos'. This can also be
-#' in uppercase (i.e. 'POS'), but can't be part of a larger word, such as
-#' 'position'. An error is raised if a position column cannot be found.
+#' matching column has a heading containing the word \code{'pos'}. This can
+#' also be in uppercase (i.e. \code{'POS'}), but can't be part of a larger
+#' word, such as \code{'position'}. An error is raised if a position column
+#' cannot be found.
 #' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame}.
 #' @param nmax Maximum number of matching position columns. If specified, an
@@ -1143,13 +1126,13 @@ getPosColIndex <- function(x, nmax=NULL) {
 # getPosColNameMapUnit ---------------------------------------------------------
 #' Get map unit from position column heading.
 #' 
-#' @template mapunits
-#' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame},
 #' or a position column heading.
 #' 
-#' @return Map unit indicated by the position column heading. Returns NA if map
-#' unit information not found in position column heading.
+#' @return Map unit indicated by the position column heading. Returns
+#' \code{NA} if map unit information not found in position column heading.
+#' 
+#' @template section-mapunits
 #' 
 #' @keywords internal
 #' @rdname getPosColNameMapUnit
@@ -1190,15 +1173,15 @@ getPosColNameMapUnit.character <- function(x) {
 # gmapframe --------------------------------------------------------------------
 #' Create a new genetic \code{mapframe}.
 #' 
-#' @template mapframe
-#' 
 #' @param ... Further arguments. These are passed to the \code{data.frame}
 #' constructor. All arguments should be passed as keyword arguments.
 #' 
 #' @return A new \code{mapframe} with genetic map positions.
 #' 
+#' @template section-mapframe
+#' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname gmapframe
 gmapframe <- function(...) {
     return( mapframe(map.unit='cM', ...) )
@@ -1210,11 +1193,11 @@ gmapframe <- function(...) {
 #' @param x Object containing map data.
 #' @param tol Tolerance for step equality.
 #' 
-#' @return Inferred map step. Returns \code{NULL} if map step could not be
-#' inferred.
+#' @return Inferred map step. Returns \code{NULL}
+#' if the map step could not be inferred.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname inferMapStep
 inferMapStep <- function(x, tol=1e-5) {
     map.steps <- unlist( getMapSteps(x) )
@@ -1227,11 +1210,11 @@ inferMapStep <- function(x, tol=1e-5) {
 #' 
 #' @param x Object containing map data.
 #' 
-#' @return TRUE if map data of object is ordered by sequence, then map
-#' position; FALSE otherwise.
+#' @return \code{TRUE} if map data of object is ordered by
+#' sequence, then map position; \code{FALSE} otherwise.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname inMapOrder
 inMapOrder <- function(x) {
     UseMethod('inMapOrder', x)
@@ -1311,7 +1294,8 @@ intersectLoci <- function(...) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if object is a genetic \code{map} object; FALSE otherwise.
+#' @return \code{TRUE} if object is a genetic \code{map} object;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isGeneticMap
@@ -1332,8 +1316,8 @@ isGeneticMap <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if object is a \code{mapframe} whose pos column contains
-#' genetic map positions; FALSE otherwise.
+#' @return \code{TRUE} if object is a \code{mapframe} whose pos column contains
+#' genetic map positions; \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isGeneticMapframe
@@ -1354,7 +1338,8 @@ isGeneticMapframe <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if object is a known genetic map unit; FALSE otherwise.
+#' @return \code{TRUE} if object is a known genetic map unit;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isGeneticMapUnit
@@ -1372,7 +1357,8 @@ isGeneticMapUnit <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if object is a physical \code{map}; FALSE otherwise.
+#' @return \code{TRUE} if object is a physical \code{map};
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isPhysicalMap
@@ -1393,8 +1379,8 @@ isPhysicalMap <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if object is a \code{mapframe} whose pos column contains
-#' physical map positions; FALSE otherwise.
+#' @return \code{TRUE} if object is a \code{mapframe} whose pos column contains
+#' physical map positions; \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isPhysicalMapframe
@@ -1415,7 +1401,8 @@ isPhysicalMapframe <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if object is a known physical map unit; FALSE otherwise.
+#' @return \code{TRUE} if object is a known physical map unit;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isPhysicalMapUnit
@@ -1435,8 +1422,8 @@ isPhysicalMapUnit <- function(x) {
 #' 
 #' @param x Test object.
 #' 
-#' @return TRUE if object is a known genetic or physical map unit;
-#' FALSE otherwise.
+#' @return \code{TRUE} if object is a known genetic or physical map unit;
+#' \code{FALSE} otherwise.
 #' 
 #' @keywords internal
 #' @rdname isValidMapUnit
@@ -1460,14 +1447,16 @@ isValidMapUnit <- function(x) {
 #' pseudomarker IDs or default marker IDs, according to whether map units
 #' are for a genetic or physical map, respectively.
 #' 
-#' Locus sequences and locus IDs are assumed to be ordered. As in R/qtl, any
-#' sequence with too few loci is extended, to ensure that all sequences have
-#' enough loci.
+#' Locus sequences and locus IDs are assumed to be ordered. As in \pkg{R/qtl},
+#' any sequence with too few loci is extended, to ensure that all sequences
+#' have enough loci.
 #' 
 #' @param locus.seqs Sequences corresponding to individual loci.
 #' @param locus.ids Individual locus IDs.
 #' @param map.unit Map unit.
 #' @param step Map step size.
+#' 
+#' @template section-map
 #' 
 #' @keywords internal
 #' @rdname makePlaceholderMap
@@ -1587,11 +1576,11 @@ makePlaceholderMap <- function(locus.seqs, locus.ids=NULL, map.unit='cM',
 # makeMapFromDefaultMarkerIDs --------------------------------------------------
 #' Make map from default marker IDs.
 #' 
-#' @template map
-#' 
 #' @param marker.ids Vector of default marker IDs.
 #' 
 #' @return An \pkg{R/qtl} \code{map} object.
+#' 
+#' @template section-map
 #' 
 #' @export
 #' @keywords internal
@@ -1603,11 +1592,11 @@ makeMapFromDefaultMarkerIDs <- function(marker.ids) {
 # makeMapFromDefaultQTLNames ---------------------------------------------------
 #' Make map from default QTL names.
 #' 
-#' @template map
-#' 
 #' @param qtl.names Vector of default QTL names.
 #' 
 #' @return An \pkg{R/qtl} \code{map} object.
+#' 
+#' @template section-map
 #' 
 #' @export
 #' @keywords internal
@@ -1619,7 +1608,7 @@ makeMapFromDefaultQTLNames <- function(qtl.names) {
 # makeMapFromPseudomarkerIDs ---------------------------------------------------
 #' Make map from pseudomarker IDs.
 #' 
-#' @template map
+#' @template section-map
 #' 
 #' @param loc.ids Vector of pseudomarker IDs.
 #' 
@@ -1635,16 +1624,16 @@ makeMapFromPseudomarkerIDs <- function(loc.ids) {
 # mapframe ---------------------------------------------------------------------
 #' Create a new \code{mapframe}.
 #' 
-#' @template mapframe
-#' 
 #' @param map.unit Map unit for the new \code{mapframe}.
 #' @param ... Further arguments. These are passed to the \code{data.frame}
 #' constructor. All arguments should be passed as keyword arguments.
 #' 
 #' @return A new \code{mapframe}.
 #' 
+#' @template section-mapframe
+#' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname mapframe
 mapframe <- function(map.unit=NULL, ...) {
     
@@ -1686,7 +1675,10 @@ mapframe <- function(map.unit=NULL, ...) {
 #' parameter, and returning a \code{mapframe} that has been rescaled in
 #' terms of the given map unit.
 #' 
+#' @template ref-broman-2003
+#' 
 #' @export
+#' @family mapkey functions
 #' @rdname mapkey
 mapkey <- function(...) {
     
@@ -1877,6 +1869,8 @@ mapkey <- function(...) {
 #' @return Current \code{mapkey} function.
 #' 
 #' @export
+#' @family mapkey functions
+#' @family package option functions
 #' @rdname mapkeyOpt
 mapkeyOpt <- function(value) {
     
@@ -1897,8 +1891,8 @@ mapkeyOpt <- function(value) {
 #' @param x Object containing map data.
 #' @param loc Locus \code{mapframe} specifying map positions.
 #' 
-#' @return Locus mapframe of those loci specified that were found in the target
-#' object.
+#' @return Locus mapframe of those loci specified
+#' that were found in the target object.
 #' 
 #' @keywords internal
 #' @rdname matchLoci
@@ -2024,10 +2018,11 @@ matchSeqRowIndices <- function(x, sequences, simplify=FALSE) {
 #' 
 #' @param x Object containing map data.
 #' 
-#' @return Input object ordered by sequence, then map position.
+#' @return Input object ordered by the normalised form of
+#' the reference sequence, then numerically by map position.
 #' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname orderMap
 orderMap <- function(x) {
     UseMethod('orderMap', x)
@@ -2578,18 +2573,20 @@ pushMap.geno <- function(x, map) {
 # setMapUnit -------------------------------------------------------------------
 #' Set map unit.
 #' 
-#' Set the map unit of the object. For a \code{data.frame}, the position column
-#' may be updated to reflect the new map unit.
-#' 
-#' @template mapunits
+#' Set the map unit of the object. If the object already has a map unit, map
+#' positions are rescaled from the original map unit to the new map unit. If
+#' a \code{data.frame} contains map unit information in headings or map
+#' positions, these are updated to reflect the new map unit.
 #' 
 #' @param x Object containing map data.
 #' @param map.unit Map unit.
 #' 
 #' @return Input object with the specified map unit.
 #' 
+#' @template section-mapunits
+#' 
 #' @export
-#' @family map utilities
+#' @family map utility functions
 #' @rdname setMapUnit
 setMapUnit <- function(x, map.unit) {
     validateMapUnit(map.unit)
@@ -2678,15 +2675,15 @@ setMapUnit.mapframe <- function(x, map.unit) {
 # setPosColDataMapUnit ---------------------------------------------------------
 #' Set map unit of position column data.
 #' 
-#' @template mapunits
-#' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame},
 #' or a vector of map positions.
-#' @param map.unit Map unit. Set to \code{NULL} to remove map unit information
-#' from position column data.
+#' @param map.unit Map unit. Set to \code{NULL} to remove
+#' map unit information from position column data.
 #' 
-#' @return Input object with the specified map unit appended to position column
-#' data.
+#' @return Input object with the specified map
+#' unit appended to position column data.
+#' 
+#' @template section-mapunits
 #' 
 #' @keywords internal
 #' @rdname setPosColDataMapUnit
@@ -2757,15 +2754,15 @@ setPosColDataMapUnit.numeric <- function(x, map.unit) {
 # setPosColNameMapUnit ---------------------------------------------------------
 #' Set map unit of position column heading.
 #' 
-#' @template mapunits
-#' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame},
 #' or a position column heading.
-#' @param map.unit Map unit. Set to \code{NULL} to remove map unit information
-#' from position column heading.
+#' @param map.unit Map unit. Set to \code{NULL} to remove
+#' map unit information from position column heading.
 #' 
-#' @return Input object with the specified map unit added to position column
-#' heading.
+#' @return Input object with the specified map
+#' unit added to position column heading.
+#' 
+#' @template section-mapunits
 #' 
 #' @keywords internal
 #' @rdname setPosColNameMapUnit
@@ -2842,11 +2839,11 @@ setPosColNameMapUnit.character <- function(x, map.unit) {
 #' Setup default \code{mapkey} objects.
 #' 
 #' Default \code{mapkey} objects are generated from genome sequence info. Simple
-#' component maps are created from sequence length info: a genetic map from the
-#' \code{'maplengths'} column, and a physical map from the \code{'seqlengths'}
-#' column. These are used to create a basic \code{mapkey} object for each genome.
+#' component maps are created from reference sequence length info: a genetic map
+#' from the \code{'maplengths'} column, and a physical map from the
+#' \code{'seqlengths'} column. These are used to create a basic
+#' \code{mapkey} object for each genome.
 #' 
-#' @include const.R
 #' @keywords internal
 #' @rdname setupDefaultMapkeys
 setupDefaultMapkeys <- function() {
@@ -2941,9 +2938,9 @@ setupDefaultMapkeys <- function() {
 # subsetMap --------------------------------------------------------------------
 #' Subset \pkg{shmootl} \code{map} object.
 #' 
-#' \pkg{R/qtl} implements a \code{subset.map} method, but this method strips
-#' some attributes from the \code{map} object. This function transfers any
-#' stripped attributes to the subsetted \code{map} object.
+#' The \pkg{R/qtl} package implements a \code{subset.map} method, but that
+#' method strips some attributes from the \code{map} object. This function
+#' transfers any stripped attributes to the subsetted \code{map} object.
 #' 
 #' @param x A \code{map} object.
 #' @param ... Arguments passed to \code{subset}.
@@ -2963,12 +2960,12 @@ subsetMap <- function(x, ...) {
 # validateMap ------------------------------------------------------------------
 #' Validate \code{map} object.
 #' 
-#' @template map
-#' 
 #' @param x A \code{map} or equivalent \code{list}.
 #' 
-#' @return TRUE if object is a valid \code{map} or equivalent \code{list};
-#' otherwise, returns first error.
+#' @return \code{TRUE} if object is a valid \code{map} or equivalent
+#' \code{list}; otherwise, returns first error.
+#' 
+#' @template section-map
 #' 
 #' @keywords internal
 #' @rdname validateMap
@@ -3167,12 +3164,12 @@ validateMap.map <- function(x, package=c('qtl', 'shmootl')) {
 # validateMapframe -------------------------------------------------------------
 #' Validate \code{mapframe} object.
 #' 
-#' @template mapframe
-#' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame}.
 #' 
-#' @return TRUE if object is a valid \code{mapframe} or equivalent
+#' @return \code{TRUE} if object is a valid \code{mapframe} or equivalent
 #' \code{data.frame}; otherwise, returns first error.
+#' 
+#' @template section-mapframe
 #' 
 #' @keywords internal
 #' @rdname validateMapframe
@@ -3305,14 +3302,14 @@ validateMapframe.mapframe <- function(x) {
 # validateMapUnit --------------------------------------------------------------
 #' Validate map unit.
 #' 
-#' @template mapunits
-#' 
 #' @param x Map unit, or object with a \code{'map.unit'} attribute.
 #' @param map.type Map type for which map unit should be validated. If not
 #' specified, map unit is validated for all map types.
 #' 
-#' @return TRUE if the specified map unit is a valid map unit for the given
-#' map type(s); otherwise, returns error.
+#' @return \code{TRUE} if the specified map unit is a valid map unit
+#' for the given map type(s); otherwise, returns error.
+#' 
+#' @template section-mapunits
 #' 
 #' @keywords internal
 #' @rdname validateMapUnit
@@ -3362,12 +3359,12 @@ validateMapUnit.default <- function(x, map.type=NULL) {
 # validateGeneticMapUnit -------------------------------------------------------
 #' Validate genetic map unit.
 #' 
-#' @template mapunits
-#' 
 #' @param x Map unit, or object with a \code{'map.unit'} attribute.
 #' 
-#' @return TRUE if map unit is a valid genetic map unit;
+#' @return \code{TRUE} if map unit is a valid genetic map unit;
 #' otherwise, returns error.
+#' 
+#' @template section-mapunits
 #' 
 #' @keywords internal
 #' @rdname validateGeneticMapUnit
@@ -3378,12 +3375,12 @@ validateGeneticMapUnit <- function(x) {
 # validatePhysicalMapUnit ------------------------------------------------------
 #' Validate physical map unit.
 #' 
-#' @template mapunits
-#' 
 #' @param x Map unit, or object with a \code{'map.unit'} attribute.
 #' 
-#' @return TRUE if map unit is a valid physical map unit;
+#' @return \code{TRUE} if map unit is a valid physical map unit;
 #' otherwise, returns error.
+#' 
+#' @template section-mapunits
 #' 
 #' @keywords internal
 #' @rdname validatePhysicalMapUnit

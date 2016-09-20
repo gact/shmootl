@@ -54,4 +54,10 @@ QTL peak, with row names containing respective QTL names. Returns an empty
 \description{
 Get QTL peaks.
 }
+\seealso{
+Other QTL functions: \code{\link{estPhysicalPositions}},
+  \code{\link{getQTLFeatures}},
+  \code{\link{getQTLIntervals}},
+  \code{\link{plotQTLScanone}}
+}
 

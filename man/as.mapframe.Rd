@@ -7,7 +7,7 @@
 \alias{as.mapframe.map}
 \alias{as.mapframe.mapframe}
 \alias{as.mapframe.scanone}
-\title{Coerce object to \code{mapframe}.}
+\title{Convert object to \code{mapframe}.}
 \usage{
 as.mapframe(from, map.unit = NULL)
 
@@ -24,25 +24,48 @@ as.mapframe(from, map.unit = NULL)
 \arguments{
 \item{from}{Object containing map data.}
 
-\item{map.unit}{Explicitly sets \code{'map.unit'}. This must be specified if
-an object does not have an existing \code{'map.unit'} attribute.}
+\item{map.unit}{Explicitly sets \code{'map.unit'} attribute. This must be
+specified if an object does not have an existing \code{'map.unit'} attribute.}
 }
 \value{
 A \code{mapframe} corresponding to the input object.
 }
 \description{
-Coerce object to \code{mapframe}.
+Convert object to \code{mapframe}.
+}
+\section{Mapframe}{
+
+
+A \code{mapframe} object is a class of \code{data.frame} that contains mapped
+information, or a \code{data.frame} with equivalent properties. The leftmost
+two columns of every \code{mapframe} object must be as follows:
+
+\itemize{
+\item{\code{chr}:}   {Chromosome/sequence labels in
+the order defined for the current reference genome.}
+\item{\code{pos}:}   {Map positions in increasing order within each
+chromosome/sequence. The map unit used in a \code{mapframe} position
+column must be indicated by setting its \code{'map.unit'} attribute.}
+}
+
+Any number of additional data columns can be included. If present, the row
+names indicate the locus IDs, which should be unique within the given
+\code{mapframe}.
 }
 \seealso{
-Other map utilities: \code{\link{as.data.frame.mapframe}},
+Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{as.data.frame.map}}, \code{\link{as.map}},
   \code{\link{extractMarkers}},
   \code{\link{extractPseudomarkers}},
   \code{\link{findFlanking}}, \code{\link{findLoci}},
   \code{\link{findMarkers}}, \code{\link{getMapSteps}},
   \code{\link{getMapUnit}}, \code{\link{gmapframe}},
-  \code{\link{inMapOrder}}, \code{\link{inferMapStep}},
-  \code{\link{mapframe}}, \code{\link{orderMap}},
-  \code{\link{setMapUnit}}
+  \code{\link{hasMapCSV}}, \code{\link{inMapOrder}},
+  \code{\link{inferMapStep}}, \code{\link{mapframe}},
+  \code{\link{orderMap}}, \code{\link{readMapCSV}},
+  \code{\link{readMapHDF5}}, \code{\link{readMapframeCSV}},
+  \code{\link{setMapUnit}}, \code{\link{writeMapCSV}},
+  \code{\link{writeMapHDF5}},
+  \code{\link{writeMapframeCSV}}
 }
 

@@ -16,14 +16,16 @@ Cross type of the \code{cross} object.
 Pull cross type from \pkg{R/qtl} \code{cross}.
 }
 \seealso{
-Other cross utilities: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
+  \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
   \code{\link{inferTetradIndices}},
   \code{\link{inferTimeStep}},
   \code{\link{interpTimeSeries}},
   \code{\link{padTimeSeries}}, \code{\link{permCross}},
-  \code{\link{pull.alleles}}, \code{\link{pull.chr}},
-  \code{\link{pull.ind}}
+  \code{\link{permIndices}}, \code{\link{pull.alleles}},
+  \code{\link{pull.chr}}, \code{\link{pull.ind}},
+  \code{\link{readCrossCSV}}, \code{\link{writeCrossCSV}}
 }
 

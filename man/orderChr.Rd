@@ -10,10 +10,18 @@ orderChr(x)
 \item{x}{Vector of chromosome labels.}
 }
 \value{
-Vector of ordered indices for the input chromosome labels.
+Vector of indices for the input chromosome labels,
+ordered with respect to their normalised form.
 }
 \description{
 Order chromosome labels.
 }
-\keyword{internal}
+\seealso{
+Other chromosome/sequence functions: \code{\link{formatChr}},
+  \code{\link{formatSeq}}, \code{\link{isNormChr}},
+  \code{\link{isNormSeq}}, \code{\link{normChr}},
+  \code{\link{normSeq}}, \code{\link{orderSeq}},
+  \code{\link{rankChr}}, \code{\link{rankSeq}},
+  \code{\link{sortChr}}, \code{\link{sortSeq}}
+}
 

@@ -3,12 +3,18 @@
 # run_recode -------------------------------------------------------------------
 #' Recode data in \pkg{R/qtl} CSV file.
 #' 
+#' Recode data in an \pkg{R/qtl} cross or genotype CSV file. Genotypes can be
+#' recoded by passing to the \code{geno} parameter a YAML string (or file)
+#' mapping old to new genotypes. Alternatively, genotype data can be
+#' converted to enumerated genotypes with the \code{enum.geno} parameter.
+#' 
 #' @param datafile cross/geno CSV file
 #' @param geno recode genotypes from mapping
 #' @param enum.geno recode to enumerated genotypes
 #' 
 #' @concept shmootl:utilities
 #' @export
+#' @family pipeline functions
 #' @rdname run_recode
 run_recode <- function(datafile, geno=mapping(), enum.geno=FALSE) {
     

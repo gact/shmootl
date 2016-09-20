@@ -14,7 +14,7 @@ validateAlleles(cross.info)
 \item{cross.info}{A \code{\link{CrossInfo}} object.}
 }
 \value{
-TRUE if alleles are valid; otherwise, returns first error.
+\code{TRUE} if alleles are valid; otherwise, returns first error.
 }
 \description{
 Validate allele information.

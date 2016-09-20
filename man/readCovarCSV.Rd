@@ -13,18 +13,21 @@ readCovarCSV(infile)
 A numeric \code{matrix} of covariate data.
 }
 \description{
-This function reads a table of covariates (with optional 'ID' column) from a
-CSV file and returns a numeric \code{matrix} of covariate data. The contents
-of the input table do not need to be numeric, but they will be converted to
-numeric values when being read from file. For example, columns containing
-character values are read as factors, which are converted to their numeric
-representation.
+This function reads a table of covariates (with optional \code{'ID'} column)
+from a CSV file and returns a numeric \code{matrix} of covariate data. Sample
+IDs are not included in the returned matrix, as \pkg{R/qtl} matches the
+covariate matrix row-by-row to the sample rows of the \code{cross} object.
+The contents of the input table do not need to be numeric, but they will be
+converted to numeric values when being read from file. For example, columns
+containing character values are read as factors, which are converted to their
+numeric representation.
 }
 \seealso{
-Other csv utilities: \code{\link{readCrossCSV}},
-  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
-  \code{\link{readMapframeCSV}},
-  \code{\link{readPhenoCSV}}, \code{\link{writeCrossCSV}},
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCrossCSV}}, \code{\link{readGenoCSV}},
+  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
   \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}},
   \code{\link{writePhenoCSV}}

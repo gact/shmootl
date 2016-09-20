@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_pullmap.R
 \name{run_pullmap}
 \alias{run_pullmap}
-\title{Pull map from data file.}
+\title{Pull map from a data file.}
 \usage{
 run_pullmap(datafile, mapfile, mapname = NA_character_,
   require.mapunit = TRUE, include.mapunit = TRUE)
@@ -19,9 +19,17 @@ run_pullmap(datafile, mapfile, mapname = NA_character_,
 \item{include.mapunit}{include map units in output}
 }
 \description{
-This script pulls the map from a CSV or HDF5 file, and writes it
-to a separate map CSV file. If a HDF5 data file contains multiple maps, the
-\code{mapname} parameter must be used to specify which map to pull.
+Pull the map from a CSV or HDF5 file, and write it to a separate map CSV
+file. If a HDF5 data file contains multiple maps, the \code{mapname}
+parameter must specify which map to pull.
+}
+\seealso{
+Other pipeline functions: \code{\link{run_annoqtl}},
+  \code{\link{run_digest}}, \code{\link{run_estimap}},
+  \code{\link{run_makecross}}, \code{\link{run_makegeno}},
+  \code{\link{run_prep}}, \code{\link{run_pushmap}},
+  \code{\link{run_recode}}, \code{\link{run_report}},
+  \code{\link{run_scanone}}
 }
 \concept{
 shmootl:utilities

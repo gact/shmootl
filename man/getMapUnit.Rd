@@ -25,7 +25,7 @@ getMapUnit(x)
 \item{x}{Object containing map data.}
 }
 \value{
-Map unit. Returns NA if map unit information not found.
+Map unit. Returns \code{NA} if map unit information not found.
 }
 \description{
 Get the map unit of the object. In most cases, this is taken from the
@@ -34,22 +34,27 @@ position column is also checked for map unit information; an error is
 raised if \code{data.frame} map unit information is inconsistent.
 }
 \section{Map Units}{
- 
-A \code{map} or \code{mapframe} must express positions in either genetic or 
-physical map units. Genetic map positions must be in centiMorgans (cM), while 
-physical map positions must be in base pairs (bp), kilobases (kb), or 
+
+
+A \code{map} or \code{mapframe} must express positions in either genetic or
+physical map units. Genetic map positions must be in centiMorgans (cM), while
+physical map positions must be in base pairs (bp), kilobases (kb), or
 Megabases (Mb).
 }
 \seealso{
-Other map utilities: \code{\link{as.data.frame.mapframe}},
+Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{as.data.frame.map}},
   \code{\link{as.mapframe}}, \code{\link{as.map}},
   \code{\link{extractMarkers}},
   \code{\link{extractPseudomarkers}},
   \code{\link{findFlanking}}, \code{\link{findLoci}},
   \code{\link{findMarkers}}, \code{\link{getMapSteps}},
-  \code{\link{gmapframe}}, \code{\link{inMapOrder}},
-  \code{\link{inferMapStep}}, \code{\link{mapframe}},
-  \code{\link{orderMap}}, \code{\link{setMapUnit}}
+  \code{\link{gmapframe}}, \code{\link{hasMapCSV}},
+  \code{\link{inMapOrder}}, \code{\link{inferMapStep}},
+  \code{\link{mapframe}}, \code{\link{orderMap}},
+  \code{\link{readMapCSV}}, \code{\link{readMapHDF5}},
+  \code{\link{readMapframeCSV}}, \code{\link{setMapUnit}},
+  \code{\link{writeMapCSV}}, \code{\link{writeMapHDF5}},
+  \code{\link{writeMapframeCSV}}
 }
 

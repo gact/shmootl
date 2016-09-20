@@ -20,5 +20,14 @@ if the given phenotype has no result with the specified name.
 \description{
 Read QTL analysis result from a HDF5 file.
 }
+\seealso{
+Other HDF5 functions: \code{\link{readDatasetHDF5}},
+  \code{\link{readMapHDF5}},
+  \code{\link{readOverviewHDF5}},
+  \code{\link{writeDatasetHDF5}},
+  \code{\link{writeMapHDF5}},
+  \code{\link{writeOverviewHDF5}},
+  \code{\link{writeResultHDF5}}
+}
 \keyword{internal}
 

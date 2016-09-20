@@ -19,15 +19,19 @@ map position specified in the corresponding row of the locus \code{mapframe}.
 Find closest map loci.
 }
 \seealso{
-Other map utilities: \code{\link{as.data.frame.mapframe}},
+Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{as.data.frame.map}},
   \code{\link{as.mapframe}}, \code{\link{as.map}},
   \code{\link{extractMarkers}},
   \code{\link{extractPseudomarkers}},
   \code{\link{findFlanking}}, \code{\link{findMarkers}},
   \code{\link{getMapSteps}}, \code{\link{getMapUnit}},
-  \code{\link{gmapframe}}, \code{\link{inMapOrder}},
-  \code{\link{inferMapStep}}, \code{\link{mapframe}},
-  \code{\link{orderMap}}, \code{\link{setMapUnit}}
+  \code{\link{gmapframe}}, \code{\link{hasMapCSV}},
+  \code{\link{inMapOrder}}, \code{\link{inferMapStep}},
+  \code{\link{mapframe}}, \code{\link{orderMap}},
+  \code{\link{readMapCSV}}, \code{\link{readMapHDF5}},
+  \code{\link{readMapframeCSV}}, \code{\link{setMapUnit}},
+  \code{\link{writeMapCSV}}, \code{\link{writeMapHDF5}},
+  \code{\link{writeMapframeCSV}}
 }
 

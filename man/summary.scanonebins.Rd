@@ -34,13 +34,14 @@ instead of running permutations directly. Thresholds are set from the
 bin edges of the \code{scanonebins} object, and empirical false-discovery
 rates (FDRs) are calculated at these thresholds. For each false-discovery
 rate specified in the \code{fdr} parameter, the threshold with the closest
-FDR is returned. Summary results take NA values in cases where no sensible
-FDR can be returned (e.g. fewer loci above a threshold in the main scanone
-result than in the corresponding permutation results).
+FDR is returned. Summary results take \code{NA} values in cases where no
+sensible FDR can be returned (e.g. fewer loci above a threshold in the
+main scanone result than in the corresponding permutation results).
 }
 \references{
 Arends D, Prins P, Jansen RC, Broman KW (2010) R/qtl:
 high-throughput multiple QTL mapping. Bioinformatics 26(23):2990-2.
 (\href{http://www.ncbi.nlm.nih.gov/pubmed/20966004}{PubMed})
 }
+\keyword{internal}
 

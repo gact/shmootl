@@ -10,9 +10,18 @@ orderSeq(x)
 \item{x}{Vector of sequence labels.}
 }
 \value{
-Vector of ordered indices for the input sequence labels.
+Vector of indices for the input sequence labels,
+ordered with respect to their normalised form.
 }
 \description{
 Order sequence labels.
+}
+\seealso{
+Other chromosome/sequence functions: \code{\link{formatChr}},
+  \code{\link{formatSeq}}, \code{\link{isNormChr}},
+  \code{\link{isNormSeq}}, \code{\link{normChr}},
+  \code{\link{normSeq}}, \code{\link{orderChr}},
+  \code{\link{rankChr}}, \code{\link{rankSeq}},
+  \code{\link{sortChr}}, \code{\link{sortSeq}}
 }
 

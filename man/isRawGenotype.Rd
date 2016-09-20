@@ -9,10 +9,11 @@ isRawGenotype(x, strict = FALSE)
 \arguments{
 \item{x}{Test object.}
 
-\item{strict}{Return TRUE only for complete genotypes.}
+\item{strict}{Return \code{TRUE} only for complete genotypes.}
 }
 \value{
-TRUE if symbol is a valid raw SNP genotype; FALSE otherwise.
+\code{TRUE} if symbol is a valid raw SNP genotype;
+\code{FALSE} otherwise.
 }
 \description{
 Test if symbol is a valid raw SNP genotype.

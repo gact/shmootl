@@ -2,7 +2,7 @@
 % Please edit documentation in R/qtlintervals.R
 \name{qtlintervals}
 \alias{qtlintervals}
-\title{Create an empty \code{qtlintervals} object.}
+\title{Create a \code{qtlintervals} object.}
 \usage{
 qtlintervals(drop = NULL, threshold = NULL, alpha = NULL, fdr = NULL,
   ...)
@@ -24,7 +24,8 @@ exclusive with \code{alpha}.)}
 An empty \code{qtlintervals} list with the given attributes.
 }
 \description{
-Create an empty \code{qtlintervals} object.
+This function creates a \code{qtlintervals} object. Currently it
+can only create a \code{qtlintervals} object of length zero.
 }
 \keyword{internal}
 

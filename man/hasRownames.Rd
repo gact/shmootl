@@ -10,7 +10,8 @@ hasRownames(x)
 \item{x}{A \code{data.frame} or \code{matrix}.}
 }
 \value{
-TRUE if input object has non-default row names; FALSE otherwise.
+\code{TRUE} if input object has non-default row names;
+\code{FALSE} otherwise.
 }
 \description{
 Test if object has rownames.

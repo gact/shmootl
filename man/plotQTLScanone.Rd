@@ -39,19 +39,25 @@ to \code{'p'} for a Manhattan plot of individual LOD scores.}
 \item{...}{Unused arguments.}
 }
 \description{
-Plotting function based on \pkg{R/qtl} \code{plot.scanone} and \pkg{qqman}
-\code{manhattan} (see references below). Plots a \code{scanone} result as
-a LOD curve (with \code{type} set to \code{'l'}) or as a Manhattan plot
-(with \code{type} set to \code{'p'}). If no plot type is specified, this
-is set automatically based on marker density.
+Plotting function based on \pkg{R/qtl} \code{plot.scanone} (Broman
+\emph{et al.} 2003) and \pkg{qqman} \code{manhattan} (Turner 2014).
+Plots a \code{scanone} result as a LOD curve (with \code{type} set
+to \code{'l'}) or as a Manhattan plot (with \code{type} set to
+\code{'p'}). If no plot type is specified, this is set automatically
+based on marker density.
 }
 \references{
 Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
-in experimental crosses. Bioinformatics 19:889-890.
+in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
 (\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
 
 Turner SD (2014) qqman: an R package for visualizing GWAS results
 using Q-Q and manhattan plots.
 (\href{http://dx.doi.org/10.1101/005165}{bioRXiv})
+}
+\seealso{
+Other QTL functions: \code{\link{estPhysicalPositions}},
+  \code{\link{getQTLFeatures}},
+  \code{\link{getQTLIntervals}}, \code{\link{getQTLPeaks}}
 }
 

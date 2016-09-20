@@ -2,7 +2,7 @@
 % Please edit documentation in R/pheno.R
 \name{as.data.frame.pheno}
 \alias{as.data.frame.pheno}
-\title{Coerce \code{pheno} object to \code{data.frame}.}
+\title{Convert \code{pheno} object to \code{data.frame}.}
 \usage{
 \method{as.data.frame}{pheno}(x, ..., digits = NULL)
 }
@@ -18,7 +18,7 @@ number of digits.}
 A \code{data.frame} corresponding to the input \code{pheno} object.
 }
 \description{
-Coerce \code{pheno} object to \code{data.frame}.
+Convert \code{pheno} object to \code{data.frame}.
 }
 \keyword{internal}
 

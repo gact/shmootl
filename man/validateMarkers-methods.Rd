@@ -14,7 +14,8 @@ validateMarkers(cross.info)
 \item{cross.info}{A \code{\link{CrossInfo}} object.}
 }
 \value{
-TRUE if marker information is valid; otherwise, returns first error.
+\code{TRUE} if marker information is valid;
+otherwise, returns first error.
 }
 \description{
 Validate marker information.

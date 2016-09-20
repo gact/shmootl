@@ -10,8 +10,8 @@ isSingleNonNegativeNumber(n)
 \item{n}{Test object.}
 }
 \value{
-TRUE if the object is a single non-negative number; 
-FALSE otherwise.
+\code{TRUE} if the object is a single non-negative number;
+\code{FALSE} otherwise.
 }
 \description{
 Test for a single non-negative number.

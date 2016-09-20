@@ -19,5 +19,12 @@ Vector of formatted chromosome labels.
 \description{
 Format chromosome labels.
 }
-\keyword{internal}
+\seealso{
+Other chromosome/sequence functions: \code{\link{formatSeq}},
+  \code{\link{isNormChr}}, \code{\link{isNormSeq}},
+  \code{\link{normChr}}, \code{\link{normSeq}},
+  \code{\link{orderChr}}, \code{\link{orderSeq}},
+  \code{\link{rankChr}}, \code{\link{rankSeq}},
+  \code{\link{sortChr}}, \code{\link{sortSeq}}
+}
 

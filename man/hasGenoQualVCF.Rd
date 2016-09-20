@@ -10,8 +10,8 @@ hasGenoQualVCF(file)
 \item{file}{A VCF file path.}
 }
 \value{
-TRUE if the specified VCF file contains genotype quality (GQ) scores;
-FALSE otherwise.
+\code{TRUE} if the specified VCF file contains
+genotype quality (GQ) scores; \code{FALSE} otherwise.
 }
 \description{
 Test if VCF file contains GQ scores.

@@ -5,57 +5,48 @@
 #' 
 #' A CrossInfo object holds yeast cross information for a specific \code{cross}
 #' object. The contents of its slots should match its corresponding object.
+#' To view documentation for any methods of this class, input the name of
+#' the method preceded by a question mark (e.g. \code{?getPhenotypes}).
 #'
-#' @slot seq A character vector of sequence identifiers, with the name
-#' of each element being the name of the given sequence. These must be
-#' unique.
+#' @slot seq A non-redundant character vector of sequence identifiers, with
+#' the name of each element being the name of the given sequence. See also
+#' \code{setSequences} and \code{getSequences}.
 #' 
-#' @slot pheno A vector of cross phenotypes, with the name of each element being 
-#' the syntactically valid name of the phenotype ID (as produced by the 
-#' function \code{make.names}). Phenotype IDs must be unique.
+#' @slot pheno A non-redundant vector of cross phenotypes, with the name of each
+#' element being the syntactically valid name of the phenotype ID (as output by
+#' the function \code{make.names}). See also \code{setPhenotypes} and
+#' \code{getPhenotypes}.
 #' 
-#' @slot markers A \code{data.frame} with one required column - 'marker' - 
-#' containing the marker ID, and one optional column: 'seq'. If present, the 
-#' 'seq' column contains the sequence corresponding to the given marker. 
-#' Each row name contains the syntactically valid name of the marker ID (as 
-#' produced by the function \code{make.names}). Marker IDs must be unique.
-#' 
-#' @slot samples A \code{data.frame} with one required column - 'sample.index' - 
-#' that contains indices of the samples in the given cross dataset. Other optional 
-#' columns can be present, including 'sample.id', 'sample.name', 'strain.index' 
-#' and 'tetrad.index'. 
-#' 
-#' The 'sample.id' column contains sample IDs, which can be any valid item ID.
-#' If this column is present, another column called 'sample.name' will
-#' contain the syntactically valid name of the sample ID (as produced by the 
-#' function \code{make.names}). Duplicate sample IDs are permissible, but only
-#' if referring to replicate samples of the same strain. Different strains can 
-#' have different numbers of replicates, but samples from a given strain must 
-#' be in consecutive rows.
+#' @slot markers A \code{data.frame} with information about the non-redundant
+#' set of markers in a \code{cross} (see \code{setMarkers} and
+#' \code{getMarkers}). This can optionally contain information about
+#' the sequences corresponding to each marker (see \code{setMarkerSeqs} and
+#' \code{getMarkerSeqs}).
 #'  
-#' The 'strain.index' column, if present, contains strain indices denoting 
-#' which strain each sample is taken from. This is only necessary if the cross
-#' contains sample replicates. Replicate samples of a given strain must have 
-#' the same genotype data, and their sample IDs must match, if present. 
-#' 
-#' If the samples are tetradic, this can also include a 'tetrad.index' column 
-#' containing the tetrad index of each sample, indicating which tetrad that 
-#' sample is from. Tetrads are assumed to be formed of each group of four 
-#' consecutive strains, unless sample IDs are present that indicate tetrad 
-#' membership. Samples can be missing from a tetrad, but in such cases the 
-#' sample IDs should be such that it is possible to assign each sample to
-#' a tetrad. In any case, samples from the same tetrad must be in consecutive 
-#' rows of the cross data.
+#' @slot samples A \code{data.frame} with information about the samples in a
+#' \code{cross}. At minimum, this must contain indices of the samples in the
+#' given \code{cross} dataset. If relevant, it can contain information about
+#' sample IDs (see \code{setSamples} and \code{getSamples}), strain indices
+#' (see \code{setStrainIndices} and \code{getStrainIndices}), and tetrad
+#' indices (see \code{setTetradIndices} and \code{getTetradIndices}).
 #' 
 #' @slot alleles A vector of cross allele symbols.
+#' See \code{setAlleles} and \code{getAlleles}.
 #' 
 #' @slot genotypes A vector of cross genotype symbols.
+#' See \code{setGenotypes} and \code{getGenotypes}.
 #' 
-#' @slot crosstype Cross type.
-#'  
+#' @slot crosstype Cross type. See \code{setCrosstype} and \code{getCrosstype}.
+#' 
+#' @template section-chr-seq
+#' @template section-phenotype-ids
+#' @template section-time-series
+#' @template section-locus-ids
+#' @template section-sample-ids
+#' @template section-tetradic-samples
+#' 
 #' @docType class
 #' @export
-#' @keywords internal
 #' @rdname CrossInfo-class
 CrossInfo <- setClass('CrossInfo',
     
@@ -91,6 +82,7 @@ CrossInfo <- setClass('CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getAlleles-methods
 setGeneric('getAlleles', function(cross.info) { 
@@ -105,7 +97,7 @@ setMethod('getAlleles', signature='CrossInfo',
         return(cross.info@alleles)
 })
 
-# getCrossType -----------------------------------------------------------------
+# getCrosstype -----------------------------------------------------------------
 #' Get cross type.
 #' 
 #' @template param-CrossInfo
@@ -114,16 +106,17 @@ setMethod('getAlleles', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
-#' @rdname getCrossType-methods
-setGeneric('getCrossType', function(cross.info) {
-    standardGeneric('getCrossType') })
+#' @rdname getCrosstype-methods
+setGeneric('getCrosstype', function(cross.info) {
+    standardGeneric('getCrosstype') })
 
-# CrossInfo::getCrossType --------------------------------------------------------
-#' @aliases getCrossType,CrossInfo-method
+# CrossInfo::getCrosstype --------------------------------------------------------
+#' @aliases getCrosstype,CrossInfo-method
 #' @export
-#' @rdname getCrossType-methods
-setMethod('getCrossType', signature='CrossInfo',
+#' @rdname getCrosstype-methods
+setMethod('getCrosstype', signature='CrossInfo',
     definition = function(cross.info) {
         return(cross.info@crosstype)
 })
@@ -137,6 +130,7 @@ setMethod('getCrossType', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getGenotypes-methods
 setGeneric('getGenotypes', function(cross.info) {
@@ -161,6 +155,7 @@ setMethod('getGenotypes', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getMarkerIndices-methods
 setGeneric('getMarkerIndices', function(cross.info, markers=NULL) {
@@ -231,6 +226,7 @@ setMethod('getMarkerIndices', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getMarkerNames-methods
 setGeneric('getMarkerNames', function(cross.info, markers=NULL) {
@@ -256,6 +252,7 @@ setMethod('getMarkerNames', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getMarkers-methods
 setGeneric('getMarkers', function(cross.info, markers=NULL) {
@@ -282,6 +279,7 @@ setMethod('getMarkers', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getMarkerSeqs-methods
 setGeneric('getMarkerSeqs', function(cross.info, markers=NULL) { 
@@ -313,6 +311,7 @@ setMethod('getMarkerSeqs', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getNumMarkers-methods
 setGeneric('getNumMarkers', function(cross.info) {
@@ -336,6 +335,7 @@ setMethod('getNumMarkers', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getNumPhenotypes-methods
 setGeneric('getNumPhenotypes', function(cross.info) {
@@ -359,6 +359,7 @@ setMethod('getNumPhenotypes', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getNumSamples-methods
 setGeneric('getNumSamples', function(cross.info) {
@@ -382,6 +383,7 @@ setMethod('getNumSamples', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getNumSeqs-methods
 setGeneric('getNumSeqs', function(cross.info) {
@@ -406,6 +408,7 @@ setMethod('getNumSeqs', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getPhenotypeIndices-methods
 setGeneric('getPhenotypeIndices', function(cross.info, phenotypes=NULL) { 
@@ -478,6 +481,7 @@ setMethod('getPhenotypeIndices', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getPhenotypeNames-methods
 setGeneric('getPhenotypeNames', function(cross.info, phenotypes=NULL) { 
@@ -503,6 +507,7 @@ setMethod('getPhenotypeNames', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getPhenotypes-methods
 setGeneric('getPhenotypes', function(cross.info, phenotypes=NULL) { 
@@ -532,12 +537,13 @@ setMethod('getPhenotypes', signature='CrossInfo',
 #' @param simplify Simplify list return value to a vector.
 #' 
 #' @return If samples are specified by strain or tetrad, and if the option 
-#' \code{simplify} is not TRUE, this method returns a list of integer vectors,
-#' each containing the sample indices corresponding to a given strain/tetrad.
-#' Otherwise, a vector of sample indices is returned.
+#' \code{simplify} is not \code{TRUE}, this method returns a list of integer
+#' vectors, each containing the sample indices corresponding to a given
+#' strain/tetrad. Otherwise, a vector of sample indices is returned.
 #'  
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getSampleIndices-methods
 setGeneric('getSampleIndices', function(cross.info, samples=NULL, strains=NULL, 
@@ -656,12 +662,13 @@ setMethod('getSampleIndices', signature='CrossInfo',
 #' @param simplify Simplify list return value to a vector.
 #' 
 #' @return If samples are specified by strain or tetrad, and if the option 
-#' \code{simplify} is not TRUE, this method returns a list of character vectors,
-#' each containing the sample names corresponding to a given strain/tetrad.
-#' Otherwise, a vector of sample names is returned.
+#' \code{simplify} is not \code{TRUE}, this method returns a list of character
+#' vectors, each containing the sample names corresponding to a given
+#' strain/tetrad. Otherwise, a vector of sample names is returned.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getSampleNames-methods
 setGeneric('getSampleNames', function(cross.info, samples=NULL, strains=NULL, 
@@ -713,12 +720,13 @@ setMethod('getSampleNames', signature='CrossInfo',
 #' @param simplify Simplify list return value to a vector.
 #' 
 #' @return If samples are specified by strain or tetrad, and if the option 
-#' \code{simplify} is not TRUE, this method returns a list of character vectors,
-#' each containing the sample IDs corresponding to a given strain/tetrad.
-#' Otherwise, a vector of sample IDs is returned.
+#' \code{simplify} is not \code{TRUE}, this method returns a list of character
+#' vectors, each containing the sample IDs corresponding to a given
+#' strain/tetrad. Otherwise, a vector of sample IDs is returned.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getSamples-methods
 setGeneric('getSamples', function(cross.info, samples=NULL, strains=NULL, 
@@ -766,6 +774,7 @@ setMethod('getSamples', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getSeqIndices-methods
 setGeneric('getSeqIndices', function(cross.info, sequences=NULL) { 
@@ -837,12 +846,13 @@ setMethod('getSeqIndices', signature='CrossInfo',
 #' @param simplify Simplify list return value to a vector.
 #' 
 #' @return List of character vectors, each containing the marker IDs
-#' corresponding to a given sequence. If option \code{simplify} is TRUE, 
+#' corresponding to a given sequence. If option \code{simplify} is \code{TRUE},
 #' this is simplified to a vector. Returns \code{NULL} if no sequence-marker 
 #' information is available.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getSeqMarkers-methods
 setGeneric('getSeqMarkers', function(cross.info, sequences=NULL, 
@@ -880,6 +890,7 @@ setMethod('getSeqMarkers', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getSeqNames-methods
 setGeneric('getSeqNames', function(cross.info, sequences=NULL) { 
@@ -905,6 +916,7 @@ setMethod('getSeqNames', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getSequences-methods
 setGeneric('getSequences', function(cross.info, sequences=NULL) { 
@@ -932,6 +944,7 @@ setMethod('getSequences', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getStrainIndices-methods
 setGeneric('getStrainIndices', function(cross.info, samples=NULL) { 
@@ -967,6 +980,7 @@ setMethod('getStrainIndices', signature='CrossInfo',
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname getTetradIndices-methods
 setGeneric('getTetradIndices', function(cross.info, samples=NULL) { 
@@ -991,14 +1005,16 @@ setMethod('getTetradIndices', signature='CrossInfo',
 })
 
 # hasMarkerSeqs ----------------------------------------------------------------
-#' Test if \code{CrossInfo} object has a marker-sequence mapping.
+#' Test if \code{\linkS4class{CrossInfo}} object has a marker-sequence mapping.
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if marker-sequence mapping is present; FALSE otherwise.
+#' @return \code{TRUE} if marker-sequence mapping is present;
+#' \code{FALSE} otherwise.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname hasMarkerSeqs-methods
 setGeneric('hasMarkerSeqs', function(cross.info) { 
@@ -1014,14 +1030,16 @@ setMethod('hasMarkerSeqs', signature='CrossInfo',
 })
 
 # hasSampleIDs -----------------------------------------------------------------
-#' Test if \code{CrossInfo} object has sample IDs.
+#' Test if \code{\linkS4class{CrossInfo}} object has sample IDs.
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if sample IDs are present; FALSE otherwise.
+#' @return \code{TRUE} if sample IDs are present;
+#' \code{FALSE} otherwise.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname hasSampleIDs-methods
 setGeneric('hasSampleIDs', function(cross.info) { 
@@ -1037,14 +1055,16 @@ setMethod('hasSampleIDs', signature='CrossInfo',
 })
 
 # hasStrainIndices -------------------------------------------------------------
-#' Test if \code{CrossInfo} object has strain indices.
+#' Test if \code{\linkS4class{CrossInfo}} object has strain indices.
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if strain indices are present; FALSE otherwise.
+#' @return \code{TRUE} if strain indices are present;
+#' \code{FALSE} otherwise.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname hasStrainIndices-methods
 setGeneric('hasStrainIndices', function(cross.info) { 
@@ -1060,14 +1080,16 @@ setMethod('hasStrainIndices', signature='CrossInfo',
 })
 
 # hasTetradIndices -------------------------------------------------------------
-#' Test if \code{CrossInfo} object has sample tetrad indices.
+#' Test if \code{\linkS4class{CrossInfo}} object has sample tetrad indices.
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if sample tetrad indices are present; FALSE otherwise.
+#' @return \code{TRUE} if sample tetrad indices are present;
+#' \code{FALSE} otherwise.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname hasTetradIndices-methods
 setGeneric('hasTetradIndices', function(cross.info) { 
@@ -1088,10 +1110,11 @@ setMethod('hasTetradIndices', signature='CrossInfo',
 #' @template param-CrossInfo
 #' @param alleles Vector of allele symbols.
 #' 
-#' @return Input \code{CrossInfo} object with the given alleles.
+#' @return Input \code{\linkS4class{CrossInfo}} object with the given alleles.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname setAlleles-methods
 setGeneric('setAlleles', function(cross.info, alleles) { 
@@ -1108,29 +1131,31 @@ setMethod('setAlleles', signature='CrossInfo',
     return(cross.info)
 })
 
-# setCrossType -----------------------------------------------------------------
+# setCrosstype -----------------------------------------------------------------
 #' Set cross type.
 #' 
 #' @template param-CrossInfo
 #' @param crosstype Cross type name.
 #' 
-#' @return Input \code{CrossInfo} object with the given cross type name.
+#' @return Input \code{\linkS4class{CrossInfo}}
+#' object with the given cross type name.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
-#' @rdname setCrossType-methods
-setGeneric('setCrossType', function(cross.info, crosstype) {
-    standardGeneric('setCrossType') })
+#' @rdname setCrosstype-methods
+setGeneric('setCrosstype', function(cross.info, crosstype) {
+    standardGeneric('setCrosstype') })
 
-# CrossInfo::setCrossType ------------------------------------------------------
-#' @aliases setCrossType,CrossInfo-method
+# CrossInfo::setCrosstype ------------------------------------------------------
+#' @aliases setCrosstype,CrossInfo-method
 #' @export
-#' @rdname setCrossType-methods
-setMethod('setCrossType', signature='CrossInfo',
+#' @rdname setCrosstype-methods
+setMethod('setCrosstype', signature='CrossInfo',
     definition = function(cross.info, crosstype) {
     cross.info@crosstype <- crosstype
-    validateCrossType(cross.info)
+    validateCrosstype(cross.info)
     return(cross.info)
 })
 
@@ -1138,12 +1163,14 @@ setMethod('setCrossType', signature='CrossInfo',
 #' Set genotype symbols.
 #' 
 #' @template param-CrossInfo
-#' @param alleles Vector of genotype symbols.
+#' @param genotypes Vector of genotype symbols.
 #' 
-#' @return Input \code{CrossInfo} object with the given genotypes.
+#' @return Input \code{\linkS4class{CrossInfo}}
+#' object with the given genotypes.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname setGenotypes-methods
 setGeneric('setGenotypes', function(cross.info, genotypes) {
@@ -1166,10 +1193,12 @@ setMethod('setGenotypes', signature='CrossInfo',
 #' @template param-CrossInfo
 #' @param markers Vector of marker IDs.
 #' 
-#' @return Input \code{CrossInfo} object with the given markers.
+#' @return Input \code{\linkS4class{CrossInfo}}
+#' object with the given markers.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname setMarkers-methods
 setGeneric('setMarkers', function(cross.info, markers) 
@@ -1199,10 +1228,12 @@ setMethod('setMarkers', signature='CrossInfo', definition =
 #' @param markers Vector containing markers to assign sequences.
 #' @param sequences Vector containing sequences for the given markers.
 #' 
-#' @return Input \code{CrossInfo} object with the given marker-sequence info.
+#' @return Input \code{\linkS4class{CrossInfo}}
+#' object with the given marker-sequence info.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname setMarkerSeqs-methods
 setGeneric('setMarkerSeqs', function(cross.info, markers=NULL, sequences=NULL) { 
@@ -1241,10 +1272,12 @@ setMethod('setMarkerSeqs', signature='CrossInfo', definition =
 #' @template param-CrossInfo
 #' @param phenotypes Vector of phenotype IDs.
 #' 
-#' @return Input \code{CrossInfo} object with the given phenotypes.
+#' @return Input \code{\linkS4class{CrossInfo}}
+#' object with the given phenotypes.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname setPhenotypes-methods
 setGeneric('setPhenotypes', function(cross.info, phenotypes) {
@@ -1272,10 +1305,12 @@ setMethod('setPhenotypes', signature='CrossInfo',
 #' @param samples Integer vector of sample indices or character vector of 
 #' sample IDs.
 #' 
-#' @return Input \code{CrossInfo} object with the given samples.
+#' @return Input \code{\linkS4class{CrossInfo}}
+#' object with the given samples.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname setSamples-methods
 setGeneric('setSamples', function(cross.info, samples) { 
@@ -1328,10 +1363,12 @@ setMethod('setSamples', signature='CrossInfo', definition =
 #' @template param-CrossInfo
 #' @param sequences Vector of sequence labels.
 #' 
-#' @return Input \code{CrossInfo} object with the given sequences.
+#' @return Input \code{\linkS4class{CrossInfo}}
+#' object with the given sequences.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname setSequences-methods
 setGeneric('setSequences', function(cross.info, sequences) 
@@ -1361,10 +1398,12 @@ setMethod('setSequences', signature='CrossInfo',
 #' @param samples Vector of samples to assign strain indices.
 #' @param strains Vector of strain indices.
 #' 
-#' @return Input \code{CrossInfo} object with the given strain indices.
+#' @return Input \code{\linkS4class{CrossInfo}}
+#' object with the given strain indices.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname setStrainIndices-methods
 setGeneric('setStrainIndices', function(cross.info, samples=NULL, strains=NULL) { 
@@ -1402,10 +1441,12 @@ setMethod('setStrainIndices', signature='CrossInfo', definition = function(cross
 #' @param samples Vector of samples for which a tetrad index should be set.
 #' @param tetrads Vector of tetrad indices.
 #' 
-#' @return Input \code{CrossInfo} object with the given tetrad indices.
+#' @return Input \code{\linkS4class{CrossInfo}}
+#' object with the given tetrad indices.
 #' 
 #' @docType methods
 #' @export
+#' @family CrossInfo methods
 #' @keywords internal
 #' @rdname setTetradIndices-methods
 setGeneric('setTetradIndices', function(cross.info, samples=NULL, 
@@ -1441,7 +1482,7 @@ setMethod('setTetradIndices', signature='CrossInfo', definition =
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if alleles are valid; otherwise, returns first error.
+#' @return \code{TRUE} if alleles are valid; otherwise, returns first error.
 #' 
 #' @docType methods
 #' @export
@@ -1483,25 +1524,25 @@ setMethod('validateAlleles', signature='CrossInfo',
     return(TRUE)
 })
 
-# validateCrossType ------------------------------------------------------------
+# validateCrosstype ------------------------------------------------------------
 #' Validate cross type information.
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if cross type is valid; otherwise, returns first error.
+#' @return \code{TRUE} if cross type is valid; otherwise, returns first error.
 #' 
 #' @docType methods
 #' @export
 #' @keywords internal
-#' @rdname validateCrossType-methods
-setGeneric('validateCrossType', function(cross.info) {
-    standardGeneric('validateCrossType') })
+#' @rdname validateCrosstype-methods
+setGeneric('validateCrosstype', function(cross.info) {
+    standardGeneric('validateCrosstype') })
 
-# CrossInfo::validateCrossType -------------------------------------------------
-#' @aliases validateCrossType,CrossInfo-method
+# CrossInfo::validateCrosstype -------------------------------------------------
+#' @aliases validateCrosstype,CrossInfo-method
 #' @export
-#' @rdname validateCrossType-methods
-setMethod('validateCrossType', signature='CrossInfo',
+#' @rdname validateCrosstype-methods
+setMethod('validateCrosstype', signature='CrossInfo',
     definition = function(cross.info) {
       
     stopifnot( is.character(cross.info@crosstype) )
@@ -1520,7 +1561,7 @@ setMethod('validateCrossType', signature='CrossInfo',
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if genotypes are valid; otherwise, returns first error.
+#' @return \code{TRUE} if genotypes are valid; otherwise, returns first error.
 #' 
 #' @docType methods
 #' @export
@@ -1571,7 +1612,8 @@ setMethod('validateGenotypes', signature='CrossInfo',
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if marker information is valid; otherwise, returns first error.
+#' @return \code{TRUE} if marker information is valid;
+#' otherwise, returns first error.
 #' 
 #' @docType methods
 #' @export
@@ -1660,7 +1702,8 @@ setMethod('validateMarkers', signature='CrossInfo',
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if phenotypes are valid; otherwise, returns first error.
+#' @return \code{TRUE} if phenotypes are valid;
+#' otherwise, returns first error.
 #' 
 #' @docType methods
 #' @export
@@ -1718,7 +1761,8 @@ setMethod('validatePhenotypes', signature='CrossInfo',
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if sample information is valid; otherwise, returns first error.
+#' @return \code{TRUE} if sample information is valid;
+#' otherwise, returns first error.
 #' 
 #' @docType methods
 #' @export
@@ -1841,7 +1885,8 @@ setMethod('validateSamples', signature='CrossInfo',
 #' 
 #' @template param-CrossInfo
 #' 
-#' @return TRUE if sequences are valid; otherwise, returns first error.
+#' @return \code{TRUE} if sequences are valid;
+#' otherwise, returns first error.
 #' 
 #' @docType methods
 #' @export
@@ -1884,22 +1929,22 @@ setMethod('validateSequences', signature='CrossInfo',
 })
 
 # CrossInfo::setValidity -------------------------------------------------------
-#' Validate \code{CrossInfo} object.
+#' Validate \code{\linkS4class{CrossInfo}} object.
 #' 
-#' @param object A \code{CrossInfo} object.
+#' @param object A \code{\linkS4class{CrossInfo}} object.
 #' 
-#' @return TRUE if object is valid; otherwise, a character vector of errors.
+#' @return \code{TRUE} if object is valid;
+#' otherwise, a character vector of errors.
 #' 
 #' @aliases setValidity,CrossInfo-method
 #' @docType methods
-#' @keywords internal
 #' @name setValidity
 #' @rdname setValidity-methods
 setValidity('CrossInfo', function(object) { 
 
     errors <- vector('character')
     
-    validators <- c(validateAlleles, validateCrossType, validateGenotypes,
+    validators <- c(validateAlleles, validateCrosstype, validateGenotypes,
         validateSequences, validateMarkers, validatePhenotypes, validateSamples)
     
     for ( validator in validators ) {

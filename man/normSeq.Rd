@@ -33,4 +33,70 @@ Input object with normalised sequence labels.
 \description{
 Normalise sequence labels.
 }
+\section{Chromosomes and Sequences}{
+
+
+Although for some yeast genome assemblies they are equivalent, chromosomes
+(cell structures containing genetic material) are treated by \pkg{shmootl}
+as being distinct from sequences (linkage units that corresponding to all
+or part of a chromosome). This distinction is necessary to allow for use of
+reference genomes in which multiple sequences map to a single chromosome.
+(see \code{\link{genomeOpt}} for more on setting a reference genome.) While
+every sequence must be mapped to a specific chromosome, it is sequences,
+and not chromosomes, that are used as the primary linkage unit throughout
+this package.
+
+\subsection{Chromosomes}{
+A yeast nuclear chromosome can be represented by an Arabic number in the
+range \code{1} to \code{16}, inclusive; or by the Roman numeral corresponding
+to the chromosome number. The mitochondrial chromosome can be represented by
+the number \code{17} or a capital \code{'M'}. A chromosome label can include
+one of the optional prefixes \code{'c'} or \code{'chr'}. So for example, any
+of the following can represent chromosome 4:
+
+\itemize{
+\item{\code{4}:}{an Arabic number}
+\item{\code{IV}:}{a Roman numeral}
+\item{\code{c04}:}{a zero-padded Arabic number with prefix \code{'c'}}
+\item{\code{chrIV}:}{a Roman numeral with prefix \code{'chr'}}
+}
+
+Using the function \code{\link{normChr}}, all of these representations can
+be normalised to one consistent form: a zero-padded Arabic number
+(i.e. \code{'04'}). This is used internally by \pkg{shmootl} as a
+normalised representation, and is recommended.
+}
+
+\subsection{Sequences}{
+For genomes in which every sequence represents a specific chromosome, the
+sequence label is identical to the chromosome label. In other cases, the
+sequence label should be a chromosome label followed by a sequence-specific
+label (e.g. contig ID), separated by an underscore. For example, a contig
+\code{'1D22'} that maps to chromosome 4 can be represented as follows:
+
+\itemize{
+\item{\code{4_1D22}}
+\item{\code{IV_1D22}}
+\item{\code{c04_1D22}}
+\item{\code{chrIV_1D22}}
+}
+
+Variations in chromosome representation are possible as before, but the
+sequence-specific label must be consistent. As with chromosomes, the function
+\code{\link{normSeq}} can be used to normalise all of these forms to
+one consistent representation: a zero-padded Arabic number followed by the
+sequence-specific label (i.e. \code{'04_1D22'}). This representation is
+recommended, as it is used internally by \pkg{shmootl} as a standard way to
+label sequences in a genome lacking a one-to-one correspondence between
+sequences and chromosomes.
+}
+}
+\seealso{
+Other chromosome/sequence functions: \code{\link{formatChr}},
+  \code{\link{formatSeq}}, \code{\link{isNormChr}},
+  \code{\link{isNormSeq}}, \code{\link{normChr}},
+  \code{\link{orderChr}}, \code{\link{orderSeq}},
+  \code{\link{rankChr}}, \code{\link{rankSeq}},
+  \code{\link{sortChr}}, \code{\link{sortSeq}}
+}
 

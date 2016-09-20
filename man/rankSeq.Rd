@@ -10,9 +10,18 @@ rankSeq(x)
 \item{x}{Vector of sequence labels.}
 }
 \value{
-Vector of ranks for the input sequence labels.
+Vector of ranks for the normalised
+form of the input sequence labels.
 }
 \description{
 Rank sequence labels.
+}
+\seealso{
+Other chromosome/sequence functions: \code{\link{formatChr}},
+  \code{\link{formatSeq}}, \code{\link{isNormChr}},
+  \code{\link{isNormSeq}}, \code{\link{normChr}},
+  \code{\link{normSeq}}, \code{\link{orderChr}},
+  \code{\link{orderSeq}}, \code{\link{rankChr}},
+  \code{\link{sortChr}}, \code{\link{sortSeq}}
 }
 

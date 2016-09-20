@@ -2,7 +2,7 @@
 % Please edit documentation in R/util.R
 \name{removeColsNA}
 \alias{removeColsNA}
-\title{Remove columns containing only NA values.}
+\title{Remove columns containing only \code{NA} values.}
 \usage{
 removeColsNA(x)
 }
@@ -10,10 +10,10 @@ removeColsNA(x)
 \item{x}{A \code{data.frame} or \code{matrix}.}
 }
 \value{
-Input object with NA-only columns removed.
+Input object without those columns that contain only \code{NA} values.
 }
 \description{
-Remove columns containing only NA values.
+Remove columns containing only \code{NA} values.
 }
 \keyword{internal}
 

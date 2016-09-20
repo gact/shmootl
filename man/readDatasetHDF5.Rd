@@ -16,15 +16,15 @@
 \alias{readDatasetHDF5.scantwoperm}
 \title{Read HDF5 dataset.
    
-The named HDF5 dataset is read from the specified HDF5 file using the method
-for the dataset type, as determined from the \code{'R.class'} or \code{'class'}
-attribute of the HDF5 object.}
+The named HDF5 dataset is read from the specified HDF5 file using the
+method for the dataset type, as determined from the \code{'R.class'}
+or \code{'class'} attribute of the HDF5 object.}
 \usage{
 readDatasetHDF5(infile, h5name, ...)
 
 readDatasetHDF5.array(infile, h5name, ...)
 
-readDatasetHDF5.data.frame(infile, h5name, col.name = "rownames")
+readDatasetHDF5.data.frame(infile, h5name, rownames.column = "rownames")
 
 readDatasetHDF5.default(infile, h5name, ...)
 
@@ -53,17 +53,28 @@ readDatasetHDF5.scantwoperm(infile, h5name, ...)
 
 \item{...}{Further arguments (see below).}
 
-\item{col.name}{For a \code{data.frame}, if any column has a name matching
-this parameter, that column is extracted from the \code{data.frame} and the
-rownames are set from its contents.}
+\item{rownames.column}{For a \code{data.frame}, if any column has a name that
+matches this parameter, that column is extracted from the \code{data.frame}
+and the rownames are set from its contents.}
 }
 \value{
 R object corresponding to the named HDF5 object.
 }
 \description{
-An \pkg{R/qtl} \code{map} object is not suited for HDF5 format, but can be 
-stored as a \code{mapframe} object, which can be read from file and then 
-converted back to a \code{map}.
+Read HDF5 dataset.
+   
+The named HDF5 dataset is read from the specified HDF5 file using the
+method for the dataset type, as determined from the \code{'R.class'}
+or \code{'class'} attribute of the HDF5 object.
+}
+\seealso{
+Other HDF5 functions: \code{\link{readMapHDF5}},
+  \code{\link{readOverviewHDF5}},
+  \code{\link{readResultHDF5}},
+  \code{\link{writeDatasetHDF5}},
+  \code{\link{writeMapHDF5}},
+  \code{\link{writeOverviewHDF5}},
+  \code{\link{writeResultHDF5}}
 }
 \keyword{internal}
 

@@ -7,12 +7,20 @@
 makePseudomarkerIDs(loc)
 }
 \arguments{
-\item{loc}{Locus \code{data.frame} specifying map positions.}
+\item{loc}{Locus \code{data.frame}, with columns \code{'chr'} and
+\code{'pos'}, specifying genetic map positions.}
 }
 \value{
 Character vector of pseudomarker IDs.
 }
 \description{
 Make pseudomarker IDs for the specified loci.
+}
+\section{Pseudomarker IDs}{
+
+
+Pseudomarker IDs are used by \pkg{R/qtl} for inter-marker loci. They indicate
+the reference sequence and genetic map position of the locus (e.g.
+\code{'c04.loc33'} for a locus at position 33cM on chromosome IV).
 }
 

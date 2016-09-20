@@ -3,7 +3,7 @@
 \name{as.geno}
 \alias{as.geno}
 \alias{as.geno.data.frame}
-\title{Coerce to \code{geno} object.}
+\title{Convert to \code{geno} object.}
 \usage{
 as.geno(from, require.mapunit = TRUE)
 
@@ -18,7 +18,7 @@ as.geno(from, require.mapunit = TRUE)
 A \code{geno} object corresponding to the input object.
 }
 \description{
-Coerce to \code{geno} object.
+Convert to \code{geno} object.
 }
 \keyword{internal}
 

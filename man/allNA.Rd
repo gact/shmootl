@@ -2,7 +2,7 @@
 % Please edit documentation in R/util.R
 \name{allNA}
 \alias{allNA}
-\title{Test if all elements are NA values.}
+\title{Test if all elements are \code{NA} values.}
 \usage{
 allNA(x)
 }
@@ -10,11 +10,11 @@ allNA(x)
 \item{x}{Test vector.}
 }
 \value{
-TRUE if vector is of length zero or contains only NA values;
-FALSE otherwise.
+\code{TRUE} if vector is of length zero or
+contains only \code{NA} values; \code{FALSE} otherwise.
 }
 \description{
-Test if all elements are NA values.
+Test if all elements are \code{NA} values.
 }
 \keyword{internal}
 

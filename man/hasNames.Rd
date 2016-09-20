@@ -10,7 +10,8 @@ hasNames(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if object has nonempty names with no NA values; FALSE otherwise.
+\code{TRUE} if object has nonempty names with no \code{NA} values;
+\code{FALSE} otherwise.
 }
 \description{
 Test if object has names.

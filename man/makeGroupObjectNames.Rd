@@ -17,9 +17,9 @@ HDF5 group object names.
 \description{
 Group names are made based on the proposed group names or the group size. 
 Default group element names will replace every group name that is either 
-an empty string or NA value. Default group element names are of the form 
-'ELT1', where the number indicates the position of the element within the 
-given group.
+an empty string or \code{NA} value. Default group element names are of the
+form \code{'ELT1'}, where the number indicates the position of the element
+within the given group.
 }
 \seealso{
 makeDefaultElementNames

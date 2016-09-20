@@ -11,10 +11,8 @@
 #' of a feature. Additional feature annotation is included, if available.
 #' 
 #' @export
+#' @family GFF functions
 #' @importFrom S4Vectors unstrsplit
-#' @include const.R
-#' @include seq.R
-#' @include util.R
 #' @rdname readFeaturesGFF
 readFeaturesGFF <- function(annofile) {
     

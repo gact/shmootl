@@ -7,9 +7,12 @@
 #' not set, the names of this vector are used as the keys of the mapping.
 #' @param keys Character vector of mapping keys.
 #' 
-#' @return A \code{mapping} of unique string keys to individual values.
+#' @return A \code{mapping} of unique string keys to
+#' individual values; equivalent to a named list in
+#' which each element is a vector with one element.
 #' 
-#' @keywords internal
+#' @export
+#' @family mapping object functions
 #' @rdname mapping
 mapping <- function(values=NULL, keys=NULL) {
     
@@ -55,13 +58,30 @@ mapping <- function(values=NULL, keys=NULL) {
 }
 
 # as.mapping -------------------------------------------------------------------
-#' @keywords internal
+#' Convert to a \code{mapping} object.
+#' 
+#' @param x Named vector.
+#' 
+#' @return A \code{mapping} corresponding to the input object.
+#' 
+#' @export
+#' @family mapping object functions
+#' @rdname as.mapping
 as.mapping <- function(x) {
     return( mapping(values=x, keys=names(x)) )
 }
 
 # is.mapping -------------------------------------------------------------------
-#' @keywords internal
+#' Test if object is a \code{mapping}.
+#' 
+#' @param x Test object.
+#' 
+#' @return \code{TRUE} if object is a \code{mapping};
+#' \code{FALSE} otherwise.
+#' 
+#' @export
+#' @family mapping object functions
+#' @rdname is.mapping
 is.mapping <- function(x) {
     
     status <- FALSE
@@ -76,7 +96,7 @@ is.mapping <- function(x) {
 #' 
 #' @param x A \code{mapping} object.
 #' 
-#' @return TRUE if object is a valid \code{mapping};
+#' @return \code{TRUE} if object is a valid \code{mapping};
 #' otherwise, returns first error.
 #' 
 #' @keywords internal
@@ -105,6 +125,7 @@ validateMapping <- function(x) {
 }
 
 # `$<-.mapping` ----------------------------------------------------------------
+#' @export
 #' @keywords internal
 `$<-.mapping` <- function(x, i, value) {
     x <- unclass(x)
@@ -115,6 +136,7 @@ validateMapping <- function(x) {
 }
 
 # `[<-.mapping` ----------------------------------------------------------------
+#' @export
 #' @keywords internal
 `[<-.mapping` <- function(x, i, value) {
     x <- unclass(x)
@@ -125,6 +147,7 @@ validateMapping <- function(x) {
 }
 
 # `[[<-.mapping` ---------------------------------------------------------------
+#' @export
 #' @keywords internal
 `[[<-.mapping` <- function(x, i, value) {
     x <- unclass(x)
@@ -135,6 +158,7 @@ validateMapping <- function(x) {
 }
 
 # `names<-.mapping` ------------------------------------------------------------
+#' @export
 #' @keywords internal
 `names<-.mapping` <- function(x, value) {
     
@@ -160,21 +184,18 @@ validateMapping <- function(x) {
 }
 
 # values -----------------------------------------------------------------------
-#' Get values of vector object.
+#' Get values of a \code{mapping} object.
 #' 
-#' @param x R vector object.
+#' @param x A \code{mapping} object.
 #' 
-#' @return Unnamed list of values in R vector object.
+#' @return Unnamed list of values in a \code{mapping} object.
 #' 
+#' @export
+#' @family mapping object functions
 #' @keywords internal
 #' @rdname values
 values <- function(x) {
-    UseMethod('values', x)
-}
-
-# values.mapping ---------------------------------------------------------------
-#' @keywords internal
-values.mapping <- function(x) {
+    stopifnot( 'mapping' %in% class(x) )
     return( unname( unclass(x) ) )
 }
 

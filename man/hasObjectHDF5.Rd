@@ -12,8 +12,8 @@ hasObjectHDF5(infile, h5name)
 \item{h5name}{HDF5 object name.}
 }
 \value{
-TRUE if the given HDF5 file contains the named object;
-FALSE otherwise.
+\code{TRUE} if the given HDF5 file contains the named object;
+\code{FALSE} otherwise.
 }
 \description{
 Test if HDF5 file contains the named object.

@@ -23,4 +23,9 @@ features in a given QTL interval.
 \description{
 Get annotation of features within QTL intervals.
 }
+\seealso{
+Other QTL functions: \code{\link{estPhysicalPositions}},
+  \code{\link{getQTLIntervals}}, \code{\link{getQTLPeaks}},
+  \code{\link{plotQTLScanone}}
+}
 

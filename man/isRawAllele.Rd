@@ -10,7 +10,8 @@ isRawAllele(x)
 \item{x}{Test object.}
 }
 \value{
-TRUE if symbol is a valid raw SNP allele; FALSE otherwise.
+\code{TRUE} if symbol is a valid raw SNP allele;
+\code{FALSE} otherwise.
 }
 \description{
 Test if symbol is a valid raw SNP allele.

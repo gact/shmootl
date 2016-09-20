@@ -9,25 +9,43 @@ inferTimeStep(cross, allow.gaps = TRUE, tol = 1e-05)
 \arguments{
 \item{cross}{An \pkg{R/qtl} \code{cross} object.}
 
-\item{allow.gaps}{Allow gaps in time series, provided that any gaps are a 
-multiple of the inferred time step.}
+\item{allow.gaps}{Allow gaps in time series, provided
+that any gaps are a multiple of the inferred time step.}
 
 \item{tol}{Tolerance for time step equality.}
 }
 \value{
-Inferred time step. Returns \code{NULL} if time step could not be inferred.
+Inferred time step. Returns \code{NULL}
+if time step could not be inferred.
 }
 \description{
 Infer time step of time-series phenotypes.
 }
+\section{Time-Series Phenotypes}{
+
+
+A set of phenotypes can be designated as a time-series by naming each
+phenotype with the time point at which phenotype observations were made
+(e.g. \code{'0.0'}, \code{'1.0'}, \code{'2.0'}). Time points can be in
+any unit, but must be non-negative, monotonically increasing, and have
+a consistent time step. If some time points are missing, the resulting
+gap in time must be a multiple of the time step.
+}
 \seealso{
-Other cross utilities: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
+  \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
   \code{\link{inferTetradIndices}},
   \code{\link{interpTimeSeries}},
   \code{\link{padTimeSeries}}, \code{\link{permCross}},
-  \code{\link{pull.alleles}}, \code{\link{pull.chr}},
-  \code{\link{pull.crosstype}}, \code{\link{pull.ind}}
+  \code{\link{permIndices}}, \code{\link{pull.alleles}},
+  \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
+  \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
+  \code{\link{writeCrossCSV}}
+
+Other time-series functions: \code{\link{hasTimeSeriesPhenotypes}},
+  \code{\link{interpTimeSeries}},
+  \code{\link{padTimeSeries}}
 }
 

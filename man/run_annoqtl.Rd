@@ -12,15 +12,24 @@ run_annoqtl(infile = NA_character_, annofile = NA_character_,
 
 \item{annofile}{GFF annotation file}
 
-\item{outfile}{annotated scan file}
+\item{outfile}{annotated scan result file}
 }
 \description{
-QTL intervals in a scan result file are annotated with features
-from the GFF annotation file, and a copy of the scan result file is output,
-in which QTL feature annotation has been added. Physical positions of QTL
-intervals must be present, either directly in the QTL intervals themselves,
-or indirectly by pairing coordinates in genetic and physical maps for the
-cross data.
+QTL intervals in a scan result HDF5 file are annotated with features from the
+GFF annotation file, and a copy of the scan result file is output, in which
+QTL feature annotation has been added. The GFF annotation file must relate to
+the same reference genome as was used in QTL analysis. In addition, physical
+positions of QTL intervals must be present, either directly in the QTL
+intervals themselves, or indirectly by pairing coordinates in genetic and
+physical maps for the cross data.
+}
+\seealso{
+Other pipeline functions: \code{\link{run_digest}},
+  \code{\link{run_estimap}}, \code{\link{run_makecross}},
+  \code{\link{run_makegeno}}, \code{\link{run_prep}},
+  \code{\link{run_pullmap}}, \code{\link{run_pushmap}},
+  \code{\link{run_recode}}, \code{\link{run_report}},
+  \code{\link{run_scanone}}
 }
 \concept{
 shmootl:pipelines

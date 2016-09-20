@@ -3,14 +3,17 @@
 # run_digest -------------------------------------------------------------------
 #' Create digest of QTL analysis results.
 #' 
+#' Given one or more scan result HDF5 files, create
+#' a digest of the results of the QTL analyses.
+#' 
 #' @param h5list list of scan result files
 #' @param digest scan digest file
 #' @param scanfile.pattern scan file name pattern
 #' 
 #' @concept shmootl:pipelines
 #' @export
+#' @family pipeline functions
 #' @importFrom tools file_ext
-#' @include const.R
 #' @rdname run_digest
 run_digest <- function(h5list=character(), digest=NA_character_,
     scanfile.pattern=NA_character_) {

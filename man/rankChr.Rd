@@ -10,10 +10,18 @@ rankChr(x)
 \item{x}{Vector of chromosome labels.}
 }
 \value{
-Vector of ranks for the input chromosome labels.
+Vector of ranks for the normalised
+form of the input chromosome labels.
 }
 \description{
 Rank chromosome labels.
 }
-\keyword{internal}
+\seealso{
+Other chromosome/sequence functions: \code{\link{formatChr}},
+  \code{\link{formatSeq}}, \code{\link{isNormChr}},
+  \code{\link{isNormSeq}}, \code{\link{normChr}},
+  \code{\link{normSeq}}, \code{\link{orderChr}},
+  \code{\link{orderSeq}}, \code{\link{rankSeq}},
+  \code{\link{sortChr}}, \code{\link{sortSeq}}
+}
 

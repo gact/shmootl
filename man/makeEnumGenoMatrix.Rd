@@ -17,10 +17,10 @@ their corresponding genotype symbols in the attribute \code{'genotypes'}.
 Given input sample genotype data, this function creates an enumerated genotype
 matrix, in which each the genotype data at each locus are coded as numbers
 in order of occurrence. So for example, if the first sample at a locus has
-raw genotype 'A', and the second sample has raw genotype 'C', these will be
-assigned genotypes '1' and '2', respectively. The enumeration of genotypes
-is performed independently for each locus, so a given enumerated genotype
-does not have the same meaning across loci.
+raw genotype \code{'A'}, and the second sample has raw genotype \code{'C'},
+these will be assigned genotypes \code{'1'} and \code{'2'}, respectively.
+The enumeration of genotypes is performed independently for each locus,
+so a given enumerated genotype does not have the same meaning across loci.
 }
 \keyword{internal}
 

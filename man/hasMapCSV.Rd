@@ -10,11 +10,35 @@ hasMapCSV(infile)
 \item{infile}{Input CSV file path.}
 }
 \value{
-TRUE if CSV file contains map data in a known format;
-FALSE otherwise.
+\code{TRUE} if CSV file contains map data in a known format;
+\code{FALSE} otherwise.
 }
 \description{
 Test if CSV file contains map data.
 }
-\keyword{internal}
+\seealso{
+Other CSV functions: \code{\link{readCovarCSV}},
+  \code{\link{readCrossCSV}}, \code{\link{readGenoCSV}},
+  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
+  \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
+  \code{\link{writeMapframeCSV}},
+  \code{\link{writePhenoCSV}}
+
+Other map utility functions: \code{\link{as.data.frame.mapframe}},
+  \code{\link{as.data.frame.map}},
+  \code{\link{as.mapframe}}, \code{\link{as.map}},
+  \code{\link{extractMarkers}},
+  \code{\link{extractPseudomarkers}},
+  \code{\link{findFlanking}}, \code{\link{findLoci}},
+  \code{\link{findMarkers}}, \code{\link{getMapSteps}},
+  \code{\link{getMapUnit}}, \code{\link{gmapframe}},
+  \code{\link{inMapOrder}}, \code{\link{inferMapStep}},
+  \code{\link{mapframe}}, \code{\link{orderMap}},
+  \code{\link{readMapCSV}}, \code{\link{readMapHDF5}},
+  \code{\link{readMapframeCSV}}, \code{\link{setMapUnit}},
+  \code{\link{writeMapCSV}}, \code{\link{writeMapHDF5}},
+  \code{\link{writeMapframeCSV}}
+}
 

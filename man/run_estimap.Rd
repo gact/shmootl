@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_estimap.R
 \name{run_estimap}
 \alias{run_estimap}
-\title{Estimate map from cross/geno data.}
+\title{Estimate map from cross/genotype data.}
 \usage{
 run_estimap(datafile, mapfile, n.cluster = 1L, error.prob = 1e-04,
   map.function = c("haldane", "kosambi", "c-f", "morgan"),
@@ -22,10 +22,18 @@ run_estimap(datafile, mapfile, n.cluster = 1L, error.prob = 1e-04,
 \item{jittermap}{jitter map positions}
 }
 \description{
-This script reads an R/qtl cross or genotype file, and outputs a
-map estimated from the input genotype data. Note that a genetic map cannot be
-estimated from enumerated genotypes, as these are generated independently for
-each marker.
+This script reads an \pkg{R/qtl} cross or genotype file, and outputs
+a map estimated from the input genotype data. Note that a genetic map
+cannot be estimated from enumerated genotypes, as these are generated
+independently for each marker.
+}
+\seealso{
+Other pipeline functions: \code{\link{run_annoqtl}},
+  \code{\link{run_digest}}, \code{\link{run_makecross}},
+  \code{\link{run_makegeno}}, \code{\link{run_prep}},
+  \code{\link{run_pullmap}}, \code{\link{run_pushmap}},
+  \code{\link{run_recode}}, \code{\link{run_report}},
+  \code{\link{run_scanone}}
 }
 \concept{
 shmootl:utilities

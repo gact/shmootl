@@ -13,7 +13,7 @@
 #' intervals, as estimated from their genetic map positions.
 #' 
 #' @export
-#' @include map.R
+#' @family QTL functions
 #' @rdname estPhysicalPositions
 estPhysicalPositions <- function(qtl.intervals, map.key=NULL) {
     
@@ -52,10 +52,10 @@ estPhysicalPositions <- function(qtl.intervals, map.key=NULL) {
 #' 
 #' @param qtl.intervals A \code{qtlintervals} object.
 #' 
-#' @return TRUE if \code{qtlintervals} object contains physical positions
-#' in terms of base-pair units; FALSE otherwise.
+#' @return \code{TRUE} if \code{qtlintervals} object contains physical
+#' positions in terms of base-pair units; \code{FALSE} otherwise.
 #' 
-#' @keywords internal
+#' @export
 #' @rdname hasPhysicalPositions
 hasPhysicalPositions <- function(qtl.intervals) {
     
@@ -94,7 +94,10 @@ hasPhysicalPositions <- function(qtl.intervals) {
 }
 
 # qtlintervals -----------------------------------------------------------------
-#' Create an empty \code{qtlintervals} object.
+#' Create a \code{qtlintervals} object.
+#' 
+#' This function creates a \code{qtlintervals} object. Currently it
+#' can only create a \code{qtlintervals} object of length zero.
 #' 
 #' @param drop LOD units that the LOD profile must drop to form a QTL interval.
 #' @param threshold LOD significance threshold for QTL intervals.

@@ -2,7 +2,7 @@
 
 # binLODValues -----------------------------------------------------------------
 #' Bin LOD values of \code{scanone} object.
-#'
+#' 
 #' @param x A \code{scanone} object or equivalent \code{data.frame} in which the
 #' data columns contain LOD score values.
 #' @template param-lodcolumns
@@ -15,7 +15,6 @@
 #' less than 1.2).
 #' 
 #' @export
-#' @include scanonebins.R
 #' @rdname binLODValues
 binLODValues <- function(x, lodcolumns=NULL) {
     

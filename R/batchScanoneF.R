@@ -18,8 +18,11 @@
 #' @return A \code{scanoneperm} matrix containing the results of \code{scanoneF}
 #' for all permutations.
 #' 
+#' @template ref-broman-2003
+#' @template ref-kwak-2014
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @rdname batchPermScanoneF
 batchPermScanoneF <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, 
     n.perm=1000, perm.pheno=TRUE, perm.geno=FALSE, ...) {
@@ -63,8 +66,11 @@ batchPermScanoneF <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
 #' @return A \code{scanoneperm} matrix containing the results of \code{scanoneF}
 #' for a single permutation.
 #' 
+#' @template ref-broman-2003
+#' @template ref-kwak-2014
+#' 
 #' @export
-#' @family scan utilities
+#' @family scan utility functions
 #' @rdname nodePermScanoneF
 nodePermScanoneF <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE, 
     perm.geno=FALSE, ...) {

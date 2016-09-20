@@ -2,7 +2,7 @@
 % Please edit documentation in R/map.R
 \name{as.data.frame.mapframe}
 \alias{as.data.frame.mapframe}
-\title{Coerce \code{mapframe} to \code{data.frame}.}
+\title{Convert \code{mapframe} to \code{data.frame}.}
 \usage{
 \method{as.data.frame}{mapframe}(x, ...)
 }
@@ -15,18 +15,22 @@
 A \code{data.frame} corresponding to the input \code{mapframe} object.
 }
 \description{
-Coerce \code{mapframe} to \code{data.frame}.
+Convert \code{mapframe} to \code{data.frame}.
 }
 \seealso{
-Other map utilities: \code{\link{as.data.frame.map}},
+Other map utility functions: \code{\link{as.data.frame.map}},
   \code{\link{as.mapframe}}, \code{\link{as.map}},
   \code{\link{extractMarkers}},
   \code{\link{extractPseudomarkers}},
   \code{\link{findFlanking}}, \code{\link{findLoci}},
   \code{\link{findMarkers}}, \code{\link{getMapSteps}},
   \code{\link{getMapUnit}}, \code{\link{gmapframe}},
-  \code{\link{inMapOrder}}, \code{\link{inferMapStep}},
-  \code{\link{mapframe}}, \code{\link{orderMap}},
-  \code{\link{setMapUnit}}
+  \code{\link{hasMapCSV}}, \code{\link{inMapOrder}},
+  \code{\link{inferMapStep}}, \code{\link{mapframe}},
+  \code{\link{orderMap}}, \code{\link{readMapCSV}},
+  \code{\link{readMapHDF5}}, \code{\link{readMapframeCSV}},
+  \code{\link{setMapUnit}}, \code{\link{writeMapCSV}},
+  \code{\link{writeMapHDF5}},
+  \code{\link{writeMapframeCSV}}
 }
 

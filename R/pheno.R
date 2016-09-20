@@ -1,7 +1,7 @@
 # Start of pheno.R #############################################################
 
 # as.data.frame.pheno ----------------------------------------------------------
-#' Coerce \code{pheno} object to \code{data.frame}.
+#' Convert \code{pheno} object to \code{data.frame}.
 #' 
 #' @param x A \code{pheno} object.
 #' @param ... Unused arguments.
@@ -49,7 +49,7 @@ as.data.frame.pheno <- function(x, ..., digits=NULL) {
 }
 
 # as.pheno ---------------------------------------------------------------------
-#' Coerce to \code{pheno} object.
+#' Convert to \code{pheno} object.
 #' 
 #' @param from Object containing phenotype data.
 #' 

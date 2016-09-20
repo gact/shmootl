@@ -10,14 +10,20 @@ readPhenoCSV(infile)
 \item{infile}{Input CSV file path.}
 }
 \description{
-Read yeast phenotype data from a CSV file.
+This function reads yeast cross phenotype data from an \pkg{R/qtl} CSV file
+and returns a \code{pheno} object. The returned \code{pheno} object has an
+attribute \code{'info'} of type \code{\linkS4class{CrossInfo}}. This
+\code{\linkS4class{CrossInfo}} object contains information about the
+phenotype data, including sample IDs, which must be present in the
+input phenotype data file.
 }
 \seealso{
-Other csv utilities: \code{\link{readCovarCSV}},
-  \code{\link{readCrossCSV}}, \code{\link{readGenoCSV}},
-  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
-  \code{\link{writeCrossCSV}}, \code{\link{writeGenoCSV}},
-  \code{\link{writeMapCSV}},
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},
+  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
+  \code{\link{readMapframeCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
+  \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}},
   \code{\link{writePhenoCSV}}
 }

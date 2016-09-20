@@ -10,17 +10,18 @@ getMapUnitSuffix(x)
 \item{x}{A character vector of map positions.}
 }
 \value{
-Map unit indicated by the map positions. Returns NA if the map
-position vector does not contain map unit suffixes.
+Map unit indicated by the map positions. Returns \code{NA}
+if the map position vector does not contain map unit suffixes.
 }
 \description{
 Get map unit suffix from a vector of map positions.
 }
 \section{Map Units}{
- 
-A \code{map} or \code{mapframe} must express positions in either genetic or 
-physical map units. Genetic map positions must be in centiMorgans (cM), while 
-physical map positions must be in base pairs (bp), kilobases (kb), or 
+
+
+A \code{map} or \code{mapframe} must express positions in either genetic or
+physical map units. Genetic map positions must be in centiMorgans (cM), while
+physical map positions must be in base pairs (bp), kilobases (kb), or
 Megabases (Mb).
 }
 \keyword{internal}
