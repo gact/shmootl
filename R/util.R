@@ -1372,8 +1372,9 @@ loadVector <- function(line=NULL, file=NULL, type=NULL) {
         
             # Read list file as a CSV file with one column.
             x <- utils::read.table(file, sep='\n', quote='', as.is=TRUE,
-                na.strings=NA, strip.white=TRUE, blank.lines.skip=FALSE,
-                allowEscapes=TRUE, stringsAsFactors=FALSE)
+                na.strings=NA, colClasses='character', strip.white=TRUE,
+                blank.lines.skip=FALSE, allowEscapes=TRUE,
+                stringsAsFactors=FALSE)
             stopifnot( ncol(x) == 1 )
             
             # Trim any blank rows from the bottom.

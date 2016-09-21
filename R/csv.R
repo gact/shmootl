@@ -168,8 +168,9 @@ getMetadataCSV <- function(x) {
         
         stopifnot( file.exists(x) )
         
-        x <- utils::read.csv(x, header=FALSE, nrows=4, check.names=FALSE, quote='',
-            stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
+        x <- utils::read.csv(x, header=FALSE, nrows=4, check.names=FALSE,
+            quote='', na.strings=const$missing.value, colClasses='character',
+            strip.white=TRUE, stringsAsFactors=FALSE)
         
         x <- bstripBlankRows( rstripBlankCols(x) )
         
@@ -238,8 +239,8 @@ readCovarCSV <- function(infile) {
     
     # Read covariate data as character data-frame from CSV file.
     covar.table <- utils::read.csv(infile, header=TRUE, check.names=FALSE,
-        quote='', stringsAsFactors=TRUE, strip.white=TRUE,
-        colClasses='character', na.strings=const$missing.value)
+        quote='', na.strings=const$missing.value, colClasses='character',
+        strip.white=TRUE, stringsAsFactors=TRUE)
     stopif( anyDuplicated( colnames(covar.table) ) )
     
     # Trim any blank rows/columns from the bottom/right, respectively.
@@ -314,8 +315,9 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     map.function <- match.arg(map.function)
     
     # Read cross input data as CSV file.
-    cross.table <- utils::read.csv(infile, header=FALSE, check.names=FALSE, quote='',
-        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
+    cross.table <- utils::read.csv(infile, header=FALSE, check.names=FALSE,
+        quote='', na.strings=const$missing.value, colClasses='character',
+        strip.white=TRUE, stringsAsFactors=FALSE)
     
     # Trim any blank rows/columns from the bottom/right, respectively.
     cross.table <- bstripBlankRows( rstripBlankCols(cross.table) )
@@ -522,9 +524,9 @@ readGenoCSV <- function(infile, require.mapunit=TRUE) {
     stopifnot( isSingleString(infile) )
     
     # Read genotype input data as CSV file.
-    geno.table <- utils::read.csv(infile, header=FALSE, check.names=FALSE, quote='',
-        stringsAsFactors=FALSE, strip.white=TRUE, colClasses='character',
-        na.strings=const$missing.value)
+    geno.table <- utils::read.csv(infile, header=FALSE, check.names=FALSE,
+        quote='', na.strings=const$missing.value, colClasses='character',
+        strip.white=TRUE, stringsAsFactors=FALSE)
     
     # Trim any blank rows/columns from the bottom/right, respectively.
     geno.table <- bstripBlankRows( rstripBlankCols(geno.table) )
@@ -661,9 +663,9 @@ readMapframeCSV <- function(infile, require.mapunit=TRUE) {
     } else if ( params$class == 'map' ) {
         
         # Read mapframe from CSV file.
-        x <- utils::read.csv(infile, check.names=FALSE, quote='',
-            strip.white=TRUE, comment.char='', stringsAsFactors=FALSE,
-            colClasses='character', na.strings='')
+        x <- utils::read.csv(infile, check.names=FALSE, quote='', na.strings='',
+            colClasses='character', strip.white=TRUE,
+            comment.char='', stringsAsFactors=FALSE)
         
         # Trim any blank rows/columns from the bottom/right, respectively.
         x <- bstripBlankRows( rstripBlankCols(x) )
@@ -716,9 +718,9 @@ readPhenoCSV <- function(infile) {
     stopifnot( isSingleString(infile) )
     
     # Read phenotype input data as CSV file.
-    pheno.table <- utils::read.csv(infile, header=FALSE, check.names=FALSE, quote='',
-        stringsAsFactors=FALSE, strip.white=TRUE, colClasses='character',
-        na.strings=const$missing.value)
+    pheno.table <- utils::read.csv(infile, header=FALSE, check.names=FALSE,
+        quote='', na.strings=const$missing.value, colClasses='character',
+        strip.white=TRUE, stringsAsFactors=FALSE)
     
     # Trim any blank rows/columns from the bottom/right, respectively.
     pheno.table <- bstripBlankRows( rstripBlankCols(pheno.table) )
@@ -786,8 +788,9 @@ recodeCSV <- function(infile, outfile, geno=NULL, enum.geno=FALSE) {
     }
     
     # Read input CSV file.
-    x <- utils::read.csv(infile, header=FALSE, check.names=FALSE, quote='', 
-        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
+    x <- utils::read.csv(infile, header=FALSE, check.names=FALSE, quote='',
+        na.strings=const$missing.value, colClasses='character',
+        strip.white=TRUE, stringsAsFactors=FALSE)
     
     # Trim any blank rows/columns from the bottom/right, respectively.
     x <- bstripBlankRows( rstripBlankCols(x) )

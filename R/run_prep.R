@@ -53,7 +53,8 @@ run_prep <- function(datafile, jittermap=FALSE, normseq=FALSE,
     
     # Read input CSV file.
     x <- utils::read.csv(datafile, header=FALSE, check.names=FALSE, quote='',
-        stringsAsFactors=FALSE, strip.white=TRUE, na.strings=const$missing.value)
+        na.strings=const$missing.value, colClasses='character',
+        strip.white=TRUE, stringsAsFactors=FALSE)
     
     # Trim any blank rows/columns from the bottom/right, respectively.
     x <- bstripBlankRows( rstripBlankCols(x) )
