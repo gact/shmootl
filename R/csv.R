@@ -41,7 +41,7 @@ getMetadataCSV <- function(x) {
             stop("data not found")
         }
         
-        if ( anyNA(x[1:2, ]) ) {
+        if ( anyNA(x[1, ]) ) {
             stop("invalid headings found")
         }
         
