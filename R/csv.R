@@ -59,7 +59,7 @@ getMetadataCSV <- function(x) {
         
         # Verify genetic map correctly formatted, if present.
         if ( any(map.blanks) && ( length(map.blanks) != length(seq.blanks) ||
-                                  any(map.blanks != seq.blanks) ) ) {
+            any(map.blanks != seq.blanks) ) ) {
             stop("map data row is invalid")
         }
         
@@ -295,6 +295,7 @@ readCovarCSV <- function(infile) {
 #' @family CSV functions
 #' @family cross object functions
 #' @importFrom methods new
+#' @importFrom stats na.omit
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
 #' @rdname readCrossCSV
@@ -363,17 +364,20 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     # Get vector of data row indices.
     dat.rows <- first.data.row : last.data.row
     
+    # Get vector of non-missing values in phenotype data.
+    pheno.values <- stats::na.omit( unlist(cross.table[dat.rows, pheno.cols]) )
+    
     # Verify that there are no blank phenotype values.
-    if ( any(cross.table[dat.rows, pheno.cols] == '') ) {
+    if ( any( pheno.values == '' ) ) {
         stop("blank phenotype values found")
     }
     
     # Get set of unique symbols used in marker genotype data.
-    geno.symbols <- sort( unique( as.character( 
+    geno.symbols <- sort( unique( as.character( # NB: sort removes NA values
         unlist(cross.table[dat.rows, geno.cols]) ) ) )
     
     # Verify that there are no blank genotype entries.
-    if ( any(geno.symbols == '') ) {
+    if ( any( geno.symbols == '' ) ) {
         stop("blank genotype values found")
     }
     
