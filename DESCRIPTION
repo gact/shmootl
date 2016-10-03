@@ -55,6 +55,7 @@ Collate:
     'getQTLPeaks.R'
     'gff.R'
     'hasEnumGenotypes.R'
+    'hasFounderGenotypes.R'
     'hdf5.R'
     'map.R'
     'mapping.R'
