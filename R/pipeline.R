@@ -46,6 +46,8 @@ getPipelineFunction <- function(pipeline) {
 #' @rdname getPipelineInfo
 getPipelineInfo <- function(pipeline) {
     
+    # TODO: display pipeline references
+    
     stopifnot( isSingleString(pipeline) )
     
     if ( ! pipeline %in% getPipelines() ) {

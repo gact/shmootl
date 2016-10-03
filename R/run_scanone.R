@@ -4,10 +4,10 @@
 #' Do single QTL scan.
 #' 
 #' Read cross data from the specified cross input file, run a single QTL
-#' analysis using \pkg{R/qtl} \code{scanone}, and write the results of
-#' that scan to the specified output file. If the input cross contains
-#' enumerated genotypes, marker regresion is performed regardless of
-#' the value of the \code{method} parameter.
+#' analysis using \pkg{R/qtl} \code{scanone} (Broman \emph{et al.} 2003),
+#' and write the results of that scan to the specified output file. If
+#' the input cross contains enumerated genotypes, marker regression is
+#' performed regardless of the value of the \code{method} parameter.
 #' 
 #' LOD threshold stringency can be set through either the significance
 #' level (\code{alpha}), or the false-discovery rate (\code{fdr}), but
@@ -29,6 +29,8 @@
 #' @param map.function genetic map function
 #' @param acovfile additive covariates file
 #' @param icovfile interactive covariates file
+#' 
+#' @template ref-broman-2003
 #' 
 #' @concept shmootl:pipelines
 #' @export

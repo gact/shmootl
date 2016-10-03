@@ -45,16 +45,21 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
 }
 \description{
 Read cross data from the specified cross input file, run a single QTL
-analysis using \pkg{R/qtl} \code{scanone}, and write the results of
-that scan to the specified output file. If the input cross contains
-enumerated genotypes, marker regresion is performed regardless of
-the value of the \code{method} parameter.
+analysis using \pkg{R/qtl} \code{scanone} (Broman \emph{et al.} 2003),
+and write the results of that scan to the specified output file. If
+the input cross contains enumerated genotypes, marker regression is
+performed regardless of the value of the \code{method} parameter.
 }
 \details{
 LOD threshold stringency can be set through either the significance
 level (\code{alpha}), or the false-discovery rate (\code{fdr}), but
 not both. If neither is specified, a significance level \code{alpha}
 of \code{0.05} is used by default.
+}
+\references{
+Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
+in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
 }
 \seealso{
 Other pipeline functions: \code{\link{run_annoqtl}},

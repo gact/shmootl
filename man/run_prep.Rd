@@ -4,16 +4,25 @@
 \alias{run_prep}
 \title{Prepare data in \pkg{R/qtl} CSV file.}
 \usage{
-run_prep(datafile, jittermap = FALSE, normseq = FALSE,
-  replace.missing = FALSE, require.mapunit = FALSE,
-  include.mapunit = TRUE)
+run_prep(datafile, normseq = FALSE, estimap = FALSE, error.prob = 1e-04,
+  map.function = c("haldane", "kosambi", "c-f", "morgan"),
+  jittermap = FALSE, amount = 1e-06, replace.missing = FALSE,
+  require.mapunit = FALSE, include.mapunit = TRUE)
 }
 \arguments{
 \item{datafile}{\pkg{R/qtl} CSV file}
 
+\item{normseq}{normalise map sequence labels}
+
+\item{estimap}{estimate genetic map}
+
+\item{error.prob}{genotyping error rate}
+
+\item{map.function}{genetic map function}
+
 \item{jittermap}{jitter map positions}
 
-\item{normseq}{normalise map sequence labels}
+\item{amount}{jitter amount}
 
 \item{replace.missing}{make missing values explicit}
 
@@ -22,17 +31,34 @@ run_prep(datafile, jittermap = FALSE, normseq = FALSE,
 \item{include.mapunit}{include map units in output}
 }
 \description{
-This script will take an \pkg{R/qtl} input data file, and prepare it
-for input to \pkg{shmootl}. Possible prep actions include resolving
-map sequence labels (\code{'normseq'}), jittering map positions (with
-the \pkg{R/qtl} function \code{jittermap}), and replacing empty cells
-with an explicit missing value symbol (\code{'replace.missing'}). If
-no prep actions are specified, all are applied. Other options include
-\code{'require.mapunit'}, which indicates if the input file must contain
-explicit map units; and \code{'include.mapunit'}, which indicates if
-explicit map units should be included in the output file. It is the
-responsibility of the user to ensure that these changes are valid for
-a given input file.
+This script will take an \pkg{R/qtl} input data file, and
+prepare it for input to \pkg{shmootl}. Possible prep actions include
+resolving map sequence labels (\code{'normseq'}), estimating a new
+genetic map with the \pkg{R/qtl} function \code{'est.map'} (Broman
+\emph{et al.} 2003), jittering existing map positions with the
+\pkg{R/qtl} function \code{'jittermap'} (Broman \emph{et al.} 2003),
+and replacing empty cells with an explicit missing value symbol
+(\code{'replace.missing'}).
+
+If no prep actions are specified, map sequence labels are
+normalised; a genetic map is estimated if not found, otherwise the existing
+map is jittered; and empty cells are replaced with an explicit missing
+value. If one or more prep actions are specified, only the specified
+actions will be applied. It is the responsibility of the user to ensure
+that any changes are valid for a given input file.
+
+Aside from prep actions, other options include
+\code{'require.mapunit'}, which indicates if the input file
+must contain explicit map units; and \code{'include.mapunit'},
+which indicates if explicit map units should be included in
+the output file. Options \code{'error.prob'} and \code{'map.function'}
+are passed to the \pkg{R/qtl} function \code{'est.map'}, while option
+\code{'amount'} is passed to the \pkg{R/qtl} \code{'jittermap'} function.
+}
+\references{
+Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
+in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
 }
 \seealso{
 Other pipeline functions: \code{\link{run_annoqtl}},
