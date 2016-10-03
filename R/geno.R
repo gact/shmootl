@@ -203,10 +203,10 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     geno.matrix <- apply(geno.matrix, 2, as.numeric)
     
     # Get sample IDs or indices.
-    samples <- from[dat.rows, id.col]
+    samples <- as.character(from[dat.rows, id.col])
     if ( allNA(samples) ) {
         samples <- seq_along(samples)
-    } else if ( anyNA(samples) || any(samples == '') ) {
+    } else if ( anyNA(samples) || any( samples == '' ) ) {
         stop("ID column is incomplete in genotype data frame")
     }
     
