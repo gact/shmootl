@@ -24,7 +24,10 @@ run_estimap <- function(datafile, mapfile, n.cluster=1L, error.prob=0.0001,
     
     stopifnot( isSingleString(mapfile) )
     stopifnot( isSinglePositiveNumber(n.cluster) )
+    stopifnot( isSingleProbability(error.prob) )
     stopifnot( isBOOL(jittermap) )
+    
+    map.function <- match.arg(map.function)
     
     guess <- sniffCSV(datafile)
     
