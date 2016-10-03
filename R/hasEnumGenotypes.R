@@ -23,4 +23,12 @@ hasEnumGenotypes.cross <- function(x) {
     return( all( isEnumAllele( attr(x, 'alleles') ) ) )
 }
 
+# hasEnumGenotypes.geno --------------------------------------------------------
+#' @export
+#' @rdname hasEnumGenotypes
+hasEnumGenotypes.geno <- function(x) {
+    stopifnot( 'geno' %in% class(x) )
+    return( all( isEnumAllele( attr(x, 'alleles') ) ) )
+}
+
 # End of hasEnumGenotypes.R ####################################################
