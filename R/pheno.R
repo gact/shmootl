@@ -89,7 +89,15 @@ as.pheno.data.frame <- function(from) {
         # If 'id' column present, set vector of
         # sample IDs and remove from phenotypes..
         stopifnot( length(id.col) == 1 )
+        
         samples <- as.character(from[dat.rows, id.col])
+        
+        if ( allNA(samples) ) {
+            samples <- seq_along(samples)
+        } else if ( anyNA(samples) || any( samples == '' ) ) {
+            stop("ID column is incomplete in phenotype data frame")
+        }
+        
         phenotypes <- phenotypes[-id.col]
         
     } else {
