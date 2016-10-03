@@ -128,7 +128,7 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
         stop("second row of ID column must be blank")
     }
     
-    map.present <- from[3, id.col] == ''
+    map.present <- ! is.na(from[3, id.col]) && from[3, id.col] == ''
     
     # Get indices of initial rows.
     head.rows <- if (map.present) {1:3} else {1:2}
@@ -203,12 +203,11 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     geno.matrix <- apply(geno.matrix, 2, as.numeric)
     
     # Get sample IDs or indices.
-    if ( all(from[dat.rows, id.col] == '') ) {
-        samples <- getIndices(dat.rows)
-    } else if ( any(from[dat.rows, id.col] == '') ) {
+    samples <- from[dat.rows, id.col]
+    if ( allNA(samples) ) {
+        samples <- seq_along(samples)
+    } else if ( anyNA(samples) || any(samples == '') ) {
         stop("ID column is incomplete in genotype data frame")
-    } else {
-        samples <- from[dat.rows, id.col]
     }
     
     # Create map table from initial rows.
