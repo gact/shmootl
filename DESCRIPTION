@@ -1,5 +1,5 @@
 Package: shmootl
-Version: 0.1.0
+Version: 0.2.0
 Date: 2016-03-08
 Title: QTL Analysis Utilities for Yeast
 Authors@R: c(person("Thomas", "Walsh", role=c("aut", "cre"), email="tw164@le.ac.uk") )
