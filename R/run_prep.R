@@ -148,8 +148,10 @@ run_prep <- function(datafile, normseq=FALSE, estimap=FALSE, error.prob=0.0001,
                 gmap <- qtl::est.map(cross, error.prob=error.prob,
                     map.function=map.function, offset=0)
                 
-                # Jitter estimated genetic map.
-                gmap <- qtl::jittermap(gmap)
+                # If specified, ensure no coinciding markers.
+                if (actions['jittermap']) {
+                    gmap <- qtl::jittermap(gmap)
+                }
                 
                 # Set map positions in initial rows, making sure
                 # to include explicit map units, if specified.
