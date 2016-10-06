@@ -18,7 +18,6 @@ hasEnumGenotypes <- function(x) {
 #' @export
 #' @rdname hasEnumGenotypes
 hasEnumGenotypes.cross <- function(x) {
-    stopifnot( 'cross' %in% class(x) )
     stopifnot( attr(x, 'crosstype') == 'bc' ) # TODO: support other cross types
     return( all( isEnumAllele( attr(x, 'alleles') ) ) )
 }
@@ -27,7 +26,6 @@ hasEnumGenotypes.cross <- function(x) {
 #' @export
 #' @rdname hasEnumGenotypes
 hasEnumGenotypes.geno <- function(x) {
-    stopifnot( 'geno' %in% class(x) )
     return( all( isEnumAllele( attr(x, 'alleles') ) ) )
 }
 

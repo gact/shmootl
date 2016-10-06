@@ -18,7 +18,6 @@ hasFounderGenotypes <- function(x) {
 #' @export
 #' @rdname hasFounderGenotypes
 hasFounderGenotypes.cross <- function(x) {
-    stopifnot( 'cross' %in% class(x) )
     stopifnot( attr(x, 'crosstype') == 'bc' ) # TODO: support other cross types
     return( all( isFounderAllele( attr(x, 'alleles') ) ) )
 }
@@ -27,7 +26,6 @@ hasFounderGenotypes.cross <- function(x) {
 #' @export
 #' @rdname hasFounderGenotypes
 hasFounderGenotypes.geno <- function(x) {
-    stopifnot( 'geno' %in% class(x) )
     return( all( isFounderAllele( attr(x, 'alleles') ) ) )
 }
 
