@@ -1,34 +1,5 @@
 # Start of cross.R #############################################################
 
-# getIdColIndex ----------------------------------------------------------------
-#' Get sample ID column index.
-#' 
-#' Get the index of the sample ID column in the \code{cross} phenotype 
-#' \code{data.frame}. This is column with the heading \code{'ID'}
-#' (case-insensitive).
-#' 
-#' @param cross An \pkg{R/qtl} \code{cross} object.
-#' 
-#' @return Sample ID column index.
-#' 
-#' @export
-#' @family cross object functions
-#' @rdname getIdColIndex
-getIdColIndex <- function(cross) {
-    
-    stopifnot( 'cross' %in% class(cross) )
-    
-    id.col <- which( tolower( names(cross$pheno) ) == 'id' )
-    
-    if ( length(id.col) == 0 ) {
-        id.col <- NULL
-    } else if ( length(id.col) > 1 ) {
-        stop("multiple ID columns found")
-    }
-    
-    return(id.col)
-}
-
 # getFlankingPhenoColIndices ---------------------------------------------------
 #' Get flanking phenotype column indices.
 #' 

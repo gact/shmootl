@@ -308,6 +308,60 @@ getColIndices <- function(x) {
     return( if ( num.cols > 0 ) { 1:num.cols } else { integer() } )
 }
 
+# getIdColIndex ----------------------------------------------------------------
+#' Get sample ID column index.
+#' 
+#' Get the index of the sample ID column in the given object. For example,
+#' in a \code{cross} object, this is the column of the phenotype
+#' \code{data.frame} with the heading \code{'ID'} (case-insensitive). It can
+#' also be used to get the ID column index directly from a \code{data.frame},
+#' in which case the ID column is that which has heading \code{'ID'}
+#' (also case-insensitive).
+#' 
+#' @param x An object that may contain a sample ID column.
+#' 
+#' @return Sample ID column index.
+#' 
+#' @export
+#' @family cross object functions
+#' @rdname getIdColIndex
+getIdColIndex <- function(x) {
+    UseMethod('getIdColIndex', x)
+}
+
+# getIdColIndex.cross ----------------------------------------------------------
+#' @export
+#' @rdname getIdColIndex
+getIdColIndex.cross <- function(x) {
+    
+    id.col <- which( tolower( colnames(x$pheno) ) == 'id' )
+    
+    if ( length(id.col) == 0 ) {
+        id.col <- NULL
+    } else if ( length(id.col) > 1 ) {
+        stop("multiple ID columns found")
+    }
+    
+    return(id.col)
+}
+
+# getIdColIndex.data.frame -----------------------------------------------------
+#' @export
+#' @method getIdColIndex data.frame
+#' @rdname getIdColIndex
+getIdColIndex.data.frame <- function(x) {
+    
+    id.col <- which( tolower( colnames(x) ) == 'id' )
+    
+    if ( length(id.col) == 0 ) {
+        id.col <- NULL
+    } else if ( length(id.col) > 1 ) {
+        stop("multiple ID columns found")
+    }
+    
+    return(id.col)
+}
+
 # getIndices -------------------------------------------------------------------
 #' Get indices of object.
 #' 

@@ -4,10 +4,12 @@
 \alias{readCovarCSV}
 \title{Read covariate matrix from a CSV file.}
 \usage{
-readCovarCSV(infile)
+readCovarCSV(infile, cross = NULL)
 }
 \arguments{
 \item{infile}{Input CSV file path.}
+
+\item{cross}{An \pkg{R/qtl} \code{cross} object.}
 }
 \value{
 A numeric \code{matrix} of covariate data.
@@ -19,8 +21,14 @@ IDs are not included in the returned matrix, as \pkg{R/qtl} matches the
 covariate matrix row-by-row to the sample rows of the \code{cross} object.
 The contents of the input table do not need to be numeric, but they will be
 converted to numeric values when being read from file. For example, columns
-containing character values are read as factors, which are converted to their
-numeric representation.
+containing character values are read as factors, which are converted to
+their numeric representation.
+}
+\details{
+If a \code{cross} object is specified, the covariate matrix is matched
+sample-by-sample to the given \code{cross}; matching per-sample requires
+that sample IDs are included in both the covariate file and the given
+\code{cross} object.
 }
 \seealso{
 Other CSV functions: \code{\link{hasMapCSV}},

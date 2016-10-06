@@ -1,6 +1,6 @@
 # Start of csv.R ###############################################################
 
-# getMetadataCSV -------------------------------------------------------------
+# getMetadataCSV ---------------------------------------------------------------
 #' Get parameters of \pkg{R/qtl} input data.
 #' 
 #' Given the path to an \pkg{R/qtl} input CSV file, or a \code{data.frame}
@@ -220,10 +220,16 @@ hasMapCSV <- function(infile) {
 #' covariate matrix row-by-row to the sample rows of the \code{cross} object.
 #' The contents of the input table do not need to be numeric, but they will be
 #' converted to numeric values when being read from file. For example, columns
-#' containing character values are read as factors, which are converted to their
-#' numeric representation.
+#' containing character values are read as factors, which are converted to
+#' their numeric representation.
+#' 
+#' If a \code{cross} object is specified, the covariate matrix is matched
+#' sample-by-sample to the given \code{cross}; matching per-sample requires
+#' that sample IDs are included in both the covariate file and the given
+#' \code{cross} object.
 #' 
 #' @param infile Input CSV file path.
+#' @param cross An \pkg{R/qtl} \code{cross} object.
 #' 
 #' @return A numeric \code{matrix} of covariate data.
 #' 
@@ -232,7 +238,7 @@ hasMapCSV <- function(infile) {
 #' @importFrom utils read.csv
 #' @importFrom utils type.convert
 #' @rdname readCovarCSV
-readCovarCSV <- function(infile) {
+readCovarCSV <- function(infile, cross=NULL) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
@@ -246,10 +252,74 @@ readCovarCSV <- function(infile) {
     # Trim any blank rows/columns from the bottom/right, respectively.
     covar.table <- bstripBlankRows( rstripBlankCols(covar.table) )
     
-    # If 'id' column present, remove it from covariate table.
-    id.col <- which( tolower( colnames(covar.table) ) == 'id' )
-    if ( length(id.col) > 0 ) {
-        covar.table <- deleteColumn(covar.table, col.index=id.col)
+    # Get 'id' column of covariate table, if present.
+    covar.id.col <- getIdColIndex(covar.table)
+    
+    # Get copy of covariate table with any duplicate rows removed.
+    # NB: If each sample has consistent covariate data, this
+    # should also deduplicate the ID column, if present.
+    dedup.covar <- covar.table[ ! duplicated(covar.table), ]
+    
+    # If covariate table has an ID column, get vector of sample IDs, then
+    # check for duplicates that would indicate inconsistent covariate data.
+    if ( ! is.null(covar.id.col) ) {
+        
+        covar.ids <- as.character(dedup.covar[, covar.id.col])
+        
+        err.ids <- covar.ids[ duplicated(covar.ids) ]
+        if ( length(err.ids) > 0 ) {
+            stop("inconsistent covariate data for samples - '", toString(err.ids), "'")
+        }
+    }
+    
+    # If a cross object specified, try to match covariate data to cross.
+    if ( ! is.null(cross) ) {
+        
+        stopifnot( 'cross' %in% class(cross) )
+        
+        matchable = FALSE
+        
+        cross.id.col <- getIdColIndex(cross)
+        
+        # Check: cross object has sample IDs.
+        if ( ! is.null(cross.id.col) ) {
+            
+            # Get cross IDs.
+            cross.ids <- as.character(cross$pheno[, cross.id.col])
+            
+            # Define new covariate table.
+            covar.table <- data.frame( matrix( NA_character_,
+                nrow = length(cross.ids), ncol = ncol(covar.table) ),
+                stringsAsFactors = FALSE )
+            colnames(covar.table) <- colnames(dedup.covar)
+            
+            # Check: covariate table has a sample ID column.
+            if ( ! is.null(covar.id.col) ) {
+                
+                # Check: covariate sample IDs are a superset of the cross sample IDs.
+                if ( all( cross.ids %in% covar.ids ) ) {
+                    
+                    matchable = TRUE
+                    
+                    for ( i in seq_along(cross.ids) ) {
+                        j = which(covar.ids == cross.ids[i])
+                        covar.table[i, ] <- unlist(dedup.covar[j, ])
+                    }
+                }
+            }
+        }
+  
+        # If 'matchable' flag equals to false, then check whether
+        # have the same number between cross ID and covariate ID.
+        if ( ! matchable && qtl::nind(cross) != nrow(covar.table) ) {
+            stop("number of rows in covariate table (", nrow(covar.table),
+                ") does not match number of cross samples (", qtl::nind(cross), ")")
+        }
+    }
+    
+    # Remove 'id' column from covariate table, if present.
+    if ( ! is.null(covar.id.col) ) {
+        covar.table <- deleteColumn(covar.table, col.index=covar.id.col)
     }
     
     # Convert columns of covariate data-frame
