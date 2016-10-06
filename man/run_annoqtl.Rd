@@ -25,11 +25,11 @@ physical maps for the cross data.
 }
 \seealso{
 Other pipeline functions: \code{\link{run_digest}},
-  \code{\link{run_estimap}}, \code{\link{run_makecross}},
-  \code{\link{run_makegeno}}, \code{\link{run_prep}},
-  \code{\link{run_pullmap}}, \code{\link{run_pushmap}},
-  \code{\link{run_recode}}, \code{\link{run_report}},
-  \code{\link{run_scanone}}
+  \code{\link{run_estimap}}, \code{\link{run_interptimes}},
+  \code{\link{run_makecross}}, \code{\link{run_makegeno}},
+  \code{\link{run_prep}}, \code{\link{run_pullmap}},
+  \code{\link{run_pushmap}}, \code{\link{run_recode}},
+  \code{\link{run_report}}, \code{\link{run_scanone}}
 }
 \concept{
 shmootl:pipelines

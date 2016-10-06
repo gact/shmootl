@@ -68,6 +68,7 @@ Collate:
     'run_annoqtl.R'
     'run_digest.R'
     'run_estimap.R'
+    'run_interptimes.R'
     'run_makecross.R'
     'run_makegeno.R'
     'run_prep.R'

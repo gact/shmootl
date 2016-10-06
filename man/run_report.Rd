@@ -18,6 +18,7 @@ report of the results of the QTL analysis.
 \seealso{
 Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_digest}}, \code{\link{run_estimap}},
+  \code{\link{run_interptimes}},
   \code{\link{run_makecross}}, \code{\link{run_makegeno}},
   \code{\link{run_prep}}, \code{\link{run_pullmap}},
   \code{\link{run_pushmap}}, \code{\link{run_recode}},
