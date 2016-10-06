@@ -8,18 +8,22 @@
 \title{Get QTL intervals.}
 \usage{
 ## Generic method.
-getQTLIntervals(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...)
+getQTLIntervals(x, chr=NULL, ci.function=c('lodint', 'bayesint'), drop=1.5,
+    prob=0.95, expandtomarkers=FALSE, ...)
 
-\method{getQTLIntervals}{mapframe}(x, chr = NULL, drop = 1.5,
-  expandtomarkers = FALSE, threshold = NULL, alpha = NULL, fdr = NULL,
-  lodcolumn = NULL, qtl.peaks = NULL, ...)
+\method{getQTLIntervals}{mapframe}(x, chr = NULL, ci.function = c("lodint",
+  "bayesint"), drop = 1.5, prob = 0.95, expandtomarkers = FALSE,
+  threshold = NULL, alpha = NULL, fdr = NULL, lodcolumn = NULL,
+  qtl.peaks = NULL, ...)
 
-\method{getQTLIntervals}{qtl}(x, chr = NULL, drop = 1.5,
-  expandtomarkers = FALSE, qtl.indices = NULL, ...)
+\method{getQTLIntervals}{qtl}(x, chr = NULL, ci.function = c("lodint",
+  "bayesint"), drop = 1.5, prob = 0.95, expandtomarkers = FALSE,
+  qtl.indices = NULL, ...)
 
-\method{getQTLIntervals}{scanone}(x, chr = NULL, drop = 1.5,
-  expandtomarkers = FALSE, threshold = NULL, alpha = NULL, fdr = NULL,
-  lodcolumn = NULL, qtl.peaks = NULL, ...)
+\method{getQTLIntervals}{scanone}(x, chr = NULL, ci.function = c("lodint",
+  "bayesint"), drop = 1.5, prob = 0.95, expandtomarkers = FALSE,
+  threshold = NULL, alpha = NULL, fdr = NULL, lodcolumn = NULL,
+  qtl.peaks = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{scanone} or \code{qtl} object.}
@@ -27,9 +31,22 @@ getQTLIntervals(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...)
 \item{chr}{Vector indicating which sequences to consider. If no sequences
 are specified, QTL intervals are returned for all available sequences.}
 
-\item{drop}{LOD units that the LOD profile must drop to form the interval.}
+\item{ci.function}{Option to indicate which function should be used for
+estimating approximate confidence intervals for QTL location. Set to
+\code{'lodint'} for LOD support intervals (adjusting stringency with the
+\code{drop} parameter), or to \code{'bayesint'} for Bayesian credible
+intervals (adjusting stringency with the \code{prob} parameter). For more
+information on the QTL interval methods used, see functions \code{lodint} and
+\code{bayesint} in the \pkg{R/qtl} manual, as well as Section 4.5 of Broman
+and Sen (2009).}
 
-\item{expandtomarkers}{Expand the LOD interval to the nearest flanking 
+\item{drop}{LOD units that the LOD profile must drop to form the interval.
+This is used only if \code{ci.function} is set to \code{'lodint'}.}
+
+\item{prob}{Desired probability coverage for the Bayesian credible interval.
+This is used only if \code{ci.function} is set to \code{'bayesint'}.}
+
+\item{expandtomarkers}{Expand the LOD interval to the nearest flanking
 markers, or to the respective terminal loci.}
 
 \item{...}{Further arguments (see below).}
@@ -51,24 +68,43 @@ or an index \emph{with respect to the set of LOD columns}. If no LOD column
 is specified and one such column is found, that column is used by default; 
 otherwise a LOD column must be specified.}
 
-\item{qtl.peaks}{Locus \code{mapframe} indicating the location of the QTL 
-peaks in a \code{scanone} result. If not specified, these are found using 
-the LOD profile of the \code{scanone} object.}
+\item{qtl.peaks}{Locus \code{mapframe} indicating the location of the QTL
+peaks in a \code{scanone} result. If not specified, these are inferred
+from the LOD profile of the \code{scanone} object.}
 
-\item{qtl.indices}{In a \code{qtl} object, this option indicates the QTLs 
+\item{qtl.indices}{In a \code{qtl} object, this option indicates the QTLs
 for which a QTL interval should be returned.}
 }
 \value{
 An object of class \code{qtlintervals}, which is essentially a list
 of \code{data.frame} objects, each containing three rows of information about
-the lower QTL interval limit, QTL peak, and upper QTL interval limit, 
+the lower QTL interval limit, QTL peak, and upper QTL interval limit,
 respectively. Returns an empty \code{qtlintervals} object if there are no
 significant QTLs.
 }
 \description{
-Get QTL intervals.
+Given a specified LOD \code{threshold} and associated
+significance level \code{alpha} (or alternatively, false-discovery rate
+\code{fdr}), this function gets approximate QTL intervals for a given
+\code{scanone} object, or a \code{qtl} object with a \code{'lodprofile'}
+attribute (as output by \pkg{R/qtl} function \code{refineqtl}).
+}
+\author{
+Thomas Walsh <tw164@le.ac.uk>
+
+Yue Hu
+}
+\references{
+Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
+in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
+(\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
+
+Broman KW, Sen S (2009) \emph{A guide to QTL mapping with R/qtl.}
+New York: Springer. (\href{http://www.rqtl.org/book/}{Website})
 }
 \seealso{
+\href{http://www.rqtl.org/manual/qtl-manual.pdf}{R/qtl manual}
+
 Other QTL functions: \code{\link{estPhysicalPositions}},
   \code{\link{getQTLFeatures}}, \code{\link{getQTLPeaks}},
   \code{\link{plotQTLScanone}}

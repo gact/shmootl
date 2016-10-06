@@ -5,14 +5,23 @@
 #' 
 #' Read cross data from the specified cross input file, run a single QTL
 #' analysis using \pkg{R/qtl} \code{scanone} (Broman \emph{et al.} 2003),
-#' and write the results of that scan to the specified output file. If
-#' the input cross contains enumerated genotypes, marker regression is
+#' and write the results of that scan to the specified output file.
+#' 
+#' If the input cross contains enumerated genotypes, marker regression is
 #' performed regardless of the value of the \code{method} parameter.
 #' 
 #' LOD threshold stringency can be set through either the significance
 #' level (\code{alpha}), or the false-discovery rate (\code{fdr}), but
 #' not both. If neither is specified, a significance level \code{alpha}
 #' of \code{0.05} is used by default.
+#' 
+#' LOD interval estimation can be controlled with the \code{'ci.function'}
+#' parameter: set to \code{'lodint'} for LOD support intervals (adjusting
+#' stringency with the \code{'drop'} parameter), or to \code{'bayesint'}
+#' for Bayesian credible intervals (adjusting stringency with the \code{'prob'}
+#' parameter). For more information on the QTL interval methods used, see
+#' functions \code{'lodint'} and \code{'bayesint'} in the \pkg{R/qtl} manual,
+#' as well as Section 4.5 of Broman and Sen (2009).
 #' 
 #' @param infile input cross file
 #' @param h5file scan result file
@@ -25,12 +34,19 @@
 #' @param alpha significance level for LOD threshold
 #' @param fdr FDR for LOD threshold
 #' @param step step size for genotype probabilities
-#' @param error.prob genotyping error rate 
 #' @param map.function genetic map function
+#' @param error.prob genotyping error rate
+#' @param ci.function QTL interval function
+#' @param drop LOD support interval drop
+#' @param prob Bayesian credible interval probability
 #' @param acovfile additive covariates file
 #' @param icovfile interactive covariates file
 #' 
+#' @template author-thomas-walsh
+#' @template author-yue-hu
 #' @template ref-broman-2003
+#' @template ref-broman-2009
+#' @template seealso-rqtl-manual
 #' 
 #' @concept shmootl:pipelines
 #' @export
@@ -41,6 +57,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     method=c('em','imp','hk','ehk','mr','mr-imp','mr-argmax'), n.perm=1000L,
     n.cluster=1L, alpha=NA_real_, fdr=NA_real_, step=0, error.prob=0.0001,
     map.function=c('haldane','kosambi','c-f','morgan'),
+    ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
     acovfile=NA_character_, icovfile=NA_character_) {
     
     stopifnot( isSingleString(infile) )
@@ -165,8 +182,8 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         writeResultHDF5(pheno.perms, tmp, phenotypes[i])
         
         # Get significant QTL intervals.
-        qtl.intervals <- getQTLIntervals(pheno.result,
-            threshold=thresholds[i], alpha=alpha, fdr=fdr)
+        qtl.intervals <- getQTLIntervals(pheno.result, ci.function=ci.function,
+            drop=drop, prob=prob, threshold=thresholds[i], alpha=alpha, fdr=fdr)
         
         # Output any significant QTL intervals.
         if ( length(qtl.intervals) > 0 ) {

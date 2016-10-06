@@ -1,19 +1,35 @@
 # Start of getQTLIntervals.R ###################################################
 
-# TODO: implement optional Bayesian credible interval.
-
 # getQTLIntervals --------------------------------------------------------------
 #' Get QTL intervals.
-#'
-#' @usage 
+#' 
+#' @description Given a specified LOD \code{threshold} and associated
+#' significance level \code{alpha} (or alternatively, false-discovery rate
+#' \code{fdr}), this function gets approximate QTL intervals for a given
+#' \code{scanone} object, or a \code{qtl} object with a \code{'lodprofile'}
+#' attribute (as output by \pkg{R/qtl} function \code{refineqtl}).
+#' 
+#' @usage
 #' ## Generic method.
-#' getQTLIntervals(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...)
-#'
+#' getQTLIntervals(x, chr=NULL, ci.function=c('lodint', 'bayesint'), drop=1.5,
+#'     prob=0.95, expandtomarkers=FALSE, ...)
+#' 
 #' @param x A \code{scanone} or \code{qtl} object.
 #' @param chr Vector indicating which sequences to consider. If no sequences
 #' are specified, QTL intervals are returned for all available sequences.
+#' @param ci.function Option to indicate which function should be used for
+#' estimating approximate confidence intervals for QTL location. Set to
+#' \code{'lodint'} for LOD support intervals (adjusting stringency with the
+#' \code{drop} parameter), or to \code{'bayesint'} for Bayesian credible
+#' intervals (adjusting stringency with the \code{prob} parameter). For more
+#' information on the QTL interval methods used, see functions \code{lodint} and
+#' \code{bayesint} in the \pkg{R/qtl} manual, as well as Section 4.5 of Broman
+#' and Sen (2009).
 #' @param drop LOD units that the LOD profile must drop to form the interval.
-#' @param expandtomarkers Expand the LOD interval to the nearest flanking 
+#' This is used only if \code{ci.function} is set to \code{'lodint'}.
+#' @param prob Desired probability coverage for the Bayesian credible interval.
+#' This is used only if \code{ci.function} is set to \code{'bayesint'}.
+#' @param expandtomarkers Expand the LOD interval to the nearest flanking
 #' markers, or to the respective terminal loci.
 #' @param ... Further arguments (see below).
 #' @param threshold In a \code{scanone} or equivalent object, this indicates
@@ -25,38 +41,56 @@
 #' the false discovery rate (FDR) of the given threshold. (Mutually exclusive
 #' with \code{alpha}.)
 #' @template param-lodcolumn
-#' @param qtl.peaks Locus \code{mapframe} indicating the location of the QTL 
-#' peaks in a \code{scanone} result. If not specified, these are found using 
-#' the LOD profile of the \code{scanone} object.
-#' @param qtl.indices In a \code{qtl} object, this option indicates the QTLs 
-#' for which a QTL interval should be returned. 
+#' @param qtl.peaks Locus \code{mapframe} indicating the location of the QTL
+#' peaks in a \code{scanone} result. If not specified, these are inferred
+#' from the LOD profile of the \code{scanone} object.
+#' @param qtl.indices In a \code{qtl} object, this option indicates the QTLs
+#' for which a QTL interval should be returned.
 #'   
 #' @return An object of class \code{qtlintervals}, which is essentially a list
 #' of \code{data.frame} objects, each containing three rows of information about
-#' the lower QTL interval limit, QTL peak, and upper QTL interval limit, 
+#' the lower QTL interval limit, QTL peak, and upper QTL interval limit,
 #' respectively. Returns an empty \code{qtlintervals} object if there are no
 #' significant QTLs.
+#' 
+#' @template author-thomas-walsh
+#' @template author-yue-hu
+#' @template ref-broman-2003
+#' @template ref-broman-2009
+#' @template seealso-rqtl-manual
 #' 
 #' @export
 #' @family QTL functions
 #' @rdname getQTLIntervals
-getQTLIntervals <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, ...) {
+getQTLIntervals <- function(x, chr=NULL, ci.function=c('lodint', 'bayesint'),
+    drop=1.5, prob=0.95, expandtomarkers=FALSE, ...) {
     UseMethod('getQTLIntervals', x)
 }
 
 # getQTLIntervals.mapframe -----------------------------------------------------
 #' @export
 #' @rdname getQTLIntervals
-getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, 
-    threshold=NULL, alpha=NULL, fdr=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
+getQTLIntervals.mapframe <- function(x, chr=NULL,
+    ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
+    expandtomarkers=FALSE, threshold=NULL, alpha=NULL, fdr=NULL,
+    lodcolumn=NULL, qtl.peaks=NULL, ...) {
 
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
     stopifnot( isBOOL(expandtomarkers) )
     
-    # Init intervals.
-    intervals <- qtlintervals(drop=drop, threshold=threshold,
-        alpha=alpha, fdr=fdr)
+    ci.function <- match.arg(ci.function)
+    
+    # Ensure only relevant parameter is stored in `qtlintervals` object.
+    if ( ci.function == 'lodint' ) {
+        prob <- NULL
+    } else { # ci.function == 'bayesint'
+        drop <- NULL
+    }
+    
+    # Init `qtlintervals` object.
+    intervals <- qtlintervals(drop=drop, prob=prob,
+        threshold=threshold, alpha=alpha, fdr=fdr)
     
     # Set standard QTL interval indices.
     ci <- c(low=1, peak=2, high=3)
@@ -111,31 +145,69 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
     # indices of the lower limit, peak, and upper limit of a significant region.
     raw.intervals <- matrix( nrow=length(peak.indices), ncol=3, 
         dimnames=list(NULL, names(ci)) )
-
-    for ( i in getIndices(peak.indices) ) {
+    
+    # Estimate LOD support intervals, if specified..
+    if ( ci.function == 'lodint' ) {
         
-        # Init interval indices to peak index.
-        l <- u <- peak.index <- peak.indices[i]
-        
-        # Get sequence endpoint indices.
-        s <- as.character(x.seqs[peak.index])
-        seq.start <- index.ranges[[s]][1]
-        seq.end <- index.ranges[[s]][2]
-        
-        # Set LOD cutoff.
-        cutoff <- max( x$lod[peak.index] - drop, 0 )
-        
-        # Decrement lower limit within this sequence while LOD score meets cutoff.
-        while ( x$lod[l] >= cutoff && l > seq.start && ! is.na(x$lod[l-1]) ) { 
-            l <- l - 1 
+        for ( i in getIndices(peak.indices) ) {
+            
+            # Init interval indices to peak index.
+            l <- u <- peak.index <- peak.indices[i]
+            
+            # Get sequence endpoint indices.
+            peak.seq <- x.seqs[peak.index]
+            seq.start <- index.ranges[[peak.seq]][1]
+            seq.end <- index.ranges[[peak.seq]][2]
+            
+            # Set LOD cutoff.
+            cutoff <- max( x$lod[peak.index] - drop, 0 )
+            
+            # Decrement lower limit within this sequence while LOD score meets cutoff.
+            while ( x$lod[l] >= cutoff && l > seq.start && ! is.na(x$lod[l-1]) ) {
+                l <- l - 1
+            }
+            
+            # Increment upper limit within this sequence while LOD score meets cutoff.
+            while ( x$lod[u] >= cutoff && u < seq.end && ! is.na(x$lod[u+1]) ) {
+                u <- u + 1
+            }
+            
+            raw.intervals[i, ] <- c(l, peak.index, u)
         }
+    
+    # ..otherwise estimate Bayesian credible intervals.
+    } else { # ci.function == 'bayesint'
         
-        # Increment upper limit within this sequence while LOD score meets cutoff.
-        while ( x$lod[u] >= cutoff && u < seq.end && ! is.na(x$lod[u+1]) ) { 
-            u <- u + 1 
+        for ( i in getIndices(peak.indices) ) {
+            
+            # Init interval indices to peak index.
+            l <- u <- peak.index <- peak.indices[i]
+            
+            # Get sequence endpoint indices.
+            peak.seq <- x.seqs[peak.index]
+            seq.start <- index.ranges[[peak.seq]][1]
+            seq.end <- index.ranges[[peak.seq]][2]
+            
+            # Call R/qtl function to do Bayesian credible interval.
+            bayes.interval <- qtl::bayesint(results=x, chr=peak.seq,
+                qtl.index=1, prob=prob, expandtomarkers=FALSE)
+            
+            # Decrement lower limit within this sequence until position matches
+            # Bayesian interval lower endpoint (within numeric tolerance).
+            while ( ! isTRUE( all.equal(x$lod[l], bayes.interval$pos[1]) ) &&
+                l > seq.start && ! is.na(x$lod[l-1]) ) {
+                l <- l - 1
+            }
+            
+            # Increment upper limit within this sequence until position matches
+            # Bayesian interval upper endpoint (within numeric tolerance).
+            while ( ! isTRUE( all.equal(x$lod[u], bayes.interval$pos[3]) ) &&
+                u < seq.end && ! is.na(x$lod[u+1]) ) {
+                u <- u + 1
+            }
+            
+            raw.intervals[i, ] <- c(l, peak.index, u)
         }
-        
-        raw.intervals[i, ] <- c(l, peak.index, u)
     }
 
     # Create matrix of merged intervals, formed by combining overlapping raw intervals.
@@ -256,8 +328,11 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALS
 # getQTLIntervals.qtl ----------------------------------------------------------
 #' @export
 #' @rdname getQTLIntervals
-getQTLIntervals.qtl <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE, 
-    qtl.indices=NULL, ...) {
+getQTLIntervals.qtl <- function(x, chr=NULL,
+    ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
+    expandtomarkers=FALSE, qtl.indices=NULL, ...) {
+    
+    ci.function <- match.arg(ci.function)
     
     # NB: if you're thinking of assuming QTL-object 
     # sequences are in order, DON'T!
@@ -286,15 +361,20 @@ getQTLIntervals.qtl <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
     intervals <- list( length(qtl.peaks) )
     for ( i in getIndices(qtl.peaks) ) {
         lod.profile <- getLODProfile(x, qtl.index=qtl.indices[i])
-        interval.result <- getQTLIntervals(lod.profile, drop=drop,
-            expandtomarkers=expandtomarkers, qtl.peaks=qtl.peaks[[i]])
+        interval.result <- getQTLIntervals(lod.profile, ci.function=ci.function,
+            drop=drop, prob=prob, expandtomarkers=expandtomarkers,
+            qtl.peaks=qtl.peaks[[i]])
         intervals[[i]] <- interval.result[[1]]
         names(intervals)[i] <- names(interval.result)[1]
     }
     
     class(intervals) <- c('qtlintervals', 'list')
     
-    attr(intervals, 'drop') <- drop
+    if ( ci.function == 'lodint' ){
+        attr(intervals, 'drop') <- drop
+    } else { # ci.function == 'bayesint'
+        attr(intervals, 'prob') <- prob
+    }
     
     return(intervals)
 }
@@ -302,11 +382,14 @@ getQTLIntervals.qtl <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
 # getQTLIntervals.scanone ------------------------------------------------------
 #' @export
 #' @rdname getQTLIntervals
-getQTLIntervals.scanone <- function(x, chr=NULL, drop=1.5, expandtomarkers=FALSE,
-    threshold=NULL, alpha=NULL, fdr=NULL, lodcolumn=NULL, qtl.peaks=NULL, ...) {
-    return( getQTLIntervals(as.mapframe(x), chr=chr, threshold=threshold,
-        drop=drop, expandtomarkers=expandtomarkers, alpha=alpha, fdr=fdr,
-        lodcolumn=lodcolumn, qtl.peaks=qtl.peaks) )
+getQTLIntervals.scanone <- function(x, chr=NULL,
+    ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
+    expandtomarkers=FALSE, threshold=NULL, alpha=NULL, fdr=NULL,
+    lodcolumn=NULL, qtl.peaks=NULL, ...) {
+    return( getQTLIntervals(as.mapframe(x), chr=chr, ci.function=ci.function,
+        drop=drop, prob=prob, expandtomarkers=expandtomarkers,
+        threshold=threshold, alpha=alpha, fdr=fdr, lodcolumn=lodcolumn,
+        qtl.peaks=qtl.peaks) )
 }
     
 # End of getQTLIntervals.R #####################################################

@@ -100,6 +100,11 @@ hasPhysicalPositions <- function(qtl.intervals) {
 #' can only create a \code{qtlintervals} object of length zero.
 #' 
 #' @param drop LOD units that the LOD profile must drop to form a QTL interval.
+#' This should only be specified if the QTL intervals are LOD support intervals,
+#' and is incompatible with the \code{prob} parameter.
+#' @param prob The probability coverage of the Bayesian credible interval.
+#' This should only be specified if the QTL intervals are Bayesian credible
+#' intervals, and is incompatible with the \code{drop} parameter.
 #' @param threshold LOD significance threshold for QTL intervals.
 #' @param alpha Significance level of QTL intervals threshold. (Mutually
 #' exclusive with \code{fdr}.)
@@ -109,9 +114,13 @@ hasPhysicalPositions <- function(qtl.intervals) {
 #' 
 #' @return An empty \code{qtlintervals} list with the given attributes.
 #' 
+#' @template author-thomas-walsh
+#' @template author-yue-hu
+#' 
 #' @keywords internal
 #' @rdname qtlintervals
-qtlintervals <- function(drop=NULL, threshold=NULL, alpha=NULL, fdr=NULL, ...) {
+qtlintervals <- function(drop=NULL, prob=NULL, threshold=NULL, alpha=NULL,
+    fdr=NULL, ...) {
     
     # TODO: create full qtlintervals object
     
@@ -119,9 +128,15 @@ qtlintervals <- function(drop=NULL, threshold=NULL, alpha=NULL, fdr=NULL, ...) {
     
     intervals <- list()
     
-    if ( ! is.null(drop) ) {
+    if ( ! is.null(drop) && ! is.null(prob) ) {
+        stop("cannot set both LOD support interval drop",
+            "and Bayesian credible interval probability")
+    } else if ( ! is.null(drop) ) { # LOD support interval
         stopifnot( isSingleNonNegativeNumber(drop) )
         attr(intervals, 'drop') <- drop
+    } else if ( ! is.null(prob) ) { # Bayes credible interval
+        stopifnot( isSingleProbability(prob) )
+        attr(intervals, 'prob') <- prob
     }
     
     if ( ! is.null(threshold) ) {

@@ -10,6 +10,7 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
   "mr-argmax"), n.perm = 1000L, n.cluster = 1L, alpha = NA_real_,
   fdr = NA_real_, step = 0, error.prob = 1e-04,
   map.function = c("haldane", "kosambi", "c-f", "morgan"),
+  ci.function = c("lodint", "bayesint"), drop = 1.5, prob = 0.95,
   acovfile = NA_character_, icovfile = NA_character_)
 }
 \arguments{
@@ -39,6 +40,12 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
 
 \item{map.function}{genetic map function}
 
+\item{ci.function}{QTL interval function}
+
+\item{drop}{LOD support interval drop}
+
+\item{prob}{Bayesian credible interval probability}
+
 \item{acovfile}{additive covariates file}
 
 \item{icovfile}{interactive covariates file}
@@ -46,22 +53,41 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
 \description{
 Read cross data from the specified cross input file, run a single QTL
 analysis using \pkg{R/qtl} \code{scanone} (Broman \emph{et al.} 2003),
-and write the results of that scan to the specified output file. If
-the input cross contains enumerated genotypes, marker regression is
-performed regardless of the value of the \code{method} parameter.
+and write the results of that scan to the specified output file.
 }
 \details{
+If the input cross contains enumerated genotypes, marker regression is
+performed regardless of the value of the \code{method} parameter.
+
 LOD threshold stringency can be set through either the significance
 level (\code{alpha}), or the false-discovery rate (\code{fdr}), but
 not both. If neither is specified, a significance level \code{alpha}
 of \code{0.05} is used by default.
+
+LOD interval estimation can be controlled with the \code{'ci.function'}
+parameter: set to \code{'lodint'} for LOD support intervals (adjusting
+stringency with the \code{'drop'} parameter), or to \code{'bayesint'}
+for Bayesian credible intervals (adjusting stringency with the \code{'prob'}
+parameter). For more information on the QTL interval methods used, see
+functions \code{'lodint'} and \code{'bayesint'} in the \pkg{R/qtl} manual,
+as well as Section 4.5 of Broman and Sen (2009).
+}
+\author{
+Thomas Walsh <tw164@le.ac.uk>
+
+Yue Hu
 }
 \references{
 Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
 in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
 (\href{http://www.ncbi.nlm.nih.gov/pubmed/12724300}{PubMed})
+
+Broman KW, Sen S (2009) \emph{A guide to QTL mapping with R/qtl.}
+New York: Springer. (\href{http://www.rqtl.org/book/}{Website})
 }
 \seealso{
+\href{http://www.rqtl.org/manual/qtl-manual.pdf}{R/qtl manual}
+
 Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_digest}}, \code{\link{run_estimap}},
   \code{\link{run_interptimes}},

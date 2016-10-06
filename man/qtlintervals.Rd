@@ -4,11 +4,17 @@
 \alias{qtlintervals}
 \title{Create a \code{qtlintervals} object.}
 \usage{
-qtlintervals(drop = NULL, threshold = NULL, alpha = NULL, fdr = NULL,
-  ...)
+qtlintervals(drop = NULL, prob = NULL, threshold = NULL, alpha = NULL,
+  fdr = NULL, ...)
 }
 \arguments{
-\item{drop}{LOD units that the LOD profile must drop to form a QTL interval.}
+\item{drop}{LOD units that the LOD profile must drop to form a QTL interval.
+This should only be specified if the QTL intervals are LOD support intervals,
+and is incompatible with the \code{prob} parameter.}
+
+\item{prob}{The probability coverage of the Bayesian credible interval.
+This should only be specified if the QTL intervals are Bayesian credible
+intervals, and is incompatible with the \code{drop} parameter.}
 
 \item{threshold}{LOD significance threshold for QTL intervals.}
 
@@ -26,6 +32,11 @@ An empty \code{qtlintervals} list with the given attributes.
 \description{
 This function creates a \code{qtlintervals} object. Currently it
 can only create a \code{qtlintervals} object of length zero.
+}
+\author{
+Thomas Walsh <tw164@le.ac.uk>
+
+Yue Hu
 }
 \keyword{internal}
 
