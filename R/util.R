@@ -1468,13 +1468,21 @@ loadVector <- function(line=NULL, file=NULL, type=NULL) {
 
 # makeDefaultMarkerIDs ---------------------------------------------------------
 #' Make default marker IDs for loci.
-#'   
+#' 
+#' @description This function creates marker IDs from locus \code{data.frame}
+#' \code{'loc'}, and validates that each locus has a map position that
+#' is within range for the given reference sequence/chromosome. If any
+#' locus position is found to be out-of-range, then it will stop with
+#' an error message.
+#' 
 #' @param loc Locus \code{data.frame}, with columns \code{'chr'} and
 #' \code{'pos'}, specifying physical map positions.
 #' @param sep Separator between the two parts of a default marker ID.
 #'      
 #' @return Character vector of default marker IDs.
 #' 
+#' @template author-thomas-walsh
+#' @template author-yue-hu
 #' @template section-default-marker-ids
 #' 
 #' @export
@@ -1503,8 +1511,10 @@ makeDefaultMarkerIDs <- function(loc, sep=c(':', '-')) {
     loc.seqs <- normSeq( pullLocusSeq(loc) )
     loc.pos <- pullLocusPos(loc)
     
-    # TODO: validate positions from genome sequence lengths.
-    exrange <- loc.pos[ loc.pos < 1 | loc.pos > 9999999 ]
+    # Validate positions from genome sequence lengths.
+    seqtab <- getSeqTable()
+    loc.seq.lengths <- seqtab$seqlengths[ match(loc.seqs,seqtab$seqids) ]
+    exrange <- loc.pos[ loc.pos < 1 | loc.pos > loc.seq.lengths ]
     if ( length(exrange) > 0 ) {
         stop("cannot make default marker IDs for positions '", toString(exrange), "'")
     }

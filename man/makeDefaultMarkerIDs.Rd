@@ -16,7 +16,11 @@ makeDefaultMarkerIDs(loc, sep = c(":", "-"))
 Character vector of default marker IDs.
 }
 \description{
-Make default marker IDs for loci.
+This function creates marker IDs from locus \code{data.frame}
+\code{'loc'}, and validates that each locus has a map position that
+is within range for the given reference sequence/chromosome. If any
+locus position is found to be out-of-range, then it will stop with
+an error message.
 }
 \section{Default Marker IDs}{
 
@@ -27,5 +31,10 @@ ID is available. These are of the form \code{'c04:0108900'}, where
 is a zero-padded seven-digit number giving the physical map position of the
 given locus (i.e. the nucleotide position of the locus in the reference
 sequence).
+}
+\author{
+Thomas Walsh <tw164@le.ac.uk>
+
+Yue Hu
 }
 
