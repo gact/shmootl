@@ -339,7 +339,7 @@ summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.0
     
     # Get counts of above-threshold loci in scanone and permutations.
     perm.counts <- scan.counts <- rep_len(0, num.bins)
-    for ( i in getIndices(thresholds) ) {
+    for ( i in seq_along(thresholds) ) {
         perm.counts[i] <- sum(object[, i:num.bins, ])
         scan.counts[i] <- sum(scan.bins[, i:num.bins, ])
     }

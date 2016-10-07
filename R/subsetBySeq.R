@@ -69,7 +69,7 @@ subsetBySeq.qtlintervals <- function(x, sequences=NULL) {
         
         interval.seqs <- sapply(x, function(obj) unique(obj[, 'chr']))
         
-        for ( i in rev( getIndices(x) ) ) { # NB: must delete in reverse order
+        for ( i in rev( seq_along(x) ) ) { # NB: must delete in reverse order
             if ( ! interval.seqs[i] %in% sequences ) {
                 x[i] <- NULL
             }

@@ -465,7 +465,7 @@ setMethod('getPhenotypeIndices', signature='CrossInfo',
     
     } else {
         
-        indices <- getIndices(cross.info@pheno)
+        indices <- seq_along(cross.info@pheno)
     }
         
     return(indices)
@@ -832,7 +832,7 @@ setMethod('getSeqIndices', signature='CrossInfo',
       
     } else {
       
-        indices <- getIndices(cross.info@seq)
+        indices <- seq_along(cross.info@seq)
     }
   
     return(indices) 
@@ -1325,7 +1325,7 @@ setMethod('setSamples', signature='CrossInfo', definition =
                   
     stopif( missing(samples) )
     
-    indices <- getIndices(samples)
+    indices <- seq_along(samples)
         
     if ( is.character(samples) ) {
       

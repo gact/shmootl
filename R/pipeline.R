@@ -82,7 +82,7 @@ getPipelineInfo <- function(pipeline) {
             help = character(n.params)
         )
         
-        for ( i in getIndices(params) ) {
+        for ( i in seq_along(params) ) {
             names(params[[i]]) <- def.params
         }
         
@@ -298,7 +298,7 @@ getPipelineInfo <- function(pipeline) {
         }
         
         # Set parameter help doc string.
-        for ( i in getIndices(item.indices) ) {
+        for ( i in seq_along(item.indices) ) {
             
             # Get parameter item index.
             item.index <- item.indices[i]
@@ -475,7 +475,7 @@ prepPipelineArgparser <- function(pipeline) {
     # Add any parameters to the argument parser.
     if ( ! is.null(pinfo$params) ) {
         
-        for ( i in getIndices(pinfo$params$arg) ) {
+        for ( i in seq_along(pinfo$params$arg) ) {
             
             ap <- argparser::add_argument(ap,
                 arg   = pinfo$params$arg[i],

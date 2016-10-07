@@ -164,7 +164,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     status <- logical( length(phenotypes) )
     
     # Output results of single QTL analysis for each phenotype.
-    for ( i in getIndices(phenotypes) ) {
+    for ( i in seq_along(phenotypes) ) {
         
         # Output scan result for this phenotype.
         pheno.result <- getLODProfile(scanone.result, lodcolumn=i)

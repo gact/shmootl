@@ -82,7 +82,7 @@ getPhenoColIndices <- function(cross, pheno.col=NULL) {
             indices <- vector('integer', length(pheno.col))
             pheno.names <- names(cross$pheno)
             
-            for ( i in getIndices(pheno.col) ) {
+            for ( i in seq_along(pheno.col) ) {
                 
                 p <- pheno.col[i]
                 
@@ -387,7 +387,7 @@ inferTetradIndices.character <- function(x) {
         
         # Get sample tetrad indices.
         sample.tindices <- integer( length=length(x) )
-        for ( i in getIndices(tetrad.xindices) ) {
+        for ( i in seq_along(tetrad.xindices) ) {
             tetrad.sindices <- unlist( replicate.sindices[ tetrad.xindices[[i]] ] )
             sample.tindices[tetrad.sindices] <- i
         }

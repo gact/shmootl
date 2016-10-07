@@ -424,7 +424,7 @@ h5writeAttributes <- function(x, h5obj) {
             
             stopifnot( 'dim' %in% names(attr.list) )
             
-            exp.keys <- paste0( 'dimnames.', c('names', getIndices(attr.list[['dim']]) ) )
+            exp.keys <- paste0( 'dimnames.', c('names', seq_along(attr.list[['dim']]) ) )
          
             if ( any( exp.keys %in% names(attr.list) ) ) {
                 stop("cannot split 'dimnames' without overwriting existing attributes")
@@ -455,7 +455,7 @@ h5writeAttributes <- function(x, h5obj) {
         }
         
         # Write attributes.
-        for ( i in getIndices(attr.list) ) {
+        for ( i in seq_along(attr.list) ) {
             rhdf5::h5writeAttribute(h5obj=h5obj, name=names(attr.list)[i], 
                 attr=attr.list[[i]])
         }
@@ -597,7 +597,7 @@ makeGroupObjectNames <- function(group.names=NULL, group.size=NULL) {
             stopifnot( group.size == length(group.names) )
         }
         
-        group.indices <- getIndices(group.names)
+        group.indices <- seq_along(group.names)
         
         m <- regexec(const$pattern$h5element, group.names)
         matches <- regmatches(group.names, m)
@@ -719,7 +719,7 @@ readDatasetHDF5.default <- function(infile, h5name, ...) {
         
         dataset.dimnames <- vector( 'list', length(dims) )
         
-        for ( i in getIndices(dims) ) {
+        for ( i in seq_along(dims) ) {
             
             attr.key <- paste0('dimnames.', i)
             
@@ -963,7 +963,7 @@ readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
     attr(dataset, 'R.colClasses') <- NULL # currently unused
     attr(dataset, 'R.class') <- NULL
     
-    for ( i in getIndices(dataset) ) {
+    for ( i in seq_along(dataset) ) {
         
         colnames(dataset[[i]]) <- attr(dataset, 'phenotypes')
     }
@@ -1329,7 +1329,7 @@ writeDatasetHDF5.list <- function(dataset, outfile, h5name, ...) {
     child.names <- makeGroupObjectNames( group.names=names(dataset), 
         group.size=length(dataset) )
     
-    for ( i in getIndices(dataset) ) {
+    for ( i in seq_along(dataset) ) {
         
         child.h5name <- joinH5ObjectNameParts( c(h5name, child.names[i]) )
         

@@ -66,7 +66,7 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
     geno.matrix <- do.call(cbind, lapply(x, function(obj) obj$data))
     
     # Replace encoded genotypes with actual genotype values.
-    for ( i in getIndices(genotypes) ) {
+    for ( i in seq_along(genotypes) ) {
         geno.matrix[ geno.matrix == i ] <- genotypes[i]
     }
     
@@ -197,7 +197,7 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     
     # Convert genotype character matrix to a numeric matrix, with
     # genotype numbers assigned to corresponding genotype symbols.
-    for ( i in getIndices(genotypes) ) {
+    for ( i in seq_along(genotypes) ) {
         geno.matrix[ geno.matrix == genotypes[i] ] <- i
     }
     geno.matrix <- apply(geno.matrix, 2, as.numeric)
@@ -324,7 +324,7 @@ makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
         
     } else {
         
-        alleles <- const$founder.allele.charset[ getIndices(y.samples) ]
+        alleles <- const$founder.allele.charset[ seq_along(y.samples) ]
     }
     
     # Get genotype loci common to samples and founders.
@@ -401,7 +401,7 @@ makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
         # Assign locus genotypes from matching founder.
         if ( length(x.genotypes) > 1 ) {
             if ( all( x.genotypes %in% y.genotypes ) ) {
-                for ( i in getIndices(y.genotypes) ) {
+                for ( i in seq_along(y.genotypes) ) {
                     geno.matrix[ x.symbols == y.genotypes[i], j ] <- i
                 }
             }

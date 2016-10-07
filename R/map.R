@@ -488,7 +488,7 @@ findFlanking.map <- function(x, loc, expandtomarkers=FALSE) {
         # If expanding to markers, create mask in which
         # markers and sequence endpoints are TRUE..
         loc.mask <- isMarkerID( names(seq.pos) ) |
-            getIndices(seq.pos) %in% c(1, length(seq.pos))
+            seq_along(seq.pos) %in% c(1, length(seq.pos))
     } else {
         # ..otherwise create mask with all TRUE.
         loc.mask <- rep_len( TRUE, length(seq.pos) )
@@ -594,7 +594,7 @@ findFlankingRowIndices <- function(x, loc, expandtomarkers=FALSE) {
         # If expanding to markers and mapframe has locus IDs, create
         # a mask in which markers and sequence endpoints are TRUE..
         loc.mask <- isMarkerID(rownames(x)[indices]) |
-            getIndices(seq.pos) %in% c( 1, length(seq.pos) )
+            seq_along(seq.pos) %in% c( 1, length(seq.pos) )
     } else {
         # ..otherwise create mask with all TRUE.
         loc.mask <- rep_len( TRUE, length(seq.pos) )
@@ -767,7 +767,7 @@ getDatColIndices <- function(x, datcolumns=NULL, strict=FALSE) {
             
             if ( isWholeNumber(datcolumns) ) {
                 
-                available.datcolumns <- getIndices(datcol.indices)
+                available.datcolumns <- seq_along(datcol.indices)
                 
                 exrange <- datcolumns[ ! inRange( datcolumns, range(available.datcolumns) ) ]
                 if ( length(exrange) > 0 ) {
@@ -990,7 +990,7 @@ getMapUnitSuffix <- function(x) {
         
         # For each locus, get column indices of
         # first matching genetic map pattern.
-        unit.indices <- unique( sapply(getIndices(positions), function(i)
+        unit.indices <- unique( sapply(seq_along(positions), function(i)
             match(TRUE, pos.matrix[i, ]) ) )
         
         if ( length(unit.indices) == 1 ) {
@@ -1021,7 +1021,7 @@ getMapUnitSuffix <- function(x) {
             
             # For each locus, get column indices of first matching genetic
             # map pattern. NB: must check in order (Mb > kb > bp).
-            unit.indices <- unique( sapply(getIndices(positions), function(i)
+            unit.indices <- unique( sapply(seq_along(positions), function(i)
                 match(TRUE, pos.matrix[i, ])) )
             
             if ( length(unit.indices) == 1 ) {
@@ -1995,7 +1995,7 @@ matchSeqRowIndices <- function(x, sequences, simplify=FALSE) {
         x.seqs <- pullLocusSeq(x)
         
         index.list <- vector('list', length(sequences))
-        for ( i in getIndices(sequences) ) {
+        for ( i in seq_along(sequences) ) {
             index.list[[i]] <- which( x.seqs == norm.seqs[i] )
         }
         
@@ -2051,7 +2051,7 @@ orderMap.map <- function(x) {
     x <- subsetMap( x, sortSeq( names(x) ) )
     
     # Sort map positions.
-    for ( i in getIndices(x) ) {
+    for ( i in seq_along(x) ) {
         x[[i]] <- sort.int(x[[i]])
     }
     
@@ -2113,7 +2113,7 @@ pullLocusSeq.list <- function(x) {
 #' @method pullLocusSeq map
 #' @rdname pullLocusSeq
 pullLocusSeq.map <- function(x) {
-    return( unlist( lapply( getIndices(x), function(i)
+    return( unlist( lapply( seq_along(x), function(i)
         rep_len(names(x)[i], length(x[[i]])) ) ) )
 }
 

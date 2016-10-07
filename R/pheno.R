@@ -102,7 +102,7 @@ as.pheno.data.frame <- function(from) {
         
     } else {
         # ..otherwise set vector of sample indices.
-        samples <- getIndices(dat.rows)
+        samples <- seq_along(dat.rows)
     }
     
     # Check for blank phenotypes.

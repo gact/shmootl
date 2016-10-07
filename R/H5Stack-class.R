@@ -351,7 +351,7 @@ setValidity('H5Stack', function(object) {
             
             for ( split.name in split.names ) {
                 
-                if ( any(split.name != last.split.name[getIndices(split.name)]) ) {
+                if ( any(split.name != last.split.name[seq_along(split.name)]) ) {
                     stop("H5Stack names must match")
                 }
             }

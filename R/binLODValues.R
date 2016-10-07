@@ -69,7 +69,7 @@ binLODValues <- function(x, lodcolumns=NULL) {
     
     num.bins <- length(bin.labels)
     
-    for ( i in getIndices(lod.bin.list) ) {
+    for ( i in seq_along(lod.bin.list) ) {
         length(lod.bin.list[[i]]) <- num.bins
     }
     

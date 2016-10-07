@@ -89,7 +89,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
         stopifnot( is.character(samples) )
         stopifnot( length(samples) > 0 )
         
-        for ( i in getIndices(infiles) ) {
+        for ( i in seq_along(infiles) ) {
             sample.list[[i]] <- sample.list[[i]][ sample.list[[i]] %in% samples ]
         }
         
@@ -143,7 +143,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
     geno.memo <- list()
     
     # Read SNP genotypes from each input VCF file.
-    for ( i in getIndices(infiles) ) {
+    for ( i in seq_along(infiles) ) {
         
         file.samples <- sample.list[[i]]
         infile <- infiles[[i]]
@@ -251,7 +251,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
                 
                 # Create matrix of allele indices, set alleles (or missing values).
                 allele.matrix <- matrix(unlist(allele.list), ncol=ploidy, byrow=TRUE)
-                for ( a in getIndices(variant.alleles) ) {
+                for ( a in seq_along(variant.alleles) ) {
                     allele.matrix[ allele.matrix == a ] <- variant.alleles[a]
                 }
                 allele.matrix[ is.na(allele.matrix) ] <- const$missing.value
@@ -293,7 +293,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
             
             # Calculate error probability for each sample genotype
             # from converted variant/genotype quality scores.
-            qual.matrix <- sapply( getIndices(variant.error.probs), function(i)
+            qual.matrix <- sapply( seq_along(variant.error.probs), function(i)
                 variant.error.probs[i] + genotype.error.probs[i, ])
             
             # If qual matrix simplified, restore to matrix.
@@ -305,7 +305,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
             qual.matrix[ is.na(qual.matrix) ] <- const$qual$prob$range[2]
             
             # Clamp quality scores within range of error probabilities.
-            qual.matrix <- sapply(getIndices(file.snps), function(i)
+            qual.matrix <- sapply(seq_along(file.snps), function(i)
                 clamp(qual.matrix[, i], const$qual$prob$range))
             
             # If qual matrix simplified, restore to matrix.
@@ -344,7 +344,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
         # Set combined variant data from each input file.
         # NB: we previously checked for duplicate samples and coinciding
         # variants, so we can assume that there will be no conflicts.
-        for ( i in getIndices(snps) ) {
+        for ( i in seq_along(snps) ) {
             for ( slice in slices ) {
                 for ( sample.id in rownames(snps[[i]]) ) {
                     for ( snp.id in colnames(snps[[i]]) ) {

@@ -149,7 +149,7 @@ getQTLIntervals.mapframe <- function(x, chr=NULL,
     # Estimate LOD support intervals, if specified..
     if ( ci.function == 'lodint' ) {
         
-        for ( i in getIndices(peak.indices) ) {
+        for ( i in seq_along(peak.indices) ) {
             
             # Init interval indices to peak index.
             l <- u <- peak.index <- peak.indices[i]
@@ -178,7 +178,7 @@ getQTLIntervals.mapframe <- function(x, chr=NULL,
     # ..otherwise estimate Bayesian credible intervals.
     } else { # ci.function == 'bayesint'
         
-        for ( i in getIndices(peak.indices) ) {
+        for ( i in seq_along(peak.indices) ) {
             
             # Init interval indices to peak index.
             l <- u <- peak.index <- peak.indices[i]
@@ -359,7 +359,7 @@ getQTLIntervals.qtl <- function(x, chr=NULL,
     
     # Get QTL intervals corresponding to QTL peaks.
     intervals <- list( length(qtl.peaks) )
-    for ( i in getIndices(qtl.peaks) ) {
+    for ( i in seq_along(qtl.peaks) ) {
         lod.profile <- getLODProfile(x, qtl.index=qtl.indices[i])
         interval.result <- getQTLIntervals(lod.profile, ci.function=ci.function,
             drop=drop, prob=prob, expandtomarkers=expandtomarkers,

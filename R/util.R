@@ -362,22 +362,6 @@ getIdColIndex.data.frame <- function(x) {
     return(id.col)
 }
 
-# getIndices -------------------------------------------------------------------
-#' Get indices of object.
-#' 
-#' @param x An object with length.
-#'     
-#' @return Integer vector of all object indices. Returns an empty integer vector
-#' if the object does not have length.
-#'    
-#' @keywords internal
-#' @rdname getIndices
-getIndices <- function(x) {
-    object.length <- length(x)
-    stopifnot( isSingleNonNegativeWholeNumber(object.length) )
-    return( if ( object.length > 0 ) { 1:object.length } else { integer() } )
-}
-
 # getMissingValueFromClassS3 ---------------------------------------------------
 #' Get missing value for the given class.
 #' 
@@ -663,7 +647,7 @@ inferStepSize <- function(steps, tol=.Machine$double.eps^0.5) {
     
     # Merge similar step values.
     merged.freq <- integer( length=length(size.groups) )
-    for ( i in getIndices(size.groups) ) {
+    for ( i in seq_along(size.groups) ) {
         g <- unlist(size.groups[i])
         merged.freq[i] <- sum(step.freq[g])
         names(merged.freq)[i] <- names( sort(step.freq[g], decreasing=TRUE) )[1]

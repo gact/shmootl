@@ -101,7 +101,7 @@ run_report <- function(h5file=NA_character_, report=NA_character_) {
     }
     
     # Write output for each phenotype.
-    for ( i in getIndices(phenotypes) ) {
+    for ( i in seq_along(phenotypes) ) {
         
         phenotype <- phenotypes[i]
         

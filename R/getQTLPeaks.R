@@ -132,7 +132,7 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, alpha=NULL,
         unnamed <- which( isPseudomarkerID(rownames(x)[peak.indices]) )
     } else { # ..otherwise all loci are unnamed.
         peak.ids <- character( length(peak.indices) )
-        unnamed <- getIndices(peak.indices)
+        unnamed <- seq_along(peak.indices)
     }
     
     # Ensure every QTL peak has a name.

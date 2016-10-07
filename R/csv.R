@@ -488,7 +488,7 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     
     } else {
         # ..otherwise set vector of sample indices.
-        samples <- getIndices(dat.rows)
+        samples <- seq_along(dat.rows)
     }
     
     # Get locus info.
@@ -903,7 +903,7 @@ recodeCSV <- function(infile, outfile, geno=NULL, enum.geno=FALSE) {
         }
         
         # Recode genotypes.
-        for ( i in getIndices(geno) ) {
+        for ( i in seq_along(geno) ) {
             recoded.geno[ original.geno == src.geno[i] ] <- dest.geno[i]
         }
         
@@ -1067,7 +1067,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     }
     
     # Replace encoded genotypes with actual genotype values.
-    for ( i in getIndices(genotypes) ) {
+    for ( i in seq_along(genotypes) ) {
         geno.table[ geno.table == i ] <- genotypes[i]
     }
     

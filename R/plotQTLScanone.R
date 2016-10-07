@@ -142,7 +142,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
         dimnames=list(chr, c('offset', 'midpoint', 'length') ) )
     
     # Assemble sequence plotting info.
-    for ( i in getIndices(chr) ) {
+    for ( i in seq_along(chr) ) {
         
         if ( length(chr) > 1 ) {
             seq.start <- x[head(seq.indices[[i]], 1), poscol.index]
@@ -210,7 +210,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     }
     
     # Plot scanone result for each sequence.
-    for ( i in getIndices(chr) ) {
+    for ( i in seq_along(chr) ) {
         
         seq.x <- x[seq.indices[[i]], poscol.index] + seq.par[i, 'offset']
         seq.y <- x[seq.indices[[i]], lodcol.index]
@@ -258,7 +258,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
                 y.offset <- yinch(0.25)
                 
                 # Display each QTL interval, remember the plot regions it occupies.
-                for ( i in getIndices(qtl.intervals) ) {
+                for ( i in seq_along(qtl.intervals) ) {
                     
                     qtl.interval <- qtl.intervals[[i]]
                     
@@ -335,7 +335,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
         }
         
         # Plot x-axis with given ticks and labels.
-        for ( i in getIndices(chr) ) {
+        for ( i in seq_along(chr) ) {
             axis(side=1, at=seq.par[i, 'midpoint'], labels=chr[i], cex.axis=cex.axis)
         }
     }
