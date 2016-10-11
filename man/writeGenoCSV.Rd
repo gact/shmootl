@@ -2,11 +2,7 @@
 % Please edit documentation in R/csv.R
 \name{writeGenoCSV}
 \alias{writeGenoCSV}
-\title{Write yeast genotype data to a CSV file.
-  
-This function writes a yeast \code{geno} object to an \pkg{R/qtl} CSV file.
-The \code{geno} object must have an attribute \code{'info'} of type
-\code{\linkS4class{CrossInfo}}, from which genotype and sample IDs are taken.}
+\title{Write yeast genotype data to a CSV file.}
 \usage{
 writeGenoCSV(geno, outfile, chr = NULL, digits = NULL,
   include.mapunit = TRUE)
@@ -26,11 +22,10 @@ number of digits.}
 \item{include.mapunit}{Include map unit information in map positions.}
 }
 \description{
-Write yeast genotype data to a CSV file.
-  
-This function writes a yeast \code{geno} object to an \pkg{R/qtl} CSV file.
-The \code{geno} object must have an attribute \code{'info'} of type
-\code{\linkS4class{CrossInfo}}, from which genotype and sample IDs are taken.
+This function writes a yeast \code{geno} object to an
+\pkg{R/qtl} CSV file. The \code{geno} object must have an attribute
+\code{'info'} of type \code{\linkS4class{CrossInfo}}, from which
+genotype and sample IDs are taken.
 }
 \seealso{
 Other CSV functions: \code{\link{hasMapCSV}},

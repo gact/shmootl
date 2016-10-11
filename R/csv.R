@@ -1128,9 +1128,10 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
 # writeGenoCSV -----------------------------------------------------------------
 #' Write yeast genotype data to a CSV file.
 #'   
-#' This function writes a yeast \code{geno} object to an \pkg{R/qtl} CSV file.
-#' The \code{geno} object must have an attribute \code{'info'} of type
-#' \code{\linkS4class{CrossInfo}}, from which genotype and sample IDs are taken.
+#' @description This function writes a yeast \code{geno} object to an
+#' \pkg{R/qtl} CSV file. The \code{geno} object must have an attribute
+#' \code{'info'} of type \code{\linkS4class{CrossInfo}}, from which
+#' genotype and sample IDs are taken.
 #' 
 #' @param geno An \pkg{R/qtl} \code{cross} \code{geno} object.
 #' @param outfile Output CSV file path.
