@@ -248,19 +248,6 @@ with(const, {
         sample.aspects$name, sample.aspects$index) ) )
     marker.headings <- c('marker', 'seq')
     
-    # Default QTL analysis result names ----------------------------------------
-    default.result.names <- data.frame( matrix(c(
-        #       class                    name
-        'scanone',                   'Scanone',
-        'scantwo',                   'Scantwo',
-        'scanoneperm',         'Scanone Perms',
-        'scanonebins',         'Scanone Perms',
-        'scantwoperm',         'Scantwo Perms',
-        'qtlintervals',        'QTL Intervals',
-        'qtlfeatures',          'QTL Features'
-    ), ncol=2, byrow=TRUE, dimnames=list(NULL, c('class', 'name'))), 
-    stringsAsFactors=FALSE)
-    
     # Excel settings -----------------------------------------------------------
     
     excel <- list(

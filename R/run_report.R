@@ -110,7 +110,7 @@ run_report <- function(h5file=NA_character_, report=NA_character_) {
             scanone.result <- readResultHDF5(h5file, phenotype, 'Scanone')
             
             # Get any QTL intervals.
-            qtl.intervals <- readResultHDF5(h5file, phenotype, 'QTL Intervals')
+            qtl.intervals <- readResultHDF5(h5file, phenotype, 'Scanone QTL Intervals')
             
             # If no QTL intervals, get scanone permutations for this phenotype,
             # and create a QTL intervals object with any threshold info.

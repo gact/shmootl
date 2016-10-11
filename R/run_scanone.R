@@ -166,7 +166,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     on.exit( file.remove(tmp), add=TRUE )
     
     # Write map to temp output file.
-    writeMapHDF5(cross.map, tmp)
+    writeMapHDF5(cross.map, tmp, 'Genetic Map')
     
     comments <- character( length(phenotypes) )
     status <- logical( length(phenotypes) )
@@ -176,7 +176,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         
         # Output scan result for this phenotype.
         pheno.result <- getLODProfile(scanone.result, lodcolumn=i)
-        writeResultHDF5(pheno.result, tmp, phenotypes[i])
+        writeResultHDF5(pheno.result, tmp, phenotypes[i], 'Scanone')
         
         # Output permutation scan results for this phenotype.
         if ( ! is.null(alpha) ) {
@@ -187,7 +187,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
             attr(pheno.perms, 'fdr') <- fdr
         }
         attr(pheno.perms, 'threshold') <- thresholds[i]
-        writeResultHDF5(pheno.perms, tmp, phenotypes[i])
+        writeResultHDF5(pheno.perms, tmp, phenotypes[i], 'Scanone Perms')
         
         # Get significant QTL intervals.
         qtl.intervals <- getQTLIntervals(pheno.result, ci.function=ci.function,
@@ -195,7 +195,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         
         # Output any significant QTL intervals.
         if ( length(qtl.intervals) > 0 ) {
-            writeResultHDF5(qtl.intervals, tmp, phenotypes[i])
+            writeResultHDF5(qtl.intervals, tmp, phenotypes[i], 'Scanone QTL Intervals')
             comments[i] <- paste(length(qtl.intervals), 'QTLs')
             status[i] <- TRUE
         }

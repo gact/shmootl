@@ -542,33 +542,6 @@ makeDefaultMapName <- function(map) {
     return(default.name)
 }
 
-# makeDefaultResultName --------------------------------------------------------
-#' Get default QTL analysis result name.
-#'   
-#' @param result Object containing a QTL analysis result.
-#'      
-#' @return Default QTL analysis result name.
-#'  
-#' @keywords internal
-#' @rdname makeDefaultResultName
-makeDefaultResultName <- function(result) {
-    
-    classes <- const$default.result.names$class
-    names <- const$default.result.names$name
-    
-    matching <- classes %in% class(result)
-    if ( length(classes[matching]) == 1 ) {
-        default.name <- names[matching]
-    } else if ( length(classes[matching]) > 1 ) {
-        stop("cannot get unique default name - result matches multiple classes - '", 
-            toString(classes[matching]), "'")
-    } else {
-        stop("cannot get default name - unknown result class")
-    }
-    
-    return(default.name)
-}
-
 # makeGroupObjectNames ---------------------------------------------------------
 #' Make valid HDF5 group object names.
 #' 
@@ -991,6 +964,8 @@ readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
 #' @rdname readMapHDF5
 readMapHDF5 <- function(infile, name) {
     
+    stopifnot( isValidID(name) )
+    
     map.names <- getMapNamesHDF5(infile)
     
     if ( name %in% map.names ) {
@@ -1061,6 +1036,9 @@ readOverviewHDF5 <- function(infile) {
 #' @keywords internal
 #' @rdname readResultHDF5
 readResultHDF5 <- function(infile, phenotype, name) {
+    
+    stopifnot( isValidID(phenotype) )
+    stopifnot( isValidID(name) )
     
     phenotype.results <- getResultNamesHDF5(infile, phenotype)
     
@@ -1551,7 +1529,7 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name, ...) {
 
 # writeMapHDF5 -----------------------------------------------------------------
 #' Write \code{map} to a HDF5 file.
-#'   
+#' 
 #' @details An \pkg{R/qtl} \code{map} object is written to the \code{'Maps'}
 #' group at the root of the given HDF5 file. If no map name is specified, a
 #' default will be assigned based on whether it is a genetic or physical map.
@@ -1571,7 +1549,9 @@ writeMapHDF5 <- function(map, outfile, name=NULL, overwrite=FALSE) {
     
     stopifnot( 'map' %in% class(map) )
     
-    if ( is.null(name) ) {
+    if ( ! is.null(name) ) {
+        stopifnot( isValidID(name) )
+    } else {
         name <- makeDefaultMapName(map)
     }
     
@@ -1643,13 +1623,9 @@ writeOverviewHDF5 <- function(overview, outfile, overwrite=FALSE) {
 #' @export
 #' @family HDF5 functions
 #' @rdname writeResultHDF5
-writeResultHDF5 <- function(result, outfile, phenotype, name=NULL,
-    overwrite=FALSE) {
-    
-    if ( is.null(name) ) {
-        name <- makeDefaultResultName(result)
-    }
-    
+writeResultHDF5 <- function(result, outfile, phenotype, name, overwrite=FALSE) {
+    stopifnot( isValidID(phenotype) )
+    stopifnot( isValidID(name) )
     h5name <- joinH5ObjectNameParts( c('Results', phenotype, name) )
     writeDatasetHDF5(result, outfile, h5name, overwrite=overwrite)
     return( invisible() )

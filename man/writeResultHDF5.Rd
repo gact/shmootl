@@ -4,7 +4,7 @@
 \alias{writeResultHDF5}
 \title{Write QTL analysis result to a HDF5 file.}
 \usage{
-writeResultHDF5(result, outfile, phenotype, name = NULL, overwrite = FALSE)
+writeResultHDF5(result, outfile, phenotype, name, overwrite = FALSE)
 }
 \arguments{
 \item{result}{R object containing a QTL analysis result.}
