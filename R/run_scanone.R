@@ -74,8 +74,6 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     pheno <- if ( ! identical(pheno, character()) ) { pheno } else { NULL }
     alpha <- if ( ! identical(alpha, NA_real_) ) { alpha } else { NULL }
     fdr <- if ( ! identical(fdr, NA_real_) ) { fdr } else { NULL }
-    addcovar <- if ( ! is.na(acovfile) ) { readCovarCSV(acovfile) } else { NULL }
-    intcovar <- if ( ! is.na(icovfile) ) { readCovarCSV(icovfile) } else { NULL }
     
     if ( ! is.null(alpha) && ! is.null(fdr) ) {
         stop("cannot set both significance level (alpha) and FDR")
@@ -104,6 +102,16 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     # Read cross input file.
     cross <- readCrossCSV(infile, error.prob=error.prob,
         map.function=map.function)
+    
+    # Read additive covariate matrix file, if specified.
+    if ( ! is.na(acovfile) ) {
+        addcovar <- readCovarCSV(acovfile, cross=cross)
+    }
+    
+    # Read interactive covariate matrix file, if specified.
+    if ( ! is.na(icovfile) ) {
+        intcovar <- readCovarCSV(icovfile, cross=cross)
+    }
     
     # Get cross info.
     cross.info <- attr(cross, 'info')
