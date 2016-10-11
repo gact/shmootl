@@ -59,6 +59,7 @@ Collate:
     'hdf5.R'
     'map.R'
     'mapping.R'
+    'pdf.R'
     'pheno.R'
     'pipeline.R'
     'plotQTLScanone.R'
