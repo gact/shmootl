@@ -106,11 +106,15 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     # Read additive covariate matrix file, if specified.
     if ( ! is.na(acovfile) ) {
         addcovar <- readCovarCSV(acovfile, cross=cross)
+    } else {
+        addcovar <- NULL
     }
     
     # Read interactive covariate matrix file, if specified.
     if ( ! is.na(icovfile) ) {
         intcovar <- readCovarCSV(icovfile, cross=cross)
+    } else {
+        intcovar <- NULL
     }
     
     # Get cross info.
