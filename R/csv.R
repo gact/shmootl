@@ -527,7 +527,7 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     # Read adjusted cross data.
     cross <- qtl::read.cross('csv', '', temp.file, genotypes=genotypes, 
         alleles=alleles, na.strings=const$missing.value, error.prob=error.prob,
-        map.function=map.function)
+        map.function=map.function, crosstype=crosstype)
     
     # Infer strain indices..keep if there are replicate samples.
     strain.indices <- inferStrainIndices(cross)
