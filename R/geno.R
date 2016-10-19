@@ -173,10 +173,8 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     genotypes <- sort( # NB: sort removes NA values.
         unique( as.character( unlist(geno.matrix) ) ) )
     
-    validateGenotypeSet(genotypes)
-    
-    # Get allele symbols from characters in genotype symbols.
-    alleles <- unique( unlist( strsplit(genotypes, '') ) )
+    # Make allele set from genotype set.
+    alleles <- makeAlleleSet(genotypes) # NB: validates genotypes
     
     # Convert genotype character matrix to a numeric matrix, with
     # genotype numbers assigned to corresponding genotype symbols.
@@ -496,6 +494,9 @@ makeGeno <- function(x, y=NULL, alleles=NULL) {
     genotypes <- attr(geno.matrix, 'genotypes')
     attr(geno.matrix, 'genotypes') <- NULL
     
+    # Make allele set from genotype set.
+    alleles <- makeAlleleSet(genotypes) # NB: validates genotypes
+    
     # Get sample and SNP IDs from genotype matrix.
     sample.ids <- rownames(geno.matrix)
     snp.ids <- colnames(geno.matrix)
@@ -507,15 +508,6 @@ makeGeno <- function(x, y=NULL, alleles=NULL) {
     
     # Convert physical map to genetic map.
     geno.map <- setMapUnit(geno.map, 'cM')
-    
-    # Verify that there are exactly two genotypes.
-    # TODO: handle more than two genotypes.
-    if ( length(genotypes) != 2 ) {
-        stop("unsupported number of genotypes - '", length(genotypes), "'")
-    }
-    
-    # Get allele symbols from characters in genotype symbols.
-    alleles <- unique( unlist( strsplit(genotypes, '') ) )
     
     # Get sequences of map loci.
     locus.seqs <- pullLocusSeq(geno.map)

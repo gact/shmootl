@@ -448,10 +448,8 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     genotypes <- sort( unique( as.character( # NB: sort removes NA values
         unlist(cross.table[dat.rows, geno.cols]) ) ) )
     
-    validateGenotypeSet(genotypes)
-    
     # Get allele symbols from characters in genotype symbols.
-    alleles <- unique( unlist( strsplit(genotypes, '') ) )
+    alleles <- makeAlleleSet(genotypes) # NB: validates genotypes
     
     # Get phenotype names.
     phenotypes <- as.character(cross.table[1, pheno.cols])

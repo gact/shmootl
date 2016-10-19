@@ -1504,6 +1504,22 @@ loadVector <- function(line=NULL, file=NULL, type=NULL) {
     return(x)
 }
 
+# makeAlleleSet ----------------------------------------------------------------
+#' Make allele set from the given genotypes.
+#' 
+#' @param genotypes Sorted character vector of genotype symbols.
+#' 
+#' @return Character vector of allele symbols generated from the given genotypes.
+#' 
+#' @keywords internal
+#' @rdname makeAlleleSet
+makeAlleleSet <- function(genotypes) {
+    validateGenotypeSet(genotypes)
+    alleles <- sort( unique( unlist( strsplit(genotypes, '') ) ) )
+    alleles <- alleles[ alleles != const$missing.value ]
+    return(alleles)
+}
+
 # makeDefaultMarkerIDs ---------------------------------------------------------
 #' Make default marker IDs for loci.
 #' 
