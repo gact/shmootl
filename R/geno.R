@@ -170,27 +170,10 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     colnames(geno.matrix) <- from[1, -id.col]
     
     # Get set of symbols in genotype matrix.
-    genotypes <- unique( as.character( unlist(geno.matrix) ) )
-    genotypes <- genotypes[ ! is.na(genotypes) ]
-    
-    # Check for blank genotypes.
-    if ( '' %in% genotypes ) {
-        stop("blank genotype values found")
-    }
+    genotypes <- sort( # NB: sort removes NA values.
+        unique( as.character( unlist(geno.matrix) ) ) )
     
     validateGenotypeSet(genotypes)
-    
-    # Verify that genotypes are haploid.
-    # TODO: handle other ploidies.
-    if ( any( nchar(genotypes) > 1 ) ) {
-        stop("unsupported genotype ploidy")
-    }
-    
-    # Verify that there are exactly two genotypes.
-    # TODO: handle more than two genotypes.
-    if ( length(genotypes) != 2 ) {
-        stop("unsupported number of genotypes - '", length(genotypes), "'")
-    }
     
     # Get allele symbols from characters in genotype symbols.
     alleles <- unique( unlist( strsplit(genotypes, '') ) )

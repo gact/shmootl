@@ -1576,34 +1576,7 @@ setGeneric('validateGenotypes', function(cross.info) {
 #' @rdname validateGenotypes-methods
 setMethod('validateGenotypes', signature='CrossInfo',
     definition = function(cross.info) {
-    
-    stopifnot( is.character(cross.info@genotypes) )
-    
-    if ( anyNA(cross.info@genotypes) ) {
-        stop("incomplete genotype info")
-    }
-    
-    dup.geno <- cross.info@genotypes[ duplicated(cross.info@genotypes) ]
-    if ( length(dup.geno) > 0 ) {
-        stop("duplicate genotypes - '", toString(dup.geno), "'")
-    }
-    
-    valid.founder <- isFounderGenotype(cross.info@genotypes)
-    valid.enum <- isEnumGenotype(cross.info@genotypes)
-    
-    err.geno <- cross.info@genotypes[ ! ( valid.founder | valid.enum ) ]
-    if ( length(err.geno) > 0 ) {
-        stop("invalid genotype values - '", toString(err.geno), "'")
-    }
-    
-    if ( any(valid.founder) && any(valid.enum) ) {
-        stop("genotypes can be of enumerated or founder type, but not both")
-    }
-    
-    if ( length( unique( nchar(cross.info@genotypes) ) ) != 1 ) {
-        stop("inconsistent genotype ploidy")
-    }
-    
+    validateGenotypeSet(cross.info@genotypes)
     return(TRUE)
 })
 

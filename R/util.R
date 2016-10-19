@@ -2126,20 +2126,28 @@ stripWhite <- function(x) {
 #' Validate a set of genotypes.
 #' 
 #' @param x Vector of genotypes.
-#' @param strict Require complete genotypes.
+#' @param strict Restrict validity to complete genotypes only.
+#' 
+#' @return \code{TRUE} if genotype set is valid; otherwise raises first error.
 #' 
 #' @keywords internal
 #' @rdname validateGenotypeSet
 validateGenotypeSet <- function(x, strict=FALSE) {
     
+    stopifnot( is.character(x) )
+    
     # Decompose genotype symbols into different types.
     founder.symbols <- x[ isFounderGenotype(x, strict=strict) ]
     enum.symbols <- x[ isEnumGenotype(x) ]
-    invalid.values <- x[ ! ( isValidGenotype(x, strict=strict) | is.na(x) ) ]
+    invalid.values <- x[ is.na(x) | ! isValidGenotype(x, strict=strict) ]
     
     # Check for invalid values.
     if ( length(invalid.values) > 0 ) {
-        stop("invalid genotype symbols - '", toString(invalid.values), "'")
+        if ( '' %in% invalid.values ) {
+            stop("blank genotype values")
+        } else {
+            stop("invalid genotype symbols - '", toString(invalid.values), "'")
+        }
     }
     
     # Check that symbols are either founder or enumerated genotypes.
@@ -2147,7 +2155,35 @@ validateGenotypeSet <- function(x, strict=FALSE) {
         stop("genotypes must be of enumerated or founder type, but not both")
     }
     
-    return( invisible() )
+    # Check for duplicate genotype symbols.
+    dup.symbols <- unique( x[ duplicated(x) ] )
+    if ( length(dup.symbols) > 0 ) {
+        stop("duplicate genotype symbols - '", toString(dup.symbols), "'")
+    }
+    
+    # Check genotype set order.
+    if ( is.unsorted(x) ) {
+        stop("genotype set is not sorted - '", toString(x), "'")
+    }
+    
+    # Verify that genotypes are haploid.
+    # TODO: handle other ploidies.
+    if ( any( nchar(x) > 1 ) ) {
+        stop("unsupported genotype ploidy")
+    }
+    
+    # Verify that genotyes have consistent ploidy.
+    if ( length( unique( nchar(x) ) ) != 1 ) {
+        stop("inconsistent genotype ploidy")
+    }
+    
+    # Verify that there are exactly two genotypes.
+    # TODO: handle more than two genotypes.
+    if ( length(x) != 2 ) {
+        stop("unsupported number of genotypes - '", length(x), "'")
+    }
+    
+    return(TRUE)
 }
 
 # End of util.R ################################################################

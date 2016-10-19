@@ -445,28 +445,10 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     }
     
     # Get set of unique symbols used in marker genotype data.
-    geno.symbols <- sort( unique( as.character( # NB: sort removes NA values
+    genotypes <- sort( unique( as.character( # NB: sort removes NA values
         unlist(cross.table[dat.rows, geno.cols]) ) ) )
     
-    # Verify that there are no blank genotype entries.
-    if ( any( geno.symbols == '' ) ) {
-        stop("blank genotype values found")
-    }
-    
-    # Get putative genotypes: genotype symbols that are not 'missing data' symbols.
-    genotypes <- geno.symbols[ ! geno.symbols %in% const$missing.value ]
-    
-    # Verify that genotypes are haploid.
-    # TODO: handle other ploidies.
-    if ( any( nchar(genotypes) > 1 ) ) {
-        stop("unsupported genotype ploidy")
-    }
-        
-    # Verify that there are exactly two genotypes.
-    # TODO: handle cross with more than two genotypes.
-    if ( length(genotypes) != 2 ) { 
-        stop("unsupported number of genotypes - '", length(genotypes), "'")
-    }
+    validateGenotypeSet(genotypes)
     
     # Get allele symbols from characters in genotype symbols.
     alleles <- unique( unlist( strsplit(genotypes, '') ) )

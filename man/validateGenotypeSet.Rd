@@ -9,7 +9,10 @@ validateGenotypeSet(x, strict = FALSE)
 \arguments{
 \item{x}{Vector of genotypes.}
 
-\item{strict}{Require complete genotypes.}
+\item{strict}{Restrict validity to complete genotypes only.}
+}
+\value{
+\code{TRUE} if genotype set is valid; otherwise raises first error.
 }
 \description{
 Validate a set of genotypes.
