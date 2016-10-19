@@ -26,7 +26,7 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
     stopifnot( file.exists(infile) )
     stopifnot( isSingleString(outfile) )
     
-    results.sought <- 'QTL Intervals'
+    results.sought <- 'Scanone QTL Intervals'
     results.found <- list()
     result.info <- list()
     
@@ -68,14 +68,14 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
     # Annotated QTL intervals for each phenotype.
     for ( phenotype in phenotypes ) {
         
-        # If QTL intervals present for this phenotype,
+        # If Scanone QTL intervals present for this phenotype,
         # get any corresponding QTL features.
-        if ( 'QTL Intervals' %in% result.info[[phenotype]] ) {
+        if ( 'Scanone QTL Intervals' %in% result.info[[phenotype]] ) {
             
             # Read QTL intervals from input scan result file.
-            qtl.intervals <- readResultHDF5(infile, phenotype, 'QTL Intervals')
+            qtl.intervals <- readResultHDF5(infile, phenotype, 'Scanone QTL Intervals')
             
-            # Ensure that QTL intervals have (estimated) physical map positions.
+            # Ensure that Scanone QTL intervals have (estimated) physical map positions.
             if ( ! hasPhysicalPositions(qtl.intervals) ) {
                 
                 # Ensure mapkey option has been set 

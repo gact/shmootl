@@ -37,7 +37,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
         # Set reserved headings that cannot be used as capture-group names.
         # NB: this should include headings for all
         # tables that will include scan file info.
-        reserved.headings <- const$excel$digest[['QTL Intervals']]$headings
+        reserved.headings <- const$excel$digest[['Scanone QTL Intervals']]$headings
         
         # Check for capture-group names clashing with reserved headings.
         clashing <- colnames(parsed)[ colnames(parsed) %in% reserved.headings ]
@@ -66,7 +66,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     
     # Check scan files for results of interest ---------------------------------
     
-    results.sought <- c('QTL Intervals', 'QTL Features')
+    results.sought <- c('Scanone QTL Intervals', 'Scanone QTL Features')
     
     # Init per-scanfile info.
     result.info <- results.found <- pheno.info <- vector('list', length(scanfiles))
@@ -99,8 +99,8 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     
     sheet.names <- c('README', 'Overview')
     
-    if ( 'QTL Intervals' %in% roi ) {
-        sheet.names <- c(sheet.names, 'QTL Intervals')
+    if ( 'Scanone QTL Intervals' %in% roi ) {
+        sheet.names <- c(sheet.names, 'Scanone QTL Intervals')
     }
     
     # Init worksheet tables ----------------------------------------------------
@@ -129,11 +129,11 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
         tables[['Overview']] <- rbind(tables[['Overview']], overview)
     }
     
-    # Setup 'QTL Intervals' worksheet, if relevant -----------------------------
+    # Setup 'Scanone QTL Intervals' worksheet, if relevant ---------------------
     
-    if ( 'QTL Intervals' %in% sheet.names ) {
+    if ( 'Scanone QTL Intervals' %in% sheet.names ) {
         
-        headings <- const$excel$digest[['QTL Intervals']]$headings
+        headings <- const$excel$digest[['Scanone QTL Intervals']]$headings
         
         # Init table with all headings; empty columns will be deleted later.
         tab <- matrix(NA_character_, nrow=0, ncol=length(headings),
@@ -145,9 +145,9 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
             
             for ( phenotype in phenotypes ) {
                 
-                if ( 'QTL Intervals' %in% results.found[[scanfile]][[phenotype]] ) {
+                if ( 'Scanone QTL Intervals' %in% results.found[[scanfile]][[phenotype]] ) {
                     
-                    qtl.intervals <- readResultHDF5(scanfile, phenotype, 'QTL Intervals')
+                    qtl.intervals <- readResultHDF5(scanfile, phenotype, 'Scanone QTL Intervals')
                     
                     if ( length(qtl.intervals) == 0 ) {
                         next
@@ -173,7 +173,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
                     physical.positions <- hasPhysicalPositions(qtl.intervals)
                     
                     # Get QTL interval features.
-                    qtl.features <- readResultHDF5(scanfile, phenotype, 'QTL Features')
+                    qtl.features <- readResultHDF5(scanfile, phenotype, 'Scanone QTL Features')
                     
                     for ( i in seq_along(qtl.intervals) ) {
                         
@@ -227,7 +227,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
                             start.bp,      # Start (bp)
                             peak.bp,       # Peak (bp)
                             end.bp,        # End (bp)
-                            feature.ids    # QTL Features
+                            feature.ids    # Scanone QTL Features
                         ), nrow=1, ncol=length(headings),
                         dimnames=list(NULL, colnames(tab)))
                         
@@ -257,7 +257,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
         }
         
         # Set QTL intervals table.
-        tables[['QTL Intervals']] <- data.frame(tab, check.names=FALSE,
+        tables[['Scanone QTL Intervals']] <- data.frame(tab, check.names=FALSE,
             stringsAsFactors=FALSE)
     }
     

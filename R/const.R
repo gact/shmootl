@@ -268,7 +268,7 @@ with(const, {
                 headings = c('File', 'Phenotype', 'Status', 'Comments')
             ),
             
-            `QTL Intervals` = list(
+            `Scanone QTL Intervals` = list(
                 
                 description = paste(
                     'Table of QTL intervals as obtained by a single- or multi-QTL scan.',
@@ -278,7 +278,7 @@ with(const, {
                 headings = c('File', 'Phenotype', 'QTL Name', 'Chromosome',
                     'Peak LOD', 'LOD Threshold', 'alpha', 'FDR',
                     'Interval Type', 'Start (cM)', 'Peak (cM)', 'End (cM)',
-                    'Start (bp)', 'Peak (bp)', 'End (bp)', 'QTL Features')
+                    'Start (bp)', 'Peak (bp)', 'End (bp)', 'Scanone QTL Features')
             )
         )
     )
