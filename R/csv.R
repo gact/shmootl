@@ -374,7 +374,7 @@ readCrossCSV <- function(infile, error.prob=0.0001,
     map.function=c('haldane', 'kosambi', 'c-f', 'morgan'),
     require.mapunit=TRUE) {
     
-    crosstype <- 'bc' # TODO: support other cross types
+    crosstype <- 'haploid' # TODO: support other cross types
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
@@ -1022,7 +1022,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
         sample.ids <- pull.ind(cross)
     }
     
-    stopifnot( crosstype == 'bc' ) # TODO: support other cross types
+    stopifnot( crosstype == 'haploid' ) # TODO: support other cross types
     stopifnot( length(phenotypes) > 0 )
     stopifnot( length(alleles) > 0 )
     stopifnot( length(markers) > 0 )

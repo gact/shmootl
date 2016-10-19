@@ -46,7 +46,7 @@ with(const, {
     maptable.colnames <- c('id', 'chr', 'pos')
     
     # Cross types handled by shmootl.
-    supported.crosstypes <- c('bc') # TODO: support other cross types
+    supported.crosstypes <- c('haploid') # TODO: support other cross types
     
     # Fixed missing value in cross data files.
     missing.value <- '-'

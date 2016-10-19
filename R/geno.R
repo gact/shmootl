@@ -112,7 +112,7 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     
     stopifnot( isBOOL(require.mapunit) )
     
-    crosstype <- 'bc' # TODO: support other cross types
+    crosstype <- 'haploid' # TODO: support other cross types
     
     if ( nrow(from) < 3 || ncol(from) < 2 ) {
         stop("invalid genotype data frame")
@@ -474,7 +474,7 @@ makeEnumGenoMatrix <- function(x) {
 #' @rdname makeGeno
 makeGeno <- function(x, y=NULL, alleles=NULL) {
     
-    crosstype <- 'bc' # TODO: support other cross types
+    crosstype <- 'haploid' # TODO: support other cross types
     
     # If founder genotypes available, get founder genotype matrix..
     if ( ! is.null(y) ) {
