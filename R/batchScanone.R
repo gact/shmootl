@@ -99,20 +99,30 @@ batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, ..
     # Run per-phenotype batch scan.
     scanone.results <- do.call(batchScan, c(args, list(...)))
     
-    # Assign phenotype names to LOD columns.
-    pheno.names <- qtl::phenames(cross)[pheno.col]
-    for ( i in seq_along(scanone.results) ) {
-        lodcol.index = getDatColIndices(scanone.results[[i]])
+    # If multiple LOD columns, assign phenotype names to LOD columns..
+    if ( length(scanone.results) > 1 ) {
+        
+        pheno.names <- qtl::phenames(cross)[pheno.col]
+        for ( i in seq_along(scanone.results) ) {
+            lodcol.index = getDatColIndices(scanone.results[[i]])
+            stopifnot( length(lodcol.index) == 1 )
+            colnames(scanone.results[[i]])[lodcol.index] <- pheno.names[i]
+        }
+        
+        # Combine per-phenotype scan results.
+        combined.result <- do.call(cbind, scanone.results)
+        
+        # Set attributes of combined result from those of first result.
+        for ( a in const$scan.attributes[['scanone']] ) {
+            attr(combined.result, a) <- attr(scanone.results[[1]], a)
+        }
+        
+    } else { # ..otherwise assign default LOD column name.
+        
+        combined.result <- scanone.results[[1]]
+        lodcol.index = getDatColIndices(combined.result)
         stopifnot( length(lodcol.index) == 1 )
-        colnames(scanone.results[[i]])[lodcol.index] <- pheno.names[i]
-    }
-    
-    # Combine per-phenotype scan results.
-    combined.result <- do.call(cbind, scanone.results)
-    
-    # Set attributes of combined result from those of first result.
-    for ( a in const$scan.attributes[['scanone']] ) {
-        attr(combined.result, a) <- attr(scanone.results[[1]], a)
+        colnames(combined.result)[lodcol.index] <- 'lod'
     }
     
     return(combined.result)
