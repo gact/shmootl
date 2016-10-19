@@ -2734,7 +2734,7 @@ setPosColDataMapUnit.character <- function(x, map.unit) {
     
     invalid <- unique(x[ is.na(res) ])
     if ( length(invalid) > 0 ) {
-        stop("invalid map positions - '", invalid, "'")
+        stop("invalid map positions - '", toString(invalid), "'")
     }
     
     # Append map unit suffixes.
