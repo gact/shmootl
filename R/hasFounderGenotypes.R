@@ -18,15 +18,18 @@ hasFounderGenotypes <- function(x) {
 #' @export
 #' @rdname hasFounderGenotypes
 hasFounderGenotypes.cross <- function(x) {
-    stopifnot( attr(x, 'crosstype') == 'bc' ) # TODO: support other cross types
-    return( all( isFounderAllele( attr(x, 'alleles') ) ) )
+    crosstype <- pull.crosstype(x)
+    alleles <- pull.alleles(x)
+    genotypes <- makeGenotypeSet(alleles, crosstype)
+    return( all( isFounderGenotype(genotypes) ) )
 }
 
 # hasFounderGenotypes.geno -----------------------------------------------------
 #' @export
 #' @rdname hasFounderGenotypes
 hasFounderGenotypes.geno <- function(x) {
-    return( all( isFounderAllele( attr(x, 'alleles') ) ) )
+    alleles <- pull.alleles(x)
+    return( all( isFounderAllele(alleles) ) )
 }
 
 # End of hasFounderGenotypes.R #################################################

@@ -1033,10 +1033,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     map.table <- as.data.frame(qtl::pull.map(cross, chr), map.unit=map.unit)
     geno.table <- qtl::pull.geno(cross)[, markers]
     
-    # As cross is haploid (though marked as 'bc'),
-    # we can set genotypes directly from alleles.
-    # TODO: handle other ploidies.
-    genotypes <- alleles
+    genotypes <- makeGenotypeSet(alleles, crosstype)
     
     # If digits specified, round numeric phenotype values and map positions.
     if ( ! is.null(digits) ) {

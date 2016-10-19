@@ -1621,6 +1621,43 @@ makeDefaultQTLNames <- function(loc, step=0) {
     return( paste(loc.seqs, loc.pos, sep='@') )
 }
 
+# makeGenotypeSet --------------------------------------------------------------
+#' Make genotype set from the given alleles and cross type.
+#' 
+#' @param alleles Sorted character vector containing a set of allele symbols.
+#' @param crosstype Cross type for which genotype set should be made.
+#' @param strict Make genotype set containing only complete genotypes.
+#' 
+#' @return Character vector of genotype symbols generated from the
+#' given alleles in a way determined by the specified cross type.
+#' 
+#' @keywords internal
+#' @rdname makeGenotypeSet
+makeGenotypeSet <- function(alleles, crosstype, strict=FALSE) {
+    
+    # TODO: implement for other cross types.
+    # TODO: implement strict option. By default (strict=FALSE), partially
+    # missing genotype symbols (e.g. 'A-') are included in the returned
+    # genotype set. If strict is TRUE, the returned genotype set contains
+    # only complete genotype symbols.
+    
+    validateAlleleSet(alleles)
+    
+    if ( crosstype == 'haploid' ) {
+        
+        # NB: strict option is irrelevant for a haploid cross type,
+        # because partial genotypes cannot exist by definition.
+        genotypes <- alleles
+        
+    } else if ( crosstype %in% const$supported.crosstypes ) {
+        stop("cannot get genotype set for cross type - '", crosstype, "'")
+    } else {
+        stop("unsupported cross type - '", crosstype, "'")
+    }
+    
+    return(genotypes)
+}
+
 # makeNumbers ------------------------------------------------------------------
 #' Make numbers from numeric names.
 #' 

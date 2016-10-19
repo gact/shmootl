@@ -18,15 +18,18 @@ hasEnumGenotypes <- function(x) {
 #' @export
 #' @rdname hasEnumGenotypes
 hasEnumGenotypes.cross <- function(x) {
-    stopifnot( attr(x, 'crosstype') == 'bc' ) # TODO: support other cross types
-    return( all( isEnumAllele( attr(x, 'alleles') ) ) )
+    crosstype <- pull.crosstype(x)
+    alleles <- pull.alleles(x)
+    genotypes <- makeGenotypeSet(alleles, crosstype)
+    return( all( isEnumGenotype(genotypes) ) )
 }
 
 # hasEnumGenotypes.geno --------------------------------------------------------
 #' @export
 #' @rdname hasEnumGenotypes
 hasEnumGenotypes.geno <- function(x) {
-    return( all( isEnumAllele( attr(x, 'alleles') ) ) )
+    alleles <- pull.alleles(x)
+    return( all( isEnumAllele(alleles) ) )
 }
 
 # End of hasEnumGenotypes.R ####################################################
