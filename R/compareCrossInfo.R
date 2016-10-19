@@ -182,7 +182,7 @@ compareCrossInfo.pheno <- function(x, cross.info=NULL) {
         errors <- c(errors, "phenotype mismatch")
     }
     
-    id.col <- which( tolower( colnames(x) ) == 'id' )
+    id.col <- getIdColIndex(x)
     
     if ( getNumSamples(cross.info) != nrow(x) ) {
         errors <- c(errors, "sample count mismatch")

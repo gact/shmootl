@@ -122,11 +122,11 @@ run_prep <- function(datafile, normseq=FALSE, estimap=FALSE, error.prob=0.0001,
             geno.data[ geno.data == '' ] <- NA
             geno.frame <- rbind(x[head.rows, params$geno.cols], geno.data)
             
-            # Insert placeholder ID column in genotype data-frame.
+            # Insert placeholder 'id' column in genotype data-frame.
             num.samples <- length(params$dat.rows)
             digits <- ceiling( log10(num.samples) )
             suffixes <- formatC(1:num.samples, width=digits, flag=0)
-            placeholder.column <- c( 'ID', rep_len('', length(head.rows) - 1 ),
+            placeholder.column <- c( 'id', rep_len('', length(head.rows) - 1 ),
                 paste0('S', suffixes) )
             geno.frame <- insertColumn(geno.frame, 1, data=placeholder.column)
             

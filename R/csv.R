@@ -589,8 +589,8 @@ readGenoCSV <- function(infile, require.mapunit=TRUE) {
     colnames(geno.table) <- make.names(geno.table[1, ])
     
     # Check for ID heading in first column.
-    id.col <- which( tolower( colnames(geno.table) ) == 'id' )
-    if ( length(id.col) == 0 || id.col[1] != 1 ) {
+    id.col <- getIdColIndex(geno.table)
+    if ( is.null(id.col) || id.col != 1 ) {
         stop("ID column not found in genotype data file - '", infile, "'")
     }
     
@@ -733,8 +733,9 @@ readMapframeCSV <- function(infile, require.mapunit=TRUE) {
         }
         
         # Set locus IDs from an input 'id' column, if present.
-        if ( 'id' %in% colnames(x) ) {
-            x <- setRownamesFromColumn(x, col.name='id')
+        id.col <- getIdColIndex(x)
+        if ( ! is.null(id.col) ) {
+            x <- setRownamesFromColumn(x, col.name=colnames(x)[id.col])
         }
         
         cross.map <- as.mapframe(x, map.unit=map.unit)
@@ -779,8 +780,8 @@ readPhenoCSV <- function(infile) {
     colnames(pheno.table) <- make.names(pheno.table[1, ])
     
     # Check for ID heading.
-    id.col <- which( tolower( colnames(pheno.table) ) == 'id' )
-    if ( length(id.col) == 0 ) {
+    id.col <- getIdColIndex(pheno.table)
+    if ( is.null(id.col) ) {
         stop("ID column not found in phenotype data file - '", infile, "'")
     }
     
