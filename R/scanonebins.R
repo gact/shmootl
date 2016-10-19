@@ -234,8 +234,9 @@ padBins <- function(x, num.bins) {
 #' @param x A \code{summary.scanonebins} object.
 #' @param ... Unused arguments.
 #' 
-#' @export
+#' @export print.summary.scanonebins
 #' @keywords internal
+#' @method print summary.scanonebins
 #' @rdname print.summary.scanonebins
 print.summary.scanonebins <- function(x, ...) {
     num.perms <- attr(x, 'n.perm')
