@@ -398,6 +398,111 @@ getMissingValueFromClassS3 <- function(class.vector) {
     return(missing.value)
 }
 
+# getPhenoColIndices -----------------------------------------------------------
+#' Get phenotype column indices.
+#' 
+#' Get the indices of the phenotype columns in the given object. In a
+#' \code{data.frame}, phenotype columns are those columns that do not have
+#' reserved phenotype headings (e.g. \code{'ID'}). In a \code{cross} object,
+#' these are the corresponding columns of the phenotype \code{data.frame}.
+#' 
+#' @param x A \code{data.frame} containing phenotype data, or an \pkg{R/qtl}
+#' \code{cross} object containing such a \code{data.frame}.
+#' @param pheno.col Vector indicating the phenotype indices to return. This can
+#' be an integer vector of phenotype column indices with respect to the columns
+#' of the \code{data.frame} (which may or may not be within a \code{cross}
+#' object), or a character vector that contains phenotype IDs or their
+#' syntactically valid names. If none are specified, all phenotype column
+#' indices are returned.
+#' 
+#' @return Phenotype column indices.
+#' 
+#' @export
+#' @family cross object functions
+#' @rdname getPhenoColIndices
+getPhenoColIndices <- function(x, pheno.col=NULL) {
+    UseMethod('getPhenoColIndices', x)
+}
+
+# getPhenoColIndices.cross -----------------------------------------------------
+#' @export
+#' @rdname getPhenoColIndices
+getPhenoColIndices.cross <- function(x, pheno.col=NULL) {
+    return( getPhenoColIndices(x$pheno, pheno.col=pheno.col) )
+}
+
+# getPhenoColIndices.data.frame ------------------------------------------------
+#' @export
+#' @method getPhenoColIndices data.frame
+#' @rdname getPhenoColIndices
+getPhenoColIndices.data.frame <- function(x, pheno.col=NULL) {
+    
+    stopif( anyNA( colnames(x) ) )
+    
+    pheno.names <- colnames(x)
+    
+    reserved.indices <- which( tolower(pheno.names) %in%
+        const$reserved.phenotypes )
+    
+    if ( ! is.null(pheno.col) ) {
+        
+        stopifnot( length(pheno.col) > 0 )
+        stopif( anyNA(pheno.col) )
+        
+        if ( is.character(pheno.col) ) {
+            
+            indices <- vector('integer', length(pheno.col))
+            
+            for ( i in seq_along(pheno.col) ) {
+                
+                p <- pheno.col[i]
+                
+                pheno.index <- which( pheno.names == make.names(p) )
+                
+                if ( length(pheno.index) == 0 ) {
+                    stop("index not found for pheno.col - '", p, "'")
+                }
+                
+                if ( length(pheno.index) > 1 ) {
+                    stop("multiple indices found for pheno.col - '", p, "'")
+                }
+                
+                if ( pheno.index %in% reserved.indices ) {
+                    stop("pheno.col heading matches reserved phenotype - '", p, "'")
+                }
+                
+                indices[i] <- pheno.index
+            }
+            
+        } else if ( is.numeric(pheno.col) && all( isWholeNumber(pheno.col) ) ) {
+            
+            exrange <- pheno.col[ pheno.col < 1 | pheno.col > ncol(x) ]
+            if ( length(exrange) > 0 ) {
+                stop("pheno.col indices out of range - '", toString(exrange), "'")
+            }
+            
+            reserved <- pheno.col[ pheno.col %in% reserved.indices ]
+            if ( length(reserved) > 0 ) {
+                stop("pheno.col indices point to reserved phenotype headings - '",
+                    toString(reserved), "'")
+            }
+            
+            indices <- pheno.col
+            
+        } else {
+            
+            stop("pheno.col must contain phenotype indices or phenotype names")
+        }
+        
+    } else {
+        
+        indices <- getColIndices(x)
+        indices <- indices[ ! indices %in% reserved.indices ]
+    }
+    
+    return(indices)
+}
+
 # getRowIndices ----------------------------------------------------------------
 #' Get row indices of object.
 #' 
