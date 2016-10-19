@@ -2138,6 +2138,58 @@ stripWhite <- function(x) {
     return( gsub( "^[[:space:]]+|[[:space:]]+$", "", x) )
 }
 
+# validateAlleleSet ------------------------------------------------------------
+#' Validate a set of alleles.
+#' 
+#' @param x Vector of alleles.
+#' 
+#' @return \code{TRUE} if allele set is valid; otherwise raises first error.
+#' 
+#' @keywords internal
+#' @rdname validateAlleleSet
+validateAlleleSet <- function(x) {
+    
+    stopifnot( is.character(x) )
+    
+    # Decompose allele symbols into different types.
+    founder.symbols <- x[ isFounderAllele(x) ]
+    enum.symbols <- x[ isEnumAllele(x) ]
+    invalid.values <- x[ is.na(x) | ! isValidAllele(x) ]
+    
+    # Check for invalid values.
+    if ( length(invalid.values) > 0 ) {
+        if ( '' %in% invalid.values ) {
+            stop("blank allele values")
+        } else {
+            stop("invalid allele symbols - '", toString(invalid.values), "'")
+        }
+    }
+    
+    # Check for duplicate allele symbols.
+    dup.symbols <- unique( x[ duplicated(x) ] )
+    if ( length(dup.symbols) > 0 ) {
+        stop("duplicate allele symbols - '", toString(dup.symbols), "'")
+    }
+    
+    # Check allele set order.
+    if ( is.unsorted(x) ) {
+        stop("allele set is not sorted - '", toString(x), "'")
+    }
+    
+    # Check that symbols are either founder or enumerated alleles.
+    if ( ! xor(length(founder.symbols) > 0, length(enum.symbols) > 0) ) {
+        stop("alleles must be of enumerated or founder type, but not both")
+    }
+    
+    # Verify that there are exactly two alleles.
+    # TODO: handle more than two alleles.
+    if ( length(x) != 2 ) {
+        stop("unsupported number of alleles - '", length(x), "'")
+    }
+    
+    return(TRUE)
+}
+
 # validateGenotypeSet ----------------------------------------------------------
 #' Validate a set of genotypes.
 #' 
