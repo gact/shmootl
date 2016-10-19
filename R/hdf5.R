@@ -131,7 +131,7 @@ copyObjectsHDF5 <- function(infile, outfile, h5names=NULL) {
         
         # Copy input dataset attributes to output dataset.
         h5obj <- rhdf5::H5Dopen(h5root, dataset.h5name)
-        h5writeAttributes(dataset, h5obj)
+        h5writeAttributes(h5obj, object=dataset)
         rhdf5::H5Dclose(h5obj)
         
         # Close output HDF5 file.
@@ -397,10 +397,11 @@ hasObjectHDF5 <- function(infile, h5name) {
 }
 
 # h5writeAttributes ------------------------------------------------------------
-#' Write attributes to a HDF5 object.
-#'   
-#' @param x List of attributes, or an R object whose attributes will be written.
+#' Write attributes to HDF5 object.
+#' 
 #' @param h5obj HDF5 object to which attributes will be assigned.
+#' @param object An R object whose attributes will be written.
+#' @param attrs List of attributes to be written.
 #' 
 #' @importFrom rhdf5 h5writeAttribute
 #' @importFrom rhdf5 h5writeAttribute.array
@@ -411,53 +412,58 @@ hasObjectHDF5 <- function(infile, h5name) {
 #' @importFrom rhdf5 h5writeAttribute.matrix
 #' @keywords internal
 #' @rdname h5writeAttributes
-h5writeAttributes <- function(x, h5obj) {
+h5writeAttributes <- function(h5obj, object=NULL, attrs=NULL) {
     
-    attr.list <- attributes(x)
-
-    if ( ! is.null(attr.list) ) {
+    if ( ! is.null(object) && ! is.null(attrs) ) {
+        stop("cannot specify both object and attribute list")
+    } else if ( ! is.null(object) ) {
+        attrs <- attributes(object)
+    } else if ( ! is.list(attrs) ) {
+        stop("must specify either object or attribute list")
+    }
+    
+    if ( is.list(attrs) && length(attrs) > 0 ) {
         
-        # If R object has 'dimnames' attribute, 
-        # split into one attribute per dimension,
-        # store dimension names separately.
-        if ( 'dimnames' %in% names(attr.list) ) {
+        # If 'dimnames' attribute present, split into one attribute
+        # per dimension, then store dimension names separately.
+        if ( 'dimnames' %in% names(attrs) ) {
             
-            stopifnot( 'dim' %in% names(attr.list) )
+            stopifnot( 'dim' %in% names(attrs) )
             
-            exp.keys <- paste0( 'dimnames.', c('names', seq_along(attr.list[['dim']]) ) )
-         
-            if ( any( exp.keys %in% names(attr.list) ) ) {
+            exp.keys <- paste0( 'dimnames.', c('names', seq_along(attrs[['dim']]) ) )
+            
+            if ( any( exp.keys %in% names(attrs) ) ) {
                 stop("cannot split 'dimnames' without overwriting existing attributes")
             }
             
-            object.dimnames <- attr.list[['dimnames']]
+            object.dimnames <- attrs[['dimnames']]
             
             if ( ! is.null(object.dimnames) ) {
                 
                 if ( ! is.null( names(object.dimnames) ) ) {
-                    attr.list[['dimnames.names']] <- names(object.dimnames)
+                    attrs[['dimnames.names']] <- names(object.dimnames)
                 }
                 
                 indices <- which( ! sapply(object.dimnames, is.null) )
                 
                 for ( i in indices ) {
                     key <- paste0('dimnames.', i)
-                    attr.list[[key]] <- object.dimnames[[i]]
+                    attrs[[key]] <- object.dimnames[[i]]
                 }
                 
-                attr.list[['dimnames']] <- NULL
+                attrs[['dimnames']] <- NULL
             }
         }
         
-        # If R object has row names, remove these.
-        if ( 'row.names' %in% names(attr.list) ) {
-            attr.list[['row.names']] <- NULL
+        # If attributes include row names, remove these.
+        if ( 'row.names' %in% names(attrs) ) {
+            attrs[['row.names']] <- NULL
         }
         
         # Write attributes.
-        for ( i in seq_along(attr.list) ) {
-            rhdf5::h5writeAttribute(h5obj=h5obj, name=names(attr.list)[i], 
-                attr=attr.list[[i]])
+        for ( i in seq_along(attrs) ) {
+            rhdf5::h5writeAttribute(h5obj=h5obj, name=names(attrs)[i],
+                attr=attrs[[i]])
         }
     }
     
@@ -1273,7 +1279,7 @@ writeDatasetHDF5.default <- function(dataset, outfile, h5name,
     
     # Write dataset attributes to HDF5.
     h5stack <- push(h5stack, rhdf5::H5Dopen(peek(h5stack), dataset.name))
-    h5writeAttributes(dataset, peek(h5stack))
+    h5writeAttributes(peek(h5stack), object=dataset)
     
     h5stack <- closeStack(h5stack)
     
@@ -1302,7 +1308,7 @@ writeDatasetHDF5.default <- function(dataset, outfile, h5name,
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5.list <- function(dataset, outfile, h5name, ...) {
     
-    writeObjectAttributesHDF5(dataset, outfile, h5name)
+    writeObjectAttributesHDF5(outfile, h5name, object=dataset)
     
     child.names <- makeGroupObjectNames( group.names=names(dataset), 
         group.size=length(dataset) )
@@ -1563,15 +1569,16 @@ writeMapHDF5 <- function(map, outfile, name=NULL, overwrite=FALSE) {
 
 # writeObjectAttributesHDF5 ----------------------------------------------------
 #' Write attributes to a HDF5 object.
-#'   
-#' @param x List of attributes, or an R object whose attributes will be written.
+#' 
 #' @param outfile An output HDF5 file.
-#' @param h5name HDF5 object name. 
-#'  
+#' @param h5name HDF5 object name.
+#' @param object An R object whose attributes will be written.
+#' @param attrs List of attributes to be written.
+#' 
 #' @importFrom methods new
 #' @keywords internal
 #' @rdname writeObjectAttributesHDF5
-writeObjectAttributesHDF5 <- function(x, outfile, h5name) {
+writeObjectAttributesHDF5 <- function(outfile, h5name, object=NULL, attrs=NULL) {
     
     stopifnot( isSingleString(outfile) )
     
@@ -1579,7 +1586,7 @@ writeObjectAttributesHDF5 <- function(x, outfile, h5name) {
     
     on.exit( closeStack(h5stack) )
     
-    h5writeAttributes(x, peek(h5stack))
+    h5writeAttributes(peek(h5stack), object=object, attrs=attrs)
     
     return( invisible() )
 }

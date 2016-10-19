@@ -2,17 +2,19 @@
 % Please edit documentation in R/hdf5.R
 \name{h5writeAttributes}
 \alias{h5writeAttributes}
-\title{Write attributes to a HDF5 object.}
+\title{Write attributes to HDF5 object.}
 \usage{
-h5writeAttributes(x, h5obj)
+h5writeAttributes(h5obj, object = NULL, attrs = NULL)
 }
 \arguments{
-\item{x}{List of attributes, or an R object whose attributes will be written.}
-
 \item{h5obj}{HDF5 object to which attributes will be assigned.}
+
+\item{object}{An R object whose attributes will be written.}
+
+\item{attrs}{List of attributes to be written.}
 }
 \description{
-Write attributes to a HDF5 object.
+Write attributes to HDF5 object.
 }
 \keyword{internal}
 

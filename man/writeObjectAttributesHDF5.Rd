@@ -4,14 +4,16 @@
 \alias{writeObjectAttributesHDF5}
 \title{Write attributes to a HDF5 object.}
 \usage{
-writeObjectAttributesHDF5(x, outfile, h5name)
+writeObjectAttributesHDF5(outfile, h5name, object = NULL, attrs = NULL)
 }
 \arguments{
-\item{x}{List of attributes, or an R object whose attributes will be written.}
-
 \item{outfile}{An output HDF5 file.}
 
 \item{h5name}{HDF5 object name.}
+
+\item{object}{An R object whose attributes will be written.}
+
+\item{attrs}{List of attributes to be written.}
 }
 \description{
 Write attributes to a HDF5 object.
