@@ -22,6 +22,7 @@ Create a \code{mapping} object.
 }
 \seealso{
 Other mapping object functions: \code{\link{as.mapping}},
-  \code{\link{is.mapping}}, \code{\link{values}}
+  \code{\link{is.mapping}}, \code{\link{mappingKeys}},
+  \code{\link{mappingValues}}
 }
 

@@ -18,6 +18,7 @@ Test if object is a \code{mapping}.
 }
 \seealso{
 Other mapping object functions: \code{\link{as.mapping}},
-  \code{\link{mapping}}, \code{\link{values}}
+  \code{\link{mappingKeys}}, \code{\link{mappingValues}},
+  \code{\link{mapping}}
 }
 

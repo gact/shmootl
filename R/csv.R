@@ -852,8 +852,8 @@ recodeCSV <- function(infile, outfile, geno=NULL, enum.geno=FALSE) {
         
         stopifnot( is.mapping(geno) )
         
-        src.geno <- names(geno)
-        dest.geno <- unlist( values(geno) )
+        src.geno <- mappingKeys(geno)
+        dest.geno <- unlist( mappingValues(geno) )
         
         if ( is.null(params$geno.cols) ) {
             stop("cannot recode - no genotype data")

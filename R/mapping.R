@@ -31,7 +31,7 @@ mapping <- function(values=NULL, keys=NULL) {
         }
         
     } else {
-     
+        
         if ( ! is.null(values) ) {
             
             if ( ! is.null( names(values) ) && all(
@@ -89,6 +89,64 @@ is.mapping <- function(x) {
     }, error=function(e) {})
     
     return(status)
+}
+
+# mappingKeys ------------------------------------------------------------------
+#' Get keys of a \code{mapping} object.
+#' 
+#' @param x A \code{mapping} object.
+#' 
+#' @return Character vector of keys in a \code{mapping} object.
+#' 
+#' @export
+#' @family mapping object functions
+#' @keywords internal
+#' @rdname mappingKeys
+mappingKeys <- function(x) {
+    stopifnot( 'mapping' %in% class(x) )
+    return( names(x) )
+}
+
+# mappingValues ----------------------------------------------------------------
+#' Get values of a \code{mapping} object.
+#' 
+#' @param x A \code{mapping} object.
+#' 
+#' @return Unnamed list of values in a \code{mapping} object.
+#' 
+#' @export
+#' @family mapping object functions
+#' @keywords internal
+#' @rdname mappingValues
+mappingValues <- function(x) {
+    stopifnot( 'mapping' %in% class(x) )
+    return( unname( unclass(x) ) )
+}
+
+# `names<-.mapping` ------------------------------------------------------------
+#' @export
+#' @keywords internal
+`names<-.mapping` <- function(x, value) {
+    
+    if ( ! is.null(value) ) {
+        
+        if ( ! is.character(value) ) {
+            stop("mapping cannot have keys of class '",
+                toString(class(value)), "'")
+        }
+        
+        if ( length(value) != length(x) ) {
+            stop("mapping cannot have ", length(value), " keys and ",
+                length(x), " values")
+        }
+    }
+    
+    x <- unclass(x)
+    names(x) <- value
+    class(x) <- c('mapping', 'list')
+    validateMapping(x)
+    
+    return(x)
 }
 
 # validateMapping --------------------------------------------------------------
@@ -155,48 +213,6 @@ validateMapping <- function(x) {
     class(x) <- c('mapping', 'list')
     validateMapping(x)
     return(x)
-}
-
-# `names<-.mapping` ------------------------------------------------------------
-#' @export
-#' @keywords internal
-`names<-.mapping` <- function(x, value) {
-    
-    if ( ! is.null(value) ) {
-        
-        if ( ! is.character(value) ) {
-            stop("mapping cannot have keys of class '",
-                toString(class(value)), "'")
-        }
-        
-        if ( length(value) != length(x) ) {
-            stop("mapping cannot have ", length(value), " keys and ",
-                length(x), " values")
-        }
-    }
-    
-    x <- unclass(x)
-    names(x) <- value
-    class(x) <- c('mapping', 'list')
-    validateMapping(x)
-    
-    return(x)
-}
-
-# values -----------------------------------------------------------------------
-#' Get values of a \code{mapping} object.
-#' 
-#' @param x A \code{mapping} object.
-#' 
-#' @return Unnamed list of values in a \code{mapping} object.
-#' 
-#' @export
-#' @family mapping object functions
-#' @keywords internal
-#' @rdname values
-values <- function(x) {
-    stopifnot( 'mapping' %in% class(x) )
-    return( unname( unclass(x) ) )
 }
 
 # End of mapping.R #############################################################
