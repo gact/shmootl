@@ -249,13 +249,16 @@ print.summary.scanonebins <- function(x, ...) {
 #' 
 #' This function is based on the \pkg{R/qtl} function \code{mqmscanfdr} (see
 #' reference below), but uses a precalculated \code{scanonebins} object
-#' instead of running permutations directly. Thresholds are set from the
-#' bin edges of the \code{scanonebins} object, and empirical false-discovery
-#' rates (FDRs) are calculated at these thresholds. For each false-discovery
-#' rate specified in the \code{fdr} parameter, the threshold with the closest
-#' FDR is returned. Summary results take \code{NA} values in cases where no
-#' sensible FDR can be returned (e.g. fewer loci above a threshold in the
-#' main scanone result than in the corresponding permutation results).
+#' instead of running permutations directly.
+#' 
+#' Thresholds are set from the bin edges of the \code{scanonebins} object, and
+#' empirical false-discovery rates (FDRs) are calculated at these thresholds.
+#' For each false-discovery rate specified in the \code{fdr} parameter, the
+#' threshold with the next lowest FDR estimate is returned where possible, or
+#' next highest FDR estimate otherwise. Summary results take \code{NA} values
+#' in cases where no sensible FDR can be returned (e.g. fewer loci above a
+#' threshold in the main scanone result than in the corresponding permutation
+#' results).
 #' 
 #' @param object A \code{scanonebins} object.
 #' @param scanone.result A \code{scanone} object created from the same data that
@@ -351,62 +354,125 @@ summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.0
     # Get FDRs at each fixed LOD threshold.
     fdrs <- mean.perm.counts / scan.counts
     
-    # Remove any artefactual bump in FDR estimates.
-    # NB: at low scan counts, as the threshold decreases, the proportional
-    # increase in mean permutation counts can be greater than the proportional
-    # increase in scan counts. This can actually result in a higher threshold
-    # having a higher FDR estimate. To avoid this, we remove these artifactually
-    # higher FDR estimates. This will result in a lower threshold, but in these
-    # cases, the LOD threshold underestimate warning will be output anyway.
-    util.indices <- which( ! is.na(fdrs) & is.finite(fdrs) & fdrs > 0 & fdrs < 1 )
-    if ( last.scan.index %in% util.indices && length(util.indices) >= 2 ) {
+    # Get indices of positive finite FDR estimates.
+    # NB: this leaves FDR estimates greater than one, but we filter those later.
+    util.indices <- which( ! is.na(fdrs) & is.finite(fdrs) & fdrs > 0 )
+    
+    # If there are useable FDR values, for each requested FDR, find the
+    # closest-matching FDR estimate and its corresponding LOD threshold..
+    if ( length(util.indices) > 0 ) {
         
-        upper.index <- which(util.indices == last.scan.index)
+        # Get useable FDR estimates.
+        util.fdrs <- fdrs[util.indices]
         
-        if ( upper.index >= 2 ) {
+        # Warn if FDR estimates are noisy.
+        # NB: at low scan counts, the distribution of significant scanone
+        # results is relatively noisy compared to the distribution of
+        # significant permutations. This can mean that as the threshold
+        # decreases, the proportional increase in mean permutation counts can
+        # be greater than the proportional increase in scan counts, which can
+        # actually result in a higher threshold having an artefactually higher
+        # FDR estimate. To circumvent this issue, for each specified FDR, where
+        # there are multiple closest-matching FDR estimates, we take the one
+        # associated with the highest LOD threshold. This may result in a
+        # conservative overestimate of LOD threshold, but that is often
+        # preferable to an underestimate.
+        if ( is.unsorted( rev(util.fdrs) ) ) {
+            warning("FDR estimates are noisy for scanone with ", length(lodcolumns),
+                " phenotypes - more accurate LOD thresholds may be obtained with",
+                " more phenotypes, or by setting stringency with 'alpha' instead")
+        }
+        
+        # Init closest-match FDR values, meaning those FDR estimates that
+        # are closest available to the requested false-discovery rates.
+        prox.fdrs <- rep(NA_real_, length(fdr))
+        
+        # Search for closest-match FDR values.
+        for ( i in seq_along(fdr) ) {
             
-            for ( i in upper.index:2 ) {
+            prox.fdr <- NA_real_
+            
+            for ( util.fdr in rev(util.fdrs) ) {
                 
-                u <- util.indices[i]
-                l <- util.indices[i-1]
-                
-                if ( fdrs[u] > fdrs[l] ) {
-                    last.scan.index <- l
-                    fdrs[u] <- 0
+                if ( util.fdr <= fdr[i] ) {
+                    
+                    # If FDR estimate is less than or equal to requested FDR,
+                    # check FDR estimate for next highest LOD threshold..
+                    prox.fdrs[i] <- util.fdr
+                    
                 } else {
+                    
+                    # ..otherwise the previously-obtained FDR estimate was the
+                    # closest match, so stop searching. If no valid FDR estimate
+                    # was obtained that is less than or equal to the requested
+                    # FDR, and this estimate is valid, accept this FDR estimate
+                    # as being the closest-match FDR.
+                    # NB: here we filter FDR estimates greater than one.
+                    if ( is.na(prox.fdr) && util.fdr < 1.0 ) {
+                        prox.fdrs[i] <- util.fdr
+                    }
                     break
                 }
             }
         }
-    }
-
-    # Get indices of useable FDR values.
-    util.indices <- which( ! is.na(fdrs) & is.finite(fdrs) & fdrs > 0 & fdrs < 1 )
-    
-    # If there are useable FDR values, for each requested FDR, get 
-    # closest matching FDR and its corresponding LOD threshold..
-    if ( length(util.indices) > 0 ) {
         
-        # Check if FDR estimate is limited by scanone LOD profile..
-        if ( last.scan.index %in% util.indices && fdrs[last.scan.index] > min(fdr) ) {
-            warning("LOD threshold (", thresholds[last.scan.index], ") is maximum ",
-                "possible with this LOD profile - may be an underestimate")
-        # ..otherwise check if limited by permutation-derived FDR estimates.
-        } else if ( min(fdrs) > min(fdr) ) {
-            warning("LOD threshold for FDR (", min(fdr), ") may be an overestimate",
-                " - more permutations may help")
+        # Warn if LOD threshold saturation at high FDR and low LOD threshold.
+        overestimates <- fdr[ ! is.na(prox.fdrs) & fdr > max(prox.fdrs) ]
+        if ( length(overestimates) > 0 ) {
+            warning("LOD threshold for FDR value(s) (", toString(overestimates),
+                ") may be an overestimate - please choose lower FDR value(s)")
         }
         
-        util.fdrs <- fdrs[util.indices]
-        prox.fdrs <- sapply(fdr, function(x) util.fdrs[ which.min( abs( x - util.fdrs ) ) ])
-        prox.fdrs <- unique(prox.fdrs)
+        # Warn if LOD threshold saturation at low FDR and high LOD threshold.
+        underestimates <- fdr[ ! is.na(prox.fdrs) & fdr < min(prox.fdrs) ]
+        if ( length(underestimates) > 0 ) {
+            if ( num.scan.bins <= num.perm.bins ) {
+                warning("LOD threshold for FDR value(s) (", toString(underestimates),
+                    ") is maximum possible with this scanone LOD profile",
+                    " - may be an underestimate")
+            } else {
+                warning("LOD thresholds for FDR value(s) (", toString(underestimates),
+                    ") may be an underestimate - more permutations may help")
+            }
+        }
         
-        indices <- which(fdrs %in% prox.fdrs)
-        thresholds <- rev(thresholds[indices])
-        fdrs <- rev(fdrs[indices])
+        # Warn if the closest-match FDR differs from the
+        # requested FDR by an order of magnitude or more.
+        oom.indices <- which( abs( log10(fdr) - log10(prox.fdrs) ) >= 1.0 )
+        for ( i in oom.indices ) {
+            warning("requested FDR (", fdr[i], ") is very different from its",
+                " closest-matching FDR (", prox.fdrs[i], ")")
+        }
         
-    } else { # otherwise set requested thresholds to NA values.
+        # Get non-redundant set of valid closest-match FDR values.
+        prox.fdrs <- unique( prox.fdrs[ ! is.na(prox.fdrs) ] )
         
+        # If any closest-match FDR values found, get corresponding thresholds..
+        if ( length(prox.fdrs) > 0 ) {
+            
+            # Get rightmost index for each distinct closest-match FDR value.
+            prox.rindices <- unique(match(prox.fdrs, rev(fdrs)))
+            prox.indices <- length(fdrs) - prox.rindices + 1
+            
+            # Get thresholds and FDR estimates for closest-match FDR values.
+            thresholds <- thresholds[prox.indices]
+            fdrs <- fdrs[prox.indices]
+            
+        } else { # ..otherwise clear LOD thresholds and FDR estimates.
+            
+            thresholds <- numeric()
+            fdrs <- numeric()
+        }
+        
+    } else { # ..otherwise clear LOD thresholds and FDR estimates.
+        
+        thresholds <- numeric()
+        fdrs <- numeric()
+    }
+    
+    # If no FDR values found, set requested thresholds to NA values.
+    if ( length(fdrs) == 0 ) {
+        warning("LOD thresholds not found for FDR values - '", toString(fdr), "'")
         thresholds <- rep_len(NA_real_, length(fdr))
         fdrs <- fdr
     }

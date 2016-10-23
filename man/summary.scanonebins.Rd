@@ -30,13 +30,17 @@ correspond approximately to the specified false discovery rates.
 \description{
 This function is based on the \pkg{R/qtl} function \code{mqmscanfdr} (see
 reference below), but uses a precalculated \code{scanonebins} object
-instead of running permutations directly. Thresholds are set from the
-bin edges of the \code{scanonebins} object, and empirical false-discovery
-rates (FDRs) are calculated at these thresholds. For each false-discovery
-rate specified in the \code{fdr} parameter, the threshold with the closest
-FDR is returned. Summary results take \code{NA} values in cases where no
-sensible FDR can be returned (e.g. fewer loci above a threshold in the
-main scanone result than in the corresponding permutation results).
+instead of running permutations directly.
+}
+\details{
+Thresholds are set from the bin edges of the \code{scanonebins} object, and
+empirical false-discovery rates (FDRs) are calculated at these thresholds.
+For each false-discovery rate specified in the \code{fdr} parameter, the
+threshold with the next lowest FDR estimate is returned where possible, or
+next highest FDR estimate otherwise. Summary results take \code{NA} values
+in cases where no sensible FDR can be returned (e.g. fewer loci above a
+threshold in the main scanone result than in the corresponding permutation
+results).
 }
 \references{
 Arends D, Prins P, Jansen RC, Broman KW (2010) R/qtl:
