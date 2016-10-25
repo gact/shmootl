@@ -45,6 +45,8 @@ Collate:
     'const.R'
     'cross.R'
     'csv.R'
+    'decodeGenotypes.R'
+    'encodeGenotypes.R'
     'excel.R'
     'geno.R'
     'genome.R'

@@ -66,9 +66,7 @@ as.data.frame.geno <- function(x, ..., chr=NULL, digits=NULL,
     geno.matrix <- do.call(cbind, lapply(x, function(obj) obj$data))
     
     # Replace encoded genotypes with actual genotype values.
-    for ( i in seq_along(genotypes) ) {
-        geno.matrix[ geno.matrix == i ] <- genotypes[i]
-    }
+    geno.matrix <- decodeGenotypes(geno.matrix, genotypes)
     
     # Prepare map matrix.
     map.table <- insertColumn(map.table, col.index=1, 
@@ -178,10 +176,7 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     
     # Convert genotype character matrix to a numeric matrix, with
     # genotype numbers assigned to corresponding genotype symbols.
-    for ( i in seq_along(genotypes) ) {
-        geno.matrix[ geno.matrix == genotypes[i] ] <- i
-    }
-    geno.matrix <- apply(geno.matrix, 2, as.numeric)
+    geno.matrix <- encodeGenotypes(geno.matrix, genotypes)
     
     # Get sample IDs or indices.
     samples <- as.character(from[dat.rows, id.col])

@@ -1045,12 +1045,7 @@ writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL,
     }
     
     # Replace encoded genotypes with actual genotype values.
-    for ( i in seq_along(genotypes) ) {
-        geno.table[ geno.table == i ] <- genotypes[i]
-    }
-    
-    # Replace missing genotype data with missing value symbol.
-    geno.table[ is.na(geno.table) ] <- const$missing.value
+    geno.table <- decodeGenotypes(geno.table, genotypes)
     
     # If writing map unit, add map unit info to map table.
     if (include.mapunit) {
