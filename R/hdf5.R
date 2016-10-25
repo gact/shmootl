@@ -1372,7 +1372,7 @@ writeDatasetHDF5.matrix <- function(dataset, outfile, h5name, ...) {
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5.scanone <- function(dataset, outfile, h5name, ...) {
     
-    num.phenotypes <- length( getDatColIndices(dataset) )
+    num.phenotypes <- length( getLodColIndices(dataset) )
     stopifnot( num.phenotypes == 1 )
     
     writeDatasetHDF5.mapframe(dataset, outfile, h5name, ...)

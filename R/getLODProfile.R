@@ -32,13 +32,7 @@ getLODProfile.data.frame <- function(x, lodcolumn=NULL, ...) {
     
     seqcol.index <- getSeqColIndex(x)
     poscol.index <- getPosColIndex(x)
-    lodcol.index <- getDatColIndices(x, datcolumns=lodcolumn)
-    
-    if ( length(lodcol.index) > 1 ) {
-        stop("cannot get LOD profile for multiple LOD columns - please choose one")
-    } else if ( length(lodcol.index) == 0 ) {
-        stop("no LOD column found")
-    }
+    lodcol.index <- getLodColIndex(x, lodcolumn=lodcolumn)
     
     others <- otherattributes(x)
     
@@ -59,10 +53,12 @@ getLODProfile.qtl <- function(x, qtl.index=NULL, ...) {
 
     stopifnot( 'lodprofile' %in% names( attributes(x) ) )
     
-    qtl.index <- resolveQtlIndices(x, qtl.index)
+    qtl.index <- getIndices(x, requested=qtl.index)
     
-    if ( length(qtl.index) != 1 ) {
+    if ( length(qtl.index) > 1 ) {
         stop("cannot get multiple LOD profiles from QTL object - please choose one")
+    } else if ( length(qtl.index) == 0 ) {
+        stop("no QTL index specified")
     }
         
     # Get LOD profiles of QTL object: a 

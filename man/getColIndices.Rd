@@ -4,14 +4,21 @@
 \alias{getColIndices}
 \title{Get column indices of object.}
 \usage{
-getColIndices(x)
+getColIndices(x, requested = NULL, strict = FALSE)
 }
 \arguments{
 \item{x}{An object with columns.}
+
+\item{requested}{A character vector of column names, a logical vector of
+length equal to the number of object columns, or a numeric vector of column
+indices of the input object. If this is specified, only the requested column
+indices are returned; otherwise, this function returns all column indices.}
+
+\item{strict}{Option indicating that \code{requested}, if specified, must
+be in the same order as the corresponding columns of the input object.}
 }
 \value{
-Integer vector of all column indices. Returns an empty integer vector
-if the object has zero columns.
+Integer vector of column indices.
 }
 \description{
 Get column indices of object.

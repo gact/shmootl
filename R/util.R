@@ -296,16 +296,55 @@ getCoercionFromClassS3 <- function(class.vector) {
 #' Get column indices of object.
 #' 
 #' @param x An object with columns.
-#'     
-#' @return Integer vector of all column indices. Returns an empty integer vector
-#' if the object has zero columns.
-#'    
+#' @param requested A character vector of column names, a logical vector of
+#' length equal to the number of object columns, or a numeric vector of column
+#' indices of the input object. If this is specified, only the requested column
+#' indices are returned; otherwise, this function returns all column indices.
+#' @param strict Option indicating that \code{requested}, if specified, must
+#' be in the same order as the corresponding columns of the input object.
+#' 
+#' @return Integer vector of column indices.
+#' 
 #' @keywords internal
 #' @rdname getColIndices
-getColIndices <- function(x) {
+getColIndices <- function(x, requested=NULL, strict=FALSE) {
+    
     num.cols <- ncol(x)
-    stopifnot( isSingleNonNegativeWholeNumber(num.cols) )
-    return( if ( num.cols > 0 ) { 1:num.cols } else { integer() } )
+    
+    if ( ! isSingleNonNegativeWholeNumber(num.cols) ) {
+        stop("cannot get column indices - object does not have columns")
+    }
+    
+    available <- if ( num.cols > 0 ) { 1:num.cols } else { integer() }
+    names(available) <- colnames(x)
+    
+    resolved <- getIndices(available, requested=requested, strict=strict)
+    indices <- unname(available[resolved])
+    
+    return(indices)
+}
+
+# getColMask -------------------------------------------------------------------
+#' Get logical mask of object columns.
+#' 
+#' Get logical mask of the columns of an object, as constrained by the
+#' \code{requested} parameter. If using this function without \code{requested}
+#' constraints, consider using the command \code{rep(TRUE, ncol(x))} instead.
+#' 
+#' @param x An object with columns.
+#' @param requested A character vector of column names, a logical vector of
+#' length equal to the number of object columns, or a numeric vector of column
+#' indices of the input object. If this parameter is not specified, the returned
+#' logical mask is \code{TRUE} for all columns.
+#' 
+#' @return Logical mask of object columns.
+#' 
+#' @keywords internal
+#' @rdname getColMask
+getColMask <- function(x, requested=NULL) {
+    available <- getColIndices(x)
+    requested <- getColIndices(x, requested=requested)
+    return( available %in% requested )
 }
 
 # getIdColIndex ----------------------------------------------------------------
@@ -360,6 +399,237 @@ getIdColIndex.data.frame <- function(x) {
     }
     
     return(id.col)
+}
+
+# getIndices -------------------------------------------------------------------
+#' Get indices of object elements.
+#' 
+#' Get the indices of an object, as constrained by the \code{requested}
+#' parameter. If using this function without \code{requested} constraints,
+#' consider using the faster primitive R function \code{seq_along} instead.
+#' 
+#' @param x An object with elements that are accessible by an index.
+#' @param requested A character vector of names, a logical vector of the same
+#' length as the input object, or a numeric vector containing indices of the
+#' input object. If this parameter is not specified, all indices are returned.
+#' @param strict Option indicating that \code{requested}, if specified, must
+#' be in the same order as the corresponding elements of the input object.
+#' 
+#' @return Integer vector of object indices.
+#' 
+#' @keywords internal
+#' @rdname getIndices
+getIndices <- function(x, requested=NULL, strict=FALSE) {
+    UseMethod('getIndices', x)
+}
+
+# getIndices.default -----------------------------------------------------------
+#' @export
+#' @rdname getIndices
+getIndices.default <- function(x, requested=NULL, strict=FALSE) {
+    
+    stopifnot( isBOOL(strict) )
+    
+    object.length <- length(x)
+    
+    if ( ! isSingleNonNegativeWholeNumber(object.length) ) {
+        stop("cannot get object indices - object does not have length")
+    }
+    
+    indices <- seq_along(x)
+    
+    if ( ! is.null(requested) ) {
+        
+        if ( is.numeric(requested) ) {
+            
+            nonintegers <- requested[ ! isWholeNumber(requested) ]
+            if ( length(nonintegers) > 0 ) {
+                stop("requested indices are not integers - '", toString(nonintegers), "'")
+            }
+            
+            exrange <- requested[ ! requested %in% indices ]
+            if ( length(exrange) > 0 ) {
+                stop("requested indices out of range - '", toString(exrange), "'")
+            }
+            
+            indices <- indices[requested]
+            
+        } else if ( is.logical(requested) ) {
+            
+            if ( length(requested) != object.length ) {
+                stop("cannot resolve indices by logical vector - length mismatch")
+            }
+            
+            indices <- unname( which(requested) )
+            
+        } else if ( is.character(requested) ) {
+            
+            object.names <- names(x)
+            
+            if ( anyNA(requested) ) {
+                stop("cannot resolve indices by name - requested names are incomplete")
+            }
+            
+            if ( is.null(object.names) ) {
+                stop("cannot resolve indices by name - no object names found")
+            }
+            
+            if ( anyDuplicated(object.names) ) {
+                stop("cannot resolve indices by name - duplicate object names found")
+            }
+            
+            unfound <- requested[ ! requested %in% object.names ]
+            if ( length(unfound) > 0 ) {
+                stop("requested names not found - '", toString(unfound), "'")
+            }
+            
+            indices <- match(requested, object.names)
+            
+        } else {
+            
+            stop("requested indices must be specified by index, logical mask, or name")
+        }
+        
+        if (strict) { # NB: also ensures no duplicates
+            if ( is.unsorted(indices, strictly=TRUE) ) {
+                stop("requested indices not specified in strictly increasing order")
+            }
+        }
+    }
+    
+    return(indices)
+}
+
+# getIndices.qtl ---------------------------------------------------------------
+#' @export
+#' @rdname getIndices
+getIndices.qtl <- function(x, requested=NULL, strict=FALSE) {
+    
+    stopifnot( x$n.qtl > 0 )
+    available <- seq(x$n.qtl)
+    names(available) <- x$name
+    
+    resolved <- getIndices(available, requested=requested, strict=strict)
+    indices <- unname(available[resolved])
+
+    return(indices)
+}
+
+# getLodColIndex ---------------------------------------------------------------
+#' Get LOD column index.
+#' 
+#' @param x A \code{scanone} or equivalent object,
+#' or any object with LOD-column-associated elements.
+#' @template param-lodcolumn
+#' 
+#' @return LOD column index.
+#' 
+#' @keywords internal
+#' @rdname getLodColIndex
+getLodColIndex <- function(x, lodcolumn=NULL) {
+    
+    lodcol.index <- getLodColIndices(x, lodcolumns=lodcolumn)
+    
+    if ( length(lodcol.index) > 1 ) {
+        stop("object has multiple LOD columns - please choose one")
+    } else if ( length(lodcol.index) == 0 ) {
+        stop("no LOD column found")
+    }
+    
+    return(lodcol.index)
+}
+
+# getLodColIndices -------------------------------------------------------------
+#' Get LOD column indices.
+#' 
+#' @param x A \code{scanone} or equivalent object,
+#' or any object with LOD-column-associated elements.
+#' @template param-lodcolumns
+#' @param strict Option indicating that the LOD columns, if specified, must
+#' be in the same order as the corresponding elements of the input object.
+#' 
+#' @return Vector of LOD column indices.
+#' 
+#' @keywords internal
+#' @rdname getLodColIndices
+getLodColIndices <- function(x, lodcolumns=NULL, strict=FALSE) {
+    UseMethod('getLodColIndices', x)
+}
+
+# getLodColIndices.scanone -----------------------------------------------------
+#' @rdname getLodColIndices
+getLodColIndices.scanone <- function(x, lodcolumns=NULL, strict=FALSE) {
+    return( getDatColIndices(x, datcolumns=lodcolumns, strict=strict) )
+}
+
+# getLodColIndices.scanonebins -------------------------------------------------
+#' @rdname getLodColIndices
+getLodColIndices.scanonebins <- function(x, lodcolumns=NULL, strict=FALSE) {
+    stopifnot( dim(x)[3] > 0 )
+    available <- seq_len( dim(x)[3] )
+    names(available) <- dimnames(x)[[3]]
+    resolved <- getIndices(available, requested=lodcolumns, strict=strict)
+    indices <- unname(available[resolved])
+    return(indices)
+}
+
+# getLodColIndices.scanoneperm -------------------------------------------------
+#' @rdname getLodColIndices
+getLodColIndices.scanoneperm <- function(x, lodcolumns=NULL, strict=FALSE) {
+    available <- getColIndices(x)
+    names(available) <- colnames(x)
+    resolved <- getIndices(available, requested=lodcolumns, strict=strict)
+    indices <- unname(available[resolved])
+    return(indices)
+}
+
+# getLodColIndices.summary.scanoneperm -----------------------------------------
+#' @export
+#' @method getLodColIndices summary.scanoneperm
+#' @rdname getLodColIndices
+getLodColIndices.summary.scanoneperm <- function(x, lodcolumns=NULL,
+    strict=FALSE) {
+    available <- getColIndices(x)
+    names(available) <- colnames(x)
+    resolved <- getIndices(available, requested=lodcolumns, strict=strict)
+    indices <- unname(available[resolved])
+    return(indices)
+}
+
+# getLodColIndices.summary.scanonebins -----------------------------------------
+#' @export
+#' @method getLodColIndices summary.scanonebins
+#' @rdname getLodColIndices
+getLodColIndices.summary.scanonebins <- function(x, lodcolumns=NULL,
+    strict=FALSE) {
+    available <- getColIndices(x)
+    names(available) <- colnames(x)
+    resolved <- getIndices(available, requested=lodcolumns, strict=strict)
+    indices <- unname(available[resolved])
+    return(indices)
+}
+
+# getMask ----------------------------------------------------------------------
+#' Get logical mask of object elements.
+#' 
+#' Get logical mask of the elements of an object, as constrained by the
+#' \code{requested} parameter. If using this function without \code{requested}
+#' constraints, consider using the command \code{rep(TRUE, length(x))} instead.
+#' 
+#' @param x An object that is subsettable by a logical mask.
+#' @param requested A character vector of names, a logical vector of the same
+#' length as the input object, or a numeric vector containing indices of the
+#' input object. If this parameter is not specified, the returned logical mask
+#' is \code{TRUE} for all elements.
+#' 
+#' @return Logical mask of object elements.
+#' 
+#' @keywords internal
+#' @rdname getMask
+getMask <- function(x, requested=NULL) {
+    available <- getIndices(x)
+    requested <- getIndices(x, requested=requested)
+    return( available %in% requested )
 }
 
 # getMissingValueFromClassS3 ---------------------------------------------------
@@ -507,16 +777,55 @@ getPhenoColIndices.data.frame <- function(x, pheno.col=NULL) {
 #' Get row indices of object.
 #' 
 #' @param x An object with rows.
-#'     
-#' @return Integer vector of all row indices. Returns an empty integer vector if
-#' the object has zero rows.
-#'    
+#' @param requested A character vector of row names, a logical vector of length
+#' equal to the number of object rows, or a numeric vector of row indices of the
+#' input object. If this is specified, only the requested row indices are
+#' returned; otherwise, this function returns all row indices.
+#' @param strict Option indicating that \code{requested}, if specified, must
+#' be in the same order as the corresponding rows of the input object.
+#' 
+#' @return Integer vector of row indices.
+#' 
 #' @keywords internal
 #' @rdname getRowIndices
-getRowIndices <- function(x) {
+getRowIndices <- function(x, requested=NULL, strict=FALSE) {
+    
     num.rows <- nrow(x)
-    stopifnot( isSingleNonNegativeWholeNumber(num.rows) )
-    return( if ( num.rows > 0 ) { 1:num.rows } else { integer() } )
+    
+    if ( ! isSingleNonNegativeWholeNumber(num.rows) ) {
+        stop("cannot get row indices - object does not have rows")
+    }
+    
+    available <- if ( num.rows > 0 ) { 1:num.rows } else { integer() }
+    names(available) <- rownames(x)
+    
+    resolved <- getIndices(available, requested=requested, strict=strict)
+    indices <- unname(available[resolved])
+    
+    return(indices)
+}
+
+# getRowMask -------------------------------------------------------------------
+#' Get logical mask of object rows.
+#' 
+#' Get logical mask of the rows of an object, as constrained by the
+#' \code{requested} parameter. If using this function without \code{requested}
+#' constraints, consider using the command \code{rep(TRUE, nrow(x))} instead.
+#' 
+#' @param x An object with rows.
+#' @param requested A character vector of row names, a logical vector of length
+#' equal to the number of object rows, or a numeric vector of row indices of the
+#' input object. If this parameter is not specified, the returned logical mask
+#' is \code{TRUE} for all rows.
+#' 
+#' @return Logical mask of object rows.
+#' 
+#' @keywords internal
+#' @rdname getRowMask
+getRowMask <- function(x, requested=NULL) {
+    available <- getRowIndices(x)
+    requested <- getRowIndices(x, requested=requested)
+    return( available %in% requested )
 }
 
 # getRunIndexList --------------------------------------------------------------
@@ -2125,44 +2434,6 @@ requestPkgDataPath <- function(...) {
     }
     
     return(result)
-}
-
-# resolveQtlIndices ------------------------------------------------------------
-#' Resolve indices of QTL object.
-#'  
-#' @param x A \code{qtl} object.
-#' @param qtl.indices QTL indices referring to the given QTL object.
-#' 
-#' @return QTL indices resolved with respect to the given QTL object.
-#' 
-#' @keywords internal
-#' @rdname resolveQtlIndices
-resolveQtlIndices <- function(x, qtl.indices=NULL) {
-    
-    stopifnot( 'qtl' %in% class(x) )
-    
-    if ( ! is.null(qtl.indices) ) {
-        
-        if ( length(qtl.indices) == 0 ) {
-            stop("no QTL indices specified")
-        }
-        
-        invalid <- qtl.indices[ ! isPositiveWholeNumber(qtl.indices) ]
-        if ( length(invalid) > 0 ) {
-            stop("invalid QTL indices - '", toString(invalid), "'")
-        }
-        
-        exrange <- qtl.indices[ qtl.indices < 1 | qtl.indices > x$n.qtl ]
-        if ( length(exrange) > 0 ) {
-            stop("QTL indices out of range - '", toString(exrange), "'")
-        }
-        
-    } else {
-        
-        qtl.indices <- 1:x$n.qtl
-    }
-    
-    return(qtl.indices)
 }
 
 # rstripBlankCols --------------------------------------------------------------

@@ -289,7 +289,7 @@ summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.0
     fdr <- unique( sort(fdr) )
     
     # Check that LOD column names match between scanone and scanonebins objects.
-    scan.lodcols <- getDatColIndices(scanone.result)
+    scan.lodcols <- getLodColIndices(scanone.result)
     scan.lodcol.names <- colnames(scanone.result)[scan.lodcols]
     perm.lodcol.names <- dimnames(object)[[3]]
     if ( length(perm.lodcol.names) != length(scan.lodcol.names) ||
@@ -298,7 +298,8 @@ summary.scanonebins <- function(object, scanone.result, lodcolumns=NULL, fdr=0.0
     }
     
     # Get specified LOD column indices.
-    lodcol.indices <- getDatColIndices(scanone.result, datcolumns=lodcolumns, strict=TRUE)
+    lodcol.indices <- getLodColIndices(scanone.result,
+        lodcolumns=lodcolumns, strict=TRUE)
     stopifnot( length(lodcol.indices) > 0 )
     
     # If no error occurred above, there is a single LOD column.

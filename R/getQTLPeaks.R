@@ -67,14 +67,8 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, alpha=NULL,
     
     seqcol.index <- getSeqColIndex(x)
     poscol.index <- getPosColIndex(x)
-    lodcol.index <- getDatColIndices(x, datcolumns=lodcolumn)
+    lodcol.index <- getLodColIndex(x, lodcolumn=lodcolumn)
     
-    if ( length(lodcol.index) > 1 ) {
-        stop("cannot get QTL peaks for multiple LOD columns - please choose one")
-    } else if ( length(lodcol.index) == 0 ) {
-        stop("no LOD column found")
-    }
-
     # Get sequences corresponding to individual map loci.
     x.seqs <- pullLocusSeq(x)
     
@@ -162,10 +156,10 @@ getQTLPeaks.qtl <- function(x, chr=NULL, qtl.indices=NULL, ...) {
     chr <- subsetBySeq(sortSeq( unique(norm.qtl.seqs) ), chr)
     stopifnot( length(chr) > 0 )
     
-    qtl.indices <- resolveQtlIndices(x, qtl.indices)
-    
-    # Filter QTL indices by sequence. 
-    qtl.indices <- which( norm.qtl.seqs %in% chr & 1:x$n.qtl %in% qtl.indices )
+    # Filter QTL indices by sequence.
+    seq.mask <- norm.qtl.seqs %in% chr
+    qtl.mask <- getMask(x, requested=qtl.indices)
+    qtl.indices <- which( seq.mask & qtl.mask )
     
     if ( length(qtl.indices) == 0 ) {
         stop("QTL object has no QTLs on sequences '", toString(chr), "'")

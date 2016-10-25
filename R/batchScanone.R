@@ -104,7 +104,7 @@ batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, ..
         
         pheno.names <- qtl::phenames(cross)[pheno.col]
         for ( i in seq_along(scanone.results) ) {
-            lodcol.index = getDatColIndices(scanone.results[[i]])
+            lodcol.index = getLodColIndices(scanone.results[[i]])
             stopifnot( length(lodcol.index) == 1 )
             colnames(scanone.results[[i]])[lodcol.index] <- pheno.names[i]
         }
@@ -120,7 +120,7 @@ batchPhenoScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, ..
     } else { # ..otherwise assign default LOD column name.
         
         combined.result <- scanone.results[[1]]
-        lodcol.index = getDatColIndices(combined.result)
+        lodcol.index = getLodColIndices(combined.result)
         stopifnot( length(lodcol.index) == 1 )
         colnames(combined.result)[lodcol.index] <- 'lod'
     }
@@ -219,7 +219,7 @@ nodePermScanone <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE,
     scanone.result <- do.call(qtl::scanone, c(args, kwargs))
     
     # Get LOD column indices.
-    lodcol.indices = getDatColIndices(scanone.result)
+    lodcol.indices = getLodColIndices(scanone.result)
     
     if ( perm.type == 'max' ) {
         

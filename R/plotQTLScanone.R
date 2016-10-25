@@ -70,13 +70,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     
     # Get scanone result column indices.
     poscol.index <- getPosColIndex(x)
-    lodcol.index <- getDatColIndices(x, datcolumns=lodcolumn)
-    
-    if ( length(lodcol.index) > 1 ) {
-        stop("cannot plot QTL scanone result for multiple LOD columns - please choose one")
-    } else if ( length(lodcol.index) == 0 ) {
-        stop("no LOD column found")
-    }
+    lodcol.index <- getLodColIndex(x, lodcolumn=lodcolumn)
     
     # Ensure scanone result has normalised sequence IDs.
     x <- normSeq(x)

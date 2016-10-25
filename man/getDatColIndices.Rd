@@ -10,9 +10,10 @@ getDatColIndices(x, datcolumns = NULL, strict = FALSE)
 \item{x}{A \code{mapframe} or equivalent \code{data.frame}.}
 
 \item{datcolumns}{Optional parameter indicating which data columns to
-consider. This must be either a character vector of data column names
-or a numeric vector of indices \emph{with respect to the set of data
-columns}. If no data columns are specified, all are considered.}
+consider. This must be a character vector of data column names, a logical
+vector with length equal to the number of data columns, or a numeric vector
+of indices \emph{with respect to the set of data columns}. If no data columns
+are specified, all are considered.}
 
 \item{strict}{Option indicating that the specified data columns must
 be in the same order as they are in the \code{mapframe} object.}

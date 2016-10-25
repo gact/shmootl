@@ -344,10 +344,10 @@ getQTLIntervals.qtl <- function(x, chr=NULL,
     chr <- subsetBySeq(sortSeq( unique(norm.qtl.seqs) ), chr)
     stopifnot( length(chr) > 0 )
     
-    qtl.indices <- resolveQtlIndices(x, qtl.indices)
-    
-    # Filter QTL indices by sequence. 
-    qtl.indices <- which( norm.qtl.seqs %in% chr & 1:x$n.qtl %in% qtl.indices )
+    # Filter QTL indices by sequence.
+    seq.mask <- norm.qtl.seqs %in% chr
+    qtl.mask <- getMask(x, requested=qtl.indices)
+    qtl.indices <- which( seq.mask & qtl.mask )
     
     if ( length(qtl.indices) == 0 ) {
         stop("QTL object has no QTLs on sequences '", toString(chr), "'")

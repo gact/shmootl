@@ -135,7 +135,7 @@ nodePermScanoneF <- function(perm.id, cross, pheno.col=NULL, perm.pheno=TRUE,
     scanone.result <- do.call(qtl::scanone, c(args, kwargs))
     
     # Get LOD column indices.
-    lodcol.indices = getDatColIndices(scanone.result)
+    lodcol.indices = getLodColIndices(scanone.result)
     
     # Set SLOD values from the mean LOD value across phenotypes at each locus.
     scanone.slod <- rowMeans(scanone.result[, lodcol.indices, drop=FALSE])

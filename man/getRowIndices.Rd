@@ -4,14 +4,21 @@
 \alias{getRowIndices}
 \title{Get row indices of object.}
 \usage{
-getRowIndices(x)
+getRowIndices(x, requested = NULL, strict = FALSE)
 }
 \arguments{
 \item{x}{An object with rows.}
+
+\item{requested}{A character vector of row names, a logical vector of length
+equal to the number of object rows, or a numeric vector of row indices of the
+input object. If this is specified, only the requested row indices are
+returned; otherwise, this function returns all row indices.}
+
+\item{strict}{Option indicating that \code{requested}, if specified, must
+be in the same order as the corresponding rows of the input object.}
 }
 \value{
-Integer vector of all row indices. Returns an empty integer vector if
-the object has zero rows.
+Integer vector of row indices.
 }
 \description{
 Get row indices of object.

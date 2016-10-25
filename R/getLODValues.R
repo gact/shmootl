@@ -29,13 +29,7 @@ getLODValues <- function(x, loc, lodcolumn=NULL) {
     poscol.index <- getPosColIndex(x)
 
     # Get LOD column index.
-    lodcol.index <- getDatColIndices(x, datcolumns=lodcolumn)
-    
-    if ( length(lodcol.index) > 1 ) {
-        stop("cannot get LOD values for multiple LOD columns - please choose one")
-    } else if ( length(lodcol.index) == 0 ) {
-        stop("no LOD column found")
-    }
+    lodcol.index <- getLodColIndex(x, lodcolumn=lodcolumn)
     
     if ( nrow(loc) == 0 ) {
         stop("cannot get LOD values - no loci specified")

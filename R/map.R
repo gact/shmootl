@@ -737,9 +737,10 @@ getSeqColIndex <- function(x) {
 #' 
 #' @param x A \code{mapframe} or equivalent \code{data.frame}.
 #' @param datcolumns Optional parameter indicating which data columns to
-#' consider. This must be either a character vector of data column names
-#' or a numeric vector of indices \emph{with respect to the set of data
-#' columns}. If no data columns are specified, all are considered.
+#' consider. This must be a character vector of data column names, a logical
+#' vector with length equal to the number of data columns, or a numeric vector
+#' of indices \emph{with respect to the set of data columns}. If no data columns
+#' are specified, all are considered.
 #' @param strict Option indicating that the specified data columns must
 #' be in the same order as they are in the \code{mapframe} object.
 #' 
@@ -750,61 +751,18 @@ getSeqColIndex <- function(x) {
 getDatColIndices <- function(x, datcolumns=NULL, strict=FALSE) {
     
     stopifnot( is.data.frame(x) )
-    stopif( anyDuplicated( colnames(x) ) )
-    stopifnot( isBOOL(strict) )
-    
     column.indices <- getColIndices(x)
-    seqcol.indices <- getSeqColIndex(x)
-    poscol.indices <- getPosColIndex(x)
-    datcol.indices <- column.indices[ column.indices != seqcol.indices &
-        column.indices != poscol.indices ]
     
-    if ( ! is.null(datcol.indices) ) {
-        
-        if ( ! is.null(datcolumns) ) {
-            
-            stopif( anyNA(datcolumns) )
-            
-            if ( isWholeNumber(datcolumns) ) {
-                
-                available.datcolumns <- seq_along(datcol.indices)
-                
-                exrange <- datcolumns[ ! inRange( datcolumns, range(available.datcolumns) ) ]
-                if ( length(exrange) > 0 ) {
-                    stop("data column indices out of range - '", toString(exrange), "'")
-                }
-                
-                datcol.indices <- datcol.indices[ datcolumns ]
-                
-            } else if ( is.character(datcolumns) ) {
-                
-                available.headings <- colnames(x)[datcol.indices]
-                
-                unfound <- datcolumns[ ! datcolumns %in% available.headings ]
-                if ( length(unfound) > 0 ) {
-                    stop("data column names not found - '", toString(unfound), "'")
-                }
-                
-                datcol.indices <- datcol.indices[ match(datcolumns, available.headings) ]
-                
-            } else {
-                
-                stop("data columns must be specified by index or name")
-            }
-            
-            if (strict) { # NB: also ensures no duplicates
-                if ( is.unsorted(datcol.indices, strictly=TRUE) ) {
-                    stop("data columns not specified in strictly increasing order")
-                }
-            }
-        }
-        
-    } else {
-        
-        datcol.indices <- integer()
-    }
+    seqcol.mask <- column.indices == getSeqColIndex(x)
+    poscol.mask <- column.indices == getPosColIndex(x)
     
-    return(datcol.indices)
+    available <- column.indices[ ! ( seqcol.mask | poscol.mask ) ]
+    names(available) <- colnames(x)[available]
+    
+    resolved <- getIndices(available, requested=datcolumns, strict=strict)
+    indices <- unname(available[resolved])
+    
+    return(indices)
 }
 
 # getMapSteps ------------------------------------------------------------------
@@ -1119,7 +1077,7 @@ getPosColIndex <- function(x, nmax=NULL) {
                 ") exceeds maximum (", nmax, ")")
         }
     }
-   
+    
     return(poscol.indices[1])
 }
 

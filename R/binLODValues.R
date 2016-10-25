@@ -20,7 +20,7 @@ binLODValues <- function(x, lodcolumns=NULL) {
     
     stopifnot( 'scanone' %in% class(x) )
     
-    lodcol.indices <- getDatColIndices(x, datcolumns=lodcolumns, strict=TRUE)
+    lodcol.indices <- getLodColIndices(x, lodcolumns=lodcolumns, strict=TRUE)
     
     num.lodcols <- length(lodcol.indices)
     
