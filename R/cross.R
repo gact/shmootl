@@ -1,5 +1,37 @@
 # Start of cross.R #############################################################
 
+# crossesEqual -----------------------------------------------------------------
+#' Test if two \pkg{R/qtl} \code{cross} objects are essentially equal.
+#' 
+#' This uses the \pkg{R/qtl} function \code{comparecrosses} to check if two
+#' input \code{cross} objects are essentially equal, with key elements being
+#' identical, and numeric values being equal (within the given tolerance).
+#' 
+#' @param cross1 An \pkg{R/qtl} \code{cross} object.
+#' @param cross2 An \pkg{R/qtl} \code{cross} object.
+#' @param tol Tolerance for comparing numeric values.
+#' 
+#' @return Returns \code{TRUE} if the two input \code{cross} objects are
+#' essentially equal. Otherwise, this function returns a character vector
+#' describing an observed difference between the two \code{cross} objects.
+#' 
+#' @template seealso-rqtl-manual
+#' 
+#' @export
+#' @family cross utility functions
+#' @rdname crossesEqual
+crossesEqual <- function(cross1, cross2, tol=1e-5) {
+    
+    diffs <- tryCatch({
+        suppressMessages( qtl::comparecrosses(cross1, cross2, tol=tol) )
+        result <- character()
+    }, error=function(e) {
+        result <- e[['message']]
+    })
+    
+    return( if ( length(diffs) == 0 ) {TRUE} else {diffs} )
+}
+
 # getFlankingPhenoColIndices ---------------------------------------------------
 #' Get flanking phenotype column indices.
 #' 

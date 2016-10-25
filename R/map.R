@@ -1845,6 +1845,80 @@ mapkeyOpt <- function(value) {
     return(result)
 }
 
+# mapsEqual -------------------------------------------------------------------
+#' Test if two \pkg{R/qtl} \code{map} objects are essentially equal.
+#' 
+#' This is based on the \pkg{R/qtl} function \code{comparecrosses},
+#' and checks that two input \code{map} objects are essentially equal, having
+#' identical reference sequences, marker names, map unit, and map positions
+#' (within the given numeric tolerance).
+#' 
+#' @param map1 An \pkg{R/qtl} \code{map} object.
+#' @param map2 An \pkg{R/qtl} \code{map} object.
+#' @param tol Numeric tolerance for comparing map positions.
+#' 
+#' @return Returns \code{TRUE} if the two input \code{map} objects are identical
+#' within the given tolerance. Otherwise, this function returns a character
+#' vector listing observed differences between the two \code{map} objects.
+#' 
+#' @template seealso-rqtl-manual
+#' 
+#' @export
+#' @family map utility functions
+#' @rdname mapsEqual
+mapsEqual <- function(map1, map2, tol=1e-5) {
+    
+    stopifnot( 'map' %in% class(map1) )
+    stopifnot( 'map' %in% class(map2) )
+    stopifnot( isSingleNonNegativeNumber(tol) )
+    
+    diffs <- character()
+    
+    if ( length(map1) == length(map2) ) {
+        
+        map1.names <- names(map1)
+        map2.names <- names(map2)
+        diff.names <- union( setdiff(map1.names, map2.names),
+            setdiff(map2.names, map1.names) )
+        if ( length(diff.names) > 0 ) {
+            diffs <- c(diffs, paste0("map sequence name mismatch - '",
+                toString(diff.names), "'"))
+        }
+        
+        if ( all( lengths(map1) == lengths(map2) ) ) {
+            
+            map1.ids <- pullLocusIDs(map1)
+            map2.ids <- pullLocusIDs(map2)
+            diff.ids <- union( setdiff(map1.ids, map2.ids),
+                setdiff(map2.ids, map1.ids) )
+            if ( length(diff.ids) > 0 ) {
+                diffs <- c(diffs, paste0("map sequence marker name mismatch - '",
+                    toString(diff.ids), "'"))
+            }
+            
+            map1.pos <- pullLocusPos(map1)
+            map2.pos <- pullLocusPos(map2)
+            if ( ! isTRUE( all.equal(map1.pos, map2.pos, tolerance=tol) ) ) {
+                diffs <- c(diffs, "map sequence marker position mismatch")
+            }
+            
+        } else {
+            diffs <- c(diffs, "map sequence marker count mismatch")
+        }
+        
+    } else {
+        diffs <- c(diffs, "map sequence count mismatch")
+    }
+    
+    map1.unit <- getMapUnit(map1)
+    map2.unit <- getMapUnit(map2)
+    if ( ! identical(map1.unit, map2.unit) ) {
+        diffs <- c(diffs, "map unit mismatch")
+    }
+    
+    return( if ( length(diffs) == 0 ) {TRUE} else {diffs} )
+}
+
 # matchLoci --------------------------------------------------------------------
 #' Get object loci matching those specified.
 #' 

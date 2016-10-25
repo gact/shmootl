@@ -40,10 +40,11 @@ Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{getMapSteps}}, \code{\link{getMapUnit}},
   \code{\link{gmapframe}}, \code{\link{hasMapCSV}},
   \code{\link{inMapOrder}}, \code{\link{inferMapStep}},
-  \code{\link{mapframe}}, \code{\link{orderMap}},
-  \code{\link{readMapCSV}}, \code{\link{readMapHDF5}},
-  \code{\link{readMapframeCSV}}, \code{\link{setMapUnit}},
-  \code{\link{writeMapCSV}}, \code{\link{writeMapHDF5}},
+  \code{\link{mapframe}}, \code{\link{mapsEqual}},
+  \code{\link{orderMap}}, \code{\link{readMapCSV}},
+  \code{\link{readMapHDF5}}, \code{\link{readMapframeCSV}},
+  \code{\link{setMapUnit}}, \code{\link{writeMapCSV}},
+  \code{\link{writeMapHDF5}},
   \code{\link{writeMapframeCSV}}
 }
 
