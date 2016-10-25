@@ -2190,31 +2190,36 @@ makePseudomarkerIDs <- function(loc) {
     return( paste0('c', loc.seqs, '.loc', loc.pos) )
 }
 
-# makeScanoneThreshold ---------------------------------------------------------
+# makeScanoneThresholdObject ---------------------------------------------------
 #' Make \code{scanone} threshold object.
 #' 
 #' @param threshold LOD threshold value.
+#' @param lodcolnames Character vector of LOD column names
+#' to be used in the \code{scanone} threshold object.
 #' @param alpha Significance level (alpha) associated with the specified LOD
 #' threshold. (Incompatible with \code{fdr}.)
 #' @param fdr False-discovery rate associated with the specified LOD
 #' threshold. (Incompatible with \code{alpha}.)
 #' 
 #' @return If \code{alpha} is specified, a \code{summary.scanoneperm} object is
-#' returned, with the given threshold at the specified \code{alpha} for the
-#' single LOD column. If \code{fdr} is specified, a \code{summary.scanonebins}
-#' object is returned, with the given threshold at the specified \code{fdr}
-#' for the single LOD column. In any case, because no permutations are used in
-#' generating the threshold, the returned object has attribute \code{'n.perm'}
-#' containing an \code{NA} value.
+#' returned, with the given threshold at the specified \code{alpha} for each LOD
+#' column. If \code{fdr} is specified, a \code{summary.scanonebins} object is
+#' returned, with the given threshold at the specified \code{fdr} in the single
+#' LOD column for all phenotypes. In any case, because no permutations are used
+#' in generating the threshold, the returned object has attribute \code{'n.perm'}
+#' containing the value \code{0}.
 #' 
 #' @keywords internal
-#' @rdname makeScanoneThreshold
-makeScanoneThreshold <- function(threshold, alpha=NULL, fdr=NULL) {
+#' @rdname makeScanoneThresholdObject
+makeScanoneThresholdObject <- function(threshold, lodcolnames='lod', alpha=NULL,
+    fdr=NULL) {
     
     stopifnot( isSingleNonNegativeNumber(threshold) )
+    stopifnot( all( isValidName(lodcolnames) ) )
+    stopifnot( length(lodcolnames) > 0 )
     
     if ( ! is.null(alpha) && ! is.null(fdr) ) {
-        stop("cannot set both significance level (alpha) and FDR")
+        stop("scanone threshold cannot have both significance level (alpha) and FDR")
     } else if ( ! is.null(alpha) ) {
         
         stopifnot( isSingleProbability(alpha) )
@@ -2229,10 +2234,16 @@ makeScanoneThreshold <- function(threshold, alpha=NULL, fdr=NULL) {
         threshold.class <- 'summary.scanonebins'
         
     } else {
-        stop("must set either significance level (alpha) or FDR")
+        stop("scanone threshold must have either significance level (alpha) or FDR")
     }
     
-    x <- matrix(threshold, dimnames=list(level, 'lod'))
+    if ( length(lodcolnames) == 1 && lodcolnames != 'lod' ) {
+        warning("forcing single LOD column name to 'lod'")
+        lodcolnames <- 'lod'
+    }
+    
+    x <- matrix( rep(threshold, length(lodcolnames)), nrow=length(level),
+        ncol=length(lodcolnames), dimnames=list(level, lodcolnames))
     class(x) <- threshold.class
     attr(x, 'n.perm') <- 0
     

@@ -181,7 +181,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         
     } else { # ..otherwise make LOD threshold object.
         
-        scanone.threshold <- makeScanoneThreshold(threshold,
+        scanone.threshold <- makeScanoneThresholdObject(threshold,
             alpha=alpha, fdr=fdr)
         multiple.lodcolumns <- FALSE
         scanone.perms <- NULL
