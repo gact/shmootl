@@ -1302,12 +1302,14 @@ isGeneticMapframe <- function(x) {
 #' @keywords internal
 #' @rdname isGeneticMapUnit
 isGeneticMapUnit <- function(x) {
-    tryCatch({
-        validateMapUnit(x, map.type='gmap')
+    
+    status <- tryCatch({
+        result <- validateMapUnit(x, map.type='gmap')
     }, error=function(e) {
-        return(FALSE)
+        result <- FALSE
     })
-    return(TRUE)
+    
+    return(status)
 }
 
 # isPhysicalMap ----------------------------------------------------------------
@@ -1366,13 +1368,13 @@ isPhysicalMapframe <- function(x) {
 #' @rdname isPhysicalMapUnit
 isPhysicalMapUnit <- function(x) {
     
-    tryCatch({
-        validateMapUnit(x, map.type='pmap')
+    status <- tryCatch({
+        status <- validateMapUnit(x, map.type='pmap')
     }, error=function(e) {
-        return(FALSE)
+        result <- FALSE
     })
     
-    return(TRUE)
+    return(status)
 }
 
 # isValidMapUnit ---------------------------------------------------------------
@@ -1387,13 +1389,13 @@ isPhysicalMapUnit <- function(x) {
 #' @rdname isValidMapUnit
 isValidMapUnit <- function(x) {
     
-    tryCatch({
-        validateMapUnit(x)
+    status <- tryCatch({
+        result <- validateMapUnit(x)
     }, error=function(e) {
-        return(FALSE)
+        result <- FALSE
     })
     
-    return(TRUE)
+    return(status)
 }
 
 # makePlaceholderMap -----------------------------------------------------------

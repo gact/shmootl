@@ -84,9 +84,11 @@ as.mapping <- function(x) {
 #' @rdname is.mapping
 is.mapping <- function(x) {
     
-    status <- FALSE
-    tryCatch({ status <- validateMapping(x)
-    }, error=function(e) {})
+    status <- tryCatch({
+        result <- validateMapping(x)
+    }, error=function(e) {
+        result <- FALSE
+    })
     
     return(status)
 }

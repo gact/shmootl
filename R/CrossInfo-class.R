@@ -1921,25 +1921,29 @@ setValidity('CrossInfo', function(object) {
         validateSequences, validateMarkers, validatePhenotypes, validateSamples)
     
     for ( validator in validators ) {
-        tryCatch({
+        
+        msg <- tryCatch({
             validator(object)
+            result <- NULL
         }, error=function(e) {
-            errors <- c(errors, e[['message']])
+            result <- e[['message']]
         })
+        
+        errors <- c(errors, msg)
     }
     
     if ( hasMarkerSeqs(object) ) {
         
         orphans <- object@markers$marker[ ! object@markers$seq %in% object@seq ]
         if ( length(orphans) > 0 ) {
-            e <- paste0("no sequence found for markers - '", toString(orphans), "'")
-            errors <- c(errors, e)
+            errors <- c(errors, paste0("no sequence found for markers - '",
+                toString(orphans), "'"))
         }
         
         empties <- object@seq[ ! object@seq %in% object@markers$seq ]
         if ( length(empties) > 0 ) {
-            e <- paste0("no markers found for sequences - '", toString(empties), "'")
-            errors <- c(errors, e)
+            errors <- c(errors, paste0("no markers found for sequences - '",
+                toString(empties), "'"))
         }
     }
     
@@ -1947,8 +1951,7 @@ setValidity('CrossInfo', function(object) {
         gchars <- sort( unique( unlist( strsplit(object@genotypes, '') ) ) )
         achars <- sort( object@alleles )
         if ( length(achars) != length(gchars) || any(achars != gchars) ) {
-            e <- paste0("allele/genotype mismatch")
-            errors <- c(errors, e)
+            errors <- c(errors, paste0("allele/genotype mismatch"))
         }
     }
     

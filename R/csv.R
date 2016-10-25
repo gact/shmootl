@@ -201,12 +201,12 @@ hasMapCSV <- function(infile) {
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     
-    status <- FALSE
-    
-    tryCatch({
+    status <- tryCatch({
         params <- getMetadataCSV(infile)
-        status <- params$map.present
-    }, error=function(e) {})
+        result <- params$map.present
+    }, error=function(e) {
+        result <- FALSE
+    })
     
     return(status)
 }
@@ -958,12 +958,12 @@ sniffCSV <- function(infile) {
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     
-    data.class <- 'unknown'
-    
-    tryCatch({
+    data.class <- tryCatch({
         params <- getMetadataCSV(infile)
-        data.class <- params$class
-    }, error=function(e) {})
+        result <- params$class
+    }, error=function(e) {
+        result <- 'unknown'
+    })
     
     return(data.class)
 }

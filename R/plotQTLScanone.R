@@ -245,17 +245,16 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
             interval.widths <- sapply(qtl.intervals, function(qtl.interval)
                 diff(qtl.interval[c(1,3), 'pos (cM)']) )
             
-            # Get default bullet width.
-            bullet.inches <- 0.06944444 # default bullet width in inches (family='sans', cex=1)
-            plot.inches <- graphics::par('pin')[1] # plot width in inches
-            plot.space <- diff(xlim) # plot width in user-space
-            bullet.width <- (bullet.inches / plot.inches) * plot.space
-            
-            # Try to get size of bullet symbol (pch=20) in user-space.
-            tryCatch({
-                bullet.width <- suppressWarnings(
-                    strwidth('\u2022', cex=args$cex, family ='sans') )
-            }, error=function(e) {})
+            # Try to get size of bullet symbol (pch=20) in user-space..
+            bullet.width <- tryCatch({
+                result <- suppressWarnings( strwidth('\u2022',
+                    cex=args$cex, family ='sans') )
+            }, error=function(e) { # ..otherwise get default bullet width.
+                bullet.inches <- 0.06944444 # default bullet width in inches (family='sans', cex=1)
+                plot.inches <- graphics::par('pin')[1] # plot width in inches
+                plot.space <- diff(xlim) # plot width in user-space
+                result <- (bullet.inches / plot.inches) * plot.space
+            })
             
             # Plot QTL intervals if plotting LOD curves and typical
             # QTL intervals would be visually distinguishable.
