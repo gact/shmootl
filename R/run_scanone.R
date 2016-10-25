@@ -10,10 +10,16 @@
 #' If the input cross contains enumerated genotypes, marker regression is
 #' performed regardless of the value of the \code{method} parameter.
 #' 
-#' LOD threshold stringency can be set through either the significance
-#' level (\code{alpha}), or the false-discovery rate (\code{fdr}), but
-#' not both. If neither is specified, a significance level \code{alpha}
-#' of \code{0.05} is used by default.
+#' In typical usage, LOD threshold stringency can be set through either the
+#' significance level (\code{alpha}), or the false-discovery rate (\code{fdr}),
+#' but not both. If neither is specified, a significance level \code{alpha}
+#' of \code{0.05} is used. The given stringency is then used to estimate a
+#' LOD threshold from \code{scanone} permutations.
+#' 
+#' This can be bypassed by setting a fixed LOD \code{threshold}, along with a
+#' nominal stringency (\code{alpha} or \code{fdr}), in which case permutations
+#' are skipped and the fixed LOD threshold is applied directly for assessing
+#' significance.
 #' 
 #' LOD interval estimation can be controlled with the \code{'ci.function'}
 #' parameter: set to \code{'lodint'} for LOD support intervals (adjusting
@@ -33,6 +39,7 @@
 #' @param n.cluster number of threads
 #' @param alpha significance level for LOD threshold
 #' @param fdr FDR for LOD threshold
+#' @param threshold fixed LOD threshold
 #' @param step step size for genotype probabilities
 #' @param map.function genetic map function
 #' @param error.prob genotyping error rate
@@ -55,8 +62,8 @@
 run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     chr=character(), pheno=character(), model=c('normal','binary','2part','np'),
     method=c('em','imp','hk','ehk','mr','mr-imp','mr-argmax'), n.perm=1000L,
-    n.cluster=1L, alpha=NA_real_, fdr=NA_real_, step=0, error.prob=0.0001,
-    map.function=c('haldane','kosambi','c-f','morgan'),
+    n.cluster=1L, alpha=NA_real_, fdr=NA_real_, threshold=NA_real_, step=0,
+    map.function=c('haldane','kosambi','c-f','morgan'), error.prob=0.0001,
     ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
     acovfile=NA_character_, icovfile=NA_character_) {
     
@@ -74,6 +81,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     pheno <- if ( ! identical(pheno, character()) ) { pheno } else { NULL }
     alpha <- if ( ! identical(alpha, NA_real_) ) { alpha } else { NULL }
     fdr <- if ( ! identical(fdr, NA_real_) ) { fdr } else { NULL }
+    threshold <- if ( ! identical(threshold, NA_real_) ) { threshold } else { NULL }
     
     if ( ! is.null(alpha) && ! is.null(fdr) ) {
         stop("cannot set both significance level (alpha) and FDR")
@@ -84,9 +92,11 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         stopifnot( isSingleFiniteNumber(fdr) )
         stopifnot( fdr > 0 & fdr < 1 )
         perm.type <- 'bins'
-    } else { # set default alpha value
+    } else if ( is.null(threshold) ) { # set default alpha value
         perm.type <- 'max'
         alpha <- 0.05
+    } else {
+        stop("cannot set fixed LOD threshold without nominal significance level (alpha) or FDR")
     }
     
     # Attach required package namespaces (if needed) ---------------------------
@@ -149,20 +159,32 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         pheno.col=pheno.col, model=model, method=method, n.cluster=n.cluster,
         addcovar=addcovar, intcovar=intcovar)
     
-    # Run permutation scans.
-    scanone.perms <- batchPermScanone(cross, chr=sequences, pheno.col=pheno.col, 
-        model=model, method=method, n.perm=n.perm, n.cluster=n.cluster,
-        perm.type=perm.type, addcovar=addcovar, intcovar=intcovar)
-    
-    # Get LOD thresholds from permutation results. 
-    if ( ! is.null(alpha) ) {
-        scanone.thresholds <- summary(scanone.perms, alpha=alpha) # qtl:::summary.scanoneperm
-        multiple.lodcolumns <- TRUE
-    } else { # fdr
-        scanone.threshold <- summary(scanone.perms, scanone.result, fdr=fdr) # summary.scanonebins
-        # NB: set FDR from scanonebins summary, as can differ from requested FDR
-        fdr <- 0.01 * as.numeric(sub('%', '', rownames(scanone.threshold)[1]))
+    # If no fixed threshold specified, estimate from permutations..
+    if ( is.null(threshold) ) {
+        
+        # Run permutation scans.
+        scanone.perms <- batchPermScanone(cross, chr=sequences,
+            pheno.col=pheno.col, model=model, method=method, n.perm=n.perm,
+            n.cluster=n.cluster, perm.type=perm.type, addcovar=addcovar,
+            intcovar=intcovar)
+        
+        # Get LOD thresholds from permutation results.
+        if ( ! is.null(alpha) ) {
+            scanone.thresholds <- summary(scanone.perms, alpha=alpha) # qtl:::summary.scanoneperm
+            multiple.lodcolumns <- TRUE
+        } else { # fdr
+            scanone.threshold <- summary(scanone.perms, scanone.result, fdr=fdr) # summary.scanonebins
+            # NB: set FDR from scanonebins summary, as can differ from requested FDR
+            fdr <- 0.01 * as.numeric(sub('%', '', rownames(scanone.threshold)[1]))
+            multiple.lodcolumns <- FALSE
+        }
+        
+    } else { # ..otherwise make LOD threshold object.
+        
+        scanone.threshold <- makeScanoneThreshold(threshold,
+            alpha=alpha, fdr=fdr)
         multiple.lodcolumns <- FALSE
+        scanone.perms <- NULL
     }
     
     # Create temp output file, ensure will be removed.
@@ -182,13 +204,16 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         pheno.result <- getLODProfile(scanone.result, lodcolumn=i)
         writeResultHDF5(pheno.result, tmp, phenotypes[i], 'Scanone')
         
-        # Output permutation scan results for this phenotype.
-        if ( ! is.null(alpha) ) {
-            pheno.perms <- subset(scanone.perms, lodcolumn=i) # qtl:::subset.scanoneperm
-        } else { # fdr
-            pheno.perms <- scanone.perms[,, i]
+        # Output any permutation scan results for this phenotype.
+        if ( ! is.null(scanone.perms) ) {
+            
+            if ( ! is.null(alpha) ) {
+                pheno.perms <- subset(scanone.perms, lodcolumn=i) # qtl:::subset.scanoneperm
+            } else { # fdr
+                pheno.perms <- scanone.perms[,, i]
+            }
+            writeResultHDF5(pheno.perms, tmp, phenotypes[i], 'Scanone Perms')
         }
-        writeResultHDF5(pheno.perms, tmp, phenotypes[i], 'Scanone Perms')
         
         # Output scanone threshold for this phenotype.
         if (multiple.lodcolumns) {

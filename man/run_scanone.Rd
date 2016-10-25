@@ -8,10 +8,10 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
   chr = character(), pheno = character(), model = c("normal", "binary",
   "2part", "np"), method = c("em", "imp", "hk", "ehk", "mr", "mr-imp",
   "mr-argmax"), n.perm = 1000L, n.cluster = 1L, alpha = NA_real_,
-  fdr = NA_real_, step = 0, error.prob = 1e-04,
+  fdr = NA_real_, threshold = NA_real_, step = 0,
   map.function = c("haldane", "kosambi", "c-f", "morgan"),
-  ci.function = c("lodint", "bayesint"), drop = 1.5, prob = 0.95,
-  acovfile = NA_character_, icovfile = NA_character_)
+  error.prob = 1e-04, ci.function = c("lodint", "bayesint"), drop = 1.5,
+  prob = 0.95, acovfile = NA_character_, icovfile = NA_character_)
 }
 \arguments{
 \item{infile}{input cross file}
@@ -34,11 +34,13 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
 
 \item{fdr}{FDR for LOD threshold}
 
+\item{threshold}{fixed LOD threshold}
+
 \item{step}{step size for genotype probabilities}
 
-\item{error.prob}{genotyping error rate}
-
 \item{map.function}{genetic map function}
+
+\item{error.prob}{genotyping error rate}
 
 \item{ci.function}{QTL interval function}
 
@@ -59,10 +61,16 @@ and write the results of that scan to the specified output file.
 If the input cross contains enumerated genotypes, marker regression is
 performed regardless of the value of the \code{method} parameter.
 
-LOD threshold stringency can be set through either the significance
-level (\code{alpha}), or the false-discovery rate (\code{fdr}), but
-not both. If neither is specified, a significance level \code{alpha}
-of \code{0.05} is used by default.
+In typical usage, LOD threshold stringency can be set through either the
+significance level (\code{alpha}), or the false-discovery rate (\code{fdr}),
+but not both. If neither is specified, a significance level \code{alpha}
+of \code{0.05} is used. The given stringency is then used to estimate a
+LOD threshold from \code{scanone} permutations.
+
+This can be bypassed by setting a fixed LOD \code{threshold}, along with a
+nominal stringency (\code{alpha} or \code{fdr}), in which case permutations
+are skipped and the fixed LOD threshold is applied directly for assessing
+significance.
 
 LOD interval estimation can be controlled with the \code{'ci.function'}
 parameter: set to \code{'lodint'} for LOD support intervals (adjusting
