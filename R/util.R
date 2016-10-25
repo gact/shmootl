@@ -556,6 +556,12 @@ getLodColIndices <- function(x, lodcolumns=NULL, strict=FALSE) {
     UseMethod('getLodColIndices', x)
 }
 
+# getLodColIndices.mapframe ----------------------------------------------------
+#' @rdname getLodColIndices
+getLodColIndices.mapframe <- function(x, lodcolumns=NULL, strict=FALSE) {
+    return( getDatColIndices(x, datcolumns=lodcolumns, strict=strict) )
+}
+
 # getLodColIndices.scanone -----------------------------------------------------
 #' @rdname getLodColIndices
 getLodColIndices.scanone <- function(x, lodcolumns=NULL, strict=FALSE) {

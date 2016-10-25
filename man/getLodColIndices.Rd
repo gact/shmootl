@@ -2,6 +2,7 @@
 % Please edit documentation in R/util.R
 \name{getLodColIndices}
 \alias{getLodColIndices}
+\alias{getLodColIndices.mapframe}
 \alias{getLodColIndices.scanone}
 \alias{getLodColIndices.scanonebins}
 \alias{getLodColIndices.scanoneperm}
@@ -10,6 +11,8 @@
 \title{Get LOD column indices.}
 \usage{
 getLodColIndices(x, lodcolumns = NULL, strict = FALSE)
+
+\method{getLodColIndices}{mapframe}(x, lodcolumns = NULL, strict = FALSE)
 
 \method{getLodColIndices}{scanone}(x, lodcolumns = NULL, strict = FALSE)
 
