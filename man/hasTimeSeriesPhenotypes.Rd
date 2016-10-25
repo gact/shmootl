@@ -32,7 +32,8 @@ a consistent time step. If some time points are missing, the resulting
 gap in time must be a multiple of the time step.
 }
 \seealso{
-Other cross object functions: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{crossesEqual}},
+  \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
   \code{\link{inferStrainIndices}},
   \code{\link{inferTetradIndices}},
@@ -42,7 +43,8 @@ Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{permIndices}}, \code{\link{pull.alleles}},
   \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
   \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
-  \code{\link{writeCrossCSV}}
+  \code{\link{readCrossHDF5}}, \code{\link{writeCrossCSV}},
+  \code{\link{writeCrossHDF5}}
 
 Other time-series functions: \code{\link{inferTimeStep}},
   \code{\link{interpTimeSeries}},

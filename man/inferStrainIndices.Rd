@@ -37,7 +37,8 @@ Different strains can have different numbers of replicates, but samples from
 a given strain must be in consecutive rows.
 }
 \seealso{
-Other cross object functions: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{crossesEqual}},
+  \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
   \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferTetradIndices}},
@@ -47,6 +48,7 @@ Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{permIndices}}, \code{\link{pull.alleles}},
   \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
   \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
-  \code{\link{writeCrossCSV}}
+  \code{\link{readCrossHDF5}}, \code{\link{writeCrossCSV}},
+  \code{\link{writeCrossHDF5}}
 }
 

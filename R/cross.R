@@ -18,7 +18,7 @@
 #' @template seealso-rqtl-manual
 #' 
 #' @export
-#' @family cross utility functions
+#' @family cross object functions
 #' @rdname crossesEqual
 crossesEqual <- function(cross1, cross2, tol=1e-5) {
     

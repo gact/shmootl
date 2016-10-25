@@ -611,6 +611,23 @@ makeGroupObjectNames <- function(group.names=NULL, group.size=NULL) {
     return(group.names)
 }
 
+# readCrossHDF5 ----------------------------------------------------------------
+#' Read \pkg{R/qtl} \code{cross} object from an input HDF5 file.
+#' 
+#' @param infile An input HDF5 file.
+#' 
+#' @return The \pkg{R/qtl} \code{cross} object in the given HDF5 file.
+#' 
+#' @export
+#' @family cross object functions
+#' @family HDF5 functions
+#' @rdname readCrossHDF5
+readCrossHDF5 <- function(infile) {
+    cross <- readDatasetHDF5(infile, 'Cross')
+    stopifnot( 'cross' %in% class(cross) )
+    return(cross)
+}
+
 # readDatasetHDF5 --------------------------------------------------------------
 #' Read HDF5 dataset.
 #'    
@@ -628,7 +645,6 @@ makeGroupObjectNames <- function(group.names=NULL, group.size=NULL) {
 #' @return R object corresponding to the named HDF5 object.
 #' 
 #' @export
-#' @family HDF5 functions
 #' @importFrom rhdf5 h5read
 #' @keywords internal
 #' @rdname readDatasetHDF5
@@ -649,6 +665,113 @@ readDatasetHDF5 <- function(infile, h5name, ...) {
 readDatasetHDF5.array <- function(infile, h5name, ...) {
     dataset <- readDatasetHDF5.default(infile, h5name)
     dataset <- aperm(dataset) # NB: R is column-major, HDF5 is row-major
+    return(dataset)
+}
+
+# readDatasetHDF5.cross --------------------------------------------------------
+#' @export
+#' @rdname readDatasetHDF5
+readDatasetHDF5.cross <- function(infile, h5name, ...) {
+    
+    cross.attrs <- readObjectAttributesHDF5(infile, h5name)
+    
+    stopifnot( 'R.class' %in% names(cross.attrs) )
+    cross.class <- as.character(cross.attrs[['R.class']])
+    stopifnot( length(cross.class) == 2 )
+    stopifnot( cross.class[2] == 'cross' )
+    crosstype <- cross.class[1]
+    stopifnot( crosstype %in% const$supported.crosstypes )
+    
+    stopifnot( 'alleles' %in% names(cross.attrs) )
+    cross.alleles <- as.character(cross.attrs[['alleles']])
+    
+    pheno.h5name <- joinH5ObjectNameParts( c(h5name, 'pheno') )
+    pheno <- readDatasetHDF5(infile, pheno.h5name, ...)
+    stopifnot( 'data.frame' %in% class(pheno) )
+    stopif( '' %in% pheno )
+    
+    pheno.cols <- getPhenoColIndices(pheno)
+    phenotypes <- colnames(pheno)[pheno.cols]
+    colnames(pheno)[pheno.cols] <- make.names(phenotypes)
+    
+    id.col <- getIdColIndex(pheno)
+    
+    if ( ! is.null(id.col) ) {
+        samples <- as.character(pheno[, id.col])
+    } else {
+        samples <- getRowIndices(pheno)
+    }
+    
+    num.samples <- length(samples)
+    
+    geno.h5name <- joinH5ObjectNameParts( c(h5name, 'geno') )
+    geno.seqs <- getObjectNamesHDF5(infile, geno.h5name,
+        relative=TRUE, min.depth=1, max.depth=1)
+    stopifnot( length(geno.seqs) > 0 )
+    stopifnot( all( isNormSeq(geno.seqs) ) ) # NB: normalised implies sorted
+    
+    geno <- vector('list', length(geno.seqs))
+    locus.seqs <- locus.ids <- character()
+    
+    for ( i in seq_along(geno.seqs) ) {
+        
+        data.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seqs[i], 'data') )
+        seq.data <- readDatasetHDF5(infile, data.h5name, ...)
+        stopifnot( 'data.frame' %in% class(seq.data) )
+        stopifnot( nrow(seq.data) == num.samples )
+        
+        map.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seqs[i], 'map') )
+        seq.mapframe <- readDatasetHDF5(infile, map.h5name, ...)
+        stopifnot( 'mapframe' %in% class(seq.mapframe) )
+        
+        map.seqs <- pullLocusSeq(seq.mapframe)
+        stopifnot( all( map.seqs == geno.seqs[i] ) )
+        locus.seqs <- c(locus.seqs, map.seqs)
+        
+        seq.ids <- pullLocusIDs(seq.mapframe)
+        stopifnot( all( isValidID(seq.ids) ) )
+        locus.ids <- c(locus.ids, seq.ids)
+        
+        seq.map <- pullLocusPos(seq.mapframe)
+        names(seq.map) <- seq.ids
+        
+        geno[[i]] <- list(data=seq.data, map=seq.map)
+        class(geno[[i]]) <- 'A' # NB: assumes no 'X' chromosomes.
+    }
+    
+    stopif( anyDuplicated(locus.ids) )
+    geno.ids <- unlist( lapply( geno, function(x) colnames(x$data) ) )
+    stopifnot( identical(geno.ids, locus.ids) )
+    
+    genotypes <- sort( unique( unlist( lapply(geno, function(x)
+        unique( as.character( unlist(x$data) ) ) ) ) ) ) # NB: sort removes NA values
+    validateGenotypeSet(genotypes)
+    
+    # Set reference sequence names of cross geno object.
+    names(geno) <- geno.seqs
+    
+    geno.alleles <- unique( unlist( strsplit(genotypes, '') ) )
+    stopifnot( setequal(geno.alleles, cross.alleles) )
+    
+    for ( geno.seq in seq_along(geno.seqs) ) {
+        geno.matrix <- as.matrix(geno[[geno.seq]]$data)
+        geno[[geno.seq]]$data <- encodeGenotypes(geno.matrix, genotypes)
+    }
+    
+    cross.info <- methods::new('CrossInfo')
+    cross.info <- setMarkers(cross.info, markers=locus.ids)
+    cross.info <- setMarkerSeqs(cross.info, sequences=locus.seqs)
+    cross.info <- setPhenotypes(cross.info, phenotypes)
+    cross.info <- setAlleles(cross.info, cross.alleles)
+    cross.info <- setGenotypes(cross.info, genotypes)
+    cross.info <- setCrosstype(cross.info, crosstype)
+    cross.info <- setSamples(cross.info, samples)
+    
+    dataset <- list(geno=geno, pheno=pheno)
+    class(dataset) <- cross.class
+    attr(dataset, 'alleles') <- cross.alleles
+    attr(dataset, 'info') <- cross.info
+    
     return(dataset)
 }
 
@@ -1016,7 +1139,7 @@ readDatasetHDF5.summary.scanoneperm <- function(infile, h5name, ...) {
 }
 
 # readMapHDF5 ------------------------------------------------------------------
-#' Read \code{map} from a HDF5 file.
+#' Read \code{map} from an input HDF5 file.
 #'   
 #' @details A \code{mapframe} dataset is read from the \code{'Maps'} group at
 #' the root of the HDF5 file, and converted to an \pkg{R/qtl} \code{map} object.
@@ -1030,7 +1153,6 @@ readDatasetHDF5.summary.scanoneperm <- function(infile, h5name, ...) {
 #' @export
 #' @family HDF5 functions
 #' @family map utility functions
-#' @keywords internal
 #' @rdname readMapHDF5
 readMapHDF5 <- function(infile, name) {
     
@@ -1067,7 +1189,7 @@ readObjectAttributesHDF5 <- function(infile, h5name) {
 }
 
 # readOverviewHDF5 -------------------------------------------------------------
-#' Read QTL analysis results overview from a HDF5 file.
+#' Read QTL analysis results overview from an input HDF5 file.
 #'    
 #' @param infile An input HDF5 file.
 #' 
@@ -1075,7 +1197,6 @@ readObjectAttributesHDF5 <- function(infile, h5name) {
 #' 
 #' @export
 #' @family HDF5 functions
-#' @keywords internal
 #' @rdname readOverviewHDF5
 readOverviewHDF5 <- function(infile) {
     
@@ -1092,7 +1213,7 @@ readOverviewHDF5 <- function(infile) {
 }
 
 # readResultHDF5 ---------------------------------------------------------------
-#' Read QTL analysis result from a HDF5 file.
+#' Read QTL analysis result from an input HDF5 file.
 #' 
 #' @param infile An input HDF5 file.
 #' @param phenotype Name of phenotype (or equivalent analysis unit).
@@ -1103,7 +1224,6 @@ readOverviewHDF5 <- function(infile) {
 #' 
 #' @export
 #' @family HDF5 functions
-#' @keywords internal
 #' @rdname readResultHDF5
 readResultHDF5 <- function(infile, phenotype, name) {
     
@@ -1237,11 +1357,30 @@ splitH5ObjectName <- function(h5name) {
     return(components)
 }
 
+# writeCrossHDF5 ---------------------------------------------------------------
+#' Write \pkg{R/qtl} \code{cross} object to an output HDF5 file.
+#' 
+#' @param cross An \pkg{R/qtl} \code{cross} object.
+#' @param outfile An output HDF5 file.
+#' @param overwrite Option indicating whether to force overwrite of an existing
+#' \code{cross}. By default, existing \code{cross} objects cannot be overwritten.
+#' 
+#' @export
+#' @family cross object functions
+#' @family HDF5 functions
+#' @rdname writeCrossHDF5
+writeCrossHDF5 <- function(cross, outfile, overwrite=FALSE) {
+    stopifnot( 'cross' %in% class(cross) )
+    writeDatasetHDF5(cross, outfile, 'Cross', overwrite=overwrite)
+    return( invisible() )
+}
+
 # writeDatasetHDF5 -------------------------------------------------------------
-#' Write R object to a HDF5 dataset.
+#' Write R object to an output HDF5 dataset.
 #'   
-#' The given R object is written to the named HDF5 dataset using the method
-#' for the given dataset type, as determined by the class of the R object.
+#' @description The given R object is written to the named HDF5 dataset using
+#' the method for the given dataset type, as determined by the class of the R
+#' object.
 #'  
 #' @param dataset R object.
 #' @param outfile An output HDF5 file.
@@ -1254,7 +1393,6 @@ splitH5ObjectName <- function(h5name) {
 #' existing dataset. By default, existing datasets cannot be overwritten.
 #' 
 #' @export
-#' @family HDF5 functions
 #' @importFrom methods new
 #' @importFrom rhdf5 H5Dopen
 #' @importFrom rhdf5 h5writeDataset
@@ -1266,6 +1404,7 @@ splitH5ObjectName <- function(h5name) {
 #' @importFrom rhdf5 h5writeDataset.list
 #' @importFrom rhdf5 h5writeDataset.logical
 #' @importFrom rhdf5 h5writeDataset.matrix
+#' @keywords internal
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5 <- function(dataset, outfile, h5name, ...) {
     UseMethod('writeDatasetHDF5', dataset)
@@ -1277,6 +1416,77 @@ writeDatasetHDF5 <- function(dataset, outfile, h5name, ...) {
 writeDatasetHDF5.array <- function(dataset, outfile, h5name, ...) {
     dataset <- aperm(dataset) # NB: R is column-major, HDF5 is row-major
     writeDatasetHDF5.default(dataset, outfile, h5name, ...)
+    return( invisible() )
+}
+
+# writeDatasetHDF5.cross -------------------------------------------------------
+#' @export
+#' @rdname writeDatasetHDF5
+writeDatasetHDF5.cross <- function(dataset, outfile, h5name, ...) {
+    
+    stopif( 'R.class' %in% names( attributes(dataset) ) )
+    
+    map.unit <- 'cM'
+    
+    # Get indices of phenotype columns.
+    pheno.col <- getPhenoColIndices(dataset)
+    
+    # Get CrossInfo object.
+    cross.info <- attr(dataset, 'info')
+    
+    # Take cross info from CrossInfo, if available..
+    if ( ! is.null(cross.info) ) {
+        compareCrossInfo(dataset, cross.info)
+        crosstype <- getCrosstype(cross.info)
+        phenotypes <- getPhenotypes(cross.info)
+        alleles <- getAlleles(cross.info)
+        markers <- getMarkers(cross.info)
+        sample.ids <- getSamples(cross.info)
+    } else { # ..otherwise take directly from cross.
+        crosstype <- pull.crosstype(dataset)
+        phenotypes <- qtl::phenames(dataset)[pheno.col]
+        alleles <- pull.alleles(dataset)
+        markers <- qtl::markernames(dataset)
+        sample.ids <- pull.ind(dataset)
+    }
+    
+    stopifnot( crosstype %in% const$supported.crosstypes )
+    stopifnot( length(sample.ids) > 0 )
+    stopifnot( length(phenotypes) > 0 )
+    stopifnot( length(alleles) > 0 )
+    stopifnot( length(markers) > 0 )
+    
+    # Output cross pheno object.
+    colnames(dataset$pheno)[pheno.col] <- phenotypes
+    pheno.h5name <- joinH5ObjectNameParts( c(h5name, 'pheno') )
+    writeDatasetHDF5(dataset$pheno, outfile, pheno.h5name, ...)
+    
+    # Prepare to output cross geno object.
+    geno.h5name <- joinH5ObjectNameParts( c(h5name, 'geno') )
+    genotypes <- makeGenotypeSet(alleles, crosstype)
+    
+    if ( ! all( sapply(dataset$geno, class) == 'A' ) ) { # NB: assumes no 'X' chromosomes.
+        stop("shmootl cross geno elements must be of class 'A'")
+    }
+    
+    # Output cross geno object sequence-by-sequence.
+    for ( geno.seq in names(dataset$geno) ) {
+        
+        data.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seq, 'data') )
+        geno.table <- as.data.frame(dataset$geno[[geno.seq]]$data)
+        geno.table <- decodeGenotypes(geno.table, genotypes) # NB: leaves NA values unchanged
+        writeDatasetHDF5(geno.table, outfile, data.h5name, ...)
+        
+        map.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seq, 'map') )
+        seq.map <- dataset$geno[[geno.seq]]$map
+        seq.mapframe <- gmapframe(chr=rep(geno.seq, length(seq.map)),
+            pos=unname(seq.map),  row.names=names(seq.map))
+        writeDatasetHDF5(seq.mapframe, outfile, map.h5name, ...)
+    }
+    
+    cross.attrs <- list(R.class=class(dataset), alleles=attr(dataset, 'alleles'))
+    writeObjectAttributesHDF5(outfile, h5name, attrs=cross.attrs)
+    
     return( invisible() )
 }
 
@@ -1666,7 +1876,7 @@ writeDatasetHDF5.summary.scanoneperm <- function(dataset, outfile, h5name, ...) 
 }
 
 # writeMapHDF5 -----------------------------------------------------------------
-#' Write \code{map} to a HDF5 file.
+#' Write \code{map} to an output HDF5 file.
 #' 
 #' @details An \pkg{R/qtl} \code{map} object is written to the \code{'Maps'}
 #' group at the root of the given HDF5 file. If no map name is specified, a
@@ -1681,7 +1891,6 @@ writeDatasetHDF5.summary.scanoneperm <- function(dataset, outfile, h5name, ...) 
 #' @export
 #' @family HDF5 functions
 #' @family map utility functions
-#' @keywords internal
 #' @rdname writeMapHDF5
 writeMapHDF5 <- function(map, outfile, name=NULL, overwrite=FALSE) {
     
@@ -1724,7 +1933,7 @@ writeObjectAttributesHDF5 <- function(outfile, h5name, object=NULL, attrs=NULL) 
 }
 
 # writeOverviewHDF5 ------------------------------------------------------------
-#' Write QTL analysis results overview to a HDF5 file.
+#' Write QTL analysis results overview to an output HDF5 file.
 #'    
 #' @param overview Object containing a QTL analysis results overview.
 #' @param outfile An output HDF5 file.
@@ -1750,7 +1959,7 @@ writeOverviewHDF5 <- function(overview, outfile, overwrite=FALSE) {
 }
 
 # writeResultHDF5 --------------------------------------------------------------
-#' Write QTL analysis result to a HDF5 file.
+#' Write QTL analysis result to an output HDF5 file.
 #' 
 #' @param result R object containing a QTL analysis result.
 #' @param outfile An output HDF5 file.

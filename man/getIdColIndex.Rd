@@ -27,7 +27,8 @@ in which case the ID column is that which has heading \code{'ID'}
 (also case-insensitive).
 }
 \seealso{
-Other cross object functions: \code{\link{getPhenoColIndices}},
+Other cross object functions: \code{\link{crossesEqual}},
+  \code{\link{getPhenoColIndices}},
   \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
   \code{\link{inferTetradIndices}},
@@ -37,6 +38,7 @@ Other cross object functions: \code{\link{getPhenoColIndices}},
   \code{\link{permIndices}}, \code{\link{pull.alleles}},
   \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
   \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
-  \code{\link{writeCrossCSV}}
+  \code{\link{readCrossHDF5}}, \code{\link{writeCrossCSV}},
+  \code{\link{writeCrossHDF5}}
 }
 

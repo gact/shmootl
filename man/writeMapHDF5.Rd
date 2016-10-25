@@ -2,7 +2,7 @@
 % Please edit documentation in R/hdf5.R
 \name{writeMapHDF5}
 \alias{writeMapHDF5}
-\title{Write \code{map} to a HDF5 file.}
+\title{Write \code{map} to an output HDF5 file.}
 \usage{
 writeMapHDF5(map, outfile, name = NULL, overwrite = FALSE)
 }
@@ -17,7 +17,7 @@ writeMapHDF5(map, outfile, name = NULL, overwrite = FALSE)
 existing map. By default, existing maps cannot be overwritten.}
 }
 \description{
-Write \code{map} to a HDF5 file.
+Write \code{map} to an output HDF5 file.
 }
 \details{
 An \pkg{R/qtl} \code{map} object is written to the \code{'Maps'}
@@ -25,11 +25,11 @@ group at the root of the given HDF5 file. If no map name is specified, a
 default will be assigned based on whether it is a genetic or physical map.
 }
 \seealso{
-Other HDF5 functions: \code{\link{readDatasetHDF5}},
+Other HDF5 functions: \code{\link{readCrossHDF5}},
   \code{\link{readMapHDF5}},
   \code{\link{readOverviewHDF5}},
   \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
+  \code{\link{writeCrossHDF5}},
   \code{\link{writeOverviewHDF5}},
   \code{\link{writeResultHDF5}}
 
@@ -48,5 +48,4 @@ Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{readMapframeCSV}}, \code{\link{setMapUnit}},
   \code{\link{writeMapCSV}}, \code{\link{writeMapframeCSV}}
 }
-\keyword{internal}
 

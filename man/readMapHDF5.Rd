@@ -2,7 +2,7 @@
 % Please edit documentation in R/hdf5.R
 \name{readMapHDF5}
 \alias{readMapHDF5}
-\title{Read \code{map} from a HDF5 file.}
+\title{Read \code{map} from an input HDF5 file.}
 \usage{
 readMapHDF5(infile, name)
 }
@@ -16,18 +16,17 @@ An \pkg{R/qtl} \code{map} object. Returns \code{NULL}
 if no map is found with the specified name.
 }
 \description{
-Read \code{map} from a HDF5 file.
+Read \code{map} from an input HDF5 file.
 }
 \details{
 A \code{mapframe} dataset is read from the \code{'Maps'} group at
 the root of the HDF5 file, and converted to an \pkg{R/qtl} \code{map} object.
 }
 \seealso{
-Other HDF5 functions: \code{\link{readDatasetHDF5}},
+Other HDF5 functions: \code{\link{readCrossHDF5}},
   \code{\link{readOverviewHDF5}},
   \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}},
+  \code{\link{writeCrossHDF5}}, \code{\link{writeMapHDF5}},
   \code{\link{writeOverviewHDF5}},
   \code{\link{writeResultHDF5}}
 
@@ -47,5 +46,4 @@ Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{writeMapHDF5}},
   \code{\link{writeMapframeCSV}}
 }
-\keyword{internal}
 

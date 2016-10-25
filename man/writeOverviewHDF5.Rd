@@ -2,7 +2,7 @@
 % Please edit documentation in R/hdf5.R
 \name{writeOverviewHDF5}
 \alias{writeOverviewHDF5}
-\title{Write QTL analysis results overview to a HDF5 file.}
+\title{Write QTL analysis results overview to an output HDF5 file.}
 \usage{
 writeOverviewHDF5(overview, outfile, overwrite = FALSE)
 }
@@ -15,14 +15,14 @@ writeOverviewHDF5(overview, outfile, overwrite = FALSE)
 existing overview. By default, existing overviews cannot be overwritten.}
 }
 \description{
-Write QTL analysis results overview to a HDF5 file.
+Write QTL analysis results overview to an output HDF5 file.
 }
 \seealso{
-Other HDF5 functions: \code{\link{readDatasetHDF5}},
+Other HDF5 functions: \code{\link{readCrossHDF5}},
   \code{\link{readMapHDF5}},
   \code{\link{readOverviewHDF5}},
   \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}}, \code{\link{writeResultHDF5}}
+  \code{\link{writeCrossHDF5}}, \code{\link{writeMapHDF5}},
+  \code{\link{writeResultHDF5}}
 }
 

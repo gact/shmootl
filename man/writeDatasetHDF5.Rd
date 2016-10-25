@@ -3,6 +3,7 @@
 \name{writeDatasetHDF5}
 \alias{writeDatasetHDF5}
 \alias{writeDatasetHDF5.array}
+\alias{writeDatasetHDF5.cross}
 \alias{writeDatasetHDF5.data.frame}
 \alias{writeDatasetHDF5.default}
 \alias{writeDatasetHDF5.list}
@@ -16,14 +17,13 @@
 \alias{writeDatasetHDF5.scantwoperm}
 \alias{writeDatasetHDF5.summary.scanonebins}
 \alias{writeDatasetHDF5.summary.scanoneperm}
-\title{Write R object to a HDF5 dataset.
-  
-The given R object is written to the named HDF5 dataset using the method
-for the given dataset type, as determined by the class of the R object.}
+\title{Write R object to an output HDF5 dataset.}
 \usage{
 writeDatasetHDF5(dataset, outfile, h5name, ...)
 
 \method{writeDatasetHDF5}{array}(dataset, outfile, h5name, ...)
+
+\method{writeDatasetHDF5}{cross}(dataset, outfile, h5name, ...)
 
 \method{writeDatasetHDF5}{data.frame}(dataset, outfile, h5name,
   rownames.column = "rownames", ...)
@@ -70,17 +70,9 @@ taken from this parameter.}
 existing dataset. By default, existing datasets cannot be overwritten.}
 }
 \description{
-Write R object to a HDF5 dataset.
-  
-The given R object is written to the named HDF5 dataset using the method
-for the given dataset type, as determined by the class of the R object.
+The given R object is written to the named HDF5 dataset using
+the method for the given dataset type, as determined by the class of the R
+object.
 }
-\seealso{
-Other HDF5 functions: \code{\link{readDatasetHDF5}},
-  \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{readResultHDF5}}, \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
-}
+\keyword{internal}
 

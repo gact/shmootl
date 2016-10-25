@@ -2,7 +2,7 @@
 % Please edit documentation in R/hdf5.R
 \name{writeResultHDF5}
 \alias{writeResultHDF5}
-\title{Write QTL analysis result to a HDF5 file.}
+\title{Write QTL analysis result to an output HDF5 file.}
 \usage{
 writeResultHDF5(result, outfile, phenotype, name, overwrite = FALSE)
 }
@@ -19,15 +19,14 @@ writeResultHDF5(result, outfile, phenotype, name, overwrite = FALSE)
 existing result. By default, existing results cannot be overwritten.}
 }
 \description{
-Write QTL analysis result to a HDF5 file.
+Write QTL analysis result to an output HDF5 file.
 }
 \seealso{
-Other HDF5 functions: \code{\link{readDatasetHDF5}},
+Other HDF5 functions: \code{\link{readCrossHDF5}},
   \code{\link{readMapHDF5}},
   \code{\link{readOverviewHDF5}},
   \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}},
+  \code{\link{writeCrossHDF5}}, \code{\link{writeMapHDF5}},
   \code{\link{writeOverviewHDF5}}
 }
 

@@ -38,7 +38,8 @@ are not required and not found, map positions are assumed to be
 in centiMorgans.
 }
 \seealso{
-Other cross object functions: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{crossesEqual}},
+  \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
   \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
@@ -48,7 +49,8 @@ Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{padTimeSeries}}, \code{\link{permCross}},
   \code{\link{permIndices}}, \code{\link{pull.alleles}},
   \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
-  \code{\link{pull.ind}}, \code{\link{writeCrossCSV}}
+  \code{\link{pull.ind}}, \code{\link{readCrossHDF5}},
+  \code{\link{writeCrossCSV}}, \code{\link{writeCrossHDF5}}
 
 Other CSV functions: \code{\link{hasMapCSV}},
   \code{\link{readCovarCSV}}, \code{\link{readGenoCSV}},

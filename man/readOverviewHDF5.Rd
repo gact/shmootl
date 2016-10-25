@@ -2,7 +2,7 @@
 % Please edit documentation in R/hdf5.R
 \name{readOverviewHDF5}
 \alias{readOverviewHDF5}
-\title{Read QTL analysis results overview from a HDF5 file.}
+\title{Read QTL analysis results overview from an input HDF5 file.}
 \usage{
 readOverviewHDF5(infile)
 }
@@ -13,15 +13,13 @@ readOverviewHDF5(infile)
 A \code{data.frame} containing a QTL analysis results overview.
 }
 \description{
-Read QTL analysis results overview from a HDF5 file.
+Read QTL analysis results overview from an input HDF5 file.
 }
 \seealso{
-Other HDF5 functions: \code{\link{readDatasetHDF5}},
+Other HDF5 functions: \code{\link{readCrossHDF5}},
   \code{\link{readMapHDF5}}, \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}},
+  \code{\link{writeCrossHDF5}}, \code{\link{writeMapHDF5}},
   \code{\link{writeOverviewHDF5}},
   \code{\link{writeResultHDF5}}
 }
-\keyword{internal}
 

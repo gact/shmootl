@@ -25,5 +25,19 @@ identical, and numeric values being equal (within the given tolerance).
 }
 \seealso{
 \href{http://www.rqtl.org/manual/qtl-manual.pdf}{R/qtl manual}
+
+Other cross object functions: \code{\link{getIdColIndex}},
+  \code{\link{getPhenoColIndices}},
+  \code{\link{hasTimeSeriesPhenotypes}},
+  \code{\link{inferStrainIndices}},
+  \code{\link{inferTetradIndices}},
+  \code{\link{inferTimeStep}},
+  \code{\link{interpTimeSeries}},
+  \code{\link{padTimeSeries}}, \code{\link{permCross}},
+  \code{\link{permIndices}}, \code{\link{pull.alleles}},
+  \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
+  \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
+  \code{\link{readCrossHDF5}}, \code{\link{writeCrossCSV}},
+  \code{\link{writeCrossHDF5}}
 }
 

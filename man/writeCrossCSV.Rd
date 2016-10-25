@@ -27,7 +27,8 @@ Phenotype, genotype, and sample IDs are taken from the \code{'info'}
 attribute of the \code{cross}, if present.
 }
 \seealso{
-Other cross object functions: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{crossesEqual}},
+  \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
   \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
@@ -37,7 +38,8 @@ Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{padTimeSeries}}, \code{\link{permCross}},
   \code{\link{permIndices}}, \code{\link{pull.alleles}},
   \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
-  \code{\link{pull.ind}}, \code{\link{readCrossCSV}}
+  \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
+  \code{\link{readCrossHDF5}}, \code{\link{writeCrossHDF5}}
 
 Other CSV functions: \code{\link{hasMapCSV}},
   \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},

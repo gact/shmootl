@@ -95,7 +95,8 @@ of natural variation in oenological traits in Saccharomyces cerevisiae.
 (\href{http://www.ncbi.nlm.nih.gov/pubmed/23185390}{PubMed})
 }
 \seealso{
-Other cross object functions: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{crossesEqual}},
+  \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
   \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
@@ -105,7 +106,8 @@ Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{padTimeSeries}}, \code{\link{permIndices}},
   \code{\link{pull.alleles}}, \code{\link{pull.chr}},
   \code{\link{pull.crosstype}}, \code{\link{pull.ind}},
-  \code{\link{readCrossCSV}}, \code{\link{writeCrossCSV}}
+  \code{\link{readCrossCSV}}, \code{\link{readCrossHDF5}},
+  \code{\link{writeCrossCSV}}, \code{\link{writeCrossHDF5}}
 
 Other permutation functions: \code{\link{permIndices}}
 }

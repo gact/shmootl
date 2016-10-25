@@ -3,6 +3,7 @@
 \name{readDatasetHDF5}
 \alias{readDatasetHDF5}
 \alias{readDatasetHDF5.array}
+\alias{readDatasetHDF5.cross}
 \alias{readDatasetHDF5.data.frame}
 \alias{readDatasetHDF5.default}
 \alias{readDatasetHDF5.list}
@@ -25,6 +26,8 @@ or \code{'class'} attribute of the HDF5 object.}
 readDatasetHDF5(infile, h5name, ...)
 
 readDatasetHDF5.array(infile, h5name, ...)
+
+readDatasetHDF5.cross(infile, h5name, ...)
 
 readDatasetHDF5.data.frame(infile, h5name, rownames.column = "rownames")
 
@@ -72,15 +75,6 @@ Read HDF5 dataset.
 The named HDF5 dataset is read from the specified HDF5 file using the
 method for the dataset type, as determined from the \code{'R.class'}
 or \code{'class'} attribute of the HDF5 object.
-}
-\seealso{
-Other HDF5 functions: \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{readResultHDF5}},
-  \code{\link{writeDatasetHDF5}},
-  \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
 }
 \keyword{internal}
 

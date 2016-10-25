@@ -16,7 +16,8 @@ Vector of alleles in the \code{cross} object.
 Pull alleles from \pkg{R/qtl} \code{cross}.
 }
 \seealso{
-Other cross object functions: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{crossesEqual}},
+  \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
   \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
@@ -26,6 +27,7 @@ Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{padTimeSeries}}, \code{\link{permCross}},
   \code{\link{permIndices}}, \code{\link{pull.chr}},
   \code{\link{pull.crosstype}}, \code{\link{pull.ind}},
-  \code{\link{readCrossCSV}}, \code{\link{writeCrossCSV}}
+  \code{\link{readCrossCSV}}, \code{\link{readCrossHDF5}},
+  \code{\link{writeCrossCSV}}, \code{\link{writeCrossHDF5}}
 }
 

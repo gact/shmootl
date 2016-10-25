@@ -33,7 +33,8 @@ reserved phenotype headings (e.g. \code{'ID'}). In a \code{cross} object,
 these are the corresponding columns of the phenotype \code{data.frame}.
 }
 \seealso{
-Other cross object functions: \code{\link{getIdColIndex}},
+Other cross object functions: \code{\link{crossesEqual}},
+  \code{\link{getIdColIndex}},
   \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{inferStrainIndices}},
   \code{\link{inferTetradIndices}},
@@ -43,6 +44,7 @@ Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{permIndices}}, \code{\link{pull.alleles}},
   \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
   \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
-  \code{\link{writeCrossCSV}}
+  \code{\link{readCrossHDF5}}, \code{\link{writeCrossCSV}},
+  \code{\link{writeCrossHDF5}}
 }
 
