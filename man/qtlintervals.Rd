@@ -4,10 +4,13 @@
 \alias{qtlintervals}
 \title{Create a \code{qtlintervals} object.}
 \usage{
-qtlintervals(drop = NULL, prob = NULL, threshold = NULL, alpha = NULL,
-  fdr = NULL, ...)
+qtlintervals(threshold = NULL, drop = NULL, prob = NULL, ...)
 }
 \arguments{
+\item{threshold}{A single \code{numeric} LOD significance threshold, or an
+object (e.g. \code{summary.scanoneperm}) containing one such threshold and
+its associated significance level.}
+
 \item{drop}{LOD units that the LOD profile must drop to form a QTL interval.
 This should only be specified if the QTL intervals are LOD support intervals,
 and is incompatible with the \code{prob} parameter.}
@@ -15,14 +18,6 @@ and is incompatible with the \code{prob} parameter.}
 \item{prob}{The probability coverage of the Bayesian credible interval.
 This should only be specified if the QTL intervals are Bayesian credible
 intervals, and is incompatible with the \code{drop} parameter.}
-
-\item{threshold}{LOD significance threshold for QTL intervals.}
-
-\item{alpha}{Significance level of QTL intervals threshold. (Mutually
-exclusive with \code{fdr}.)}
-
-\item{fdr}{False discovery rate (FDR) of QTL intervals threshold. (Mutually
-exclusive with \code{alpha}.)}
 
 \item{...}{Unused arguments.}
 }

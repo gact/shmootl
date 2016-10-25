@@ -11,14 +11,10 @@
 #' @param chr Vector indicating which sequences to consider. If no sequences
 #' are specified, QTL peaks are returned for all available sequences.
 #' @param ... Further arguments (see below).
-#' @param threshold In a \code{scanone} or equivalent object, this indicates
-#' the LOD significance threshold for QTL peaks.
-#' @param alpha In a \code{scanone} or equivalent object, this contains the
-#' the significance level of the given threshold. (Mutually exclusive
-#' with \code{fdr}.)
-#' @param fdr In a \code{scanone} or equivalent object, this contains
-#' the false discovery rate (FDR) of the given threshold. (Mutually exclusive
-#' with \code{alpha}.)
+#' @param threshold For a \code{scanone} or equivalent object, this
+#' contains a single \code{numeric} LOD significance threshold, or
+#' an object (e.g. \code{summary.scanoneperm}) containing one such
+#' threshold and its associated significance level.
 #' @template param-lodcolumn
 #' @param qtl.indices In a \code{qtl} object, this option indicates the QTLs 
 #' for which a QTL peak should be returned. 
@@ -37,32 +33,20 @@ getQTLPeaks <- function(x, chr=NULL, ...) {
 # getQTLPeaks.mapframe ---------------------------------------------------------
 #' @export
 #' @rdname getQTLPeaks
-getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, alpha=NULL,
-    fdr=NULL, lodcolumn=NULL, ...) {
+getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ...) {
     
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
-    stopifnot( isSingleNonNegativeNumber(threshold) )
+    stopif( is.null(threshold) )
     
-    # Init info attributes.
-    info <- list( threshold=unname(threshold) )
-    
-    # Set significance level / false-discovery rate.
-    if ( ! is.null(alpha) && ! is.null(fdr) ) {
-        stop("cannot set both significance level (alpha) and FDR")
-    } else if ( ! is.null(alpha) ) {
-        stopifnot( isSingleProbability(alpha) )
-        info[['alpha']] <- unname(alpha)
-    } else if ( ! is.null(fdr) ) {
-        stopifnot( isSingleFiniteNumber(fdr) )
-        stopifnot( fdr > 0 & fdr < 1 )
-        info[['fdr']] <- unname(fdr)
-    }
+    # Get threshold info.
+    tinfo <- getScanoneThresholdInfo(threshold)
+    stopifnot( isSingleNonNegativeNumber(tinfo[['threshold']]) )
     
     # Set default QTL peaks mapframe.
     qtl.peaks <- gmapframe()
-    for ( key in names(info) ) { # set info attributes
-        attr(qtl.peaks, key) <- info[[key]]
+    for ( k in names(tinfo) ) { # set threshold info
+        attr(qtl.peaks, k) <- tinfo[[k]]
     }
     
     seqcol.index <- getSeqColIndex(x)
@@ -92,7 +76,7 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, alpha=NULL,
     for ( chr.seq in chr ) {
         indices <- which( x.seqs == chr.seq )
         seq.lod <- x[indices, lodcol.index]
-        bool.mask <- ! is.na(seq.lod) & seq.lod >= threshold
+        bool.mask <- ! is.na(seq.lod) & seq.lod >= tinfo[['threshold']]
         char.mask <- sapply(bool.mask, function(sig.lod) 
             if (sig.lod) {chr.seq} else { NA })
         lod.mask[indices] <- char.mask
@@ -115,8 +99,8 @@ getQTLPeaks.mapframe <- function(x, chr=NULL, threshold=NULL, alpha=NULL,
     # Create genetic mapframe of QTL peaks.
     qtl.peaks <- gmapframe(chr=x[peak.indices, seqcol.index], 
         pos=x[peak.indices, poscol.index])
-    for ( key in names(info) ) { # set info attributes
-        attr(qtl.peaks, key) <- info[[key]]
+    for ( k in names(tinfo) ) { # set threshold info
+        attr(qtl.peaks, k) <- tinfo[[k]]
     }
     
     # If mapframe has row names, get locus IDs at QTL 
@@ -175,10 +159,9 @@ getQTLPeaks.qtl <- function(x, chr=NULL, qtl.indices=NULL, ...) {
 # getQTLPeaks.scanone ----------------------------------------------------------
 #' @export
 #' @rdname getQTLPeaks
-getQTLPeaks.scanone <- function(x, chr=NULL, threshold=NULL, alpha=NULL,
-    fdr=NULL, lodcolumn=NULL, ...) {
-    qtl.peaks <- getQTLPeaks(as.mapframe(x), chr=chr, threshold=threshold,
-        alpha=alpha, fdr=fdr, lodcolumn=lodcolumn)
+getQTLPeaks.scanone <- function(x, chr=NULL, threshold=NULL, lodcolumn=NULL, ...) {
+    qtl.peaks <- getQTLPeaks(as.mapframe(x), chr=chr,
+        threshold=threshold, lodcolumn=lodcolumn)
     return(qtl.peaks)
 }
 
@@ -190,7 +173,9 @@ getQTLPeaks.scanone <- function(x, chr=NULL, threshold=NULL, alpha=NULL,
 #' LOD threshold. 
 #' 
 #' @param x A \code{scanone} object.
-#' @param threshold LOD significance threshold.
+#' @param threshold A single \code{numeric} LOD significance threshold, or an
+#' object (e.g. \code{summary.scanoneperm}) containing one such threshold
+#' and its associated significance level.
 #' @param qtl.peaks Locus \code{mapframe} containing QTL peaks.
 #' @param ... Further arguments. These are passed to \code{\link{getLODProfile}},
 #' and may include a \code{lodcolumn} for a \code{scanone} object with multiple 
@@ -201,10 +186,11 @@ getQTLPeaks.scanone <- function(x, chr=NULL, threshold=NULL, alpha=NULL,
 #' @keywords internal
 #' @rdname testQTLPeakSignificance
 testQTLPeakSignificance <- function(x, threshold, qtl.peaks, ...) {
-    stopifnot( isSingleNonNegativeNumber(threshold) )
+    tinfo <- getScanoneThresholdInfo(threshold)
+    stopifnot( isSingleNonNegativeNumber(tinfo[['threshold']]) )
     lod.profile <- getLODProfile(x, ...)
     peak.lods <- getLODValues(lod.profile, qtl.peaks)
-    return( ! is.na(peak.lods) & peak.lods >= threshold )
+    return( ! is.na(peak.lods) & peak.lods >= tinfo[['threshold']] )
 }
     
 # End of getQTLPeaks.R #########################################################

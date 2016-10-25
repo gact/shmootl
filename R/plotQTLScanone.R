@@ -18,6 +18,9 @@
 #' as the \code{scanone} object. These intervals are added to the plot, unless
 #' the median interval size is too small to be distinguishable. Threshold
 #' information is taken from this object, if available.
+#' @param threshold A single \code{numeric} LOD significance threshold, or an
+#' object (e.g. \code{summary.scanoneperm}) containing one such threshold and
+#' its associated significance level.
 #' @param col Analogous to the standard \code{'col'} plotting parameter. This is
 #' recycled to match the number of sequences being plotted. As in the package
 #' \pkg{qqman}, this defaults to two alternating monochrome shades.
@@ -51,17 +54,32 @@
 #' @importFrom utils tail
 #' @rdname plotQTLScanone
 plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
-    col=c('gray10', 'gray60'), gap=25, phenotype=NULL, type=NULL, ...) {
+    threshold=NULL, col=c('gray10', 'gray60'), gap=25, phenotype=NULL,
+    type=NULL, ...) {
     
     stopifnot( 'scanone' %in% class(x) )
     stopifnot( isSinglePositiveWholeNumber(gap) )
     stopifnot( emptyArgs(...) )
     
+    # Assume no threshold info.
+    tinfo <- NULL
+    
+    # Get threshold info, if specified directly.
+    if ( ! is.null(threshold) ) {
+        tinfo <- getScanoneThresholdInfo(threshold)
+    }
+    
+    # Get threshold info from QTL intervals, if specified.
     if ( ! is.null(qtl.intervals) ) {
+        
         stopifnot( 'qtlintervals' %in% class(qtl.intervals) )
-        threshold <- attr(qtl.intervals, 'threshold')
-    } else {
-        threshold <- NULL
+        qinfo <- getScanoneThresholdInfo(qtl.intervals)
+        
+        if ( is.null(threshold) ) {
+            tinfo <- qinfo
+        } else if ( ! identical(qinfo, tinfo) ) {
+            stop("threshold information does not match that of QTL intervals")
+        }
     }
     
     if ( ! is.null(type) && ! type %in% c('l', 'p') ) {
@@ -122,8 +140,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     names(seq.indices) <- chr
     
     # Set maximum y-value, ensure greater than or equal to one.
-    max.lod <- max( x[, lodcol.index],
-        threshold, 1.0, na.rm=TRUE )
+    max.lod <- max( x[, lodcol.index], tinfo[['threshold']], 1.0, na.rm=TRUE )
     
     # Set width of gaps between sequences.
     gap.width <- ifelse(length(chr) > 1, gap, 0)
@@ -286,22 +303,22 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
                 }
             }
         }
+    }
+    
+    # Plot LOD threshold if available.
+    if ( ! is.null(tinfo[['threshold']]) ) {
         
         # Draw horizontal red dashed line to indicate LOD threshold.
-        abline(threshold, 0, col='red', lwd=1.0, lty='dotted')
-        
-        # Try to get significance levels corresponding to LOD threshold.
-        alpha <- attr(qtl.intervals, 'alpha')
-        fdr <- attr(qtl.intervals, 'fdr')
+        abline(tinfo[['threshold']], 0, col='red', lwd=1.0, lty='dotted')
         
         # If significance level or false-discovery rate available, add to threshold line.
-        if ( ! is.null(alpha) || ! is.null(fdr) ) {
+        if ( ! is.null(tinfo[['alpha']]) || ! is.null(tinfo[['fdr']]) ) {
             
             # Set threshold label text.
-            if ( ! is.null(alpha) ) {
-                thresh.label.text <- bquote( bold(alpha ~ '=' ~ .(alpha)) )
-            } else {
-                thresh.label.text <- paste0('FDR=', fdr)
+            if ( ! is.null(tinfo[['alpha']]) ) {
+                thresh.label.text <- bquote( bold(alpha ~ '=' ~ .(tinfo[['alpha']])) )
+            } else { # ! is.null(fdr)
+                thresh.label.text <- paste0('FDR=', tinfo[['fdr']])
             }
             
             # Set threshold label width.
@@ -311,8 +328,8 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
             thresh.label.pos <- cum.plot.width - thresh.label.width - xinch(0.025)
             
             # Draw LOD significance threshold label.
-            text( thresh.label.pos, threshold + yinch(0.025), thresh.label.text,
-                  col='red', adj=c(0, 0), cex=0.8)
+            text( thresh.label.pos, tinfo[['threshold']] + yinch(0.025),
+                thresh.label.text, col='red', adj=c(0, 0), cex=0.8)
         }
     }
     

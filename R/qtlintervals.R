@@ -99,17 +99,15 @@ hasPhysicalPositions <- function(qtl.intervals) {
 #' This function creates a \code{qtlintervals} object. Currently it
 #' can only create a \code{qtlintervals} object of length zero.
 #' 
+#' @param threshold A single \code{numeric} LOD significance threshold, or an
+#' object (e.g. \code{summary.scanoneperm}) containing one such threshold and
+#' its associated significance level.
 #' @param drop LOD units that the LOD profile must drop to form a QTL interval.
 #' This should only be specified if the QTL intervals are LOD support intervals,
 #' and is incompatible with the \code{prob} parameter.
 #' @param prob The probability coverage of the Bayesian credible interval.
 #' This should only be specified if the QTL intervals are Bayesian credible
 #' intervals, and is incompatible with the \code{drop} parameter.
-#' @param threshold LOD significance threshold for QTL intervals.
-#' @param alpha Significance level of QTL intervals threshold. (Mutually
-#' exclusive with \code{fdr}.)
-#' @param fdr False discovery rate (FDR) of QTL intervals threshold. (Mutually
-#' exclusive with \code{alpha}.)
 #' @param ... Unused arguments.
 #' 
 #' @return An empty \code{qtlintervals} list with the given attributes.
@@ -119,8 +117,7 @@ hasPhysicalPositions <- function(qtl.intervals) {
 #' 
 #' @keywords internal
 #' @rdname qtlintervals
-qtlintervals <- function(drop=NULL, prob=NULL, threshold=NULL, alpha=NULL,
-    fdr=NULL, ...) {
+qtlintervals <- function(threshold=NULL, drop=NULL, prob=NULL, ...) {
     
     # TODO: create full qtlintervals object
     
@@ -128,31 +125,40 @@ qtlintervals <- function(drop=NULL, prob=NULL, threshold=NULL, alpha=NULL,
     
     intervals <- list()
     
+    # If threshold specified, set threshold info.
+    if ( ! is.null(threshold) ) {
+        
+        # Get threshold info.
+        tinfo <- getScanoneThresholdInfo(threshold)
+        stopifnot( isSingleNonNegativeNumber(tinfo[['threshold']]) )
+        
+        # Set LOD threshold attribute.
+        attr(intervals, 'threshold') <- tinfo[['threshold']]
+        
+        # Set significance (alpha) / false-discovery rate.
+        if ( ! is.null(tinfo[['alpha']]) && ! is.null(tinfo[['fdr']]) ) {
+            stop("cannot set both significance level (alpha) and FDR")
+        } else if ( ! is.null(tinfo[['alpha']]) ) {
+            stopifnot( isSingleProbability(tinfo[['alpha']]) )
+            attr(intervals, 'alpha') <- tinfo[['alpha']]
+        } else if ( ! is.null(tinfo[['fdr']]) ) {
+            stopifnot( isSingleFiniteNumber(tinfo[['fdr']]) )
+            stopifnot( tinfo[['fdr']] > 0 & tinfo[['fdr']] < 1 )
+            attr(intervals, 'fdr') <- tinfo[['fdr']]
+        }
+    }
+    
+    # Set LOD support interval drop / Bayesian credible interval probability.
     if ( ! is.null(drop) && ! is.null(prob) ) {
-        stop("cannot set both LOD support interval drop",
-            "and Bayesian credible interval probability")
+        stop("cannot set both LOD interval drop and Bayesian interval probability")
     } else if ( ! is.null(drop) ) { # LOD support interval
         stopifnot( isSingleNonNegativeNumber(drop) )
         attr(intervals, 'drop') <- drop
     } else if ( ! is.null(prob) ) { # Bayes credible interval
         stopifnot( isSingleProbability(prob) )
         attr(intervals, 'prob') <- prob
-    }
-    
-    if ( ! is.null(threshold) ) {
-        stopifnot( isSingleNonNegativeNumber(threshold) )
-        attr(intervals, 'threshold') <- threshold
-    }    
-    
-    if ( ! is.null(alpha) && ! is.null(fdr) ) {
-        stop("cannot set both significance level (alpha) and FDR")
-    } else if ( ! is.null(alpha) ) {
-        stopifnot( isSingleProbability(alpha) )
-        attr(intervals, 'alpha') <- unname(alpha)
-    } else if ( ! is.null(fdr) ) {
-        stopifnot( isSingleFiniteNumber(fdr) )
-        stopifnot( fdr > 0 & fdr < 1 )
-        attr(intervals, 'fdr') <- unname(fdr)
+    } else {
+        stop("must set either LOD interval drop or Bayesian interval probability")
     }
     
     class(intervals) <- c('qtlintervals', 'list')

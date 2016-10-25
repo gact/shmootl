@@ -77,7 +77,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     
     if ( ! is.null(alpha) && ! is.null(fdr) ) {
         stop("cannot set both significance level (alpha) and FDR")
-    } else if ( ! is.null(alpha) ) {# set specified alpha value
+    } else if ( ! is.null(alpha) ) { # set specified alpha value
         stopifnot( isSingleProbability(alpha) )
         perm.type <- 'max'
     } else if ( ! is.null(fdr) ) { # set specified FDR
@@ -156,13 +156,13 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     
     # Get LOD thresholds from permutation results. 
     if ( ! is.null(alpha) ) {
-        perm.summary <- summary(scanone.perms, alpha=alpha) # qtl:::summary.scanoneperm
-        thresholds <- as.numeric(perm.summary[1, ])
+        scanone.thresholds <- summary(scanone.perms, alpha=alpha) # qtl:::summary.scanoneperm
+        multiple.lodcolumns <- TRUE
     } else { # fdr
-        perm.summary <- summary(scanone.perms, scanone.result, fdr=fdr) # summary.scanonebins
-        thresholds <- rep(perm.summary[1, 'lod'], length(phenotypes))
-        # NB: update FDR from perm summary, can differ from requested FDR
-        fdr <- 0.01 * as.numeric(sub('%', '', rownames(perm.summary)[1]))
+        scanone.threshold <- summary(scanone.perms, scanone.result, fdr=fdr) # summary.scanonebins
+        # NB: set FDR from scanonebins summary, as can differ from requested FDR
+        fdr <- 0.01 * as.numeric(sub('%', '', rownames(scanone.threshold)[1]))
+        multiple.lodcolumns <- FALSE
     }
     
     # Create temp output file, ensure will be removed.
@@ -178,24 +178,27 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     # Output results of single QTL analysis for each phenotype.
     for ( i in seq_along(phenotypes) ) {
         
-        # Output scan result for this phenotype.
+        # Output scanone result for this phenotype.
         pheno.result <- getLODProfile(scanone.result, lodcolumn=i)
         writeResultHDF5(pheno.result, tmp, phenotypes[i], 'Scanone')
         
         # Output permutation scan results for this phenotype.
         if ( ! is.null(alpha) ) {
             pheno.perms <- subset(scanone.perms, lodcolumn=i) # qtl:::subset.scanoneperm
-            attr(pheno.perms, 'alpha') <- alpha
         } else { # fdr
             pheno.perms <- scanone.perms[,, i]
-            attr(pheno.perms, 'fdr') <- fdr
         }
-        attr(pheno.perms, 'threshold') <- thresholds[i]
         writeResultHDF5(pheno.perms, tmp, phenotypes[i], 'Scanone Perms')
+        
+        # Output scanone threshold for this phenotype.
+        if (multiple.lodcolumns) {
+            scanone.threshold <- subset(scanone.thresholds, lodcolumn=i)
+        }
+        writeResultHDF5(scanone.threshold, tmp, phenotypes[i], 'Scanone Threshold')
         
         # Get significant QTL intervals.
         qtl.intervals <- getQTLIntervals(pheno.result, ci.function=ci.function,
-            drop=drop, prob=prob, threshold=thresholds[i], alpha=alpha, fdr=fdr)
+            drop=drop, prob=prob, threshold=scanone.threshold)
         
         # Output any significant QTL intervals.
         if ( length(qtl.intervals) > 0 ) {
@@ -206,7 +209,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     }
     
     # Output results overview.
-    overview <- data.frame(Phenotype=phenotypes, Status=status, 
+    overview <- data.frame(Phenotype=phenotypes, Status=status,
         Comments=comments, stringsAsFactors=FALSE)
     writeOverviewHDF5(overview, tmp)
     

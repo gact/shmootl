@@ -9,7 +9,9 @@ testQTLPeakSignificance(x, threshold, qtl.peaks, ...)
 \arguments{
 \item{x}{A \code{scanone} object.}
 
-\item{threshold}{LOD significance threshold.}
+\item{threshold}{A single \code{numeric} LOD significance threshold, or an
+object (e.g. \code{summary.scanoneperm}) containing one such threshold
+and its associated significance level.}
 
 \item{qtl.peaks}{Locus \code{mapframe} containing QTL peaks.}
 

@@ -107,17 +107,17 @@ writeReportPDF <- function(scanfile, report) {
             # Get any QTL intervals.
             qtl.intervals <- readResultHDF5(scanfile, phenotype, 'Scanone QTL Intervals')
             
-            # If no QTL intervals, get scanone permutations for this phenotype,
-            # and create a QTL intervals object with any threshold info.
-            # NB: if no permutations found, threshold attributes will be NULL.
+            # If no QTL intervals, get scanone threshold for this phenotype.
+            # NB: if no scanone threshold found, threshold object will be NULL.
             if ( is.null(qtl.intervals) ) {
-                scanone.perms <- readResultHDF5(scanfile, phenotype, 'Scanone Perms')
-                qtl.intervals <- qtlintervals(threshold=attr(scanone.perms, 'threshold'),
-                    alpha=attr(scanone.perms, 'alpha'), fdr=attr(scanone.perms, 'fdr'))
+                scanone.threshold <- readResultHDF5(scanfile, phenotype, 'Scanone Threshold')
+            } else {
+                scanone.threshold <- NULL
             }
             
             # Plot (zero or more) QTL intervals across all sequences.
-            plotQTLScanone(scanone.result, qtl.intervals=qtl.intervals, phenotype=phenotype)
+            plotQTLScanone(scanone.result, qtl.intervals=qtl.intervals,
+                threshold=scanone.threshold, phenotype=phenotype)
             
             # If significant QTL intervals found, plot
             # all sequences with a significant QTL.
@@ -128,7 +128,8 @@ writeReportPDF <- function(scanfile, report) {
                 
                 for ( interval.seq in interval.seqs ) {
                     plotQTLScanone(scanone.result, qtl.intervals=qtl.intervals,
-                        chr=interval.seq, phenotype=phenotype)
+                        threshold=scanone.threshold, chr=interval.seq,
+                        phenotype=phenotype)
                 }
             }
         }

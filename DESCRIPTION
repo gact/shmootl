@@ -81,6 +81,7 @@ Collate:
     'scanonebins.R'
     'seq.R'
     'shmootl.R'
+    'subset.summary.scanoneperm.R'
     'subsetByLoci.R'
     'subsetByLocusID.R'
     'subsetBySeq.R'

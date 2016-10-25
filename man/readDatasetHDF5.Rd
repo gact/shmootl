@@ -14,6 +14,8 @@
 \alias{readDatasetHDF5.scanoneperm}
 \alias{readDatasetHDF5.scantwo}
 \alias{readDatasetHDF5.scantwoperm}
+\alias{readDatasetHDF5.summary.scanonebins}
+\alias{readDatasetHDF5.summary.scanoneperm}
 \title{Read HDF5 dataset.
    
 The named HDF5 dataset is read from the specified HDF5 file using the
@@ -45,6 +47,10 @@ readDatasetHDF5.scanoneperm(infile, h5name, ...)
 readDatasetHDF5.scantwo(infile, h5name, ...)
 
 readDatasetHDF5.scantwoperm(infile, h5name, ...)
+
+\method{readDatasetHDF5}{summary.scanonebins}(infile, h5name, ...)
+
+\method{readDatasetHDF5}{summary.scanoneperm}(infile, h5name, ...)
 }
 \arguments{
 \item{infile}{An input HDF5 file.}

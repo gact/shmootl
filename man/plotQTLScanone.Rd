@@ -5,8 +5,8 @@
 \title{Plot \pkg{R/qtl} \code{scanone} result.}
 \usage{
 plotQTLScanone(x, chr = NULL, lodcolumn = NULL, qtl.intervals = NULL,
-  col = c("gray10", "gray60"), gap = 25, phenotype = NULL, type = NULL,
-  ...)
+  threshold = NULL, col = c("gray10", "gray60"), gap = 25,
+  phenotype = NULL, type = NULL, ...)
 }
 \arguments{
 \item{x}{An \pkg{R/qtl} \code{scanone} object.}
@@ -26,6 +26,10 @@ is used by default; otherwise a LOD column must be specified.}
 as the \code{scanone} object. These intervals are added to the plot, unless
 the median interval size is too small to be distinguishable. Threshold
 information is taken from this object, if available.}
+
+\item{threshold}{A single \code{numeric} LOD significance threshold, or an
+object (e.g. \code{summary.scanoneperm}) containing one such threshold and
+its associated significance level.}
 
 \item{col}{Analogous to the standard \code{'col'} plotting parameter. This is
 recycled to match the number of sequences being plotted. As in the package

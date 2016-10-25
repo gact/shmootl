@@ -14,6 +14,8 @@
 \alias{writeDatasetHDF5.scanoneperm}
 \alias{writeDatasetHDF5.scantwo}
 \alias{writeDatasetHDF5.scantwoperm}
+\alias{writeDatasetHDF5.summary.scanonebins}
+\alias{writeDatasetHDF5.summary.scanoneperm}
 \title{Write R object to a HDF5 dataset.
   
 The given R object is written to the named HDF5 dataset using the method
@@ -46,6 +48,10 @@ writeDatasetHDF5(dataset, outfile, h5name, ...)
 \method{writeDatasetHDF5}{scantwo}(dataset, outfile, h5name, ...)
 
 \method{writeDatasetHDF5}{scantwoperm}(dataset, outfile, h5name, ...)
+
+\method{writeDatasetHDF5}{summary.scanonebins}(dataset, outfile, h5name, ...)
+
+\method{writeDatasetHDF5}{summary.scanoneperm}(dataset, outfile, h5name, ...)
 }
 \arguments{
 \item{dataset}{R object.}

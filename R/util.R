@@ -505,7 +505,6 @@ getIndices.default <- function(x, requested=NULL, strict=FALSE) {
 #' @rdname getIndices
 getIndices.qtl <- function(x, requested=NULL, strict=FALSE) {
     
-    stopifnot( x$n.qtl > 0 )
     available <- seq(x$n.qtl)
     names(available) <- x$name
     
@@ -571,7 +570,6 @@ getLodColIndices.scanone <- function(x, lodcolumns=NULL, strict=FALSE) {
 # getLodColIndices.scanonebins -------------------------------------------------
 #' @rdname getLodColIndices
 getLodColIndices.scanonebins <- function(x, lodcolumns=NULL, strict=FALSE) {
-    stopifnot( dim(x)[3] > 0 )
     available <- seq_len( dim(x)[3] )
     names(available) <- dimnames(x)[[3]]
     resolved <- getIndices(available, requested=lodcolumns, strict=strict)
@@ -911,6 +909,60 @@ getRunIndices <- function(x) {
     num.runs <- union( length(x$lengths), length(x$values) )
     stopifnot( isSingleNonNegativeWholeNumber(num.runs) )
     return( if ( num.runs > 0 ) { 1:num.runs } else { integer() } )
+}
+
+# getScanoneThresholdInfo ------------------------------------------------------
+#' Get \code{scanone} threshold info from object.
+#' 
+#' @param x An object containing a single \code{scanone} threshold,
+#' or an object associated with a single \code{scanone} threshold.
+#' 
+#' @return A named list containing the \code{scanone} threshold
+#' info that was extracted from the input object.
+#' 
+#' @keywords internal
+#' @rdname getScanoneThresholdInfo
+getScanoneThresholdInfo <- function(x) {
+    UseMethod('getScanoneThresholdInfo', x)
+}
+
+# getScanoneThresholdInfo.numeric ----------------------------------------------
+#' @rdname getScanoneThresholdInfo
+getScanoneThresholdInfo.numeric <- function(x) {
+    stopifnot( isSingleNonNegativeNumber(x) )
+    return( list( threshold=unname(x), alpha=NULL, fdr=NULL) )
+}
+
+# getScanoneThresholdInfo.qtlintervals -----------------------------------------
+#' @rdname getScanoneThresholdInfo
+getScanoneThresholdInfo.qtlintervals <- function(x) {
+    stopifnot( 'threshold' %in% names( attributes(x) ) )
+    return( list( threshold=unname( attr(x, 'threshold') ),
+        alpha=unname( attr(x, 'alpha') ), fdr=unname( attr(x, 'fdr') ) ) )
+}
+
+# getScanoneThresholdInfo.summary.scanonebins ----------------------------------
+#' @method getScanoneThresholdInfo summary.scanonebins
+#' @rdname getScanoneThresholdInfo
+getScanoneThresholdInfo.summary.scanonebins <- function(x) {
+    stopifnot( ncol(x) == 1 )
+    stopifnot( nrow(x) == 1 )
+    threshold <- x[1, 1]
+    alpha <- NULL
+    fdr <- 0.01 * as.numeric( sub('%', '', rownames(x)[1]) )
+    return( list( threshold=threshold, alpha=alpha, fdr=fdr) )
+}
+
+# getScanoneThresholdInfo.summary.scanoneperm ----------------------------------
+#' @method getScanoneThresholdInfo summary.scanoneperm
+#' @rdname getScanoneThresholdInfo
+getScanoneThresholdInfo.summary.scanoneperm <- function(x) {
+    stopifnot( ncol(x) == 1 )
+    stopifnot( nrow(x) == 1 )
+    threshold <- x[1, 1]
+    alpha <- 0.01 * as.numeric( sub('%', '', rownames(x)[1]) )
+    fdr <- NULL
+    return( list( threshold=threshold, alpha=alpha, fdr=fdr) )
 }
 
 # getSeqinfo -------------------------------------------------------------------
@@ -2136,6 +2188,55 @@ makePseudomarkerIDs <- function(loc) {
     loc.pos <- pullLocusPos(loc)
     
     return( paste0('c', loc.seqs, '.loc', loc.pos) )
+}
+
+# makeScanoneThreshold ---------------------------------------------------------
+#' Make \code{scanone} threshold object.
+#' 
+#' @param threshold LOD threshold value.
+#' @param alpha Significance level (alpha) associated with the specified LOD
+#' threshold. (Incompatible with \code{fdr}.)
+#' @param fdr False-discovery rate associated with the specified LOD
+#' threshold. (Incompatible with \code{alpha}.)
+#' 
+#' @return If \code{alpha} is specified, a \code{summary.scanoneperm} object is
+#' returned, with the given threshold at the specified \code{alpha} for the
+#' single LOD column. If \code{fdr} is specified, a \code{summary.scanonebins}
+#' object is returned, with the given threshold at the specified \code{fdr}
+#' for the single LOD column. In any case, because no permutations are used in
+#' generating the threshold, the returned object has attribute \code{'n.perm'}
+#' containing an \code{NA} value.
+#' 
+#' @keywords internal
+#' @rdname makeScanoneThreshold
+makeScanoneThreshold <- function(threshold, alpha=NULL, fdr=NULL) {
+    
+    stopifnot( isSingleNonNegativeNumber(threshold) )
+    
+    if ( ! is.null(alpha) && ! is.null(fdr) ) {
+        stop("cannot set both significance level (alpha) and FDR")
+    } else if ( ! is.null(alpha) ) {
+        
+        stopifnot( isSingleProbability(alpha) )
+        level <- paste0(as.character(100 * alpha), '%')
+        threshold.class <- 'summary.scanoneperm'
+        
+    } else if ( ! is.null(fdr) ) {
+        
+        stopifnot( isSingleFiniteNumber(fdr) )
+        stopifnot( fdr > 0 & fdr < 1 )
+        level <- paste0(as.character(100 * fdr), '%')
+        threshold.class <- 'summary.scanonebins'
+        
+    } else {
+        stop("must set either significance level (alpha) or FDR")
+    }
+    
+    x <- matrix(threshold, dimnames=list(level, 'lod'))
+    class(x) <- threshold.class
+    attr(x, 'n.perm') <- 0
+    
+    return(x)
 }
 
 # otherattributes --------------------------------------------------------------

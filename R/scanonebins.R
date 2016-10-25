@@ -244,6 +244,35 @@ print.summary.scanonebins <- function(x, ...) {
     print( matrix(x, dimnames=dimnames(x)) )
 }
 
+# subset.summary.scanonebins ---------------------------------------------------
+#' Subset a \code{summary.scanonebins} object.
+#' 
+#' @param x A \code{summary.scanonebins} object.
+#' @param fdrs FDR levels by which to subset the input object.
+#' @param ... Unused arguments.
+#' 
+#' @return The input \code{summary.scanonebins} object,
+#' subsetted with respect to the specified constraints.
+#' 
+#' @export subset.summary.scanonebins
+#' @keywords internal
+#' @method subset summary.scanonebins
+#' @rdname subset.summary.scanonebins
+subset.summary.scanonebins <- function(x, fdrs=NULL, ...) {
+    
+    fdr.mask <- getRowMask(x, requested=fdrs)
+    
+    others <- otherattributes(x)
+    
+    x <- x[fdr.mask, , drop=FALSE]
+    
+    class(x) <- 'summary.scanonebins'
+    
+    otherattributes(x) <- others
+    
+    return(x)
+}
+
 # summary.scanonebins ----------------------------------------------------------
 #' Estimate FDR LOD thresholds from a \code{scanonebins} object.
 #' 

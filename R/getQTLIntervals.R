@@ -32,14 +32,10 @@
 #' @param expandtomarkers Expand the LOD interval to the nearest flanking
 #' markers, or to the respective terminal loci.
 #' @param ... Further arguments (see below).
-#' @param threshold In a \code{scanone} or equivalent object, this indicates
-#' the LOD significance threshold for QTL intervals.
-#' @param alpha In a \code{scanone} or equivalent object, this contains the
-#' significance level of the given threshold. (Mutually exclusive with
-#' \code{fdr}.)
-#' @param fdr In a \code{scanone} or equivalent object, this contains
-#' the false discovery rate (FDR) of the given threshold. (Mutually exclusive
-#' with \code{alpha}.)
+#' @param threshold For a \code{scanone} or equivalent object, this
+#' contains a single \code{numeric} LOD significance threshold, or
+#' an object (e.g. \code{summary.scanoneperm}) containing one such
+#' threshold and its associated significance level.
 #' @template param-lodcolumn
 #' @param qtl.peaks Locus \code{mapframe} indicating the location of the QTL
 #' peaks in a \code{scanone} result. If not specified, these are inferred
@@ -70,14 +66,14 @@ getQTLIntervals <- function(x, chr=NULL, ci.function=c('lodint', 'bayesint'),
 # getQTLIntervals.mapframe -----------------------------------------------------
 #' @export
 #' @rdname getQTLIntervals
-getQTLIntervals.mapframe <- function(x, chr=NULL,
-    ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
-    expandtomarkers=FALSE, threshold=NULL, alpha=NULL, fdr=NULL,
+getQTLIntervals.mapframe <- function(x, chr=NULL, ci.function=c('lodint',
+    'bayesint'), drop=1.5, prob=0.95, expandtomarkers=FALSE, threshold=NULL,
     lodcolumn=NULL, qtl.peaks=NULL, ...) {
 
     stopifnot( getMapUnit(x) == 'cM' )
     stopifnot( nrow(x) > 0 )
     stopifnot( isBOOL(expandtomarkers) )
+    stopif( is.null(threshold) )
     
     ci.function <- match.arg(ci.function)
     
@@ -89,8 +85,7 @@ getQTLIntervals.mapframe <- function(x, chr=NULL,
     }
     
     # Init `qtlintervals` object.
-    intervals <- qtlintervals(drop=drop, prob=prob,
-        threshold=threshold, alpha=alpha, fdr=fdr)
+    intervals <- qtlintervals(threshold=threshold, drop=drop, prob=prob)
     
     # Set standard QTL interval indices.
     ci <- c(low=1, peak=2, high=3)
@@ -328,9 +323,8 @@ getQTLIntervals.mapframe <- function(x, chr=NULL,
 # getQTLIntervals.qtl ----------------------------------------------------------
 #' @export
 #' @rdname getQTLIntervals
-getQTLIntervals.qtl <- function(x, chr=NULL,
-    ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
-    expandtomarkers=FALSE, qtl.indices=NULL, ...) {
+getQTLIntervals.qtl <- function(x, chr=NULL, ci.function=c('lodint','bayesint'),
+    drop=1.5, prob=0.95, expandtomarkers=FALSE, qtl.indices=NULL, ...) {
     
     ci.function <- match.arg(ci.function)
     
@@ -382,14 +376,12 @@ getQTLIntervals.qtl <- function(x, chr=NULL,
 # getQTLIntervals.scanone ------------------------------------------------------
 #' @export
 #' @rdname getQTLIntervals
-getQTLIntervals.scanone <- function(x, chr=NULL,
-    ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
-    expandtomarkers=FALSE, threshold=NULL, alpha=NULL, fdr=NULL,
+getQTLIntervals.scanone <- function(x, chr=NULL, ci.function=c('lodint',
+    'bayesint'), drop=1.5, prob=0.95, expandtomarkers=FALSE, threshold=NULL,
     lodcolumn=NULL, qtl.peaks=NULL, ...) {
     return( getQTLIntervals(as.mapframe(x), chr=chr, ci.function=ci.function,
         drop=drop, prob=prob, expandtomarkers=expandtomarkers,
-        threshold=threshold, alpha=alpha, fdr=fdr, lodcolumn=lodcolumn,
-        qtl.peaks=qtl.peaks) )
+        threshold=threshold, lodcolumn=lodcolumn, qtl.peaks=qtl.peaks) )
 }
     
 # End of getQTLIntervals.R #####################################################

@@ -13,8 +13,7 @@ getQTLIntervals(x, chr=NULL, ci.function=c('lodint', 'bayesint'), drop=1.5,
 
 \method{getQTLIntervals}{mapframe}(x, chr = NULL, ci.function = c("lodint",
   "bayesint"), drop = 1.5, prob = 0.95, expandtomarkers = FALSE,
-  threshold = NULL, alpha = NULL, fdr = NULL, lodcolumn = NULL,
-  qtl.peaks = NULL, ...)
+  threshold = NULL, lodcolumn = NULL, qtl.peaks = NULL, ...)
 
 \method{getQTLIntervals}{qtl}(x, chr = NULL, ci.function = c("lodint",
   "bayesint"), drop = 1.5, prob = 0.95, expandtomarkers = FALSE,
@@ -22,8 +21,7 @@ getQTLIntervals(x, chr=NULL, ci.function=c('lodint', 'bayesint'), drop=1.5,
 
 \method{getQTLIntervals}{scanone}(x, chr = NULL, ci.function = c("lodint",
   "bayesint"), drop = 1.5, prob = 0.95, expandtomarkers = FALSE,
-  threshold = NULL, alpha = NULL, fdr = NULL, lodcolumn = NULL,
-  qtl.peaks = NULL, ...)
+  threshold = NULL, lodcolumn = NULL, qtl.peaks = NULL, ...)
 }
 \arguments{
 \item{x}{A \code{scanone} or \code{qtl} object.}
@@ -51,16 +49,10 @@ markers, or to the respective terminal loci.}
 
 \item{...}{Further arguments (see below).}
 
-\item{threshold}{In a \code{scanone} or equivalent object, this indicates
-the LOD significance threshold for QTL intervals.}
-
-\item{alpha}{In a \code{scanone} or equivalent object, this contains the
-significance level of the given threshold. (Mutually exclusive with
-\code{fdr}.)}
-
-\item{fdr}{In a \code{scanone} or equivalent object, this contains
-the false discovery rate (FDR) of the given threshold. (Mutually exclusive
-with \code{alpha}.)}
+\item{threshold}{For a \code{scanone} or equivalent object, this
+contains a single \code{numeric} LOD significance threshold, or
+an object (e.g. \code{summary.scanoneperm}) containing one such
+threshold and its associated significance level.}
 
 \item{lodcolumn}{In a \code{scanone} or equivalent object, this
 parameter indicates which LOD column to consider. In other objects
