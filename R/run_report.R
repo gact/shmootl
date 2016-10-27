@@ -6,7 +6,7 @@
 #' Given a scan result HDF5 file, create a
 #' report of the results of the QTL analysis.
 #' 
-#' @param h5file scan result file
+#' @param h5file HDF5 scan file
 #' @param report scan report file
 #' 
 #' @concept shmootl:pipelines
@@ -23,19 +23,26 @@ run_report <- function(h5file=NA_character_, report=NA_character_) {
     on.exit( file.remove(tmp), add=TRUE )
     
     # Write report to temp file.
-    if ( report.ext %in% const$ext$pdf ) {
+    success <- tryCatch({
         
-        writeReportPDF(h5file, tmp)
+        if ( report.ext %in% const$ext$pdf ) {
+            writeReportPDF(h5file, tmp)
+        } else {
+            stop("cannot write report - unknown extension on file '", report, "'")
+        }
         
-    } else {
+        result <- TRUE
         
-        stop("cannot write report - unknown extension on file '", report, "'")
-    }
+    }, error=function(e) {
+        result <- FALSE
+    })
     
-    # Move temp file to final report file.
+    # If report written without error, move temp file to final report file.
     # NB: file.copy is used here instead of file.rename because the latter
     # can sometimes fail when moving files between different file systems.
-    file.copy(tmp, report, overwrite=TRUE)
+    if (success) {
+        file.copy(tmp, report, overwrite=TRUE)
+    }
     
     return( invisible() )
 }

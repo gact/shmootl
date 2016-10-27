@@ -7,7 +7,7 @@
 run_report(h5file = NA_character_, report = NA_character_)
 }
 \arguments{
-\item{h5file}{scan result file}
+\item{h5file}{HDF5 scan file}
 
 \item{report}{scan report file}
 }

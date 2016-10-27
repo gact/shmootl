@@ -8,7 +8,7 @@ run_digest(h5list = character(), digest = NA_character_,
   scanfile.pattern = NA_character_)
 }
 \arguments{
-\item{h5list}{list of scan result files}
+\item{h5list}{list of HDF5 scan files}
 
 \item{digest}{scan digest file}
 
