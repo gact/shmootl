@@ -767,6 +767,10 @@ readDatasetHDF5.cross <- function(infile, h5name, ...) {
     cross.info <- setCrosstype(cross.info, crosstype)
     cross.info <- setSamples(cross.info, samples)
     
+    # Set sorted sequences in CrossInfo object.
+    sequences <- sortSeq( unique(locus.seqs) )
+    cross.info <- setSequences(cross.info, sequences)
+    
     dataset <- list(geno=geno, pheno=pheno)
     class(dataset) <- cross.class
     attr(dataset, 'alleles') <- cross.alleles
