@@ -6,7 +6,7 @@
 #' Given one or more scan result HDF5 files, create
 #' a digest of the results of the QTL analyses.
 #' 
-#' @param h5list list of scan result files
+#' @param h5list list of HDF5 scan files
 #' @param digest scan digest file
 #' @param scanfile.pattern scan file name pattern
 #' 
@@ -35,16 +35,27 @@ run_digest <- function(h5list=character(), digest=NA_character_,
     tmp <- tempfile( fileext=paste0('.', digest.ext) ) 
     on.exit( file.remove(tmp), add=TRUE )
     
-    if ( digest.ext %in% const$ext$excel ) {
-        writeDigestExcel(h5list, tmp, scanfile.pattern=scanfile.pattern)
-    } else {
-        stop("cannot create digest - unknown extension on file '", digest, "'")
-    }
+    # Write digest to temp file.
+    success <- tryCatch({
+        
+        if ( digest.ext %in% const$ext$excel ) {
+            writeDigestExcel(h5list, tmp, scanfile.pattern=scanfile.pattern)
+        } else {
+            stop("cannot create digest - unknown extension on file '", digest, "'")
+        }
+        
+        result <- TRUE
+        
+    }, error=function(e) {
+        result <- FALSE
+    })
     
-    # Move temp file to final digest file.
+    # If digest written without error, move temp file to final digest file.
     # NB: file.copy is used here instead of file.rename because the latter
     # can sometimes fail when moving files between different file systems.
-    file.copy(tmp, digest, overwrite=TRUE)
+    if (success) {
+        file.copy(tmp, digest, overwrite=TRUE)
+    }
     
     return( invisible() )
 }
