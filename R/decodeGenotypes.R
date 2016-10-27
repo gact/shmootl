@@ -10,6 +10,7 @@
 #' @return Object of same class and dimensions as input object,
 #' but with genotype integers decoded to genotype strings.
 #' 
+#' @export
 #' @keywords internal
 #' @rdname decodeGenotypes
 decodeGenotypes <- function(x, genotypes) {
@@ -17,6 +18,8 @@ decodeGenotypes <- function(x, genotypes) {
 }
 
 # decodeGenotypes.integer ------------------------------------------------------
+#' @export
+#' @method decodeGenotypes integer
 #' @rdname decodeGenotypes
 decodeGenotypes.integer <- function(x, genotypes) {
     
@@ -33,6 +36,7 @@ decodeGenotypes.integer <- function(x, genotypes) {
 }
 
 # decodeGenotypes.data.frame ---------------------------------------------------
+#' @export
 #' @method decodeGenotypes data.frame
 #' @rdname decodeGenotypes
 decodeGenotypes.data.frame <- function(x, genotypes) {
@@ -44,6 +48,8 @@ decodeGenotypes.data.frame <- function(x, genotypes) {
 }
 
 # decodeGenotypes.matrix -------------------------------------------------------
+#' @export
+#' @method decodeGenotypes matrix
 #' @rdname decodeGenotypes
 decodeGenotypes.matrix <- function(x, genotypes) {
     stopifnot( typeof(x) == 'integer' )

@@ -10,6 +10,7 @@
 #' @return Object of same class and dimensions as input object,
 #' but with genotype strings encoded as genotype integers.
 #' 
+#' @export
 #' @keywords internal
 #' @rdname encodeGenotypes
 encodeGenotypes <- function(x, genotypes) {
@@ -17,6 +18,8 @@ encodeGenotypes <- function(x, genotypes) {
 }
 
 # encodeGenotypes.character ----------------------------------------------------
+#' @export
+#' @method encodeGenotypes character
 #' @rdname encodeGenotypes
 encodeGenotypes.character <- function(x, genotypes) {
     
@@ -33,6 +36,7 @@ encodeGenotypes.character <- function(x, genotypes) {
 }
 
 # encodeGenotypes.data.frame ---------------------------------------------------
+#' @export
 #' @method encodeGenotypes data.frame
 #' @rdname encodeGenotypes
 encodeGenotypes.data.frame <- function(x, genotypes) {
@@ -43,6 +47,8 @@ encodeGenotypes.data.frame <- function(x, genotypes) {
 }
 
 # encodeGenotypes.matrix -------------------------------------------------------
+#' @export
+#' @method encodeGenotypes matrix
 #' @rdname encodeGenotypes
 encodeGenotypes.matrix <- function(x, genotypes) {
     x <- apply(x, 2, as.character)
