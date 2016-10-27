@@ -4,7 +4,7 @@
 \alias{writeResultHDF5}
 \title{Write QTL analysis result to an output HDF5 file.}
 \usage{
-writeResultHDF5(result, outfile, phenotype, name, overwrite = FALSE)
+writeResultHDF5(result, outfile, phenotype, analysis, name, overwrite = FALSE)
 }
 \arguments{
 \item{result}{R object containing a QTL analysis result.}
@@ -12,6 +12,8 @@ writeResultHDF5(result, outfile, phenotype, name, overwrite = FALSE)
 \item{outfile}{An output HDF5 file.}
 
 \item{phenotype}{Name of phenotype (or equivalent analysis unit).}
+
+\item{analysis}{Name of analysis from which result was generated.}
 
 \item{name}{Name of QTL analysis result.}
 
@@ -23,10 +25,9 @@ Write QTL analysis result to an output HDF5 file.
 }
 \seealso{
 Other HDF5 functions: \code{\link{readCrossHDF5}},
-  \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{readResultHDF5}},
+  \code{\link{readMapHDF5}}, \code{\link{readResultHDF5}},
+  \code{\link{readResultsOverviewHDF5}},
   \code{\link{writeCrossHDF5}}, \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}}
+  \code{\link{writeResultsOverviewHDF5}}
 }
 

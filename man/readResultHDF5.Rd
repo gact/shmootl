@@ -4,18 +4,21 @@
 \alias{readResultHDF5}
 \title{Read QTL analysis result from an input HDF5 file.}
 \usage{
-readResultHDF5(infile, phenotype, name)
+readResultHDF5(infile, phenotype, analysis, name)
 }
 \arguments{
 \item{infile}{An input HDF5 file.}
 
 \item{phenotype}{Name of phenotype (or equivalent analysis unit).}
 
+\item{analysis}{Name of analysis from which result was generated.}
+
 \item{name}{Name of QTL analysis result.}
 }
 \value{
-R object containing QTL analysis result. Returns \code{NULL}
-if the given phenotype has no result with the specified name.
+R object containing QTL analysis result. Returns \code{NULL} if
+either the given phenotype or analysis are not present, or they are both
+present but have no result with the specified name.
 }
 \description{
 Read QTL analysis result from an input HDF5 file.
@@ -23,9 +26,9 @@ Read QTL analysis result from an input HDF5 file.
 \seealso{
 Other HDF5 functions: \code{\link{readCrossHDF5}},
   \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
+  \code{\link{readResultsOverviewHDF5}},
   \code{\link{writeCrossHDF5}}, \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
+  \code{\link{writeResultHDF5}},
+  \code{\link{writeResultsOverviewHDF5}}
 }
 

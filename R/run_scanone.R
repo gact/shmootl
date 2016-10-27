@@ -3,9 +3,9 @@
 # run_scanone ------------------------------------------------------------------
 #' Do single QTL scan.
 #' 
-#' Read cross data from the specified cross input file, run a single QTL
-#' analysis using \pkg{R/qtl} \code{scanone} (Broman \emph{et al.} 2003),
-#' and write the results of that scan to the specified output file.
+#' Read cross data from the specified cross input CSV file or HDF5 scan file,
+#' run a single QTL analysis using \pkg{R/qtl} \code{scanone} (Broman \emph{et
+#' al.} 2003), and write the results of that scan to the specified HDF5 file.
 #' 
 #' If the input cross contains enumerated genotypes, marker regression is
 #' performed regardless of the value of the \code{method} parameter.
@@ -30,7 +30,7 @@
 #' as well as Section 4.5 of Broman and Sen (2009).
 #' 
 #' @param infile input cross file
-#' @param h5file scan result file
+#' @param h5file HDF5 scan file
 #' @param chr sequences [default: all]
 #' @param pheno phenotypes [default: all]
 #' @param model phenotype model
@@ -67,8 +67,6 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
     acovfile=NA_character_, icovfile=NA_character_) {
     
-    stopifnot( isSingleString(infile) )
-    stopifnot( file.exists(infile) )
     stopifnot( isSingleString(h5file) )
     stopifnot( isSingleNonNegativeNumber(step) )
     stopifnot( isSingleProbability(error.prob) )
@@ -77,6 +75,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     method <- match.arg(method)
     map.function <- match.arg(map.function)
     
+    infile <- if ( ! identical(infile, NA_character_) ) { infile } else { NULL }
     chr <- if ( ! identical(chr, character()) ) { chr } else { NULL }
     pheno <- if ( ! identical(pheno, character()) ) { pheno } else { NULL }
     alpha <- if ( ! identical(alpha, NA_real_) ) { alpha } else { NULL }
@@ -109,9 +108,30 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     
     # --------------------------------------------------------------------------
     
-    # Read cross input file.
-    cross <- readCrossCSV(infile, error.prob=error.prob,
-        map.function=map.function)
+    # Create temp output file, ensure will be removed.
+    tmp <- tempfile()
+    on.exit( file.remove(tmp), add=TRUE )
+    
+    # Read cross from input CSV file or HDF5 file as appropriate.
+    # If HDF5 file does not exist, create it and add cross object.
+    # If both input files exist, their cross objects must match.
+    if ( file.exists(h5file) ) {
+        updating.h5file <- TRUE
+        stopifnot( hasCrossHDF5(h5file) )
+        cross <- h5file.cross <- readCrossHDF5(h5file)
+        if ( ! is.null(infile) ) {
+            infile.cross <- readCrossCSV(infile, error.prob=error.prob,
+                map.function=map.function)
+            stopifnot( crossesEqual(h5file.cross, infile.cross) )
+        }
+    } else if ( ! is.null(infile) ) {
+        updating.h5file <- FALSE
+        cross <- readCrossCSV(infile, error.prob=error.prob,
+            map.function=map.function)
+        writeCrossHDF5(cross, tmp)
+    } else {
+        stop("no input CSV file or HDF5 file specified")
+    }
     
     # Read additive covariate matrix file, if specified.
     if ( ! is.na(acovfile) ) {
@@ -146,9 +166,6 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         
         method <- 'mr'
     }
-    
-    # Get cross map.
-    cross.map <- qtl::pull.map(cross)
     
     # Calculate probabilities of true underlying genotypes given observed marker data.
     cross <- qtl::calc.genoprob(cross, step=step, error.prob=error.prob, 
@@ -187,22 +204,19 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         scanone.perms <- NULL
     }
     
-    # Create temp output file, ensure will be removed.
-    tmp <- tempfile()
-    on.exit( file.remove(tmp), add=TRUE )
+    scanone.overview <- structure(rep('', length(phenotypes)), names=phenotypes)
     
-    # Write map to temp output file.
-    writeMapHDF5(cross.map, tmp, 'Genetic Map')
-    
-    comments <- character( length(phenotypes) )
-    status <- logical( length(phenotypes) )
+    # If updating HDF5 file, init HDF5 object names of updated objects.
+    if (updating.h5file) {
+        updated.objects <- character()
+    }
     
     # Output results of single QTL analysis for each phenotype.
     for ( i in seq_along(phenotypes) ) {
         
         # Output scanone result for this phenotype.
         pheno.result <- getLODProfile(scanone.result, lodcolumn=i)
-        writeResultHDF5(pheno.result, tmp, phenotypes[i], 'Scanone')
+        writeResultHDF5(pheno.result, tmp, phenotypes[i], 'Scanone', 'Result')
         
         # Output any permutation scan results for this phenotype.
         if ( ! is.null(scanone.perms) ) {
@@ -212,14 +226,14 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
             } else { # fdr
                 pheno.perms <- scanone.perms[,, i]
             }
-            writeResultHDF5(pheno.perms, tmp, phenotypes[i], 'Scanone Perms')
+            writeResultHDF5(pheno.perms, tmp, phenotypes[i], 'Scanone', 'Permutations')
         }
         
         # Output scanone threshold for this phenotype.
         if (multiple.lodcolumns) {
             scanone.threshold <- subset(scanone.thresholds, lodcolumn=i)
         }
-        writeResultHDF5(scanone.threshold, tmp, phenotypes[i], 'Scanone Threshold')
+        writeResultHDF5(scanone.threshold, tmp, phenotypes[i], 'Scanone', 'Threshold')
         
         # Get significant QTL intervals.
         qtl.intervals <- getQTLIntervals(pheno.result, ci.function=ci.function,
@@ -227,18 +241,49 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         
         # Output any significant QTL intervals.
         if ( length(qtl.intervals) > 0 ) {
-            writeResultHDF5(qtl.intervals, tmp, phenotypes[i], 'Scanone QTL Intervals')
-            comments[i] <- paste(length(qtl.intervals), 'QTLs')
-            status[i] <- TRUE
+            writeResultHDF5(qtl.intervals, tmp, phenotypes[i], 'Scanone', 'QTL Intervals')
+        }
+        
+        # Set results overview info for this phenotype.
+        scanone.overview[i] <- paste(length(qtl.intervals), 'QTLs')
+        
+        # If updating HDF5 file, add scanone results to updated objects.
+        if (updating.h5file) {
+            h5name <- joinH5ObjectNameParts( c('Results', phenotypes[i], 'Scanone') )
+            updated.objects <- c(updated.objects, h5name)
         }
     }
     
-    # Output results overview.
-    overview <- data.frame(Phenotype=phenotypes, Status=status,
-        Comments=comments, stringsAsFactors=FALSE)
-    writeOverviewHDF5(overview, tmp)
+    # If updating existing HDF5 file..
+    if (updating.h5file) {
+        
+        # ..output updated results overview..
+        stopifnot( hasResultsOverviewHDF5(h5file) )
+        overview <- readResultsOverviewHDF5(h5file)
+        overview <- updateResultsOverview(overview, 'Scanone', scanone.overview)
+        writeResultsOverviewHDF5(overview, tmp)
+        
+        # ..and add results overview to updated objects..
+        h5name <- joinH5ObjectNameParts( c('Results', 'Overview') )
+        updated.objects <- c(updated.objects, h5name)
+        
+    } else { # ..otherwise output new results overview.
+        
+        overview <- makeResultsOverview(phenotypes, 'Scanone', scanone.overview)
+        writeResultsOverviewHDF5(overview, tmp)
+    }
     
-    # Move temp file to final scan result file.
+    # If updating HDF5 scan file, transfer all existing but
+    # unchanged objects from HDF5 scan file to temp file.
+    if (updating.h5file) {
+        updated <- unique( unlist( lapply( updated.objects,
+            function(h5name) getObjectNamesHDF5(tmp, h5name) ) ) )
+        existing <- getObjectNamesHDF5(h5file)
+        unchanged <- setdiff(existing, updated) # NB: guarantees unique
+        copyObjectsHDF5(h5file, tmp, h5names=unchanged)
+    }
+    
+    # Move temp file to final HDF5 result file.
     # NB: file.copy is used here instead of file.rename because the latter
     # can sometimes fail when moving files between different file systems.
     file.copy(tmp, h5file, overwrite=TRUE)

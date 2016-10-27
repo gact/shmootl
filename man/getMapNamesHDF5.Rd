@@ -10,8 +10,8 @@ getMapNamesHDF5(infile)
 \item{infile}{An input HDF5 file.}
 }
 \value{
-Vector of map names. Returns \code{NULL}
-if there are no maps present.
+Vector of map names. Returns an empty
+character vector if there are no maps present.
 }
 \description{
 Get names of maps in HDF5 file.

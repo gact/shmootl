@@ -2,21 +2,24 @@
 % Please edit documentation in R/hdf5.R
 \name{getResultNamesHDF5}
 \alias{getResultNamesHDF5}
-\title{Get names of results for a given phenotype.}
+\title{Get names of results for a given phenotype and analysis.}
 \usage{
-getResultNamesHDF5(infile, phenotype)
+getResultNamesHDF5(infile, phenotype, analysis)
 }
 \arguments{
 \item{infile}{An input HDF5 file.}
 
-\item{phenotype}{Name of phenotype (or equivalent analysis unit).}
+\item{phenotype}{Name of phenotype (or equivalent analysis units).}
+
+\item{analysis}{Name of analysis from which results were generated.}
 }
 \value{
-Vector of result names for the given phenotype. Returns \code{NULL}
-if there are no results present for the given phenotype.
+Vector of result names for the given phenotype and analysis. Returns
+an empty character vector if no results are found for the given phenotype and
+analysis.
 }
 \description{
-Get names of results for a given phenotype.
+Get names of results for a given phenotype and analysis.
 }
 \keyword{internal}
 

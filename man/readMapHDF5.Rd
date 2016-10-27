@@ -24,11 +24,11 @@ the root of the HDF5 file, and converted to an \pkg{R/qtl} \code{map} object.
 }
 \seealso{
 Other HDF5 functions: \code{\link{readCrossHDF5}},
-  \code{\link{readOverviewHDF5}},
   \code{\link{readResultHDF5}},
+  \code{\link{readResultsOverviewHDF5}},
   \code{\link{writeCrossHDF5}}, \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
+  \code{\link{writeResultHDF5}},
+  \code{\link{writeResultsOverviewHDF5}}
 
 Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{as.data.frame.map}},

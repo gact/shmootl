@@ -2190,6 +2190,51 @@ makePseudomarkerIDs <- function(loc) {
     return( paste0('c', loc.seqs, '.loc', loc.pos) )
 }
 
+# makeResultsOverview ----------------------------------------------------------
+#' Make QTL analysis results overview.
+#' 
+#' @param phenotypes Vector of phenotype IDs.
+#' @param analysis Name of analysis from which results were generated.
+#' @param results Character vector summarising results of analysis. If the
+#' results vector has names, results are matched to phenotypes by name.
+#' 
+#' @return A results overview \code{data.frame}, with two columns:
+#' \code{'Phenotype'}, listing phenotypes for which the analysis was
+#' done; and a second column summarising the results of that analysis.
+#' 
+#' @keywords internal
+#' @rdname makeResultsOverview
+makeResultsOverview <- function(phenotypes, analysis, results=NULL) {
+    
+    stopifnot( all( isValidID(phenotypes) ) )
+    stopifnot( length(phenotypes) > 0 )
+    stopif( anyDuplicated(phenotypes) )
+    stopifnot( isSingleString(analysis) )
+    stopifnot( analysis %in% const$supported.analyses )
+    
+    phenotypes <- sort(phenotypes)
+    
+    if ( ! is.null(results) ) {
+        
+        stopifnot( is.character(results) )
+        stopifnot( hasNames(results) )
+        stopif( anyDuplicated( names(results) ) )
+        stopifnot( setequal(names(results), phenotypes) )
+        results <- unname(results[phenotypes])
+        
+    } else {
+        
+        results <- rep('', length(phenotypes))
+    }
+    
+    columns <- structure(list(phenotypes, results),
+        names=c('Phenotype', analysis))
+    
+    overview <- as.data.frame(columns, stringsAsFactors=FALSE)
+    
+    return(overview)
+}
+
 # makeScanoneThresholdObject ---------------------------------------------------
 #' Make \code{scanone} threshold object.
 #' 
@@ -2669,6 +2714,90 @@ stripWhite <- function(x) {
     return( gsub( "^[[:space:]]+|[[:space:]]+$", "", x) )
 }
 
+# updateResultsOverview --------------------------------------------------------
+#' Update QTL analysis results overview.
+#' 
+#' @param overview A \code{data.frame} containing
+#' a QTL analysis results overview.
+#' @param analysis Name of analysis from which results were generated.
+#' @param results Named character vector summarising results of analysis.
+#' Each result is matched to its corresponding phenotype by name.
+#' 
+#' @return A results overview \code{data.frame}, with two or more columns:
+#' \code{'Phenotype'}, listing phenotypes for which analyses were done; and one
+#' or more additional columns, each summarising the results of a QTL analysis.
+#' 
+#' @keywords internal
+#' @rdname updateResultsOverview
+updateResultsOverview <- function(overview, analysis, results=NULL) {
+    
+    validateResultsOverview(overview)
+    stopifnot( isSingleString(analysis) )
+    stopifnot( analysis %in% const$supported.analyses )
+    
+    input.headings <- colnames(overview)
+    input.analyses <- input.headings[-1]
+    
+    output.analyses <- const$supported.analyses[ const$supported.analyses %in%
+        c(input.analyses, analysis) ]
+    output.headings <- c('Phenotype', output.analyses)
+    
+    input.phenotypes <- overview[, 'Phenotype']
+    
+    if ( hasNames(results) ) {
+        output.phenotypes <- sort( union( input.phenotypes, names(results) ) )
+    } else {
+        output.phenotypes <- sort(input.phenotypes)
+    }
+    
+    columns <- as.list(overview)
+    
+    for ( output.analysis in output.analyses ) {
+        
+        output.results <- structure(rep('', length(output.phenotypes)),
+            names=output.phenotypes)
+        
+        if ( output.analysis %in% input.analyses ) {
+            
+            input.results <- structure(columns[[output.analysis]],
+                names=input.phenotypes)
+            
+            for ( phenotype in names(input.results) ) {
+                output.results[phenotype] <- input.results[phenotype]
+            }
+        }
+        
+        if ( output.analysis == analysis && ! is.null(results) ) {
+            
+            stopifnot( is.character(results) )
+            
+            if ( hasNames(results) ) {
+                stopif( anyDuplicated( names(results) ) )
+            } else {
+                stopifnot( length(results) == length(input.phenotypes) )
+                names(results) <- input.phenotypes
+            }
+            
+            for ( phenotype in names(results) ) {
+                output.results[phenotype] <- results[phenotype]
+            }
+        }
+        
+        columns[[output.analysis]] <- unname(output.results)
+    }
+    
+    # Update phenotype column.
+    columns[['Phenotype']] <- output.phenotypes
+    
+    # Order column list by output headings.
+    columns <- columns[output.headings]
+    
+    # Create updated results overview.
+    overview <- as.data.frame(columns, stringsAsFactors=FALSE)
+    
+    return(overview)
+}
+
 # validateAlleleSet ------------------------------------------------------------
 #' Validate a set of alleles.
 #' 
@@ -2780,6 +2909,47 @@ validateGenotypeSet <- function(x, strict=FALSE) {
     # TODO: handle more than two genotypes.
     if ( length(x) != 2 ) {
         stop("unsupported number of genotypes - '", length(x), "'")
+    }
+    
+    return(TRUE)
+}
+
+# validateResultsOverview ------------------------------------------------------
+#' Validate a QTL analysis results overview.
+#' 
+#' @param overview Results overview \code{data.frame}.
+#' 
+#' @return \code{TRUE} if results overview is valid;
+#' otherwise raises first error.
+#' 
+#' @keywords internal
+#' @rdname validateResultsOverview
+validateResultsOverview <- function(overview) {
+    
+    stopifnot( is.data.frame(overview) )
+    stopifnot( all( sapply(overview, class) == 'character' ) )
+    stopifnot(  ncol(overview) >= 2 )
+    
+    headings <- colnames(overview)
+    if ( headings[1] != 'Phenotype' ) {
+        stop("first column of results overview must be 'Phenotype' column")
+    }
+    
+    unknown <- headings[ ! headings[-1] %in% const$supported.analyses ]
+    if ( length(unknown) > 0 ) {
+        stop("results overview contains unknown analyses - '", toString(unknown), "'")
+    }
+    
+    phenotypes <- overview[, 'Phenotype']
+    
+    invalid <- phenotypes[ ! isValidID(phenotypes) ]
+    if ( length(invalid) > 0 ) {
+        stop("results overview phenotype IDs are invalid - '", toString(invalid), "'")
+    }
+    
+    if ( is.unsorted(phenotypes, strictly=TRUE) ) { # NB: also ensures no duplicates
+        print(phenotypes)
+        stop("results overview phenotypes are out of order")
     }
     
     return(TRUE)

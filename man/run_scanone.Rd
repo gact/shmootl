@@ -16,7 +16,7 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
 \arguments{
 \item{infile}{input cross file}
 
-\item{h5file}{scan result file}
+\item{h5file}{HDF5 scan file}
 
 \item{chr}{sequences [default: all]}
 
@@ -53,9 +53,9 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
 \item{icovfile}{interactive covariates file}
 }
 \description{
-Read cross data from the specified cross input file, run a single QTL
-analysis using \pkg{R/qtl} \code{scanone} (Broman \emph{et al.} 2003),
-and write the results of that scan to the specified output file.
+Read cross data from the specified cross input CSV file or HDF5 scan file,
+run a single QTL analysis using \pkg{R/qtl} \code{scanone} (Broman \emph{et
+al.} 2003), and write the results of that scan to the specified HDF5 file.
 }
 \details{
 If the input cross contains enumerated genotypes, marker regression is

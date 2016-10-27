@@ -11,6 +11,7 @@ readCrossHDF5(infile)
 }
 \value{
 The \pkg{R/qtl} \code{cross} object in the given HDF5 file.
+Returns \code{NULL} if no \code{cross} object is found.
 }
 \description{
 Read \pkg{R/qtl} \code{cross} object from an input HDF5 file.
@@ -31,10 +32,10 @@ Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{writeCrossCSV}}, \code{\link{writeCrossHDF5}}
 
 Other HDF5 functions: \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
   \code{\link{readResultHDF5}},
+  \code{\link{readResultsOverviewHDF5}},
   \code{\link{writeCrossHDF5}}, \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
+  \code{\link{writeResultHDF5}},
+  \code{\link{writeResultsOverviewHDF5}}
 }
 

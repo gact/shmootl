@@ -48,6 +48,9 @@ with(const, {
     # Cross types handled by shmootl.
     supported.crosstypes <- c('haploid') # TODO: support other cross types
     
+    # Titles of analyses implemented in shmootl.
+    supported.analyses <- c('Scanone')
+    
     # Fixed missing value in cross data files.
     missing.value <- '-'
     
@@ -265,7 +268,7 @@ with(const, {
                 
                 description = 'Results overview from across the set of scan files.',
                 
-                headings = c('File', 'Phenotype', 'Status', 'Comments')
+                headings = c('File', 'Phenotype', const$supported.analyses)
             ),
             
             `Scanone QTL Intervals` = list(

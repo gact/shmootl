@@ -18,30 +18,35 @@ writeReportPDF <- function(scanfile, report) {
     stopifnot( file.exists(scanfile) )
     stopifnot( isSingleString(report) )
     
-    results.sought <- 'Scanone'
-    results.found <- list()
+    results.sought <- 'Scanone/Result'
     result.info <- list()
+    roi <- character()
     
     if ( hasObjectHDF5(scanfile, 'Results') ) {
         
-        # Get phenotypes from scan result file.
-        phenotypes <- getPhenotypesHDF5(scanfile)
+        # Get result info for HDF5 scan file.
+        for ( phenotype in getResultPhenotypesHDF5(scanfile) ) {
+            analyses <- getResultAnalysesHDF5(scanfile, phenotype)
+            result.info[[phenotype]] <- lapply( analyses, function(analysis)
+                getResultNamesHDF5(scanfile, phenotype, analysis) )
+            names(result.info[[phenotype]]) <- analyses
+        }
         
-        # Get result info for phenotypes.
-        result.info <- lapply(phenotypes, function(phenotype)
-            getResultNamesHDF5(scanfile, phenotype))
-        names(result.info) <- phenotypes
-        
-        # Get results of interest for each phenotype.
-        results.found <- lapply(result.info, function(results)
-            results[ results %in% results.sought ])
+        # Get results of interest.
+        for ( phenotype in names(result.info) ) {
+            for ( analysis in names(result.info[[phenotype]]) ) {
+                for ( result in result.info[[phenotype]][[analysis]] ) {
+                    h5name <- joinH5ObjectNameParts(c(analysis, result), relative=TRUE)
+                    if ( h5name %in% results.sought ) {
+                        roi <- union(roi, h5name)
+                    }
+                }
+            }
+        }
     }
     
-    # Get set of results of interest.
-    roi <- unique( unlist(results.found) )
-    
     if ( length(roi) == 0 ) {
-        warning("cannot output report - results not found in file '", scanfile, "'")
+        stop("cannot output report - results not found in file '", scanfile, "'")
     }
     
     # Introduce plot device.
@@ -96,21 +101,25 @@ writeReportPDF <- function(scanfile, report) {
     }
     
     # Write output for each phenotype.
-    for ( i in seq_along(phenotypes) ) {
+    for ( i in seq_along(result.info) ) {
         
-        phenotype <- phenotypes[i]
+        phenotype <- names(result.info)[i]
         
-        if ( 'Scanone' %in% result.info[[phenotype]] ) {
+        if ( 'Scanone' %in% names(result.info[[phenotype]]) &&
+            'Result' %in% result.info[[phenotype]][['Scanone']] ) {
             
-            scanone.result <- readResultHDF5(scanfile, phenotype, 'Scanone')
+            scanone.result <- readResultHDF5(scanfile,
+                phenotype, 'Scanone', 'Result')
             
             # Get any QTL intervals.
-            qtl.intervals <- readResultHDF5(scanfile, phenotype, 'Scanone QTL Intervals')
+            qtl.intervals <- readResultHDF5(scanfile,
+                phenotype, 'Scanone', 'QTL Intervals')
             
             # If no QTL intervals, get scanone threshold for this phenotype.
             # NB: if no scanone threshold found, threshold object will be NULL.
             if ( is.null(qtl.intervals) ) {
-                scanone.threshold <- readResultHDF5(scanfile, phenotype, 'Scanone Threshold')
+                scanone.threshold <- readResultHDF5(scanfile,
+                    phenotype, 'Scanone', 'Threshold')
             } else {
                 scanone.threshold <- NULL
             }

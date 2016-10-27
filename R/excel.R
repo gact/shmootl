@@ -66,40 +66,46 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     
     # Check scan files for results of interest ---------------------------------
     
-    results.sought <- c('Scanone QTL Intervals', 'Scanone QTL Features')
-    
-    # Init per-scanfile info.
-    result.info <- results.found <- pheno.info <- vector('list', length(scanfiles))
-    names(result.info) <- names(results.found) <- names(pheno.info) <- scanfiles
+    results.sought <- c('Scanone/QTL Intervals', 'Scanone/QTL Features')
+    result.info <- list()
+    roi <- character()
     
     for ( scanfile in scanfiles ) {
         
-        if ( ! hasObjectHDF5(scanfile, 'Results/Overview') ) {
+        if ( ! hasResultsOverviewHDF5(scanfile) ) {
             stop("cannot create digest - result overview not found in file '",
                 scanfile, "'")
         }
         
-        # Get phenotypes from scan result file.
-        pheno.info[[scanfile]] <- getPhenotypesHDF5(scanfile)
+        # Get result info for this HDF5 scan file.
+        info <- list()
+        for ( phenotype in getResultPhenotypesHDF5(scanfile) ) {
+            analyses <- getResultAnalysesHDF5(scanfile, phenotype)
+            info[[phenotype]] <- lapply( analyses, function(analysis)
+                getResultNamesHDF5(scanfile, phenotype, analysis) )
+            names(info[[phenotype]]) <- analyses
+        }
         
-        # Get all result names for each phenotype.
-        result.info[[scanfile]] <- lapply(pheno.info[[scanfile]], function(phenotype)
-            getResultNamesHDF5(scanfile, phenotype))
-        names(result.info[[scanfile]]) <- pheno.info[[scanfile]]
+        # Get results of interest.
+        for ( phenotype in names(info) ) {
+            for ( analysis in names(info[[phenotype]]) ) {
+                for ( result in info[[phenotype]][[analysis]] ) {
+                    h5name <- joinH5ObjectNameParts(c(analysis, result), relative=TRUE)
+                    if ( h5name %in% results.sought ) {
+                        roi <- union(roi, h5name)
+                    }
+                }
+            }
+        }
         
-        # Get names of results of interest for each phenotype.
-        results.found[[scanfile]] <- lapply(result.info[[scanfile]], function(results)
-            results[ results %in% results.sought ])
+        result.info[[scanfile]] <- info
     }
-    
-    # Get set of results of interest.
-    roi <- unique( unlist(results.found) )
     
     # Set worksheet names ------------------------------------------------------
     
     sheet.names <- c('README', 'Overview')
     
-    if ( 'Scanone QTL Intervals' %in% roi ) {
+    if ( 'Scanone/QTL Intervals' %in% roi ) {
         sheet.names <- c(sheet.names, 'Scanone QTL Intervals')
     }
     
@@ -120,14 +126,33 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     
     headings <- const$excel$digest[['Overview']]$headings
     
-    tables[['Overview']] <- as.data.frame( matrix(nrow=0, ncol=length(headings),
-        dimnames=list(NULL, headings) ) )
+    # Init exhaustive results overview (i.e. including all possible columns).
+    tables[['Overview']] <- as.data.frame( matrix(nrow=0,
+        ncol=length(headings), dimnames=list(NULL, headings) ),
+        stringsAsFactors=FALSE)
     
+    # Get exhaustive results overview of HDF5 scan files.
     for ( scanfile in scanfiles ) {
-        overview <- readOverviewHDF5(scanfile)
-        overview <- insertColumn(overview, 1, col.name='File', data=scanfile)
-        tables[['Overview']] <- rbind(tables[['Overview']], overview)
+        
+        input.oview <- readResultsOverviewHDF5(scanfile)
+        
+        output.oview <- as.data.frame( matrix(nrow=nrow(input.oview),
+            ncol=length(headings), dimnames=list(NULL, headings) ),
+            stringsAsFactors=FALSE)
+        
+        for ( k in colnames(input.oview) ) {
+            output.oview[, k] <- as.character(input.oview[, k])
+        }
+        
+        output.oview[, 'File'] <- scanfile
+        
+        tables[['Overview']] <- rbind(tables[['Overview']], output.oview)
     }
+    
+    # Remove unused results overview columns.
+    nonempty <- sapply( getColIndices(tables[['Overview']]),
+        function(i) ! allNA(tables[['Overview']][, i]) )
+    tables[['Overview']] <- tables[['Overview']][, nonempty]
     
     # Setup 'Scanone QTL Intervals' worksheet, if relevant ---------------------
     
@@ -141,13 +166,13 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
         
         for ( scanfile in scanfiles ) {
             
-            phenotypes <- pheno.info[[scanfile]]
-            
-            for ( phenotype in phenotypes ) {
+            for ( phenotype in names(result.info[[scanfile]]) ) {
                 
-                if ( 'Scanone QTL Intervals' %in% results.found[[scanfile]][[phenotype]] ) {
+                if ( 'Scanone' %in% names(result.info[[scanfile]][[phenotype]]) &&
+                    'QTL Intervals' %in% result.info[[scanfile]][[phenotype]][['Scanone']] ) {
                     
-                    qtl.intervals <- readResultHDF5(scanfile, phenotype, 'Scanone QTL Intervals')
+                    qtl.intervals <- readResultHDF5(scanfile,
+                        phenotype, 'Scanone', 'QTL Intervals')
                     
                     if ( length(qtl.intervals) == 0 ) {
                         next
@@ -173,7 +198,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
                     physical.positions <- hasPhysicalPositions(qtl.intervals)
                     
                     # Get QTL interval features.
-                    qtl.features <- readResultHDF5(scanfile, phenotype, 'Scanone QTL Features')
+                    qtl.features <- readResultHDF5(scanfile, phenotype, 'Scanone', 'QTL Features')
                     
                     for ( i in seq_along(qtl.intervals) ) {
                         

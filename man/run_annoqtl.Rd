@@ -8,20 +8,20 @@ run_annoqtl(infile = NA_character_, annofile = NA_character_,
   outfile = NA_character_)
 }
 \arguments{
-\item{infile}{scan result file}
+\item{infile}{input HDF5 scan file}
 
 \item{annofile}{GFF annotation file}
 
-\item{outfile}{annotated scan result file}
+\item{outfile}{annotated HDF5 scan file}
 }
 \description{
-QTL intervals in a scan result HDF5 file are annotated with features from the
-GFF annotation file, and a copy of the scan result file is output, in which
-QTL feature annotation has been added. The GFF annotation file must relate to
+QTL intervals in a HDF5 scan file are annotated with features from the GFF
+annotation file, and a copy of the HDF5 scan file is output, in which QTL
+feature annotation has been added. The GFF annotation file must relate to
 the same reference genome as was used in QTL analysis. In addition, physical
 positions of QTL intervals must be present, either directly in the QTL
-intervals themselves, or indirectly by pairing coordinates in genetic and
-physical maps for the cross data.
+intervals themselves, or indirectly by pairing coordinates in the cross
+genetic map to a corresponding physical map.
 }
 \seealso{
 Other pipeline functions: \code{\link{run_digest}},

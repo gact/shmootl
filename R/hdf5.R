@@ -146,14 +146,21 @@ copyObjectsHDF5 <- function(infile, outfile, h5names=NULL) {
 #' 
 #' @param infile An input HDF5 file.
 #' 
-#' @return Vector of map names. Returns \code{NULL}
-#' if there are no maps present.
+#' @return Vector of map names. Returns an empty
+#' character vector if there are no maps present.
 #' 
 #' @keywords internal
 #' @rdname getMapNamesHDF5
 getMapNamesHDF5 <- function(infile) {
-    return( getObjectNamesHDF5(infile, 'Maps', relative=TRUE,
-        min.depth=1, max.depth=1) )
+    
+    mapnames <- character()
+    
+    if ( hasObjectHDF5(infile, 'Maps') ) {
+        mapnames <- getObjectNamesHDF5(infile, 'Maps', relative=TRUE,
+            min.depth=1, max.depth=1)
+    }
+    
+    return(mapnames)
 }
 
 # getObjectClassHDF5 -----------------------------------------------------------
@@ -178,6 +185,7 @@ getObjectClassHDF5 <- function(infile, h5name) {
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     h5name <- resolveH5ObjectName(h5name)
+    stopifnot( hasObjectHDF5(infile, h5name) )
     
     attrs <- rhdf5::h5readAttributes(infile, h5name)
     
@@ -241,7 +249,7 @@ getObjectNamesHDF5 <- function(infile, h5name=NULL, relative=FALSE,
     h5name <- resolveH5ObjectName(h5name)
     
     # Open HDF5 file.
-    h5stack <- methods::new('H5Stack', infile, h5name)
+    h5stack <- methods::new('H5Stack', infile)
     on.exit( closeStack(h5stack) )
     
     # Check that starting-point HDF5 object exists.
@@ -249,6 +257,10 @@ getObjectNamesHDF5 <- function(infile, h5name=NULL, relative=FALSE,
         stop("HDF5 object ('", h5name, "') not found in file - '",  infile, "'")
     }
     
+    # Open starting-point HDF5 object.
+    h5stack <- push(h5stack, rhdf5::H5Oopen(peek(h5stack), h5name))
+    
+    # Get type of starting-point HDF5 object.
     h5type <- as.character( rhdf5::H5Iget_type( peek(h5stack) ) )
     
     if ( ! h5type %in% c('H5I_GROUP', 'H5I_DATASET', 'H5I_FILE') ) {
@@ -309,52 +321,100 @@ getObjectNamesHDF5 <- function(infile, h5name=NULL, relative=FALSE,
     return(object.h5names)
 }
 
-# getPhenotypesHDF5 ------------------------------------------------------------
-#' Get names of phenotypes in HDF5 file.
+
+
+# getResultAnalysesHDF5 --------------------------------------------------------
+#' Get names of result analyses for a given phenotype.
+#' 
+#' @param infile An input HDF5 file.
+#' @param phenotype Name of phenotype (or equivalent analysis units).
+#' 
+#' @return Vector of result analysis names for the given phenotype.
+#' Returns an empty character vector if no result analyses are found.
+#' 
+#' @keywords internal
+#' @rdname getResultAnalysesHDF5
+getResultAnalysesHDF5 <- function(infile, phenotype) {
+    
+    stopifnot( isValidID(phenotype) )
+    
+    h5name <- joinH5ObjectNameParts( c('Results', phenotype) )
+    
+    analyses <- character()
+    
+    if ( hasObjectHDF5(infile, h5name) ) {
+        analyses <- getObjectNamesHDF5(infile, h5name, relative=TRUE,
+            min.depth=1, max.depth=1)
+    }
+    
+    return(analyses)
+}
+
+# getResultNamesHDF5 -----------------------------------------------------------
+#' Get names of results for a given phenotype and analysis.
+#' 
+#' @param infile An input HDF5 file.
+#' @param phenotype Name of phenotype (or equivalent analysis units).
+#' @param analysis Name of analysis from which results were generated.
+#' 
+#' @return Vector of result names for the given phenotype and analysis. Returns
+#' an empty character vector if no results are found for the given phenotype and
+#' analysis.
+#' 
+#' @keywords internal
+#' @rdname getResultNamesHDF5
+getResultNamesHDF5 <- function(infile, phenotype, analysis) {
+    
+    stopifnot( isValidID(phenotype) )
+    stopifnot( isValidID(analysis) )
+    
+    h5name <- joinH5ObjectNameParts( c('Results', phenotype, analysis) )
+    
+    results <- character()
+    
+    if ( hasObjectHDF5(infile, h5name) ) {
+        results <- getObjectNamesHDF5(infile, h5name, relative=TRUE,
+            min.depth=1, max.depth=1)
+    }
+    
+    return(results)
+}
+
+# getResultPhenotypesHDF5 ------------------------------------------------------
+#' Get names of result phenotypes in HDF5 file.
 #' 
 #' @param infile An input HDF5 file.
 #' 
-#' @return Vector of phenotype names. Returns \code{NULL}
-#' if there are no phenotypes present.
+#' @return Vector of result phenotype names. Returns an empty
+#' character vector if there are no result phenotypes present.
 #' 
 #' @keywords internal
-#' @rdname getPhenotypesHDF5
-getPhenotypesHDF5 <- function(infile) {
+#' @rdname getResultPhenotypesHDF5
+getResultPhenotypesHDF5 <- function(infile) {
     
-    phenotypes <- NULL
+    phenotypes <- character()
     
-    result.names <- getObjectNamesHDF5(infile, 'Results', relative=TRUE,
-        min.depth=1, max.depth=1)
-    
-    if ( ! is.null(result.names) ) {
-        
+    if ( hasObjectHDF5(infile, 'Results') ) {
+        result.names <- getObjectNamesHDF5(infile, 'Results', relative=TRUE,
+            min.depth=1, max.depth=1)
         phenotypes <- result.names[ result.names != 'Overview' ]
-        
-        if ( length(phenotypes) == 0 ) {
-            phenotypes <- NULL
-        }
     }
     
     return(phenotypes)
 }
 
-# getResultNamesHDF5 -----------------------------------------------------------
-#' Get names of results for a given phenotype.
+# hasCrossHDF5 -----------------------------------------------------------------
+#' Test if HDF5 file contains an \pkg{R/qtl} \code{cross} object.
 #' 
 #' @param infile An input HDF5 file.
-#' @param phenotype Name of phenotype (or equivalent analysis unit).
 #' 
-#' @return Vector of result names for the given phenotype. Returns \code{NULL}
-#' if there are no results present for the given phenotype.
+#' @return \code{TRUE} if the given HDF5 file contains an \pkg{R/qtl}
+#' \code{cross} object; \code{FALSE} otherwise.
 #' 
 #' @keywords internal
-#' @rdname getResultNamesHDF5
-getResultNamesHDF5 <- function(infile, phenotype) {
-    stopifnot( phenotype %in% getPhenotypesHDF5(infile) )
-    h5name <- joinH5ObjectNameParts( c('Results', phenotype) )
-    phenotype.results <- getObjectNamesHDF5(infile, h5name, relative=TRUE,
-        min.depth=1, max.depth=1)
-    return(phenotype.results)
+#' @rdname hasCrossHDF5
+hasCrossHDF5 <- function(infile) {
+    return( hasObjectHDF5(infile, 'Cross') )
 }
 
 # hasMapHDF5 -------------------------------------------------------------------
@@ -370,6 +430,7 @@ getResultNamesHDF5 <- function(infile, phenotype) {
 #' @rdname hasMapHDF5
 hasMapHDF5 <- function(infile, name) {
     stopifnot( isSingleString(name) )
+    stopifnot( isValidID(name) )
     mapnames <- getMapNamesHDF5(infile)
     return( name %in% mapnames )
 }
@@ -394,6 +455,20 @@ hasObjectHDF5 <- function(infile, h5name) {
     h5stack <- methods::new('H5Stack', infile)
     on.exit( closeStack(h5stack) )
     return( rhdf5::H5Lexists(peek(h5stack), h5name) )
+}
+
+# hasResultsOverviewHDF5 -------------------------------------------------------
+#' Test if HDF5 file contains a QTL analysis results overview.
+#' 
+#' @param infile An input HDF5 file.
+#' 
+#' @return \code{TRUE} if the given HDF5 file contains a
+#' QTL analysis results overview; \code{FALSE} otherwise.
+#' 
+#' @keywords internal
+#' @rdname hasResultsOverviewHDF5
+hasResultsOverviewHDF5 <- function(infile) {
+    return( hasObjectHDF5(infile, 'Results/Overview') )
 }
 
 # h5writeAttributes ------------------------------------------------------------
@@ -617,14 +692,21 @@ makeGroupObjectNames <- function(group.names=NULL, group.size=NULL) {
 #' @param infile An input HDF5 file.
 #' 
 #' @return The \pkg{R/qtl} \code{cross} object in the given HDF5 file.
+#' Returns \code{NULL} if no \code{cross} object is found.
 #' 
 #' @export
 #' @family cross object functions
 #' @family HDF5 functions
 #' @rdname readCrossHDF5
 readCrossHDF5 <- function(infile) {
-    cross <- readDatasetHDF5(infile, 'Cross')
-    stopifnot( 'cross' %in% class(cross) )
+    
+    if ( hasCrossHDF5(infile) ) {
+        cross <- readDatasetHDF5(infile, 'Cross')
+        stopifnot( 'cross' %in% class(cross) )
+    } else {
+        cross <- NULL
+    }
+    
     return(cross)
 }
 
@@ -1160,11 +1242,7 @@ readDatasetHDF5.summary.scanoneperm <- function(infile, h5name, ...) {
 #' @rdname readMapHDF5
 readMapHDF5 <- function(infile, name) {
     
-    stopifnot( isValidID(name) )
-    
-    map.names <- getMapNamesHDF5(infile)
-    
-    if ( name %in% map.names ) {
+    if ( hasMapHDF5(infile, name) ) {
         h5name <- joinH5ObjectNameParts( c('Maps', name) )
         result <- readDatasetHDF5(infile, h5name)
     } else {
@@ -1192,58 +1270,61 @@ readObjectAttributesHDF5 <- function(infile, h5name) {
     return( rhdf5::h5readAttributes(infile, h5name) )
 }
 
-# readOverviewHDF5 -------------------------------------------------------------
-#' Read QTL analysis results overview from an input HDF5 file.
-#'    
-#' @param infile An input HDF5 file.
-#' 
-#' @return A \code{data.frame} containing a QTL analysis results overview.
-#' 
-#' @export
-#' @family HDF5 functions
-#' @rdname readOverviewHDF5
-readOverviewHDF5 <- function(infile) {
-    
-    h5name <- joinH5ObjectNameParts( c('Results', 'Overview') )
-    overview <- readDatasetHDF5(infile, h5name)
-    
-    stopifnot( is.data.frame(overview) )
-    stopifnot( all( colnames(overview) == c('Phenotype', 'Status', 'Comments') ) )
-    stopifnot( is.character(overview[['Phenotype']]) )
-    stopifnot( is.logical(overview[['Status']]) )
-    stopifnot( is.character(overview[['Comments']]) )
-    
-    return(overview)
-}
-
 # readResultHDF5 ---------------------------------------------------------------
 #' Read QTL analysis result from an input HDF5 file.
 #' 
 #' @param infile An input HDF5 file.
 #' @param phenotype Name of phenotype (or equivalent analysis unit).
+#' @param analysis Name of analysis from which result was generated.
 #' @param name Name of QTL analysis result.
 #' 
-#' @return R object containing QTL analysis result. Returns \code{NULL}
-#' if the given phenotype has no result with the specified name.
+#' @return R object containing QTL analysis result. Returns \code{NULL} if
+#' either the given phenotype or analysis are not present, or they are both
+#' present but have no result with the specified name.
 #' 
 #' @export
 #' @family HDF5 functions
 #' @rdname readResultHDF5
-readResultHDF5 <- function(infile, phenotype, name) {
+readResultHDF5 <- function(infile, phenotype, analysis, name) {
     
     stopifnot( isValidID(phenotype) )
+    stopifnot( isValidID(analysis) )
     stopifnot( isValidID(name) )
     
-    phenotype.results <- getResultNamesHDF5(infile, phenotype)
+    results <- getResultNamesHDF5(infile, phenotype, analysis)
     
-    if ( name %in% phenotype.results ) {
-        h5name <- joinH5ObjectNameParts( c('Results', phenotype, name) )
+    if ( name %in% results ) {
+        h5name <- joinH5ObjectNameParts( c('Results', phenotype, analysis, name) )
         result <- readDatasetHDF5(infile, h5name)
     } else {
         result <- NULL
     }
     
     return(result)
+}
+
+# readResultsOverviewHDF5 ------------------------------------------------------
+#' Read QTL analysis results overview from an input HDF5 file.
+#' 
+#' @param infile An input HDF5 file.
+#' 
+#' @return A \code{data.frame} containing a QTL analysis results
+#' overview. Returns \code{NULL} if no results overview is found.
+#' 
+#' @export
+#' @family HDF5 functions
+#' @rdname readResultsOverviewHDF5
+readResultsOverviewHDF5 <- function(infile) {
+    
+    if ( hasResultsOverviewHDF5(infile) ) {
+        h5name <- joinH5ObjectNameParts( c('Results', 'Overview') )
+        overview <- readDatasetHDF5(infile, h5name)
+        validateResultsOverview(overview)
+    } else {
+        overview <- NULL
+    }
+    
+    return(overview)
 }
 
 # resolveH5ObjectName ----------------------------------------------------------
@@ -1936,27 +2017,20 @@ writeObjectAttributesHDF5 <- function(outfile, h5name, object=NULL, attrs=NULL) 
     return( invisible() )
 }
 
-# writeOverviewHDF5 ------------------------------------------------------------
+# writeResultsOverviewHDF5 -----------------------------------------------------
 #' Write QTL analysis results overview to an output HDF5 file.
 #'    
-#' @param overview Object containing a QTL analysis results overview.
+#' @param overview A \code{data.frame} containing
+#' a QTL analysis results overview.
 #' @param outfile An output HDF5 file.
 #' @param overwrite Option indicating whether to force overwrite of an
 #' existing overview. By default, existing overviews cannot be overwritten.
 #' 
 #' @export
 #' @family HDF5 functions
-#' @rdname writeOverviewHDF5
-writeOverviewHDF5 <- function(overview, outfile, overwrite=FALSE) {
-    
-    # TODO: review result overview format.
-    
-    stopifnot( is.data.frame(overview) )
-    stopifnot( all( colnames(overview) == c('Phenotype', 'Status', 'Comments') ) )
-    stopifnot( is.character(overview[['Phenotype']]) )
-    stopifnot( is.logical(overview[['Status']]) )
-    stopifnot( is.character(overview[['Comments']]) )
-    
+#' @rdname writeResultsOverviewHDF5
+writeResultsOverviewHDF5 <- function(overview, outfile, overwrite=FALSE) {
+    validateResultsOverview(overview)
     h5name <- joinH5ObjectNameParts( c('Results', 'Overview') )
     writeDatasetHDF5(overview, outfile, h5name, overwrite=overwrite)
     return( invisible() )
@@ -1968,6 +2042,7 @@ writeOverviewHDF5 <- function(overview, outfile, overwrite=FALSE) {
 #' @param result R object containing a QTL analysis result.
 #' @param outfile An output HDF5 file.
 #' @param phenotype Name of phenotype (or equivalent analysis unit).
+#' @param analysis Name of analysis from which result was generated.
 #' @param name Name of QTL analysis result.
 #' @param overwrite Option indicating whether to force overwrite of an
 #' existing result. By default, existing results cannot be overwritten.
@@ -1975,10 +2050,12 @@ writeOverviewHDF5 <- function(overview, outfile, overwrite=FALSE) {
 #' @export
 #' @family HDF5 functions
 #' @rdname writeResultHDF5
-writeResultHDF5 <- function(result, outfile, phenotype, name, overwrite=FALSE) {
+writeResultHDF5 <- function(result, outfile, phenotype, analysis, name,
+    overwrite=FALSE) {
     stopifnot( isValidID(phenotype) )
+    stopifnot( isValidID(analysis) )
     stopifnot( isValidID(name) )
-    h5name <- joinH5ObjectNameParts( c('Results', phenotype, name) )
+    h5name <- joinH5ObjectNameParts( c('Results', phenotype, analysis, name) )
     writeDatasetHDF5(result, outfile, h5name, overwrite=overwrite)
     return( invisible() )
 }

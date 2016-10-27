@@ -33,10 +33,10 @@ Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{readCrossHDF5}}, \code{\link{writeCrossCSV}}
 
 Other HDF5 functions: \code{\link{readCrossHDF5}},
-  \code{\link{readMapHDF5}},
-  \code{\link{readOverviewHDF5}},
-  \code{\link{readResultHDF5}}, \code{\link{writeMapHDF5}},
-  \code{\link{writeOverviewHDF5}},
-  \code{\link{writeResultHDF5}}
+  \code{\link{readMapHDF5}}, \code{\link{readResultHDF5}},
+  \code{\link{readResultsOverviewHDF5}},
+  \code{\link{writeMapHDF5}},
+  \code{\link{writeResultHDF5}},
+  \code{\link{writeResultsOverviewHDF5}}
 }
 
