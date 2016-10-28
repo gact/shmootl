@@ -89,4 +89,5 @@ Collate:
     'subsetByLocusID.R'
     'subsetBySeq.R'
     'vcf.R'
+    'wasa-data.R'
     'zzz.R'
