@@ -23,13 +23,73 @@ This package depends on the following:
 
 ## Installation 
 
-To install ShmooTL from GitHub, you will first need to install [devtools](https://github.com/hadley/devtools) using the R command:
+Before installing ShmooTL from GitHub, you will first need to install its dependency packages.
+
+### Installing packages from R
+
+Some required packages can be installed from within R as follows:
+
+```
+install.packages('argparser')
+install.packages('qtl')
+install.packages('yaml')
+```
+
+Optional packages `abind` and `xlsx` can also be installed in this way:
+
+```
+install.packages('abind')
+install.packages('xlsx')
+```
+
+### Installing Bioconductor packages
+
+To install required Bioconductor packages, first source the `biocLite.R` install script as follows:
+
+```
+source('https://bioconductor.org/biocLite.R')
+```
+
+Then input the following commands to install needed Bioconductor packages:
+
+```
+biocLite('VariantAnnotation')
+biocLite('rhdf5')
+```
+
+It may be necessary to install additional Bioconductor packages in a similar manner (e.g. `biocLite('rtracklayer')`).
+
+### Installing packages from GitHub
+
+Packages `funqtl` and `qtlcharts` can be installed directly from the GitHub website, but you must first install the `devtools` package, which can be installed from within R:
 
 ```
 install.packages('devtools')
 ```
 
-The ShmooTL package and its dependencies can then be installed with the R commands:
+To install `funqtl` from GitHub, input:
+
+```
+library(devtools)
+install_github('ikwak2/funqtl')
+```
+
+To install `qtlcharts` from GitHub, install the package `hmtlwidgets` as follows:
+
+```
+install.packages('htmlwidgets')
+```
+
+Then install `qtlcharts` from GitHub:
+
+```
+library(devtools)
+install_github('kbroman/qtlcharts')
+```
+
+### Installing ShmooTL from GitHub
+
+With the `devtools` package and other dependencies installed, ShmooTL can be installed from GitHub as follows:
 
 ```
 library(devtools)

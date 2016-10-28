@@ -13,6 +13,7 @@
 #' @return \code{TRUE} if \code{\linkS4class{CrossInfo}} and test object are
 #' concordant; otherwise returns a character vector of mismatch errors.
 #' 
+#' @importFrom methods validObject
 #' @keywords internal
 #' @rdname compareCrossInfo
 #' @seealso \code{\linkS4class{CrossInfo}}
@@ -34,7 +35,7 @@ compareCrossInfo.cross <- function(x, cross.info=NULL) {
         stop("CrossInfo not found in cross object")
     }
     
-    validObject(cross.info)
+    methods::validObject(cross.info)
     
     errors <- vector('character')
     
@@ -110,7 +111,7 @@ compareCrossInfo.geno <- function(x, cross.info=NULL) {
         stop("CrossInfo not found in geno object")
     }
     
-    validObject(cross.info)
+    methods::validObject(cross.info)
     
     errors <- vector('character')
     
@@ -170,7 +171,7 @@ compareCrossInfo.pheno <- function(x, cross.info=NULL) {
         stop("CrossInfo not found in pheno object")
     }
     
-    validObject(cross.info)
+    methods::validObject(cross.info)
     
     errors <- vector('character')
     

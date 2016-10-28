@@ -15,8 +15,13 @@
 #' @export
 #' @family digest functions
 #' @family Excel functions
+#' @importFrom utils installed.packages
 #' @rdname writeDigestExcel
 writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
+    
+    if ( ! 'xlsx' %in% rownames(utils::installed.packages()) ) {
+        stop("cannot write Excel digest without R package 'xlsx'")
+    }
     
     stopifnot( is.character(scanfiles) )
     stopifnot( length(scanfiles) > 0 )

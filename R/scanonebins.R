@@ -182,7 +182,7 @@ mergeLODBinLabels <- function(...) {
 #' @return Input \code{scanonebins} object, padded with zeroes to the
 #' specified size.
 #' 
-#' @importFrom abind abind
+#' @importFrom utils installed.packages
 #' @keywords internal
 #' @rdname padBins
 padBins <- function(x, num.bins) {
@@ -217,6 +217,10 @@ padBins <- function(x, num.bins) {
         
         padding <- array(0, dim=padding.dim,
             dimnames=padding.dimnames)
+        
+        if ( ! 'abind' %in% rownames(utils::installed.packages()) ) {
+            stop("cannot pad 'scanonebins' object without R package 'abind'")
+        }
         
         x <- abind::abind(x, padding, along=2)
         

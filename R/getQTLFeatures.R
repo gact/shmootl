@@ -23,6 +23,7 @@
 #' @importFrom GenomicRanges findOverlaps
 #' @importFrom GenomicRanges GRanges
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
+#' @importFrom methods slotNames
 #' @rdname getQTLFeatures
 getQTLFeatures <- function(qtl.intervals, features) {
     
@@ -93,7 +94,7 @@ getQTLFeatures <- function(qtl.intervals, features) {
         # Assign QTL features overlapping each QTL interval.
         for ( i in seq_along(qtl.intervals) ) {
             
-            if ( 'queryHits' %in% slotNames(qtl.overlaps) ) {
+            if ( 'queryHits' %in% methods::slotNames(qtl.overlaps) ) {
                 row.indices <- qtl.overlaps@subjectHits[ qtl.overlaps@queryHits == i ]
             } else {
                 row.indices <- qtl.overlaps@to[ qtl.overlaps@from == i ]

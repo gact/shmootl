@@ -2588,7 +2588,7 @@ requestPkgDataPath <- function(...) {
     if ( result == '' ) {
         
         # NB: this assumes the current working directory is 'shmootl/R'.
-        result <- normalizePath( file.path('..', 'inst', datapath) )
+        result <- normalizePath( file.path('..', 'inst', datapath), mustWork=TRUE )
         
         if ( ! file.exists(result) ) {
             stop("shmootl package data file/directory not found - '", 

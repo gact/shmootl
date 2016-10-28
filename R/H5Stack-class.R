@@ -241,6 +241,7 @@ setMethod('pop', signature='H5Stack', definition = function(h5stack) {
 #' @return Input \code{H5Stack} object with new element added.
 #' 
 #' @docType methods
+#' @importFrom methods validObject
 #' @keywords internal
 #' @rdname push-methods
 setGeneric('push', function(h5stack, h5obj) { standardGeneric('push') })
@@ -252,7 +253,7 @@ setMethod('push', signature='H5Stack', definition = function(h5stack, h5obj) {
     
     h5stack@ids <- c(h5stack@ids, h5obj)
     
-    validObject(h5stack)
+    methods::validObject(h5stack)
     
     return(h5stack)
 })

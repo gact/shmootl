@@ -28,13 +28,17 @@
 #' 
 #' @export
 #' @family scan utility functions
-#' @importFrom abind abind
+#' @importFrom utils installed.packages
 #' @rdname batchPermScanone
 batchPermScanone <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL, 
     n.perm=1000, perm.pheno=TRUE, perm.geno=FALSE, perm.type=c('max', 'bins'), ...) {
     
     stopifnot( isSinglePositiveWholeNumber(n.perm) )
     stopifnot( allKwargs(...) )
+    
+    if ( perm.type == 'bins' && ! 'abind' %in% rownames(utils::installed.packages()) ) {
+        stop("cannot do 'scanonebins' permutation scan without R package 'abind'")
+    }
     
     perm.type <- match.arg(perm.type)
     
