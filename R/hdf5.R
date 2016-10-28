@@ -827,18 +827,18 @@ readDatasetHDF5.cross <- function(infile, h5name, ...) {
     
     genotypes <- sort( unique( unlist( lapply(geno, function(x)
         unique( as.character( unlist(x$data) ) ) ) ) ) ) # NB: sort removes NA values
-    validateGenotypeSet(genotypes)
+    genotypes <- genotypes[ genotypes != const$missing.value ] # NB: remove missing value symbols
     
-    # Set reference sequence names of cross geno object.
-    names(geno) <- geno.seqs
+    for ( i in seq_along(geno.seqs) ) {
+        geno.matrix <- as.matrix(geno[[i]]$data)
+        geno[[i]]$data <- encodeGenotypes(geno.matrix, genotypes)
+    }
     
     geno.alleles <- unique( unlist( strsplit(genotypes, '') ) )
     stopifnot( setequal(geno.alleles, cross.alleles) )
     
-    for ( geno.seq in seq_along(geno.seqs) ) {
-        geno.matrix <- as.matrix(geno[[geno.seq]]$data)
-        geno[[geno.seq]]$data <- encodeGenotypes(geno.matrix, genotypes)
-    }
+    # Set reference sequence names of cross geno object.
+    names(geno) <- geno.seqs
     
     cross.info <- methods::new('CrossInfo')
     cross.info <- setMarkers(cross.info, markers=locus.ids)
@@ -1559,7 +1559,8 @@ writeDatasetHDF5.cross <- function(dataset, outfile, h5name, ...) {
         
         data.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seq, 'data') )
         geno.table <- as.data.frame(dataset$geno[[geno.seq]]$data)
-        geno.table <- decodeGenotypes(geno.table, genotypes) # NB: leaves NA values unchanged
+        geno.table <- decodeGenotypes(geno.table, genotypes,
+            missing.value=const$missing.value)
         writeDatasetHDF5(geno.table, outfile, data.h5name, ...)
         
         map.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seq, 'map') )

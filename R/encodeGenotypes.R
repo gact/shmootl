@@ -7,8 +7,9 @@
 #' @param genotypes Sorted character vector of genotype symbols.
 #' Input genotype strings should be elements of this vector.
 #' 
-#' @return Object of same class and dimensions as input object,
-#' but with genotype strings encoded as genotype integers.
+#' @return Object of the same class and dimensions as input object, but with
+#' genotype strings encoded as genotype integers. Missing values (\code{'-'})
+#' are replaced with the character \code{NA} value.
 #' 
 #' @export
 #' @keywords internal
@@ -24,6 +25,9 @@ encodeGenotypes <- function(x, genotypes) {
 encodeGenotypes.character <- function(x, genotypes) {
     
     validateGenotypeSet(genotypes)
+    
+    # Ensure missing values are set to NA value.
+    x[ x == const$missing.value ] <- NA_character_
     
     unknown <- x[ ! x %in% c(genotypes, NA_character_) ]
     if ( length(unknown) > 0 ) {

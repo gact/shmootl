@@ -22,8 +22,9 @@ encodeGenotypes(x, genotypes)
 Input genotype strings should be elements of this vector.}
 }
 \value{
-Object of same class and dimensions as input object,
-but with genotype strings encoded as genotype integers.
+Object of the same class and dimensions as input object, but with
+genotype strings encoded as genotype integers. Missing values (\code{'-'})
+are replaced with the character \code{NA} value.
 }
 \description{
 Encode genotype strings as genotype integers.

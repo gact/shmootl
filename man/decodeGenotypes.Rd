@@ -7,19 +7,23 @@
 \alias{decodeGenotypes.matrix}
 \title{Decode genotype integers to genotype strings.}
 \usage{
-decodeGenotypes(x, genotypes)
+decodeGenotypes(x, genotypes, missing.value = NA_character_)
 
-\method{decodeGenotypes}{integer}(x, genotypes)
+\method{decodeGenotypes}{integer}(x, genotypes, missing.value = NA_character_)
 
-\method{decodeGenotypes}{data.frame}(x, genotypes)
+\method{decodeGenotypes}{data.frame}(x, genotypes,
+  missing.value = NA_character_)
 
-\method{decodeGenotypes}{matrix}(x, genotypes)
+\method{decodeGenotypes}{matrix}(x, genotypes, missing.value = NA_character_)
 }
 \arguments{
 \item{x}{Object containing genotype integers.}
 
 \item{genotypes}{Sorted character vector of genotype symbols.
 Input genotype integers should be valid indices of this vector.}
+
+\item{missing.value}{If set to a missing value symbol (\code{'-'}),
+\code{NA} values are converted to the given symbol.}
 }
 \value{
 Object of same class and dimensions as input object,
