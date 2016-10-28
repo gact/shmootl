@@ -188,7 +188,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     }
     
     # Set y-axis plotting parameters.
-    ylim <- c( 0.0, ceiling(max.lod + 0.5) )
+    ylim <- c( 0.0, ceiling(max.lod + yinch(0.5)) )
     ylab <- 'LOD'
     
     # Set fixed plotting arguments.
