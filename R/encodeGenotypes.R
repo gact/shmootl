@@ -31,7 +31,7 @@ encodeGenotypes.character <- function(x, genotypes) {
     
     unknown <- x[ ! x %in% c(genotypes, NA_character_) ]
     if ( length(unknown) > 0 ) {
-        stop("cannot encode unknown symbols as genotypes - '", unknown, "'")
+        stop("cannot encode unknown symbols as genotypes - '", toString(unknown), "'")
     }
     
     x <- match(x, genotypes)
