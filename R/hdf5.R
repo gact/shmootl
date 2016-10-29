@@ -799,7 +799,7 @@ readDatasetHDF5.cross <- function(infile, h5name, ...) {
         
         data.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seqs[i], 'data') )
         seq.data <- readDatasetHDF5(infile, data.h5name, ...)
-        stopifnot( 'data.frame' %in% class(seq.data) )
+        stopifnot( 'matrix' %in% class(seq.data) )
         stopifnot( nrow(seq.data) == num.samples )
         
         map.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seqs[i], 'map') )
@@ -830,8 +830,7 @@ readDatasetHDF5.cross <- function(infile, h5name, ...) {
     genotypes <- genotypes[ genotypes != const$missing.value ] # NB: remove missing value symbols
     
     for ( i in seq_along(geno.seqs) ) {
-        geno.matrix <- as.matrix(geno[[i]]$data)
-        geno[[i]]$data <- encodeGenotypes(geno.matrix, genotypes)
+        geno[[i]]$data <- encodeGenotypes(geno[[i]]$data, genotypes)
     }
     
     geno.alleles <- unique( unlist( strsplit(genotypes, '') ) )
@@ -1557,12 +1556,13 @@ writeDatasetHDF5.cross <- function(dataset, outfile, h5name, ...) {
     # Output cross geno object sequence-by-sequence.
     for ( geno.seq in names(dataset$geno) ) {
         
+        # Store cross genotypes for this sequence as a character matrix.
         data.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seq, 'data') )
-        geno.table <- as.data.frame(dataset$geno[[geno.seq]]$data)
-        geno.table <- decodeGenotypes(geno.table, genotypes,
+        seq.geno <- decodeGenotypes(dataset$geno[[geno.seq]]$data, genotypes,
             missing.value=const$missing.value)
-        writeDatasetHDF5(geno.table, outfile, data.h5name, ...)
+        writeDatasetHDF5(seq.geno, outfile, data.h5name, ...)
         
+        # Store genetic map for this sequence as a mapframe object.
         map.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seq, 'map') )
         seq.map <- dataset$geno[[geno.seq]]$map
         seq.mapframe <- gmapframe(chr=rep(geno.seq, length(seq.map)),
