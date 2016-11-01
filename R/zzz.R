@@ -13,9 +13,6 @@
     
     setupDefaultMapkeys()
     
-    const$excel$digest$Overview[['headings']] <- c('File', 'Phenotype',
-        getPkgAnalysisNames())
-    
     # Lock package constants ---------------------------------------------------
     
     lockEnvironment(const, bindings=TRUE)

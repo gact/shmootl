@@ -249,41 +249,6 @@ with(const, {
         sample.aspects$name, sample.aspects$index) ) )
     marker.headings <- c('marker', 'seq')
     
-    # Excel settings -----------------------------------------------------------
-    
-    excel <- list(
-        
-        digest = list(
-            
-            `README` = list(
-                
-                description = 'This describes the contents of every worksheet in this workbook.',
-                
-                headings = c('Worksheet', 'Description')
-            ),
-            
-            `Overview` = list(
-                
-                description = 'Results overview from across the set of scan files.'
-                
-                # headings defined in zzz.R
-            ),
-            
-            `Scanone QTL Intervals` = list(
-                
-                description = paste(
-                    'Table of QTL intervals as obtained by a single- or multi-QTL scan.',
-                    'Genomic features within the QTL interval are included, if available.'
-                ),
-                
-                headings = c('File', 'Phenotype', 'QTL Name', 'Chromosome',
-                    'Peak LOD', 'LOD Threshold', 'alpha', 'FDR',
-                    'Interval Type', 'Start (cM)', 'Peak (cM)', 'End (cM)',
-                    'Start (bp)', 'Peak (bp)', 'End (bp)', 'Scanone QTL Features')
-            )
-        )
-    )
-    
     # Annotation settings ------------------------------------------------------
     
     anno <- list(

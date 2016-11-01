@@ -21,4 +21,9 @@ that capture group in the scan file names.}
 \description{
 Write an Excel digest of QTL scan results.
 }
+\author{
+Thomas Walsh <tw164@le.ac.uk>
+
+Yue Hu
+}
 

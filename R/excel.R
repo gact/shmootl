@@ -1,5 +1,48 @@
 # Start of excel.R #############################################################
 
+# getExcelDigestInfo -----------------------------------------------------------
+#' Get info for digest Excel file.
+#' 
+#' @return A list containing descriptions
+#' and headings for Excel digest worksheets.
+#' 
+#' @keywords internal
+#' @rdname getExcelDigestInfo
+getExcelDigestInfo <- function() {
+    
+    info <- list(
+        
+        `README` = list(
+        
+            description = 'This describes the contents of every worksheet in this workbook.',
+        
+            headings = c('Worksheet', 'Description')
+        ),
+            
+        `Overview` = list(
+            
+            description = 'Results overview from across the set of scan files.',
+            
+            headings = c('File', 'Phenotype', getPkgAnalysisNames())
+        ),
+        
+        `Scanone QTL Intervals` = list(
+            
+            description = paste(
+                'Table of QTL intervals as obtained by a single- or multi-QTL scan.',
+                'Genomic features within the QTL interval are included, if available.'
+            ),
+            
+            headings = c('File', 'Phenotype', 'QTL Name', 'Chromosome',
+                'Peak LOD', 'LOD Threshold', 'alpha', 'FDR',
+                'Interval Type', 'Start (cM)', 'Peak (cM)', 'End (cM)',
+                'Start (bp)', 'Peak (bp)', 'End (bp)', 'Scanone QTL Features')
+        )
+    )
+    
+    return(info)
+}
+
 # writeDigestExcel -------------------------------------------------------------
 #' Write an Excel digest of QTL scan results.
 #' 
@@ -33,6 +76,9 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     stopifnot( isSingleString(digest) )
     stopifnot( tools::file_ext(digest) %in% const$ext$excel )
     
+    # Get Excel digest info.
+    digest.info <- getExcelDigestInfo()
+    
     # If scanfile pattern specified, get scanfile info from scan file names.
     scanfile.info <- NULL
     if ( ! is.null(scanfile.pattern) ) {
@@ -45,7 +91,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
         # Set reserved headings that cannot be used as capture-group names.
         # NB: this should include headings for all
         # tables that will include scan file info.
-        reserved.headings <- const$excel$digest[['Scanone QTL Intervals']]$headings
+        reserved.headings <- digest.info[['Scanone QTL Intervals']]$headings
         
         # Check for capture-group names clashing with reserved headings.
         clashing <- colnames(parsed)[ colnames(parsed) %in% reserved.headings ]
@@ -125,14 +171,14 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     # Setup 'README' worksheet -------------------------------------------------
     
     descriptions <- unlist( lapply(sheet.names, function(k)
-        const$excel$digest[[k]]$description) )
+        digest.info[[k]]$description) )
     
     tables[['README']] <- data.frame(Worksheet=sheet.names,
         Description=descriptions, stringsAsFactors=FALSE)
-               
+    
     # Setup 'Overview' worksheet -----------------------------------------------
     
-    headings <- const$excel$digest[['Overview']]$headings
+    headings <- digest.info[['Overview']]$headings
     
     # Init exhaustive results overview (i.e. including all possible columns).
     tables[['Overview']] <- as.data.frame( matrix(nrow=0,
@@ -166,7 +212,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     
     if ( 'Scanone QTL Intervals' %in% sheet.names ) {
         
-        headings <- const$excel$digest[['Scanone QTL Intervals']]$headings
+        headings <- digest.info[['Scanone QTL Intervals']]$headings
         
         # Init table with all headings; empty columns will be deleted later.
         tab <- matrix(NA_character_, nrow=0, ncol=length(headings),
