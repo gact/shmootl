@@ -36,26 +36,16 @@ run_digest <- function(h5list=character(), digest=NA_character_,
     on.exit( file.remove(tmp), add=TRUE )
     
     # Write digest to temp file.
-    success <- tryCatch({
-        
-        if ( digest.ext %in% const$ext$excel ) {
-            writeDigestExcel(h5list, tmp, scanfile.pattern=scanfile.pattern)
-        } else {
-            stop("cannot create digest - unknown extension on file '", digest, "'")
-        }
-        
-        result <- TRUE
-        
-    }, error=function(e) {
-        result <- FALSE
-    })
+    if ( digest.ext %in% const$ext$excel ) {
+        writeDigestExcel(h5list, tmp, scanfile.pattern=scanfile.pattern)
+    } else {
+        stop("cannot create digest - unknown extension on file '", digest, "'")
+    }
     
     # If digest written without error, move temp file to final digest file.
     # NB: file.copy is used here instead of file.rename because the latter
     # can sometimes fail when moving files between different file systems.
-    if (success) {
-        file.copy(tmp, digest, overwrite=TRUE)
-    }
+    file.copy(tmp, digest, overwrite=TRUE)
     
     return( invisible() )
 }
