@@ -39,7 +39,7 @@ run <- function() {
         args <- args[-1]
         
         # If shmootl is available and valid pipeline is specified, run.
-        if ( ! is.na(pipeline) && pipeline %in% getPipelines() ) {
+        if ( ! is.na(pipeline) && pipeline %in% getPkgPipelineNames() ) {
             
             # Prep argument parser.
             ap <- prepPipelineArgparser(pipeline)
@@ -50,11 +50,11 @@ run <- function() {
             # Process pipeline arguments.
             args <- procPipelineArgs(ap, args)
             
-            # Get pipeline function.
-            pipe.func <- getPipelineFunction(pipeline)
+            # Get pipeline function name.
+            pipe.func.name <- getPipelineFunctionName(pipeline)
             
             # Run pipeline.
-            do.call(pipe.func, args)
+            do.call(pipe.func.name, args)
             
             return( invisible() )
         } 

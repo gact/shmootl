@@ -11,9 +11,52 @@
 #' @rdname getPipelineFunction
 getPipelineFunction <- function(pipeline) {
     stopifnot( isSingleString(pipeline) )
-    stopifnot( pipeline %in% getPipelines() )
     stopifnot( 'package:shmootl' %in% search() )
-    return( get( paste0('run_', pipeline) ) )
+    return( get( getPipelineFunctionName(pipeline) ) )
+}
+
+# getPipelineFunctionName ------------------------------------------------------
+#' Get function name for the given \pkg{shmootl} pipeline.
+#' 
+#' @param pipeline Character vector of \pkg{shmootl} pipeline names.
+#' 
+#' @return Character vector in which each element contains the name
+#' of the \pkg{shmootl} pipeline function called by the pipeline
+#' named in the corresponding element of the input vector.
+#' 
+#' @keywords internal
+#' @rdname getPipelineFunctionName
+getPipelineFunctionName <- function(pipeline) {
+    stopifnot( is.character(pipeline) )
+    stopifnot( length(pipeline) > 0 )
+    stopifnot( all( pipeline %in% getPkgPipelineNames() ) )
+    return( paste0('run_', pipeline) )
+}
+
+# getPipelineName --------------------------------------------------------------
+#' Get \pkg{shmootl} pipeline name for the given function.
+#' 
+#' @param pipe.func.name Character vector of
+#' \pkg{shmootl} pipeline function names.
+#' 
+#' @return Character vector in which each element contains the name
+#' of the \pkg{shmootl} pipeline implemented by the function named
+#' in the corresponding element of the input vector.
+#' 
+#' @keywords internal
+#' @rdname getPipelineName
+getPipelineName <- function(pipe.func.name) {
+    
+    stopifnot( is.character(pipe.func.name) )
+    stopifnot( length(pipe.func.name) > 0 )
+    stopifnot( all( pipe.func.name %in% getPkgPipelineFunctionNames() ) )
+    
+    # NB: valid package pipeline function names are guaranteed to match.
+    m <- regexec(const$pattern$pipe.func, pipe.func.name)
+    matches <- regmatches(pipe.func.name, m)
+    pipeline <- sapply(matches, getElement, 2)
+    
+    return(pipeline)
 }
 
 # getPipelineInfo --------------------------------------------------------------
@@ -26,6 +69,7 @@ getPipelineFunction <- function(pipeline) {
 #' \itemize{
 #' \item{\code{'command'}} {Shell command used to call pipeline.}
 #' \item{\code{'title'}} {Pipeline function title.}
+#' \item{\code{'group'}} {Category to which the pipeline belongs.}
 #' \item{\code{'description'}} {Pipeline function description. This is not 
 #' returned if it duplicates the function title.}
 #' \item{\code{'details'}} {Pipeline function details.}
@@ -34,9 +78,10 @@ getPipelineFunction <- function(pipeline) {
 #' value.}
 #' }
 #'  
-#' Elements \code{'command'} and \code{'title'} are guaranteed to contain their
-#' respective values. The remaining elements are only returned if corresponding 
-#' documentation is available; otherwise, they are assigned a \code{NULL} value. 
+#' Elements \code{'command'}, \code{'title'}, and \code{'group'} are guaranteed
+#' to contain their respective values. The remaining elements are only returned
+#' if corresponding documentation is available; otherwise, they are assigned a
+#' \code{NULL} value.
 #' 
 #' @param pipeline Name of \pkg{shmootl} pipeline.
 #' 
@@ -50,7 +95,7 @@ getPipelineInfo <- function(pipeline) {
     
     stopifnot( isSingleString(pipeline) )
     
-    if ( ! pipeline %in% getPipelines() ) {
+    if ( ! pipeline %in% getPkgPipelineNames() ) {
         stop("shmootl pipeline not found - '", pipeline, "'")
     }
     
@@ -374,27 +419,29 @@ getPipelineInfo <- function(pipeline) {
         description=description, details=details, params=params) )
 }
 
-# getPipelines -----------------------------------------------------------------
-#' Get \pkg{shmootl} pipeline names.
+# getPipelineTitle -------------------------------------------------------------
+#' Get title of the given \pkg{shmootl} pipeline.
 #' 
-#' @return Character vector of \pkg{shmootl} pipeline names.
+#' @param pipeline Character vector of \pkg{shmootl} pipeline names.
 #' 
-#' @export
-#' @rdname getPipelines
-getPipelines <- function() {
+#' @return Character vector in which each element contains the title of the
+#' \pkg{shmootl} pipeline in the corresponding element of the input vector.
+#' 
+#' @keywords internal
+#' @rdname getPipelineTitle
+getPipelineTitle <- function(pipeline) {
     
-    # Load shmootl Rd database.
-    db <- tools::Rd_db('shmootl')
+    stopifnot( is.character(pipeline) )
+    stopifnot( length(pipeline) > 0 )
+    stopifnot( all( pipeline %in% getPkgPipelineNames() ) )
     
-    # Get names of doc files matching pipeline docs pattern.
-    rd_files <- names(db)[ grepl(const$pattern$pipe.docs, names(db)) ]
+    results <- as.character( lapply(lapply(strsplit(pipeline, '[.]'),
+        tools::toTitleCase), paste0, collapse='.') )
     
-    # Extract pipeline names from matching doc file names.
-    m <- regexec(const$pattern$pipe.docs, rd_files)
-    matches <- regmatches(rd_files, m)
-    pipelines <- sapply(matches, getElement, 3)
+    results <- as.character( lapply(lapply(strsplit(results, '_'),
+        tools::toTitleCase), paste0, collapse='_') )
     
-    return(pipelines)
+    return(results)
 }
 
 # getPipelineUsage -------------------------------------------------------------
@@ -411,7 +458,7 @@ getPipelineUsage <- function() {
     "usage: Rscript -e 'library(shmootl)' -e 'run()' <pipeline> [-h] ... \n\n",
     "Run the given shmootl pipeline.\n")
 
-    pipelines <- getPipelines()
+    pipelines <- getPkgPipelineNames()
     
     # Get pipeline padding strings.
     pipeline.widths <- nchar(pipelines)
@@ -444,6 +491,88 @@ getPipelineUsage <- function() {
     }
     
     return( paste0( c(usage, pipeline.listings) ) )
+}
+
+# getPkgAnalysisNames ----------------------------------------------------------
+#' Get \pkg{shmootl} analysis names.
+#' 
+#' @return Character vector of \pkg{shmootl} analysis names.
+#' 
+#' @keywords internal
+#' @rdname getPkgAnalysisNames
+getPkgAnalysisNames <- function() {
+    return( getPipelineTitle( getPkgAnalysisPipelineNames() ) )
+}
+
+# getPkgAnalysisPipelineNames --------------------------------------------------
+#' Get \pkg{shmootl} analysis pipeline names.
+#' 
+#' @return Character vector of \pkg{shmootl} analysis pipeline names.
+#' 
+#' @keywords internal
+#' @rdname getPkgAnalysisPipelineNames
+getPkgAnalysisPipelineNames <- function() {
+    return( getPkgPipelineNames(group='analysis') )
+}
+
+# getPkgPipelineFunctionNames --------------------------------------------------
+#' Get \pkg{shmootl} pipeline function names.
+#' 
+#' @param group Pipeline group for which pipeline function names should be
+#' retrieved. If no pipeline group is specified, all pipeline function names
+#' are returned.
+#' 
+#' @return Character vector of \pkg{shmootl} pipeline function names.
+#' 
+#' @export
+#' @rdname getPkgPipelineFunctionNames
+getPkgPipelineFunctionNames <- function(group=NULL) {
+    pipelines <- getPkgPipelineNames(group=group)
+    return( getPipelineFunctionName(pipelines) )
+}
+
+# getPkgPipelineNames ----------------------------------------------------------
+#' Get \pkg{shmootl} pipeline names.
+#' 
+#' @param group Pipeline group for which pipeline names should be retrieved.
+#' If no pipeline group is specified, all pipeline names are returned.
+#' 
+#' @return Character vector of \pkg{shmootl} pipeline names.
+#' 
+#' @export
+#' @rdname getPkgPipelineNames
+getPkgPipelineNames <- function(group=NULL) {
+    
+    # Load shmootl Rd database.
+    db <- tools::Rd_db('shmootl')
+    
+    # Get names of doc files matching pipeline docs pattern.
+    rd_files <- names(db)[ grepl(const$pattern$pipe.docs, names(db)) ]
+    
+    # Extract pipeline names from matching doc file names.
+    m <- regexec(const$pattern$pipe.docs, rd_files)
+    matches <- regmatches(rd_files, m)
+    pipelines <- sapply(matches, getElement, 3)
+    
+    if ( ! is.null(group) ) {
+        
+        stopifnot( group %in% const$pipeline.groups )
+        
+        mask <- rep(FALSE, length(pipelines))
+        
+        for ( i in seq_along(pipelines) ) {
+            
+            pinfo <- getPipelineInfo(pipelines[i])
+            
+            if ( pinfo$group == group ) {
+                mask[i] <- TRUE
+            }
+        }
+        
+        pipelines <- pipelines[mask]
+    }
+    
+    return(pipelines)
 }
 
 # prepPipelineArgparser --------------------------------------------------------

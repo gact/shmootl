@@ -67,6 +67,9 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
     acovfile=NA_character_, icovfile=NA_character_) {
     
+    pipeline <- getPipelineName( as.character(match.call()[[1]]) )
+    analysis <- getPipelineTitle(pipeline)
+    
     stopifnot( isSingleString(h5file) )
     stopifnot( isSingleNonNegativeNumber(step) )
     stopifnot( isSingleProbability(error.prob) )
@@ -216,7 +219,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         
         # Output scanone result for this phenotype.
         pheno.result <- getLODProfile(scanone.result, lodcolumn=i)
-        writeResultHDF5(pheno.result, tmp, phenotypes[i], 'Scanone', 'Result')
+        writeResultHDF5(pheno.result, tmp, phenotypes[i], analysis, 'Result')
         
         # Output any permutation scan results for this phenotype.
         if ( ! is.null(scanone.perms) ) {
@@ -226,14 +229,14 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
             } else { # fdr
                 pheno.perms <- scanone.perms[,, i]
             }
-            writeResultHDF5(pheno.perms, tmp, phenotypes[i], 'Scanone', 'Permutations')
+            writeResultHDF5(pheno.perms, tmp, phenotypes[i], analysis, 'Permutations')
         }
         
         # Output scanone threshold for this phenotype.
         if (multiple.lodcolumns) {
             scanone.threshold <- subset(scanone.thresholds, lodcolumn=i)
         }
-        writeResultHDF5(scanone.threshold, tmp, phenotypes[i], 'Scanone', 'Threshold')
+        writeResultHDF5(scanone.threshold, tmp, phenotypes[i], analysis, 'Threshold')
         
         # Get significant QTL intervals.
         qtl.intervals <- getQTLIntervals(pheno.result, ci.function=ci.function,
@@ -241,7 +244,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         
         # Output any significant QTL intervals.
         if ( length(qtl.intervals) > 0 ) {
-            writeResultHDF5(qtl.intervals, tmp, phenotypes[i], 'Scanone', 'QTL Intervals')
+            writeResultHDF5(qtl.intervals, tmp, phenotypes[i], analysis, 'QTL Intervals')
         }
         
         # Set results overview info for this phenotype.
@@ -249,7 +252,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         
         # If updating HDF5 file, add scanone results to updated objects.
         if (updating.h5file) {
-            h5name <- joinH5ObjectNameParts( c('Results', phenotypes[i], 'Scanone') )
+            h5name <- joinH5ObjectNameParts( c('Results', phenotypes[i], analysis) )
             updated.objects <- c(updated.objects, h5name)
         }
     }
@@ -260,7 +263,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         # ..output updated results overview..
         stopifnot( hasResultsOverviewHDF5(h5file) )
         overview <- readResultsOverviewHDF5(h5file)
-        overview <- updateResultsOverview(overview, 'scanone', scanone.overview)
+        overview <- updateResultsOverview(overview, analysis, scanone.overview)
         writeResultsOverviewHDF5(overview, tmp)
         
         # ..and add results overview to updated objects..
@@ -269,7 +272,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         
     } else { # ..otherwise output new results overview.
         
-        overview <- makeResultsOverview(phenotypes, 'scanone', scanone.overview)
+        overview <- makeResultsOverview(phenotypes, analysis, scanone.overview)
         writeResultsOverviewHDF5(overview, tmp)
     }
     

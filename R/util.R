@@ -2210,7 +2210,7 @@ makeResultsOverview <- function(phenotypes, analysis, results=NULL) {
     stopifnot( length(phenotypes) > 0 )
     stopif( anyDuplicated(phenotypes) )
     stopifnot( isSingleString(analysis) )
-    stopifnot( analysis %in% const$supported.analyses )
+    stopifnot( analysis %in% getPkgAnalysisNames() )
     
     phenotypes <- sort(phenotypes)
     
@@ -2228,7 +2228,7 @@ makeResultsOverview <- function(phenotypes, analysis, results=NULL) {
     }
     
     columns <- structure(list(phenotypes, results),
-        names=c('Phenotype', tools::toTitleCase(analysis)))
+        names=c('Phenotype', analysis))
     
     overview <- as.data.frame(columns, stringsAsFactors=FALSE)
     
@@ -2731,14 +2731,16 @@ stripWhite <- function(x) {
 #' @rdname updateResultsOverview
 updateResultsOverview <- function(overview, analysis, results=NULL) {
     
+    supported.analyses <- getPkgAnalysisNames()
+    
     validateResultsOverview(overview)
     stopifnot( isSingleString(analysis) )
-    stopifnot( analysis %in% const$supported.analyses )
+    stopifnot( analysis %in% supported.analyses )
     
     input.headings <- colnames(overview)
-    input.analyses <- tolower(input.headings[-1])
+    input.analyses <- input.headings[-1]
     
-    output.analyses <- const$supported.analyses[ const$supported.analyses %in%
+    output.analyses <- supported.analyses[ supported.analyses %in%
         c(input.analyses, analysis) ]
     output.headings <- c('Phenotype', output.analyses)
     
@@ -2794,9 +2796,6 @@ updateResultsOverview <- function(overview, analysis, results=NULL) {
     
     # Create updated results overview.
     overview <- as.data.frame(columns, stringsAsFactors=FALSE)
-    
-    # Convert results overview headings to Title Case.
-    colnames(overview) <- tools::toTitleCase(output.headings)
     
     return(overview)
 }
@@ -2938,9 +2937,9 @@ validateResultsOverview <- function(overview) {
         stop("first column of results overview must be 'Phenotype' column")
     }
     
-    analyses <- tolower(headings[-1])
+    analyses <- headings[-1]
     
-    unknown <- analyses[ ! analyses %in% const$supported.analyses ]
+    unknown <- analyses[ ! analyses %in% getPkgAnalysisNames() ]
     if ( length(unknown) > 0 ) {
         stop("results overview contains unknown analyses - '", toString(unknown), "'")
     }

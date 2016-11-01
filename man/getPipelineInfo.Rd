@@ -21,6 +21,7 @@ elements of this list are as follows:
 \itemize{
 \item{\code{'command'}} {Shell command used to call pipeline.}
 \item{\code{'title'}} {Pipeline function title.}
+\item{\code{'group'}} {Category to which the pipeline belongs.}
 \item{\code{'description'}} {Pipeline function description. This is not 
 returned if it duplicates the function title.}
 \item{\code{'details'}} {Pipeline function details.}
@@ -29,9 +30,10 @@ parameter info. If the function has no parameters, this takes a \code{NULL}
 value.}
 }
  
-Elements \code{'command'} and \code{'title'} are guaranteed to contain their
-respective values. The remaining elements are only returned if corresponding 
-documentation is available; otherwise, they are assigned a \code{NULL} value.
+Elements \code{'command'}, \code{'title'}, and \code{'group'} are guaranteed
+to contain their respective values. The remaining elements are only returned
+if corresponding documentation is available; otherwise, they are assigned a
+\code{NULL} value.
 }
 \keyword{internal}
 
