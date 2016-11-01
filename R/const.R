@@ -161,9 +161,6 @@ with(const, {
         # Percentage.
         percentage = '^([+-]?[[:digit:]](?:[.][[:digit:]]+)?)%$',
         
-        # Package pipeline docs.
-        pipe.docs = '^(run_([[:alpha:]][[:alnum:]._]*))[.]Rd$',
-        
         # Package pipeline functions.
         pipe.func = '^run_([[:alpha:]][[:alpha:]._]*)$',
         

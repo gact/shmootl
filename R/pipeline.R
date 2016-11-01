@@ -543,16 +543,36 @@ getPkgPipelineFunctionNames <- function(group=NULL) {
 #' @rdname getPkgPipelineNames
 getPkgPipelineNames <- function(group=NULL) {
     
-    # Load shmootl Rd database.
-    db <- tools::Rd_db('shmootl')
+    # Take pipeline function names from 'shmootl' package, if available..
+    pipe.func.names <- tryCatch({
+        
+        result <- ls('package:shmootl', pattern=const$pattern$pipe.func)
+        
+    }, error=function(e) { # ..otherwise take from 'shmootl' environment.
+        
+        env <- environment()
+        
+        while ( ! identical( env, emptyenv() ) ) {
+            
+            if ( environmentName(env) == 'shmootl' ) {
+                matching <- ls(env, pattern=const$pattern$pipe.func)
+                break
+            }
+            
+            env <- parent.env(env)
+        }
+        
+        if ( identical( env, emptyenv() ) ) {
+            stop("failed to get shmootl package pipeline names")
+        }
+        
+        result <- matching
+    })
     
-    # Get names of doc files matching pipeline docs pattern.
-    rd_files <- names(db)[ grepl(const$pattern$pipe.docs, names(db)) ]
-    
-    # Extract pipeline names from matching doc file names.
-    m <- regexec(const$pattern$pipe.docs, rd_files)
-    matches <- regmatches(rd_files, m)
-    pipelines <- sapply(matches, getElement, 3)
+    # Extract pipeline names from matching function names.
+    m <- regexec(const$pattern$pipe.func, pipe.func.names)
+    matches <- regmatches(pipe.func.names, m)
+    pipelines <- sapply(matches, getElement, 2)
     
     if ( ! is.null(group) ) {
         
