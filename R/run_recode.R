@@ -8,7 +8,7 @@
 #' mapping old to new genotypes. Alternatively, genotype data can be
 #' converted to enumerated genotypes with the \code{enum.geno} parameter.
 #' 
-#' @param datafile cross/geno CSV file
+#' @param datafile cross/geno CSV file [required]
 #' @param geno recode genotypes from mapping
 #' @param enum.geno recode to enumerated genotypes
 #' 
@@ -16,7 +16,10 @@
 #' @export
 #' @family pipeline functions
 #' @rdname run_recode
-run_recode <- function(datafile, geno=mapping(), enum.geno=FALSE) {
+run_recode <- function(datafile=NA_character_, geno=mapping(),
+    enum.geno=FALSE) {
+    
+    stopifnot( isSingleString(datafile) )
     
     tmp <- tempfile()
     on.exit( file.remove(tmp) )

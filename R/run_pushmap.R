@@ -9,8 +9,8 @@
 #' being written to the HDF5 file. Otherwise, a default map name
 #' (e.g. \code{'Genetic Map'}) is used.
 #' 
-#' @param mapfile input map CSV file
-#' @param datafile file with map data
+#' @param mapfile input map CSV file [required]
+#' @param datafile file with map data [required]
 #' @param mapname name of map (if applicable)
 #' @param require.mapunit require map units in input
 #' @param include.mapunit include map units in output
@@ -19,8 +19,11 @@
 #' @export
 #' @family pipeline functions
 #' @rdname run_pushmap
-run_pushmap <- function(mapfile, datafile, mapname=NA_character_,
-    require.mapunit=TRUE, include.mapunit=TRUE) {
+run_pushmap <- function(mapfile=NA_character_, datafile=NA_character_,
+    mapname=NA_character_, require.mapunit=TRUE, include.mapunit=TRUE) {
+    
+    stopifnot( isSingleString(mapfile) )
+    stopifnot( isSingleString(datafile) )
     
     mapname <- if ( ! identical(mapname, NA_character_) ) { mapname } else { NULL }
     

@@ -6,11 +6,11 @@
 #' Given one or more scan result HDF5 files, create
 #' a digest of the results of the QTL analyses.
 #' 
-#' @param h5list list of HDF5 scan files
-#' @param digest scan digest file
+#' @param h5list list of HDF5 scan files [required]
+#' @param digest scan digest file [required]
 #' @param scanfile.pattern scan file name pattern
 #' 
-#' @concept shmootl:pipelines
+#' @concept shmootl:processing
 #' @export
 #' @family pipeline functions
 #' @importFrom tools file_ext

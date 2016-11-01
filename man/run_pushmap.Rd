@@ -4,13 +4,13 @@
 \alias{run_pushmap}
 \title{Push map into a data file.}
 \usage{
-run_pushmap(mapfile, datafile, mapname = NA_character_,
-  require.mapunit = TRUE, include.mapunit = TRUE)
+run_pushmap(mapfile = NA_character_, datafile = NA_character_,
+  mapname = NA_character_, require.mapunit = TRUE, include.mapunit = TRUE)
 }
 \arguments{
-\item{mapfile}{input map CSV file}
+\item{mapfile}{input map CSV file [required]}
 
-\item{datafile}{file with map data}
+\item{datafile}{file with map data [required]}
 
 \item{mapname}{name of map (if applicable)}
 

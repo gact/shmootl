@@ -8,11 +8,11 @@ run_annoqtl(infile = NA_character_, annofile = NA_character_,
   outfile = NA_character_)
 }
 \arguments{
-\item{infile}{input HDF5 scan file}
+\item{infile}{input HDF5 scan file [required]}
 
-\item{annofile}{GFF annotation file}
+\item{annofile}{GFF annotation file [required]}
 
-\item{outfile}{annotated HDF5 scan file}
+\item{outfile}{annotated HDF5 scan file [required]}
 }
 \description{
 QTL intervals in a HDF5 scan file are annotated with features from the GFF
@@ -32,6 +32,6 @@ Other pipeline functions: \code{\link{run_digest}},
   \code{\link{run_report}}, \code{\link{run_scanone}}
 }
 \concept{
-shmootl:pipelines
+shmootl:processing
 }
 

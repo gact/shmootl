@@ -4,13 +4,13 @@
 \alias{run_prep}
 \title{Prepare data in \pkg{R/qtl} CSV file.}
 \usage{
-run_prep(datafile, normseq = FALSE, estimap = FALSE, error.prob = 1e-04,
-  map.function = c("haldane", "kosambi", "c-f", "morgan"),
-  jittermap = FALSE, amount = 1e-06, replace.missing = FALSE,
+run_prep(datafile = NA_character_, normseq = FALSE, estimap = FALSE,
+  error.prob = 1e-04, map.function = c("haldane", "kosambi", "c-f",
+  "morgan"), jittermap = FALSE, amount = 1e-06, replace.missing = FALSE,
   require.mapunit = FALSE, include.mapunit = TRUE)
 }
 \arguments{
-\item{datafile}{\pkg{R/qtl} CSV file}
+\item{datafile}{\pkg{R/qtl} CSV file [required]}
 
 \item{normseq}{normalise map sequence labels}
 
@@ -70,6 +70,6 @@ Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_scanone}}
 }
 \concept{
-shmootl:utilities
+shmootl:preparation
 }
 

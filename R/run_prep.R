@@ -27,7 +27,7 @@
 #' are passed to the \pkg{R/qtl} function \code{'est.map'}, while option
 #' \code{'amount'} is passed to the \pkg{R/qtl} \code{'jittermap'} function.
 #' 
-#' @param datafile \pkg{R/qtl} CSV file
+#' @param datafile \pkg{R/qtl} CSV file [required]
 #' @param normseq normalise map sequence labels
 #' @param estimap estimate genetic map
 #' @param error.prob genotyping error rate
@@ -40,15 +40,15 @@
 #' 
 #' @template ref-broman-2003
 #' 
-#' @concept shmootl:utilities
+#' @concept shmootl:preparation
 #' @export
 #' @family pipeline functions
 #' @importFrom utils read.csv
 #' @importFrom utils write.table
 #' @rdname run_prep
-run_prep <- function(datafile, normseq=FALSE, estimap=FALSE, error.prob=0.0001,
-    map.function=c('haldane','kosambi','c-f','morgan'), jittermap=FALSE,
-    amount=1e-6, replace.missing=FALSE, require.mapunit=FALSE,
+run_prep <- function(datafile=NA_character_, normseq=FALSE, estimap=FALSE,
+    error.prob=0.0001, map.function=c('haldane','kosambi','c-f','morgan'),
+    jittermap=FALSE, amount=1e-6, replace.missing=FALSE, require.mapunit=FALSE,
     include.mapunit=TRUE) {
     
     stopifnot( isSingleString(datafile) )

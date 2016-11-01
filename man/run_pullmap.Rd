@@ -4,13 +4,13 @@
 \alias{run_pullmap}
 \title{Pull map from a data file.}
 \usage{
-run_pullmap(datafile, mapfile, mapname = NA_character_,
-  require.mapunit = TRUE, include.mapunit = TRUE)
+run_pullmap(datafile = NA_character_, mapfile = NA_character_,
+  mapname = NA_character_, require.mapunit = TRUE, include.mapunit = TRUE)
 }
 \arguments{
-\item{datafile}{file containing map data}
+\item{datafile}{file containing map data [required]}
 
-\item{mapfile}{output map CSV file}
+\item{mapfile}{output map CSV file [required]}
 
 \item{mapname}{name of map (if applicable)}
 

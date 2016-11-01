@@ -1,20 +1,23 @@
 # Start of run_report.R ########################################################
 
 # run_report -------------------------------------------------------------------
-#' Create report of \pkg{R/qtl} analysis results.
+#' Create report of QTL analysis results.
 #' 
 #' Given a scan result HDF5 file, create a
 #' report of the results of the QTL analysis.
 #' 
-#' @param h5file HDF5 scan file
-#' @param report scan report file
+#' @param h5file HDF5 scan file [required]
+#' @param report scan report file [required]
 #' 
-#' @concept shmootl:pipelines
+#' @concept shmootl:processing
 #' @export
 #' @family pipeline functions
 #' @rdname run_report
 run_report <- function(h5file=NA_character_, report=NA_character_) {
-
+    
+    stopifnot( isSingleString(h5file) )
+    stopifnot( isSingleString(report) )
+    
     # Get digest file extension.
     report.ext <- tools::file_ext(report)
     

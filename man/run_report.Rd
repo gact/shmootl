@@ -2,14 +2,14 @@
 % Please edit documentation in R/run_report.R
 \name{run_report}
 \alias{run_report}
-\title{Create report of \pkg{R/qtl} analysis results.}
+\title{Create report of QTL analysis results.}
 \usage{
 run_report(h5file = NA_character_, report = NA_character_)
 }
 \arguments{
-\item{h5file}{HDF5 scan file}
+\item{h5file}{HDF5 scan file [required]}
 
-\item{report}{scan report file}
+\item{report}{scan report file [required]}
 }
 \description{
 Given a scan result HDF5 file, create a
@@ -25,6 +25,6 @@ Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_scanone}}
 }
 \concept{
-shmootl:pipelines
+shmootl:processing
 }
 

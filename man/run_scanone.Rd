@@ -2,7 +2,7 @@
 % Please edit documentation in R/run_scanone.R
 \name{run_scanone}
 \alias{run_scanone}
-\title{Do single QTL scan.}
+\title{Do single-QTL scan.}
 \usage{
 run_scanone(infile = NA_character_, h5file = NA_character_,
   chr = character(), pheno = character(), model = c("normal", "binary",
@@ -14,9 +14,9 @@ run_scanone(infile = NA_character_, h5file = NA_character_,
   prob = 0.95, acovfile = NA_character_, icovfile = NA_character_)
 }
 \arguments{
-\item{infile}{input cross file}
+\item{infile}{input cross CSV file}
 
-\item{h5file}{HDF5 scan file}
+\item{h5file}{HDF5 scan file [required]}
 
 \item{chr}{sequences [default: all]}
 
@@ -105,6 +105,6 @@ Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_report}}
 }
 \concept{
-shmootl:pipelines
+shmootl:analysis
 }
 

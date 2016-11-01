@@ -17,18 +17,18 @@
 #' specified, each element of the \code{alleles} vector must denote a
 #' specific founder.
 #' 
-#' @param datafile sample VCF file
+#' @param datafile sample VCF file [required]
 #' @param fdrfile optional founder VCF file
-#' @param genfile output genotype CSV file
+#' @param genfile output genotype CSV file [required]
 #' @param alleles founder allele symbols
 #' @param digits numeric precision [default: unrounded]
 #' 
-#' @concept shmootl:utilities
+#' @concept shmootl:preparation
 #' @export
 #' @family pipeline functions
 #' @rdname run_makegeno
-run_makegeno <- function(datafile, genfile, fdrfile=NA_character_,
-    alleles=character(), digits=NA_integer_) {
+run_makegeno <- function(datafile=NA_character_, genfile=NA_character_,
+    fdrfile=NA_character_, alleles=character(), digits=NA_integer_) {
     
     stopifnot( isSingleString(genfile) )
     

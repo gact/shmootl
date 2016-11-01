@@ -55,7 +55,8 @@ with(const, {
     missing.value <- '-'
     
     # Pipeline groups for command-line interface.
-    pipeline.groups <- c('pipelines', 'utilities', 'misc')
+    pipeline.groups <- c('analysis', 'preparation', 'processing',
+        'utilities', 'misc')
     
     # Missing value in VCF data.
     vcf.missing.value <- '.'

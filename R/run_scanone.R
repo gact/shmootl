@@ -1,7 +1,7 @@
 # Start of run_scanone.R #######################################################
 
 # run_scanone ------------------------------------------------------------------
-#' Do single QTL scan.
+#' Do single-QTL scan.
 #' 
 #' Read cross data from the specified cross input CSV file or HDF5 scan file,
 #' run a single QTL analysis using \pkg{R/qtl} \code{scanone} (Broman \emph{et
@@ -29,8 +29,8 @@
 #' functions \code{'lodint'} and \code{'bayesint'} in the \pkg{R/qtl} manual,
 #' as well as Section 4.5 of Broman and Sen (2009).
 #' 
-#' @param infile input cross file
-#' @param h5file HDF5 scan file
+#' @param infile input cross CSV file
+#' @param h5file HDF5 scan file [required]
 #' @param chr sequences [default: all]
 #' @param pheno phenotypes [default: all]
 #' @param model phenotype model
@@ -55,7 +55,7 @@
 #' @template ref-broman-2009
 #' @template seealso-rqtl-manual
 #' 
-#' @concept shmootl:pipelines
+#' @concept shmootl:analysis
 #' @export
 #' @family pipeline functions
 #' @rdname run_scanone

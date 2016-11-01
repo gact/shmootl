@@ -8,8 +8,8 @@
 #' cannot be estimated from enumerated genotypes, as these are generated
 #' independently for each marker.
 #' 
-#' @param datafile input cross/geno CSV file
-#' @param mapfile output map CSV file
+#' @param datafile input cross/geno CSV file [required]
+#' @param mapfile output map CSV file [required]
 #' @param n.cluster number of threads
 #' @param error.prob genotyping error rate
 #' @param map.function genetic map function
@@ -19,9 +19,11 @@
 #' @export
 #' @family pipeline functions
 #' @rdname run_estimap
-run_estimap <- function(datafile, mapfile, n.cluster=1L, error.prob=0.0001,
-    map.function=c("haldane","kosambi","c-f","morgan"), jittermap=FALSE) {
+run_estimap <- function(datafile=NA_character_, mapfile=NA_character_,
+    n.cluster=1L, error.prob=0.0001, map.function=c('haldane', 'kosambi',
+    'c-f', 'morgan'), jittermap=FALSE) {
     
+    stopifnot( isSingleString(datafile) )
     stopifnot( isSingleString(mapfile) )
     stopifnot( isSinglePositiveNumber(n.cluster) )
     stopifnot( isSingleProbability(error.prob) )

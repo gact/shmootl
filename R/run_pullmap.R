@@ -7,8 +7,8 @@
 #' file. If a HDF5 data file contains multiple maps, the \code{mapname}
 #' parameter must specify which map to pull.
 #' 
-#' @param datafile file containing map data
-#' @param mapfile output map CSV file
+#' @param datafile file containing map data [required]
+#' @param mapfile output map CSV file [required]
 #' @param mapname name of map (if applicable)
 #' @param require.mapunit require map units in input
 #' @param include.mapunit include map units in output
@@ -17,9 +17,10 @@
 #' @export
 #' @family pipeline functions
 #' @rdname run_pullmap
-run_pullmap <- function(datafile, mapfile, mapname=NA_character_,
-    require.mapunit=TRUE, include.mapunit=TRUE) {
+run_pullmap <- function(datafile=NA_character_, mapfile=NA_character_,
+    mapname=NA_character_, require.mapunit=TRUE, include.mapunit=TRUE) {
     
+    stopifnot( isSingleString(datafile) )
     stopifnot( isSingleString(mapfile) )
     
     mapname <- if ( ! identical(mapname, NA_character_) ) { mapname } else { NULL }

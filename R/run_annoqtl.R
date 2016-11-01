@@ -11,11 +11,11 @@
 #' intervals themselves, or indirectly by pairing coordinates in the cross
 #' genetic map to a corresponding physical map.
 #' 
-#' @param infile input HDF5 scan file
-#' @param annofile GFF annotation file
-#' @param outfile annotated HDF5 scan file
+#' @param infile input HDF5 scan file [required]
+#' @param annofile GFF annotation file [required]
+#' @param outfile annotated HDF5 scan file [required]
 #' 
-#' @concept shmootl:pipelines
+#' @concept shmootl:processing
 #' @export
 #' @family pipeline functions
 #' @rdname run_annoqtl
@@ -24,6 +24,7 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
+    stopifnot( isSingleString(annofile) )
     stopifnot( isSingleString(outfile) )
     
     results.sought <- 'Scanone/QTL Intervals'

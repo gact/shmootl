@@ -4,13 +4,13 @@
 \alias{run_makegeno}
 \title{Make genotype data from VCF.}
 \usage{
-run_makegeno(datafile, genfile, fdrfile = NA_character_,
-  alleles = character(), digits = NA_integer_)
+run_makegeno(datafile = NA_character_, genfile = NA_character_,
+  fdrfile = NA_character_, alleles = character(), digits = NA_integer_)
 }
 \arguments{
-\item{datafile}{sample VCF file}
+\item{datafile}{sample VCF file [required]}
 
-\item{genfile}{output genotype CSV file}
+\item{genfile}{output genotype CSV file [required]}
 
 \item{fdrfile}{optional founder VCF file}
 
@@ -44,6 +44,6 @@ Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_scanone}}
 }
 \concept{
-shmootl:utilities
+shmootl:preparation
 }
 

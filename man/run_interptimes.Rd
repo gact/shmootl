@@ -4,10 +4,10 @@
 \alias{run_interptimes}
 \title{Interpolate time-series phenotypes in \pkg{R/qtl} CSV file.}
 \usage{
-run_interptimes(datafile, tol = 1e-05)
+run_interptimes(datafile = NA_character_, tol = 1e-05)
 }
 \arguments{
-\item{datafile}{cross CSV file}
+\item{datafile}{cross CSV file [required]}
 
 \item{tol}{time-step equality tolerance}
 }

@@ -4,14 +4,14 @@
 \alias{run_estimap}
 \title{Estimate map from cross/genotype data.}
 \usage{
-run_estimap(datafile, mapfile, n.cluster = 1L, error.prob = 1e-04,
-  map.function = c("haldane", "kosambi", "c-f", "morgan"),
-  jittermap = FALSE)
+run_estimap(datafile = NA_character_, mapfile = NA_character_,
+  n.cluster = 1L, error.prob = 1e-04, map.function = c("haldane",
+  "kosambi", "c-f", "morgan"), jittermap = FALSE)
 }
 \arguments{
-\item{datafile}{input cross/geno CSV file}
+\item{datafile}{input cross/geno CSV file [required]}
 
-\item{mapfile}{output map CSV file}
+\item{mapfile}{output map CSV file [required]}
 
 \item{n.cluster}{number of threads}
 

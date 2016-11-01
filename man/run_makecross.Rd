@@ -2,16 +2,17 @@
 % Please edit documentation in R/run_makecross.R
 \name{run_makecross}
 \alias{run_makecross}
-\title{Make cross from genotype and phenotype data.}
+\title{Make cross CSV file from genotype and phenotype data.}
 \usage{
-run_makecross(genfile, phefile, crossfile)
+run_makecross(genfile = NA_character_, phefile = NA_character_,
+  crossfile = NA_character_)
 }
 \arguments{
-\item{genfile}{input genotype CSV file}
+\item{genfile}{input genotype CSV file [required]}
 
-\item{phefile}{input phenotype CSV file}
+\item{phefile}{input phenotype CSV file [required]}
 
-\item{crossfile}{output cross CSV file}
+\item{crossfile}{output cross CSV file [required]}
 }
 \description{
 Read separate genotype and phenotype data files,
@@ -27,6 +28,6 @@ Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_scanone}}
 }
 \concept{
-shmootl:utilities
+shmootl:preparation
 }
 
