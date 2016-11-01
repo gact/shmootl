@@ -12,6 +12,9 @@
 #' used in the digest file, as a heading for a column that contains matches to
 #' that capture group in the scan file names.
 #' 
+#' @template author-thomas-walsh
+#' @template author-yue-hu
+#' 
 #' @export
 #' @family digest functions
 #' @family Excel functions
@@ -271,7 +274,7 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
         # Remove empty columns.
         nonempty <- sapply( getColIndices(tab),
             function(i) ! allNA(tab[, i]) )
-        tab <- tab[, nonempty]
+        tab <- tab[, nonempty, drop=FALSE]
         
         # Add scanfile info, if available.
         if ( ! is.null(scanfile.info) ) {
