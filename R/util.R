@@ -2228,7 +2228,7 @@ makeResultsOverview <- function(phenotypes, analysis, results=NULL) {
     }
     
     columns <- structure(list(phenotypes, results),
-        names=c('Phenotype', analysis))
+        names=c('Phenotype', tools::toTitleCase(analysis)))
     
     overview <- as.data.frame(columns, stringsAsFactors=FALSE)
     
@@ -2736,7 +2736,7 @@ updateResultsOverview <- function(overview, analysis, results=NULL) {
     stopifnot( analysis %in% const$supported.analyses )
     
     input.headings <- colnames(overview)
-    input.analyses <- input.headings[-1]
+    input.analyses <- tolower(input.headings[-1])
     
     output.analyses <- const$supported.analyses[ const$supported.analyses %in%
         c(input.analyses, analysis) ]
@@ -2794,6 +2794,9 @@ updateResultsOverview <- function(overview, analysis, results=NULL) {
     
     # Create updated results overview.
     overview <- as.data.frame(columns, stringsAsFactors=FALSE)
+    
+    # Convert results overview headings to Title Case.
+    colnames(overview) <- tools::toTitleCase(output.headings)
     
     return(overview)
 }
@@ -2935,7 +2938,9 @@ validateResultsOverview <- function(overview) {
         stop("first column of results overview must be 'Phenotype' column")
     }
     
-    unknown <- headings[ ! headings[-1] %in% const$supported.analyses ]
+    analyses <- tolower(headings[-1])
+    
+    unknown <- analyses[ ! analyses %in% const$supported.analyses ]
     if ( length(unknown) > 0 ) {
         stop("results overview contains unknown analyses - '", toString(unknown), "'")
     }

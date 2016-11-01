@@ -49,7 +49,7 @@ with(const, {
     supported.crosstypes <- c('haploid') # TODO: support other cross types
     
     # Titles of analyses implemented in shmootl.
-    supported.analyses <- c('Scanone')
+    supported.analyses <- c('scanone')
     
     # Fixed missing value in cross data files.
     missing.value <- '-'

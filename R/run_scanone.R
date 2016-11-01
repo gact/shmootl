@@ -260,7 +260,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         # ..output updated results overview..
         stopifnot( hasResultsOverviewHDF5(h5file) )
         overview <- readResultsOverviewHDF5(h5file)
-        overview <- updateResultsOverview(overview, 'Scanone', scanone.overview)
+        overview <- updateResultsOverview(overview, 'scanone', scanone.overview)
         writeResultsOverviewHDF5(overview, tmp)
         
         # ..and add results overview to updated objects..
@@ -269,7 +269,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         
     } else { # ..otherwise output new results overview.
         
-        overview <- makeResultsOverview(phenotypes, 'Scanone', scanone.overview)
+        overview <- makeResultsOverview(phenotypes, 'scanone', scanone.overview)
         writeResultsOverviewHDF5(overview, tmp)
     }
     
