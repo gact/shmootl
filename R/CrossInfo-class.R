@@ -1500,25 +1500,28 @@ setMethod('validateAlleles', signature='CrossInfo',
     
     stopifnot( is.character(cross.info@alleles) )
     
-    if ( anyNA(cross.info@alleles) ) {
-        stop("incomplete allele info")
-    }
-    
-    dup.alleles <- cross.info@alleles[ duplicated(cross.info@alleles) ]
-    if ( length(dup.alleles) > 0 ) {
-        stop("duplicate alleles - '", toString(dup.alleles), "'")
-    }
-    
-    valid.founder <- isFounderAllele(cross.info@alleles)
-    valid.enum <- isEnumAllele(cross.info@alleles)
-    
-    err.alleles <- cross.info@alleles[ ! ( valid.founder | valid.enum ) ]
-    if ( length(err.alleles) > 0 ) {
-        stop("invalid allele values - '", toString(err.alleles), "'")
-    }
-    
-    if ( any(valid.founder) && any(valid.enum) ) {
-        stop("alleles can be of enumerated or founder type, but not both")
+    if ( ! identical( cross.info@alleles, character() ) ) {
+        
+        if ( anyNA(cross.info@alleles) ) {
+            stop("incomplete allele info")
+        }
+        
+        dup.alleles <- cross.info@alleles[ duplicated(cross.info@alleles) ]
+        if ( length(dup.alleles) > 0 ) {
+            stop("duplicate alleles - '", toString(dup.alleles), "'")
+        }
+        
+        valid.founder <- isFounderAllele(cross.info@alleles)
+        valid.enum <- isEnumAllele(cross.info@alleles)
+        
+        err.alleles <- cross.info@alleles[ ! ( valid.founder | valid.enum ) ]
+        if ( length(err.alleles) > 0 ) {
+            stop("invalid allele values - '", toString(err.alleles), "'")
+        }
+        
+        if ( any(valid.founder) && any(valid.enum) ) {
+            stop("alleles can be of enumerated or founder type, but not both")
+        }
     }
     
     return(TRUE)
@@ -1546,11 +1549,15 @@ setMethod('validateCrosstype', signature='CrossInfo',
     definition = function(cross.info) {
       
     stopifnot( is.character(cross.info@crosstype) )
-    stopifnot( length(cross.info@crosstype) == 1 )
     
-    if ( ! is.na(cross.info@crosstype) && ! cross.info@crosstype %in%
-        const$supported.crosstypes ) {
-        stop("unsupported cross type - '", cross.info@crosstype, "'")
+    if ( ! identical(cross.info@crosstype, NA_character_) ) {
+        
+        stopifnot( length(cross.info@crosstype) == 1 )
+        
+        if ( ! is.na(cross.info@crosstype) && ! cross.info@crosstype %in%
+            const$supported.crosstypes ) {
+            stop("unsupported cross type - '", cross.info@crosstype, "'")
+        }
     }
 
     return(TRUE)
@@ -1576,7 +1583,11 @@ setGeneric('validateGenotypes', function(cross.info) {
 #' @rdname validateGenotypes-methods
 setMethod('validateGenotypes', signature='CrossInfo',
     definition = function(cross.info) {
-    validateGenotypeSet(cross.info@genotypes)
+    
+    if ( ! identical( cross.info@genotypes, character() ) ) {
+        validateGenotypeSet(cross.info@genotypes)
+    }
+    
     return(TRUE)
 })
 
@@ -1606,7 +1617,7 @@ setMethod('validateMarkers', signature='CrossInfo',
     
     if ( anyNA(cross.info@markers) ) {
         stop("incomplete marker info")
-    }    
+    }
     
     headings <- colnames(cross.info@markers)
     
@@ -1626,7 +1637,10 @@ setMethod('validateMarkers', signature='CrossInfo',
     
     if ( nrow(cross.info@markers) == 0 ) {
         ih <- headings[ headings != 'marker' ]
-        stop("headings invalid in CrossInfo object with zero markers - '", toString(ih), "'")
+        if ( length(ih) > 0 ) {
+            stop("headings invalid in CrossInfo object with zero markers - '",
+                toString(ih), "'")
+        }
     }
     
     marker.ids <- cross.info@markers$marker
