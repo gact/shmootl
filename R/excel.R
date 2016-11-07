@@ -120,9 +120,12 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     
     # Check scan files for results of interest ---------------------------------
     
-    results.sought <- c('Scanone/QTL Intervals', 'Scanone/QTL Features')
+    results.sought <- list(
+        'Scanone' = c('QTL Intervals')
+    )
+    
     result.info <- list()
-    roi <- character()
+    roi <- list()
     
     for ( scanfile in scanfiles ) {
         
@@ -144,9 +147,9 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
         for ( phenotype in names(info) ) {
             for ( analysis in names(info[[phenotype]]) ) {
                 for ( result in info[[phenotype]][[analysis]] ) {
-                    h5name <- joinH5ObjectNameParts(c(analysis, result), relative=TRUE)
-                    if ( h5name %in% results.sought ) {
-                        roi <- union(roi, h5name)
+                    if ( analysis %in% names(results.sought) &&
+                        result %in% results.sought[[analysis]] ) {
+                        roi[[analysis]] <- union(roi[[analysis]], result)
                     }
                 }
             }
@@ -159,8 +162,10 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     
     sheet.names <- c('README', 'Overview')
     
-    if ( 'Scanone/QTL Intervals' %in% roi ) {
-        sheet.names <- c(sheet.names, 'Scanone QTL Intervals')
+    for ( analysis in sort( names(roi) ) ) {
+        for ( result in roi[[analysis]] ) {
+            sheet.names <- c(sheet.names, paste(analysis, result))
+        }
     }
     
     # Init worksheet tables ----------------------------------------------------

@@ -27,9 +27,12 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
     stopifnot( isSingleString(annofile) )
     stopifnot( isSingleString(outfile) )
     
-    results.sought <- 'Scanone/QTL Intervals'
+    results.sought <- list(
+        'Scanone' = c('QTL Intervals')
+    )
+    
     result.info <- list()
-    roi <- character()
+    roi <- list()
     
     if ( hasObjectHDF5(infile, 'Results') ) {
         
@@ -45,9 +48,9 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
         for ( phenotype in names(result.info) ) {
             for ( analysis in names(result.info[[phenotype]]) ) {
                 for ( result in result.info[[phenotype]][[analysis]] ) {
-                    h5name <- joinH5ObjectNameParts(c(analysis, result), relative=TRUE)
-                    if ( h5name %in% results.sought ) {
-                        roi <- union(roi, h5name)
+                    if ( analysis %in% names(results.sought) &&
+                         result %in% results.sought[[analysis]] ) {
+                        roi[[analysis]] <- union(roi[[analysis]], result)
                     }
                 }
             }

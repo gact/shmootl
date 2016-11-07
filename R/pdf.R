@@ -18,9 +18,12 @@ writeReportPDF <- function(scanfile, report) {
     stopifnot( file.exists(scanfile) )
     stopifnot( isSingleString(report) )
     
-    results.sought <- 'Scanone/Result'
+    results.sought <- list(
+        'Scanone' = c('Result')
+    )
+    
     result.info <- list()
-    roi <- character()
+    roi <- list()
     
     if ( hasObjectHDF5(scanfile, 'Results') ) {
         
@@ -36,9 +39,9 @@ writeReportPDF <- function(scanfile, report) {
         for ( phenotype in names(result.info) ) {
             for ( analysis in names(result.info[[phenotype]]) ) {
                 for ( result in result.info[[phenotype]][[analysis]] ) {
-                    h5name <- joinH5ObjectNameParts(c(analysis, result), relative=TRUE)
-                    if ( h5name %in% results.sought ) {
-                        roi <- union(roi, h5name)
+                    if ( analysis %in% names(results.sought) &&
+                        result %in% results.sought[[analysis]] ) {
+                        roi[[analysis]] <- union(roi[[analysis]], result)
                     }
                 }
             }
