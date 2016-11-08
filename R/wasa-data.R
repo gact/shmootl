@@ -32,9 +32,10 @@
 #' @template ref-cubillos-2011
 #' @template ref-warringer-2008
 #' 
+#' @name wasa
 #' @docType data
 #' @family datasets
 #' @keywords data
-'wasa'
+NULL
 
 # End of wasa-data.R ###########################################################
