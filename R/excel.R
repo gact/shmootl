@@ -33,29 +33,11 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     stopifnot( isSingleString(digest) )
     stopifnot( tools::file_ext(digest) %in% const$ext$excel )
     
-    # If scanfile pattern specified, get scanfile info from scan file names.
-    info <- NULL
+    # If scanfile pattern specified, get experiment info from scan file names.
     if ( ! is.null(scanfile.pattern) ) {
-        
-        stopifnot( isSingleString(scanfile.pattern) )
-        
-        # Parse scan file names by the given pattern.
-        parsed <- parseFilenames(scanfiles, scanfile.pattern)
-        
-        # Check for capture-group names clashing with disallowed info tags.
-        clashing <- colnames(parsed)[ colnames(parsed) %in% const$disallowed.infotags ]
-        if ( length(clashing) > 0 ) {
-            stop("info tags clash with Excel headings - '", toString(clashing), "'")
-        }
-        
-        # Remove empty columns.
-        nonempty <- sapply( getColIndices(parsed),
-            function(i) ! allNA(parsed[, i]) )
-        parsed <- parsed[, nonempty]
-        
-        if ( ncol(parsed) > 0 ) {
-            info <- parsed
-        }
+        xinfo <- getXInfoFromFilenames(scanfiles, scanfile.pattern)
+    } else {
+        xinfo <- NULL
     }
     
     # Attach required package namespaces (if needed) ---------------------------
@@ -273,13 +255,13 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
             function(i) ! allNA(tab[, i]) )
         tab <- tab[, nonempty, drop=FALSE]
         
-        # Add scanfile info, if available.
-        if ( ! is.null(info) ) {
+        # Add experiment info, if available.
+        if ( ! is.null(xinfo) ) {
             
             row.indices <- sapply( getRowIndices(tab), function(i)
-                which( rownames(info) == tab[i, 'File'] ) )
+                which( rownames(xinfo) == tab[i, 'File'] ) )
             
-            scanfile.table <- info[row.indices, ]
+            scanfile.table <- xinfo[row.indices, ]
             rownames(scanfile.table) <- NULL
             
             tab <- cbind(tab[, 1, drop=FALSE], scanfile.table,

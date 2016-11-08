@@ -286,10 +286,11 @@ with(const, {
         )
     )
     
-    # Info settings ------------------------------------------------------------
+    # XInfo settings -----------------------------------------------------------
     
-    # Set info tags that are disallowed so as to prevent clashes with Excel headings.
-    disallowed.infotags <- sort( unique( unlist( lapply(excel,
+    # Set experiment info tags that are disallowed so as to prevent clashes
+    # with other names that might be used alongside the extracted info.
+    disallowed.xinfotags <- sort( unique( unlist( lapply(excel,
         function(x) lapply(which( ! names(x) %in% c('README', 'Overview') ),
         function(i) x[[i]]$headings) ) ) ) )
     

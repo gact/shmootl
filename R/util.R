@@ -911,6 +911,58 @@ getRunIndices <- function(x) {
     return( if ( num.runs > 0 ) { 1:num.runs } else { integer() } )
 }
 
+# getXInfoFromFilenames --------------------------------------------------------
+#' Get experiment info from filenames.
+#' 
+#' @param filenames Character vector of file names.
+#' @param pattern Pattern for extracting experiment info from file names. This
+#' must be a valid Perl regex with named capture groups. Neither the capture
+#' groups nor the pattern itself are required to match any given filename, but
+#' all capture groups must have a name, and that name cannot clash with other
+#' names that might be used alongside the extracted info.
+#' 
+#' @return Character matrix in which each row contains the values of capture
+#' groups for a given filename, and each column contains values of a given
+#' capture group across filenames. Unmatched capture groups are represented by
+#' \code{NA} values.
+#' 
+#' @keywords internal
+#' @rdname getXInfoFromFilenames
+getXInfoFromFilenames <- function(filenames, pattern) {
+    
+    stopifnot( is.character(filenames) )
+    stopif( anyDuplicated(filenames) )
+    stopifnot( isSingleString(pattern) )
+    
+    # Init scanfile info.
+    xinfo <- NULL
+    
+    if ( length(filenames) > 0 ) {
+        
+        # Parse scan file names by the given pattern.
+        parsed <- parseFilenames(filenames, pattern)
+        
+        # Check for capture-group names clashing with disallowed info tags.
+        clashing <- colnames(parsed)[ colnames(parsed) %in%
+            const$disallowed.xinfotags ]
+        if ( length(clashing) > 0 ) {
+            stop("info tags clash with Excel headings - '",
+                toString(clashing), "'")
+        }
+        
+        # Remove empty columns.
+        nonempty <- sapply( getColIndices(parsed),
+            function(i) ! allNA(parsed[, i]) )
+        parsed <- parsed[, nonempty, drop=FALSE]
+        
+        if ( ncol(parsed) > 0 ) {
+            xinfo <- parsed
+        }
+    }
+    
+    return(xinfo)
+}
+
 # getScanoneThresholdInfo ------------------------------------------------------
 #' Get \code{scanone} threshold info from object.
 #' 
