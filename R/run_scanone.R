@@ -68,7 +68,7 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
     acovfile=NA_character_, icovfile=NA_character_) {
     
     pipeline <- getPipelineName( as.character(match.call()[[1]]) )
-    analysis <- getPipelineTitle(pipeline)
+    analysis <- getAnalysisTitle(pipeline)
     
     stopifnot( isSingleString(h5file) )
     stopifnot( isSingleNonNegativeNumber(step) )

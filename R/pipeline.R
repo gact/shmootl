@@ -1,5 +1,28 @@
 # Start of pipeline.R ##########################################################
 
+# getAnalysisTitle -------------------------------------------------------------
+#' Get analysis title for the given \pkg{shmootl} analysis pipeline.
+#' 
+#' @param pipeline Character vector of \pkg{shmootl} analysis pipeline titles.
+#' 
+#' @return Character vector in which each element contains the title of the
+#' \pkg{shmootl} analysis pipeline in the corresponding element of the input
+#' vector.
+#' 
+#' @keywords internal
+#' @rdname getAnalysisTitle
+getAnalysisTitle <- function(pipeline) {
+    
+    stopifnot( is.character(pipeline) )
+    stopifnot( length(pipeline) > 0 )
+    stopifnot( all( pipeline %in% const$supported.analyses) )
+    
+    indices <- match(pipeline, const$supported.analyses)
+    results <- names(const$supported.analyses)[indices]
+    
+    return(results)
+}
+
 # getPipelineFunction ----------------------------------------------------------
 #' Get \pkg{shmootl} pipeline function.
 #' 
@@ -419,31 +442,6 @@ getPipelineInfo <- function(pipeline) {
         description=description, details=details, params=params) )
 }
 
-# getPipelineTitle -------------------------------------------------------------
-#' Get title of the given \pkg{shmootl} pipeline.
-#' 
-#' @param pipeline Character vector of \pkg{shmootl} pipeline names.
-#' 
-#' @return Character vector in which each element contains the title of the
-#' \pkg{shmootl} pipeline in the corresponding element of the input vector.
-#' 
-#' @keywords internal
-#' @rdname getPipelineTitle
-getPipelineTitle <- function(pipeline) {
-    
-    stopifnot( is.character(pipeline) )
-    stopifnot( length(pipeline) > 0 )
-    stopifnot( all( pipeline %in% getPkgPipelineNames() ) )
-    
-    results <- as.character( lapply(lapply(strsplit(pipeline, '[.]'),
-        tools::toTitleCase), paste0, collapse='.') )
-    
-    results <- as.character( lapply(lapply(strsplit(results, '_'),
-        tools::toTitleCase), paste0, collapse='_') )
-    
-    return(results)
-}
-
 # getPipelineUsage -------------------------------------------------------------
 #' Get default usage string for \pkg{shmootl} pipelines.
 #' 
@@ -491,17 +489,6 @@ getPipelineUsage <- function() {
     }
     
     return( paste0( c(usage, pipeline.listings) ) )
-}
-
-# getPkgAnalysisNames ----------------------------------------------------------
-#' Get \pkg{shmootl} analysis names.
-#' 
-#' @return Character vector of \pkg{shmootl} analysis names.
-#' 
-#' @keywords internal
-#' @rdname getPkgAnalysisNames
-getPkgAnalysisNames <- function() {
-    return( getPipelineTitle( getPkgAnalysisPipelineNames() ) )
 }
 
 # getPkgAnalysisPipelineNames --------------------------------------------------

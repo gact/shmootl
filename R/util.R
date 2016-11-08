@@ -2210,7 +2210,7 @@ makeResultsOverview <- function(phenotypes, analysis, results=NULL) {
     stopifnot( length(phenotypes) > 0 )
     stopif( anyDuplicated(phenotypes) )
     stopifnot( isSingleString(analysis) )
-    stopifnot( analysis %in% getPkgAnalysisNames() )
+    stopifnot( analysis %in% names(const$supported.analyses) )
     
     phenotypes <- sort(phenotypes)
     
@@ -2731,7 +2731,7 @@ stripWhite <- function(x) {
 #' @rdname updateResultsOverview
 updateResultsOverview <- function(overview, analysis, results=NULL) {
     
-    supported.analyses <- getPkgAnalysisNames()
+    supported.analyses <- names(const$supported.analyses)
     
     validateResultsOverview(overview)
     stopifnot( isSingleString(analysis) )
@@ -2939,7 +2939,7 @@ validateResultsOverview <- function(overview) {
     
     analyses <- headings[-1]
     
-    unknown <- analyses[ ! analyses %in% getPkgAnalysisNames() ]
+    unknown <- analyses[ ! analyses %in% names(const$supported.analyses) ]
     if ( length(unknown) > 0 ) {
         stop("results overview contains unknown analyses - '", toString(unknown), "'")
     }
