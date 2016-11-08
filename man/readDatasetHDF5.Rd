@@ -10,6 +10,7 @@
 \alias{readDatasetHDF5.map}
 \alias{readDatasetHDF5.mapframe}
 \alias{readDatasetHDF5.matrix}
+\alias{readDatasetHDF5.qtlintervals}
 \alias{readDatasetHDF5.scanone}
 \alias{readDatasetHDF5.scanonebins}
 \alias{readDatasetHDF5.scanoneperm}
@@ -40,6 +41,8 @@ readDatasetHDF5.map(infile, h5name, ...)
 readDatasetHDF5.mapframe(infile, h5name, ...)
 
 readDatasetHDF5.matrix(infile, h5name, ...)
+
+readDatasetHDF5.qtlintervals(infile, h5name, ...)
 
 readDatasetHDF5.scanone(infile, h5name, ...)
 

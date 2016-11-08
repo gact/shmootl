@@ -1035,6 +1035,22 @@ readDatasetHDF5.matrix <- function(infile, h5name, ...) {
     return(dataset)
 }
 
+# readDatasetHDF5.qtlintervals -------------------------------------------------
+#' @export
+#' @rdname readDatasetHDF5
+readDatasetHDF5.qtlintervals <- function(infile, h5name, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
+    
+    dataset <- readDatasetHDF5.list(infile, h5name, rownames.column='id')
+    
+    stopifnot( 'R.class' %in% names( attributes(dataset) ) )
+    class(dataset) <- attr(dataset, 'R.class')
+    attr(dataset, 'R.class') <- NULL
+    
+    return(dataset)
+}
+
 # readDatasetHDF5.scanone ------------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
@@ -1833,6 +1849,29 @@ writeDatasetHDF5.matrix <- function(dataset, outfile, h5name,
     stopifnot( length( list(...) ) == 0 )
     dataset <- t(dataset) # NB: R is column-major, HDF5 is row-major
     writeDatasetHDF5.default(dataset, outfile, h5name, overwrite=overwrite)
+    return( invisible() )
+}
+
+# writeDatasetHDF5.qtlintervals ------------------------------------------------
+#' @export
+#' @rdname writeDatasetHDF5
+writeDatasetHDF5.qtlintervals <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
+    
+    qtl.names <- names(dataset)
+    stopifnot( all( isValidID(qtl.names) ) )
+    stopif( anyDuplicated(qtl.names) )
+    stopifnot( length(dataset) > 0 )
+    
+    stopif( 'R.class' %in% names( attributes(dataset) ) )
+    attr(dataset, 'R.class') <- class(dataset)
+    class(dataset) <- 'list'
+    
+    writeDatasetHDF5.list(dataset, outfile, h5name,
+        overwrite=overwrite, rownames.column='id')
+    
     return( invisible() )
 }
 

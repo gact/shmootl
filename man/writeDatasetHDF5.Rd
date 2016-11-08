@@ -10,6 +10,7 @@
 \alias{writeDatasetHDF5.map}
 \alias{writeDatasetHDF5.mapframe}
 \alias{writeDatasetHDF5.matrix}
+\alias{writeDatasetHDF5.qtlintervals}
 \alias{writeDatasetHDF5.scanone}
 \alias{writeDatasetHDF5.scanonebins}
 \alias{writeDatasetHDF5.scanoneperm}
@@ -44,6 +45,9 @@ writeDatasetHDF5(dataset, outfile, h5name, overwrite = FALSE, ...)
 
 \method{writeDatasetHDF5}{matrix}(dataset, outfile, h5name, overwrite = FALSE,
   ...)
+
+\method{writeDatasetHDF5}{qtlintervals}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 
 \method{writeDatasetHDF5}{scanone}(dataset, outfile, h5name,
   overwrite = FALSE, ...)
