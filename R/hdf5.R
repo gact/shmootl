@@ -736,7 +736,7 @@ readDatasetHDF5 <- function(infile, h5name, ...) {
     
     readDataset <- dispatchFromClassS3('readDatasetHDF5', class.vector, 'shmootl')
     
-    dataset <- readDataset(infile, h5name)
+    dataset <- readDataset(infile, h5name, ...)
     
     return(dataset)
 }
@@ -745,6 +745,7 @@ readDatasetHDF5 <- function(infile, h5name, ...) {
 #' @export
 #' @rdname readDatasetHDF5
 readDatasetHDF5.array <- function(infile, h5name, ...) {
+    stopifnot( length( list(...) ) == 0 )
     dataset <- readDatasetHDF5.default(infile, h5name)
     dataset <- aperm(dataset) # NB: R is column-major, HDF5 is row-major
     return(dataset)
@@ -754,6 +755,8 @@ readDatasetHDF5.array <- function(infile, h5name, ...) {
 #' @export
 #' @rdname readDatasetHDF5
 readDatasetHDF5.cross <- function(infile, h5name, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
     
     cross.attrs <- readObjectAttributesHDF5(infile, h5name)
     
@@ -768,7 +771,7 @@ readDatasetHDF5.cross <- function(infile, h5name, ...) {
     cross.alleles <- as.character(cross.attrs[['alleles']])
     
     pheno.h5name <- joinH5ObjectNameParts( c(h5name, 'pheno') )
-    pheno <- readDatasetHDF5(infile, pheno.h5name, ...)
+    pheno <- readDatasetHDF5(infile, pheno.h5name)
     stopifnot( 'data.frame' %in% class(pheno) )
     stopif( '' %in% pheno )
     
@@ -798,12 +801,12 @@ readDatasetHDF5.cross <- function(infile, h5name, ...) {
     for ( i in seq_along(geno.seqs) ) {
         
         data.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seqs[i], 'data') )
-        seq.data <- readDatasetHDF5(infile, data.h5name, ...)
+        seq.data <- readDatasetHDF5(infile, data.h5name)
         stopifnot( 'matrix' %in% class(seq.data) )
         stopifnot( nrow(seq.data) == num.samples )
         
         map.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seqs[i], 'map') )
-        seq.mapframe <- readDatasetHDF5(infile, map.h5name, ...)
+        seq.mapframe <- readDatasetHDF5(infile, map.h5name)
         stopifnot( 'mapframe' %in% class(seq.mapframe) )
         
         map.seqs <- pullLocusSeq(seq.mapframe)
@@ -863,7 +866,10 @@ readDatasetHDF5.cross <- function(infile, h5name, ...) {
 # readDatasetHDF5.data.frame ---------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
-readDatasetHDF5.data.frame <- function(infile, h5name, rownames.column='rownames') {
+readDatasetHDF5.data.frame <- function(infile, h5name,
+    rownames.column='rownames', ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
     
     dataset <- readDatasetHDF5.default(infile, h5name)
     
@@ -885,6 +891,7 @@ readDatasetHDF5.data.frame <- function(infile, h5name, rownames.column='rownames
 #' @rdname readDatasetHDF5
 readDatasetHDF5.default <- function(infile, h5name, ...) {
     
+    stopifnot( length( list(...) ) == 0 )
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     h5name <- resolveH5ObjectName(h5name)
@@ -963,7 +970,7 @@ readDatasetHDF5.list <- function(infile, h5name, ...) {
         
         child.h5name <- joinH5ObjectNameParts( c(h5name, child.name) )
         
-        dataset[[child.name]] <- readDatasetHDF5(infile, child.h5name)
+        dataset[[child.name]] <- readDatasetHDF5(infile, child.h5name, ...)
     }
     
     names(dataset) <- original.names
@@ -977,6 +984,8 @@ readDatasetHDF5.list <- function(infile, h5name, ...) {
 #' @export
 #' @rdname readDatasetHDF5
 readDatasetHDF5.map <- function(infile, h5name, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
     
     h5attrs <- readObjectAttributesHDF5(infile, h5name)
     
@@ -1004,6 +1013,8 @@ readDatasetHDF5.map <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.mapframe <- function(infile, h5name, ...) {
     
+    stopifnot( length( list(...) ) == 0 )
+    
     dataset <- readDatasetHDF5.data.frame(infile, h5name, rownames.column='id')
     
     stopifnot( 'R.class' %in% names( attributes(dataset) ) )
@@ -1018,6 +1029,7 @@ readDatasetHDF5.mapframe <- function(infile, h5name, ...) {
 #' @export
 #' @rdname readDatasetHDF5
 readDatasetHDF5.matrix <- function(infile, h5name, ...) {
+    stopifnot( length( list(...) ) == 0 )
     dataset <- readDatasetHDF5.default(infile, h5name)
     dataset <- t(dataset) # NB: R is column-major, HDF5 is row-major
     return(dataset)
@@ -1027,13 +1039,15 @@ readDatasetHDF5.matrix <- function(infile, h5name, ...) {
 #' @export
 #' @rdname readDatasetHDF5
 readDatasetHDF5.scanone <- function(infile, h5name, ...) {
-    return( readDatasetHDF5.mapframe(infile, h5name) )
+    return( readDatasetHDF5.mapframe(infile, h5name, ...) )
 }
 
 # readDatasetHDF5.scanonebins --------------------------------------------------
 #' @export
 #' @rdname readDatasetHDF5
 readDatasetHDF5.scanonebins  <- function(infile, h5name, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
     
     dataset.attrs <- readObjectAttributesHDF5(infile, h5name)
     
@@ -1071,6 +1085,8 @@ readDatasetHDF5.scanonebins  <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.scanoneperm  <- function(infile, h5name, ...) {
     
+    stopifnot( length( list(...) ) == 0 )
+    
     dataset.attrs <- readObjectAttributesHDF5(infile, h5name)
     
     dataset <- readDatasetHDF5.data.frame(infile, h5name)
@@ -1101,6 +1117,8 @@ readDatasetHDF5.scanoneperm  <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.scantwo <- function(infile, h5name, ...) {
     
+    stopifnot( length( list(...) ) == 0 )
+    
     dataset <- readDatasetHDF5.list(infile, h5name)
     
     stopifnot( 'R.class' %in% names( attributes(dataset) ) )
@@ -1124,6 +1142,8 @@ readDatasetHDF5.scantwo <- function(infile, h5name, ...) {
 #' @export
 #' @rdname readDatasetHDF5
 readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
     
     dataset.attrs <- readObjectAttributesHDF5(infile, h5name)
     
@@ -1151,7 +1171,6 @@ readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
     attr(dataset, 'R.class') <- NULL
     
     for ( i in seq_along(dataset) ) {
-        
         colnames(dataset[[i]]) <- attr(dataset, 'phenotypes')
     }
     attr(dataset, 'phenotypes') <- NULL
@@ -1164,6 +1183,8 @@ readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
 #' @method readDatasetHDF5 summary.scanonebins
 #' @rdname readDatasetHDF5
 readDatasetHDF5.summary.scanonebins <- function(infile, h5name, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
     
     dataset <- readDatasetHDF5.data.frame(infile, h5name)
     
@@ -1196,6 +1217,8 @@ readDatasetHDF5.summary.scanonebins <- function(infile, h5name, ...) {
 #' @method readDatasetHDF5 summary.scanoneperm
 #' @rdname readDatasetHDF5
 readDatasetHDF5.summary.scanoneperm <- function(infile, h5name, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
     
     dataset <- readDatasetHDF5.data.frame(infile, h5name)
     
@@ -1469,12 +1492,12 @@ writeCrossHDF5 <- function(cross, outfile, overwrite=FALSE) {
 #' @param dataset R object.
 #' @param outfile An output HDF5 file.
 #' @param h5name HDF5 dataset name.
-#' @param ... Further arguments (see below).
-#' @param rownames.column For a \code{data.frame}, any rownames are removed,
-#' and then inserted into a column of the main table, with its column name
-#' taken from this parameter.
 #' @param overwrite Option indicating whether to force overwrite of an
 #' existing dataset. By default, existing datasets cannot be overwritten.
+#' @param ... Further arguments (see below).
+#' @param rownames.column For a \code{data.frame} or equivalent object, any
+#' rownames are removed, and then inserted into a column of the main table,
+#' with its column name taken from this parameter.
 #' 
 #' @export
 #' @importFrom methods new
@@ -1490,23 +1513,42 @@ writeCrossHDF5 <- function(cross, outfile, overwrite=FALSE) {
 #' @importFrom rhdf5 h5writeDataset.matrix
 #' @keywords internal
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5 <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5 <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
     UseMethod('writeDatasetHDF5', dataset)
 }
 
 # writeDatasetHDF5.array -------------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.array <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.array <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
+    stopifnot( length( list(...) ) == 0 )
     dataset <- aperm(dataset) # NB: R is column-major, HDF5 is row-major
-    writeDatasetHDF5.default(dataset, outfile, h5name, ...)
+    writeDatasetHDF5.default(dataset, outfile, h5name, overwrite=overwrite)
     return( invisible() )
 }
 
 # writeDatasetHDF5.cross -------------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.cross <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.cross <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
+    stopifnot( isSingleString(outfile) )
+    stopifnot( isBOOL(overwrite) )
+    
+    # If output file exists and overwrite option is TRUE,
+    # prepare to overwrite the dataset via a temp file..
+    if ( file.exists(outfile) && hasObjectHDF5(outfile, h5name) && overwrite ) {
+        sinkfile <- tempfile()
+        on.exit( if ( file.exists(sinkfile) ) { file.remove(sinkfile) } )
+        overwriting <- TRUE
+    } else { # ..otherwise prepare to write directly to output file.
+        sinkfile <- outfile
+        overwriting <- FALSE
+    }
     
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
@@ -1543,7 +1585,7 @@ writeDatasetHDF5.cross <- function(dataset, outfile, h5name, ...) {
     # Output cross pheno object.
     colnames(dataset$pheno)[pheno.col] <- phenotypes
     pheno.h5name <- joinH5ObjectNameParts( c(h5name, 'pheno') )
-    writeDatasetHDF5(dataset$pheno, outfile, pheno.h5name, ...)
+    writeDatasetHDF5(dataset$pheno, sinkfile, pheno.h5name)
     
     # Prepare to output cross geno object.
     geno.h5name <- joinH5ObjectNameParts( c(h5name, 'geno') )
@@ -1560,18 +1602,35 @@ writeDatasetHDF5.cross <- function(dataset, outfile, h5name, ...) {
         data.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seq, 'data') )
         seq.geno <- decodeGenotypes(dataset$geno[[geno.seq]]$data, genotypes,
             missing.value=const$missing.value)
-        writeDatasetHDF5(seq.geno, outfile, data.h5name, ...)
+        writeDatasetHDF5(seq.geno, sinkfile, data.h5name)
         
         # Store genetic map for this sequence as a mapframe object.
         map.h5name <- joinH5ObjectNameParts( c(geno.h5name, geno.seq, 'map') )
         seq.map <- dataset$geno[[geno.seq]]$map
         seq.mapframe <- gmapframe(chr=rep(geno.seq, length(seq.map)),
             pos=unname(seq.map),  row.names=names(seq.map))
-        writeDatasetHDF5(seq.mapframe, outfile, map.h5name, ...)
+        writeDatasetHDF5(seq.mapframe, sinkfile, map.h5name)
     }
     
     cross.attrs <- list(R.class=class(dataset), alleles=attr(dataset, 'alleles'))
-    writeObjectAttributesHDF5(outfile, h5name, attrs=cross.attrs)
+    writeObjectAttributesHDF5(sinkfile, h5name, attrs=cross.attrs)
+    
+    # If overwriting dataset via a temp file, transfer any remaining objects to
+    # the temp file, then copy the complete temp file to the final output file.
+    if (overwriting) {
+        
+        # Transfer all existing but unchanged objects
+        # from existing output file to temp file.
+        updated <- getObjectNamesHDF5(sinkfile, h5name)
+        existing <- getObjectNamesHDF5(outfile)
+        unchanged <- setdiff(existing, updated) # NB: guarantees unique
+        copyObjectsHDF5(outfile, sinkfile, h5names=unchanged)
+        
+        # Move temp file to final output file.
+        # NB: file.copy is used here instead of file.rename because the latter
+        # can sometimes fail when moving files between different file systems.
+        file.copy(sinkfile, outfile, overwrite=TRUE)
+    }
     
     return( invisible() )
 }
@@ -1580,8 +1639,8 @@ writeDatasetHDF5.cross <- function(dataset, outfile, h5name, ...) {
 #' @export
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name,
-    rownames.column='rownames', ...) {
-
+    overwrite=FALSE, rownames.column='rownames', ...) {
+    
     stopif( 'R.colClasses' %in% names( attributes(dataset) ) )
     
     stopifnot( nrow(dataset) > 0 )
@@ -1600,7 +1659,7 @@ writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name,
     
     attr(dataset, 'R.colClasses') <- colClasses
     
-    writeDatasetHDF5.default(dataset, outfile, h5name, ...)
+    writeDatasetHDF5.default(dataset, outfile, h5name, overwrite=overwrite, ...)
     
     return( invisible() )
 }
@@ -1610,7 +1669,8 @@ writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name,
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5.default <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
-
+    
+    stopifnot( length( list(...) ) == 0 )
     stopifnot( isSingleString(outfile) )
     stopifnot( isBOOL(overwrite) )
     h5name <- resolveH5ObjectName(h5name)
@@ -1633,7 +1693,13 @@ writeDatasetHDF5.default <- function(dataset, outfile, h5name,
     
     # Open new HDF5 stack.
     h5stack <- methods::new('H5Stack', sinkfile, h5loc.name)
-    on.exit({ closeStack(h5stack); if (overwriting) { file.remove(sinkfile) } })
+    
+    on.exit({
+        closeStack(h5stack)
+        if ( overwriting && file.exists(sinkfile) ) {
+            file.remove(sinkfile)
+        }
+    })
     
     # Write dataset to HDF5.
     rhdf5::h5writeDataset(h5loc=peek(h5stack), name=dataset.name, obj=dataset)
@@ -1667,18 +1733,51 @@ writeDatasetHDF5.default <- function(dataset, outfile, h5name,
 # writeDatasetHDF5.list --------------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.list <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.list <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
     
-    writeObjectAttributesHDF5(outfile, h5name, object=dataset)
+    stopifnot( isSingleString(outfile) )
+    stopifnot( isBOOL(overwrite) )
     
+    # If output file exists and overwrite option is TRUE,
+    # prepare to overwrite the dataset via a temp file..
+    if ( file.exists(outfile) && hasObjectHDF5(outfile, h5name) && overwrite ) {
+        sinkfile <- tempfile()
+        on.exit( if ( file.exists(sinkfile) ) { file.remove(sinkfile) } )
+        overwriting <- TRUE
+    } else { # ..otherwise prepare to write directly to output file.
+        sinkfile <- outfile
+        overwriting <- FALSE
+    }
+    
+    # Output attributes of list object.
+    writeObjectAttributesHDF5(sinkfile, h5name, object=dataset)
+    
+    # Resolve names of list elements, setting defaults as needed.
     child.names <- makeGroupObjectNames( group.names=names(dataset), 
         group.size=length(dataset) )
     
+    # Output each list element.
     for ( i in seq_along(dataset) ) {
-        
         child.h5name <- joinH5ObjectNameParts( c(h5name, child.names[i]) )
+        writeDatasetHDF5(dataset[[i]], sinkfile, child.h5name, ...)
+    }
+    
+    # If overwriting dataset via a temp file, transfer any remaining objects to
+    # the temp file, then copy the complete temp file to the final output file.
+    if (overwriting) {
         
-        writeDatasetHDF5(dataset[[i]], outfile, child.h5name, ...)
+        # Transfer all existing but unchanged objects
+        # from existing output file to temp file.
+        updated <- getObjectNamesHDF5(sinkfile, h5name)
+        existing <- getObjectNamesHDF5(outfile)
+        unchanged <- setdiff(existing, updated) # NB: guarantees unique
+        copyObjectsHDF5(outfile, sinkfile, h5names=unchanged)
+        
+        # Move temp file to final output file.
+        # NB: file.copy is used here instead of file.rename because the latter
+        # can sometimes fail when moving files between different file systems.
+        file.copy(sinkfile, outfile, overwrite=TRUE)
     }
     
     return( invisible() )
@@ -1687,7 +1786,10 @@ writeDatasetHDF5.list <- function(dataset, outfile, h5name, ...) {
 # writeDatasetHDF5.map ---------------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.map <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.map <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
     
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
@@ -1698,7 +1800,7 @@ writeDatasetHDF5.map <- function(dataset, outfile, h5name, ...) {
     attr(dataset, 'R.class') <- dataset.Rclass
     
     writeDatasetHDF5.data.frame(dataset, outfile, h5name,
-        rownames.column='id', ...)
+        overwrite=overwrite, rownames.column='id')
     
     return( invisible() )
 }
@@ -1706,7 +1808,10 @@ writeDatasetHDF5.map <- function(dataset, outfile, h5name, ...) {
 # writeDatasetHDF5.mapframe ----------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
+    
+    stopifnot( length( list(...) ) == 0 )
     
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
@@ -1715,7 +1820,7 @@ writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name, ...) {
     dataset <- as.data.frame(dataset)
     
     writeDatasetHDF5.data.frame(dataset, outfile, h5name,
-        rownames.column='id', ...)
+        overwrite=overwrite, rownames.column='id')
 
     return( invisible() )
 }
@@ -1723,21 +1828,25 @@ writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name, ...) {
 # writeDatasetHDF5.matrix ------------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.matrix <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.matrix <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
+    stopifnot( length( list(...) ) == 0 )
     dataset <- t(dataset) # NB: R is column-major, HDF5 is row-major
-    writeDatasetHDF5.default(dataset, outfile, h5name, ...)
+    writeDatasetHDF5.default(dataset, outfile, h5name, overwrite=overwrite)
     return( invisible() )
 }
 
 # writeDatasetHDF5.scanone -----------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.scanone <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.scanone <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
     
     num.phenotypes <- length( getLodColIndices(dataset) )
     stopifnot( num.phenotypes == 1 )
     
-    writeDatasetHDF5.mapframe(dataset, outfile, h5name, ...)
+    writeDatasetHDF5.mapframe(dataset, outfile, h5name,
+        overwrite=overwrite, ...)
     
     return( invisible() )
 }
@@ -1745,8 +1854,10 @@ writeDatasetHDF5.scanone <- function(dataset, outfile, h5name, ...) {
 # writeDatasetHDF5.scanonebins -------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.scanonebins <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.scanonebins <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
     
+    stopifnot( length( list(...) ) == 0 )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     num.phenotypes <- dim(dataset)[3]
@@ -1772,7 +1883,8 @@ writeDatasetHDF5.scanonebins <- function(dataset, outfile, h5name, ...) {
     
     attr(dataset, 'R.class') <- c('scanonebins', 'array')
     
-    writeDatasetHDF5.data.frame(dataset, outfile, h5name, ...)
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name,
+        overwrite=overwrite)
     
     return( invisible() )
 }
@@ -1780,8 +1892,10 @@ writeDatasetHDF5.scanonebins <- function(dataset, outfile, h5name, ...) {
 # writeDatasetHDF5.scanoneperm -------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
     
+    stopifnot( length( list(...) ) == 0 )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     num.phenotypes <- ncol(dataset)
@@ -1805,7 +1919,8 @@ writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name, ...) {
     attr(scanoneperm.dataset, 'R.class') <- 'scanoneperm'
     class(scanoneperm.dataset) <- 'data.frame'
     
-    writeDatasetHDF5.data.frame(scanoneperm.dataset, outfile, h5name, ...)
+    writeDatasetHDF5.data.frame(scanoneperm.dataset, outfile, h5name,
+        overwrite=overwrite)
     
     return( invisible() )
 }
@@ -1813,8 +1928,10 @@ writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name, ...) {
 # writeDatasetHDF5.scantwo -----------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
     
+    stopifnot( length( list(...) ) == 0 )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     stopifnot( is.null(dataset$scanoneX) )
@@ -1838,7 +1955,7 @@ writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name, ...) {
     attr(dataset, 'R.class') <- class(dataset)
     class(dataset) <- 'list'
     
-    writeDatasetHDF5.list(dataset, outfile, h5name, ...)
+    writeDatasetHDF5.list(dataset, outfile, h5name, overwrite=overwrite)
     
     return( invisible() )
 }
@@ -1846,8 +1963,10 @@ writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name, ...) {
 # writeDatasetHDF5.scantwoperm -------------------------------------------------
 #' @export
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
     
+    stopifnot( length( list(...) ) == 0 )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     phenames.vectors <- lapply(unname(dataset), colnames)
@@ -1890,7 +2009,8 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name, ...) {
     attr(scantwoperm.dataset, 'R.class') <- c('scantwoperm', 'list')
     class(scantwoperm.dataset) <- 'data.frame'
     
-    writeDatasetHDF5.data.frame(scantwoperm.dataset, outfile, h5name, ...)
+    writeDatasetHDF5.data.frame(scantwoperm.dataset, outfile, h5name,
+        overwrite=overwrite)
     
     return( invisible() )
 }
@@ -1899,8 +2019,10 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name, ...) {
 #' @export
 #' @method writeDatasetHDF5 summary.scanonebins
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.summary.scanonebins <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.summary.scanonebins <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
     
+    stopifnot( length( list(...) ) == 0 )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     num.lodcolumns <- ncol(dataset)
     stopifnot( num.lodcolumns == 1 )
@@ -1923,7 +2045,7 @@ writeDatasetHDF5.summary.scanonebins <- function(dataset, outfile, h5name, ...) 
         attr(dataset, attr.name) <- trans.attrs[[attr.name]]
     }
     
-    writeDatasetHDF5.data.frame(dataset, outfile, h5name, ...)
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name, overwrite=overwrite)
     
     return( invisible() )
 }
@@ -1932,8 +2054,10 @@ writeDatasetHDF5.summary.scanonebins <- function(dataset, outfile, h5name, ...) 
 #' @export
 #' @method writeDatasetHDF5 summary.scanoneperm
 #' @rdname writeDatasetHDF5
-writeDatasetHDF5.summary.scanoneperm <- function(dataset, outfile, h5name, ...) {
+writeDatasetHDF5.summary.scanoneperm <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
     
+    stopifnot( length( list(...) ) == 0 )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     num.lodcolumns <- ncol(dataset)
     stopifnot( num.lodcolumns == 1 )
@@ -1956,7 +2080,7 @@ writeDatasetHDF5.summary.scanoneperm <- function(dataset, outfile, h5name, ...) 
         attr(dataset, attr.name) <- trans.attrs[[attr.name]]
     }
     
-    writeDatasetHDF5.data.frame(dataset, outfile, h5name, ...)
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name, overwrite=overwrite)
     
     return( invisible() )
 }

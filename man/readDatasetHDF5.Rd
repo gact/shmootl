@@ -29,7 +29,7 @@ readDatasetHDF5.array(infile, h5name, ...)
 
 readDatasetHDF5.cross(infile, h5name, ...)
 
-readDatasetHDF5.data.frame(infile, h5name, rownames.column = "rownames")
+readDatasetHDF5.data.frame(infile, h5name, rownames.column = "rownames", ...)
 
 readDatasetHDF5.default(infile, h5name, ...)
 

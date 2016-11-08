@@ -19,39 +19,52 @@
 \alias{writeDatasetHDF5.summary.scanoneperm}
 \title{Write R object to an output HDF5 dataset.}
 \usage{
-writeDatasetHDF5(dataset, outfile, h5name, ...)
+writeDatasetHDF5(dataset, outfile, h5name, overwrite = FALSE, ...)
 
-\method{writeDatasetHDF5}{array}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{array}(dataset, outfile, h5name, overwrite = FALSE,
+  ...)
 
-\method{writeDatasetHDF5}{cross}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{cross}(dataset, outfile, h5name, overwrite = FALSE,
+  ...)
 
 \method{writeDatasetHDF5}{data.frame}(dataset, outfile, h5name,
-  rownames.column = "rownames", ...)
+  overwrite = FALSE, rownames.column = "rownames", ...)
 
 \method{writeDatasetHDF5}{default}(dataset, outfile, h5name,
   overwrite = FALSE, ...)
 
-\method{writeDatasetHDF5}{list}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{list}(dataset, outfile, h5name, overwrite = FALSE,
+  ...)
 
-\method{writeDatasetHDF5}{map}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{map}(dataset, outfile, h5name, overwrite = FALSE,
+  ...)
 
-\method{writeDatasetHDF5}{mapframe}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{mapframe}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 
-\method{writeDatasetHDF5}{matrix}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{matrix}(dataset, outfile, h5name, overwrite = FALSE,
+  ...)
 
-\method{writeDatasetHDF5}{scanone}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{scanone}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 
-\method{writeDatasetHDF5}{scanonebins}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{scanonebins}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 
-\method{writeDatasetHDF5}{scanoneperm}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{scanoneperm}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 
-\method{writeDatasetHDF5}{scantwo}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{scantwo}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 
-\method{writeDatasetHDF5}{scantwoperm}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{scantwoperm}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 
-\method{writeDatasetHDF5}{summary.scanonebins}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{summary.scanonebins}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 
-\method{writeDatasetHDF5}{summary.scanoneperm}(dataset, outfile, h5name, ...)
+\method{writeDatasetHDF5}{summary.scanoneperm}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 }
 \arguments{
 \item{dataset}{R object.}
@@ -60,14 +73,14 @@ writeDatasetHDF5(dataset, outfile, h5name, ...)
 
 \item{h5name}{HDF5 dataset name.}
 
-\item{...}{Further arguments (see below).}
-
-\item{rownames.column}{For a \code{data.frame}, any rownames are removed,
-and then inserted into a column of the main table, with its column name
-taken from this parameter.}
-
 \item{overwrite}{Option indicating whether to force overwrite of an
 existing dataset. By default, existing datasets cannot be overwritten.}
+
+\item{...}{Further arguments (see below).}
+
+\item{rownames.column}{For a \code{data.frame} or equivalent object, any
+rownames are removed, and then inserted into a column of the main table,
+with its column name taken from this parameter.}
 }
 \description{
 The given R object is written to the named HDF5 dataset using
