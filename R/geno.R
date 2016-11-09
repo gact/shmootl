@@ -257,12 +257,12 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
 #' Make founder genotype matrix from genotype data.
 #' 
 #' Given input genotype data for cross segregant samples and their founder 
-#' strains, this function assigns a symbol to each locus according to the 
-#' inferred founder genotype.
+#' strains, this function assigns a genotype symbol to each locus according
+#' to the inferred combination of founder alleles.
 #' 
 #' @param x Raw sample genotype \code{array}.
 #' @param y Raw founder genotype \code{array}.
-#' @param alleles Founder allele symbols.
+#' @param alleles Mapping of founder sample IDs to founder allele symbols.
 #'   
 #' @return A founder genotype matrix, with genotypes encoded as integers and
 #' their corresponding genotype symbols in the attribute \code{'genotypes'}.
@@ -284,23 +284,48 @@ makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
     
     if ( ! is.null(alleles) ) {
         
-        if ( length(alleles) != length(y.samples) ) {
-            stop("founder allele length mismatch")
+        stopifnot( is.mapping(alleles) )
+        
+        founder.samples <- mappingKeys(alleles) # NB: ensures unique sample IDs
+        founder.symbols <- as.character( mappingValues(alleles) )
+        
+        unknown <- founder.samples[ ! founder.samples %in% y.samples ]
+        if ( length(unknown) > 0 ) {
+            stop("allele symbols specified for unknown founder samples - '",
+                 toString(unknown), "'")
         }
         
-        dup.alleles <- alleles[ duplicated(alleles) ]
+        unfound <- y.samples[ ! y.samples %in% founder.samples ]
+        if ( length(unfound) > 0 ) {
+            stop("allele symbols not specified for founder samples - '",
+                toString(unfound), "'")
+        }
+        
+        dup.alleles <- founder.symbols[ duplicated(founder.symbols) ]
         if ( length(dup.alleles) > 0 ) {
             stop("duplicate founder alleles - '", toString(dup.alleles), "'")
         }
         
-        err.alleles <- alleles[ ! isFounderAllele(alleles) ]
+        err.alleles <- founder.symbols[ ! isFounderAllele(founder.symbols) ]
         if ( length(err.alleles) > 0 ) {
             stop("invalid founder alleles - '", toString(err.alleles), "'")
         }
         
+        # Get ordered allele symbol set.
+        allele.symbols <- sort( founder.symbols )
+        
+        # Get allele indices with respect to ordered allele symbol set.
+        # NB: this may differ from the order of alleles in the allele mapping.
+        allele.indices <- match(founder.symbols, allele.symbols)
+        names(allele.indices) <- founder.samples
+        
     } else {
         
-        alleles <- const$founder.allele.charset[ seq_along(y.samples) ]
+        # Get default allele symbol set.
+        allele.symbols <- const$founder.allele.charset[ seq_along(y.samples) ]
+        
+        # Get allele indices with respect to default allele symbol set.
+        allele.indices <- structure(seq_along(allele.symbols), names=y.samples)
     }
     
     # Get genotype loci common to samples and founders.
@@ -377,8 +402,8 @@ makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
         # Assign locus genotypes from matching founder.
         if ( length(x.genotypes) > 1 ) {
             if ( all( x.genotypes %in% y.genotypes ) ) {
-                for ( i in seq_along(y.genotypes) ) {
-                    geno.matrix[ x.symbols == y.genotypes[i], j ] <- i
+                for ( k in names(y.genotypes) ) {
+                    geno.matrix[ x.symbols == y.genotypes[k], j ] <- allele.indices[k]
                 }
             }
         }
@@ -393,7 +418,8 @@ makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
     
     # Set genotype symbols for founders.
     # TODO: handle other segregant ploidies.
-    attr(geno.matrix, 'genotypes') <- alleles
+    attr(geno.matrix, 'genotypes') <- makeGenotypeSet(allele.symbols,
+        crosstype='haploid') # TODO: handle other cross types.
     
     return(geno.matrix)
 }
@@ -461,7 +487,7 @@ makeEnumGenoMatrix <- function(x) {
 #' 
 #' @param x Raw sample genotype \code{array}.
 #' @param y Raw founder genotype \code{array}.
-#' @param alleles Founder allele symbols.
+#' @param alleles Mapping of founder sample IDs to founder allele symbols.
 #' 
 #' @return A \code{geno} object.
 #' 

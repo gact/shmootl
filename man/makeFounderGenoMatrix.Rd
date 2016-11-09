@@ -11,7 +11,7 @@ makeFounderGenoMatrix(x, y, alleles = NULL)
 
 \item{y}{Raw founder genotype \code{array}.}
 
-\item{alleles}{Founder allele symbols.}
+\item{alleles}{Mapping of founder sample IDs to founder allele symbols.}
 }
 \value{
 A founder genotype matrix, with genotypes encoded as integers and
@@ -19,8 +19,8 @@ their corresponding genotype symbols in the attribute \code{'genotypes'}.
 }
 \description{
 Given input genotype data for cross segregant samples and their founder 
-strains, this function assigns a symbol to each locus according to the 
-inferred founder genotype.
+strains, this function assigns a genotype symbol to each locus according
+to the inferred combination of founder alleles.
 }
 \keyword{internal}
 

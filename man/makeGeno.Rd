@@ -11,7 +11,7 @@ makeGeno(x, y = NULL, alleles = NULL)
 
 \item{y}{Raw founder genotype \code{array}.}
 
-\item{alleles}{Founder allele symbols.}
+\item{alleles}{Mapping of founder sample IDs to founder allele symbols.}
 }
 \value{
 A \code{geno} object.

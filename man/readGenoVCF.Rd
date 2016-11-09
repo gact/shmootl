@@ -13,7 +13,7 @@ readGenoVCF(..., samples, founders = NULL, alleles = NULL)
 
 \item{founders}{Founder sample IDs.}
 
-\item{alleles}{Founder allele symbols.}
+\item{alleles}{Mapping of founder sample IDs to founder allele symbols.}
 }
 \value{
 An \pkg{R/qtl} \code{cross} \code{geno} object.
@@ -29,10 +29,15 @@ for example, if the raw SNP alleles at a given locus are \code{'A'} and
 \code{'C'}, samples are assigned the genotypes \code{'1'} and \code{'2'},
 respectively.
 
-If founder samples are specified, this function assigns a genotype symbol
-corresponding to a specific founder. The actual symbol used is taken from
-the \code{alleles} parameter if available; otherwise it is taken from the
-letters of the alphabet (i.e. \code{'A'}, \code{'B'} etc.).
+If founder samples are specified, this function assigns to each marker a
+genotype symbol consisting of alleles that each correspond to a specific
+founder.
+
+If the \code{alleles} parameter is specified, this must be a mapping of
+founder sample IDs to allele symbols (e.g.
+\code{mapping( c(DBVPG6044 = 'W', YPS128 = 'S') )}). If the \code{alleles}
+parameter is not specified, allele symbols are taken from the letters of the
+alphabet (i.e. \code{'A'}, \code{'B'} etc.).
 }
 \section{Raw Alleles and Genotypes}{
 

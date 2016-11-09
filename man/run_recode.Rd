@@ -15,9 +15,17 @@ run_recode(datafile = NA_character_, geno = mapping(), enum.geno = FALSE)
 }
 \description{
 Recode data in an \pkg{R/qtl} cross or genotype CSV file. Genotypes can be
-recoded by passing to the \code{geno} parameter a YAML string (or file)
-mapping old to new genotypes. Alternatively, genotype data can be
-converted to enumerated genotypes with the \code{enum.geno} parameter.
+recoded by passing to the \code{geno} parameter a mapping of old to new
+genotypes. Alternatively, genotype data can be converted to enumerated
+genotypes with the \code{enum.geno} parameter.
+}
+\details{
+When calling this function from within the \code{R} environment, the
+\code{geno} parameter must be specified as a mapping object (e.g.
+\code{mapping( c(A = 'W', B = 'S') )}). When called from the command line
+using \code{Rscript}, the \code{geno} parameter must be specified as a a
+YAML string (or YAML file) mapping old to new genotypes
+(e.g. \code{"A: W, B: S"}).
 }
 \seealso{
 Other pipeline functions: \code{\link{run_annoqtl}},

@@ -13,14 +13,22 @@
 #' \code{'2'}, etc.).
 #' 
 #' If a founder VCF file is given, markers are assigned a genotype symbol
-#' corresponding to a specific founder. If the \code{alleles} parameter is
-#' specified, each element of the \code{alleles} vector must denote a
-#' specific founder.
+#' consisting of alleles that each correspond to a specific founder.
+#' 
+#' If the \code{alleles} parameter is specified, this must be a mapping of
+#' founder sample IDs to allele symbols. If calling this function from within
+#' the \code{R} environment, this must be specified as a mapping object (e.g.
+#' \code{mapping( c(DBVPG6044 = 'W', YPS128 = 'S') )}). When called from the
+#' command line using \code{Rscript}, the \code{alleles} parameter must be
+#' specified as a a YAML string (or YAML file) mapping founders to allele
+#' symbols (e.g. \code{"DBVPG6044: W, YPS128: S"}). If the \code{alleles}
+#' parameter is not specified, allele symbols are taken from the letters
+#' of the alphabet (i.e. \code{'A'}, \code{'B'} etc.).
 #' 
 #' @param datafile sample VCF file [required]
 #' @param fdrfile optional founder VCF file
 #' @param genfile output genotype CSV file [required]
-#' @param alleles founder allele symbols
+#' @param alleles founder allele symbol mapping
 #' @param digits numeric precision [default: unrounded]
 #' 
 #' @concept shmootl:preparation
@@ -28,11 +36,11 @@
 #' @family pipeline functions
 #' @rdname run_makegeno
 run_makegeno <- function(datafile=NA_character_, genfile=NA_character_,
-    fdrfile=NA_character_, alleles=character(), digits=NA_integer_) {
+    fdrfile=NA_character_, alleles=mapping(), digits=NA_integer_) {
     
     stopifnot( isSingleString(genfile) )
     
-    alleles <- if ( ! identical(alleles, character()) ) { alleles } else { NULL }
+    alleles <- if ( ! identical(alleles, mapping()) ) { alleles } else { NULL }
     digits <- if ( ! identical(digits, NA_integer_) ) { digits } else { NULL }
     
     sample.ids <- getSamplesVCF(datafile)
