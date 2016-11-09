@@ -8,15 +8,19 @@
 #' 
 #' @param h5file HDF5 scan file [required]
 #' @param report scan report file [required]
+#' @param analyses analyses to output [default: all]
 #' 
 #' @concept shmootl:processing
 #' @export
 #' @family pipeline functions
 #' @rdname run_report
-run_report <- function(h5file=NA_character_, report=NA_character_) {
+run_report <- function(h5file=NA_character_, report=NA_character_,
+    analyses=character()) {
     
     stopifnot( isSingleString(h5file) )
     stopifnot( isSingleString(report) )
+    
+    analyses <- if ( ! identical(analyses, character()) ) { analyses } else { NULL }
     
     # Get digest file extension.
     report.ext <- tools::file_ext(report)
@@ -27,7 +31,7 @@ run_report <- function(h5file=NA_character_, report=NA_character_) {
     
     # Write report to temp file.
     if ( report.ext %in% const$ext$pdf ) {
-        writeReportPDF(h5file, tmp)
+        writeReportPDF(h5file, tmp, analyses=analyses)
     } else {
         stop("cannot write report - unknown extension on file '", report, "'")
     }

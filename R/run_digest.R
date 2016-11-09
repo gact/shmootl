@@ -8,6 +8,7 @@
 #' 
 #' @param h5list list of HDF5 scan files [required]
 #' @param digest scan digest file [required]
+#' @param analyses analyses to output [default: all]
 #' @param scanfile.pattern scan file name pattern
 #' 
 #' @concept shmootl:processing
@@ -16,16 +17,16 @@
 #' @importFrom tools file_ext
 #' @rdname run_digest
 run_digest <- function(h5list=character(), digest=NA_character_,
-    scanfile.pattern=NA_character_) {
+    analyses=character(), scanfile.pattern=NA_character_) {
     
     stopifnot( is.character(h5list) )
     stopifnot( length(h5list) > 0 )
     stopifnot( all( file.exists(h5list) ) )
     stopifnot( isSingleString(digest) )
     
-    if ( identical(scanfile.pattern, NA_character_) ) {
-        scanfile.pattern <- NULL
-    }
+    analyses <- if ( ! identical(analyses, character()) ) { analyses } else { NULL }
+    scanfile.pattern <- if ( ! identical(scanfile.pattern, NA_character_) ) {
+        scanfile.pattern } else { NULL }
     
     # Get digest file extension.
     digest.ext <- tools::file_ext(digest)
@@ -37,7 +38,8 @@ run_digest <- function(h5list=character(), digest=NA_character_,
     
     # Write digest to temp file.
     if ( digest.ext %in% const$ext$excel ) {
-        writeDigestExcel(h5list, tmp, scanfile.pattern=scanfile.pattern)
+        writeDigestExcel(h5list, tmp, analyses=analyses,
+            scanfile.pattern=scanfile.pattern)
     } else {
         stop("cannot create digest - unknown extension on file '", digest, "'")
     }

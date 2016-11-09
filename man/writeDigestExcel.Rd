@@ -4,12 +4,16 @@
 \alias{writeDigestExcel}
 \title{Write an Excel digest of QTL scan results.}
 \usage{
-writeDigestExcel(scanfiles, digest, scanfile.pattern = NULL)
+writeDigestExcel(scanfiles, digest, analyses = NULL,
+  scanfile.pattern = NULL)
 }
 \arguments{
 \item{scanfiles}{One or more QTL scan result HDF5 files.}
 
 \item{digest}{Path of output digest Excel file.}
+
+\item{analyses}{Analyses for which results should be included in the digest
+file. If none are specified, results are output for all available analyses.}
 
 \item{scanfile.pattern}{Optional pattern for extracting experiment info from
 scan file names. This must be a valid Perl regex with named capture groups.

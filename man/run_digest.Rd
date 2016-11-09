@@ -5,12 +5,14 @@
 \title{Create digest of QTL analysis results.}
 \usage{
 run_digest(h5list = character(), digest = NA_character_,
-  scanfile.pattern = NA_character_)
+  analyses = character(), scanfile.pattern = NA_character_)
 }
 \arguments{
 \item{h5list}{list of HDF5 scan files [required]}
 
 \item{digest}{scan digest file [required]}
+
+\item{analyses}{analyses to output [default: all]}
 
 \item{scanfile.pattern}{scan file name pattern}
 }

@@ -4,12 +4,15 @@
 \alias{writeReportPDF}
 \title{Write a PDF report of QTL scan results.}
 \usage{
-writeReportPDF(scanfile, report)
+writeReportPDF(scanfile, report, analyses = NULL)
 }
 \arguments{
 \item{scanfile}{A scan result HDF5 file.}
 
 \item{report}{Path of output report PDF file.}
+
+\item{analyses}{Analyses for which results should be included in the report
+file. If none are specified, results are output for all available analyses.}
 }
 \description{
 Write a PDF report of QTL scan results.

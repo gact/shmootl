@@ -7,7 +7,7 @@
 getAnalysisTitle(pipeline)
 }
 \arguments{
-\item{pipeline}{Character vector of \pkg{shmootl} analysis pipeline titles.}
+\item{pipeline}{Character vector of \pkg{shmootl} analysis pipeline names.}
 }
 \value{
 Character vector in which each element contains the title of the

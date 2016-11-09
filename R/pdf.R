@@ -5,6 +5,8 @@
 #'  
 #' @param scanfile A scan result HDF5 file.
 #' @param report Path of output report PDF file.
+#' @param analyses Analyses for which results should be included in the report
+#' file. If none are specified, results are output for all available analyses.
 #' 
 #' @export
 #' @importFrom grDevices cairo_pdf
@@ -12,15 +14,22 @@
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices pdf
 #' @rdname writeReportPDF
-writeReportPDF <- function(scanfile, report) {
+writeReportPDF <- function(scanfile, report, analyses=NULL) {
     
     stopifnot( isSingleString(scanfile) )
     stopifnot( file.exists(scanfile) )
     stopifnot( isSingleString(report) )
     
+    # Set possible results to be sought in scan file.
     results.sought <- list(
         'Scanone' = c('Result')
     )
+    
+    # Resolve relevant analyses.
+    analyses.sought <- unique( resolveAnalysisTitle(analyses) )
+    
+    # Set actual results sought for relevant analyses.
+    results.sought <- results.sought[ names(results.sought) %in% analyses.sought ]
     
     result.info <- list()
     roi <- list()
@@ -49,7 +58,8 @@ writeReportPDF <- function(scanfile, report) {
     }
     
     if ( length(roi) == 0 ) {
-        stop("cannot output report - results not found in file '", scanfile, "'")
+        stop("cannot output report - no relevant results found in file '",
+            scanfile, "'")
     }
     
     # Introduce plot device.
@@ -108,40 +118,43 @@ writeReportPDF <- function(scanfile, report) {
         
         phenotype <- names(result.info)[i]
         
-        if ( 'Scanone' %in% names(result.info[[phenotype]]) &&
-            'Result' %in% result.info[[phenotype]][['Scanone']] ) {
+        if ( 'Scanone' %in% names(roi) ) {
             
-            scanone.result <- readResultHDF5(scanfile,
-                phenotype, 'Scanone', 'Result')
-            
-            # Get any QTL intervals.
-            qtl.intervals <- readResultHDF5(scanfile,
-                phenotype, 'Scanone', 'QTL Intervals')
-            
-            # If no QTL intervals, get scanone threshold for this phenotype.
-            # NB: if no scanone threshold found, threshold object will be NULL.
-            if ( is.null(qtl.intervals) ) {
-                scanone.threshold <- readResultHDF5(scanfile,
-                    phenotype, 'Scanone', 'Threshold')
-            } else {
-                scanone.threshold <- NULL
-            }
-            
-            # Plot (zero or more) QTL intervals across all sequences.
-            plotQTLScanone(scanone.result, qtl.intervals=qtl.intervals,
-                threshold=scanone.threshold, phenotype=phenotype)
-            
-            # If significant QTL intervals found, plot
-            # all sequences with a significant QTL.
-            if ( length(qtl.intervals) > 0 ) {
+            if ( 'Scanone' %in% names(result.info[[phenotype]]) &&
+                'Result' %in% result.info[[phenotype]][['Scanone']] ) {
                 
-                interval.seqs <- unique( sapply( qtl.intervals,
-                    function(x) unique(x[, 'chr']) ) )
+                scanone.result <- readResultHDF5(scanfile,
+                    phenotype, 'Scanone', 'Result')
                 
-                for ( interval.seq in interval.seqs ) {
-                    plotQTLScanone(scanone.result, qtl.intervals=qtl.intervals,
-                        threshold=scanone.threshold, chr=interval.seq,
-                        phenotype=phenotype)
+                # Get any QTL intervals.
+                qtl.intervals <- readResultHDF5(scanfile,
+                    phenotype, 'Scanone', 'QTL Intervals')
+                
+                # If no QTL intervals, get scanone threshold for this phenotype.
+                # NB: if no scanone threshold found, threshold object will be NULL.
+                if ( is.null(qtl.intervals) ) {
+                    scanone.threshold <- readResultHDF5(scanfile,
+                        phenotype, 'Scanone', 'Threshold')
+                } else {
+                    scanone.threshold <- NULL
+                }
+                
+                # Plot (zero or more) QTL intervals across all sequences.
+                plotQTLScanone(scanone.result, qtl.intervals=qtl.intervals,
+                    threshold=scanone.threshold, phenotype=phenotype)
+                
+                # If significant QTL intervals found, plot
+                # all sequences with a significant QTL.
+                if ( length(qtl.intervals) > 0 ) {
+                    
+                    interval.seqs <- unique( sapply( qtl.intervals,
+                        function(x) unique(x[, 'chr']) ) )
+                    
+                    for ( interval.seq in interval.seqs ) {
+                        plotQTLScanone(scanone.result, qtl.intervals=qtl.intervals,
+                            threshold=scanone.threshold, chr=interval.seq,
+                            phenotype=phenotype)
+                    }
                 }
             }
         }

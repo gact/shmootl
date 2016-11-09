@@ -3,7 +3,7 @@
 # getAnalysisTitle -------------------------------------------------------------
 #' Get analysis title for the given \pkg{shmootl} analysis pipeline.
 #' 
-#' @param pipeline Character vector of \pkg{shmootl} analysis pipeline titles.
+#' @param pipeline Character vector of \pkg{shmootl} analysis pipeline names.
 #' 
 #' @return Character vector in which each element contains the title of the
 #' \pkg{shmootl} analysis pipeline in the corresponding element of the input
@@ -863,6 +863,60 @@ procPipelineArgs <- function(ap, args) {
     }
     
     return(args)
+}
+
+# resolveAnalysisTitle ---------------------------------------------------------
+#' Resolve analysis title.
+#' 
+#' @param analyses Vector of \pkg{shmootl} analysis pipeline names or titles.
+#' If no analysis pipelines are specified, all supported analysis titles are
+#' returned.
+#' 
+#' @return If the \code{analyses} parameter is specified, this is a character
+#' vector in which each element contains the title of the \pkg{shmootl} analysis
+#' pipeline referenced in the corresponding element of the input vector. If the
+#' \code{analyses} parameter is \code{NULL}, this is a character vector of all
+#' supported analysis titles.
+#' 
+#' @keywords internal
+#' @rdname resolveAnalysisTitle
+resolveAnalysisTitle <- function(analyses=NULL) {
+    
+    if ( ! is.null(analyses) ) {
+        
+        stopifnot( is.character(analyses) )
+        stopifnot( length(analyses) > 0 )
+        
+        # Get supported analysis names and titles.
+        supported.names <- unname(const$supported.analyses)
+        supported.titles <- names(const$supported.analyses)
+        
+        # Get indices of supported analyses matched by each specified analysis.
+        index.list <- lapply( analyses, function(analysis)
+            which( supported.names == analysis | supported.titles == analysis ) )
+        
+        # Get number of supported analyses matched by each specified analysis.
+        match.counts <- lengths(index.list)
+        
+        unresolved <- analyses[ match.counts == 0 ]
+        if ( length(unresolved) > 0 ) {
+            stop("analyses could not be resolved - '", toString(unresolved), "'")
+        }
+        
+        ambiguous <- analyses[ match.counts > 1 ]
+        if ( length(ambiguous) > 0 ) {
+            stop("analyses could not be unambiguously resolved - '",
+                toString(ambiguous), "'")
+        }
+        
+        res <- names(const$supported.analyses)[ unlist(index.list) ]
+        
+    } else {
+        
+        res <- names(const$supported.analyses)
+    }
+    
+    return(res)
 }
 
 # End of pipeline.R ############################################################

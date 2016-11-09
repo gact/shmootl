@@ -5,6 +5,8 @@
 #' 
 #' @param scanfiles One or more QTL scan result HDF5 files.
 #' @param digest Path of output digest Excel file.
+#' @param analyses Analyses for which results should be included in the digest
+#' file. If none are specified, results are output for all available analyses.
 #' @param scanfile.pattern Optional pattern for extracting experiment info from
 #' scan file names. This must be a valid Perl regex with named capture groups.
 #' Neither the capture groups nor the pattern itself are required to match any
@@ -20,7 +22,8 @@
 #' @family Excel functions
 #' @importFrom utils installed.packages
 #' @rdname writeDigestExcel
-writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
+writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
+    scanfile.pattern=NULL) {
     
     if ( ! 'xlsx' %in% rownames(utils::installed.packages()) ) {
         stop("cannot write Excel digest without R package 'xlsx'")
@@ -50,9 +53,16 @@ writeDigestExcel <- function(scanfiles, digest, scanfile.pattern=NULL) {
     
     # Check scan files for results of interest ---------------------------------
     
+    # Set possible results to be sought in scan file.
     results.sought <- list(
         'Scanone' = c('QTL Intervals')
     )
+    
+    # Resolve relevant analyses.
+    analyses.sought <- unique( resolveAnalysisTitle(analyses) )
+    
+    # Set actual results sought for relevant analyses.
+    results.sought <- results.sought[ names(results.sought) %in% analyses.sought ]
     
     result.info <- list()
     roi <- list()
