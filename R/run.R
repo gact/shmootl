@@ -61,7 +61,7 @@ run <- function() {
     }
  
     # Output usage info to standard error.
-    message( getPipelineUsage() )
+    message( getPkgPipelineUsage() )
 
     return( invisible() )
 }

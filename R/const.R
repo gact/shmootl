@@ -57,7 +57,7 @@ with(const, {
     missing.value <- '-'
     
     # Pipeline groups for command-line interface.
-    pipeline.groups <- c('analysis', 'preparation', 'processing',
+    pipe.groups <- c('analysis', 'preparation', 'processing',
         'utilities', 'misc')
     
     # Missing value in VCF data.
@@ -166,11 +166,14 @@ with(const, {
         # Percentage.
         percentage = '^([+-]?[[:digit:]](?:[.][[:digit:]]+)?)%$',
         
+        # Package pipeline docs.
+        pipe.docs = '^run_([[:alpha:]][[:alnum:]._]*)[.]Rd$',
+        
         # Package pipeline functions.
         pipe.func = '^run_([[:alpha:]][[:alpha:]._]*)$',
         
         # Package pipeline group tag.
-        pipe.group = paste0('^shmootl:(', paste(pipeline.groups, collapse='|'), ')$'),
+        pipe.group = paste0('^shmootl:(', paste(pipe.groups, collapse='|'), ')$'),
         
         # Mapframe position column heading.
         poscol = '(?:^|^.*[^[:alpha:]])pos(?:[^[:alpha:]].*$|$)',
