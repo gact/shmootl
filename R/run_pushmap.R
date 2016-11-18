@@ -27,7 +27,7 @@ run_pushmap <- function(mapfile=NA_character_, datafile=NA_character_,
     
     mapname <- if ( ! identical(mapname, NA_character_) ) { mapname } else { NULL }
     
-    datafile.ext <- tools::file_ext(datafile)
+    datafile.format <- inferFormatFromFilename(datafile)
     
     # Create output temp file.
     tmp <- tempfile()
@@ -42,7 +42,7 @@ run_pushmap <- function(mapfile=NA_character_, datafile=NA_character_,
     cross.map <- readMapCSV(mapfile, require.mapunit=require.mapunit)
     
     # Push map into temp file.
-    if ( datafile.ext %in% const$ext$csv ) {
+    if ( datafile.format == 'CSV' ) {
         
         if ( ! is.null(mapname) ) {
             stop("cannot specify map name for a CSV file")
@@ -50,13 +50,13 @@ run_pushmap <- function(mapfile=NA_character_, datafile=NA_character_,
         
         writeMapCSV(cross.map, tmp, include.mapunit=include.mapunit)
         
-    } else if ( datafile.ext %in% const$ext$hdf5 ) {
+    } else if ( datafile.format == 'HDF5' ) {
         
         writeMapHDF5(cross.map, tmp, name=mapname, overwrite=TRUE)
         
     } else {
         
-        stop("cannot push map - unknown extension on file '", datafile, "'")
+        stop("cannot push map into ", datafile.format, " format file")
     }
     
     # Move temp file to final output file.

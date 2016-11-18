@@ -25,9 +25,9 @@ run_pullmap <- function(datafile=NA_character_, mapfile=NA_character_,
     
     mapname <- if ( ! identical(mapname, NA_character_) ) { mapname } else { NULL }
     
-    datafile.ext <- tools::file_ext(datafile)
+    datafile.format <- inferFormatFromFilename(datafile)
     
-    if ( datafile.ext %in% const$ext$csv ) {
+    if ( datafile.format == 'CSV' ) {
         
         if ( ! is.null(mapname) ) {
             stop("cannot specify map name for a CSV file")
@@ -35,7 +35,7 @@ run_pullmap <- function(datafile=NA_character_, mapfile=NA_character_,
         
         cross.map <- readMapCSV(datafile, require.mapunit=require.mapunit)
         
-    } else if ( datafile.ext %in% const$ext$hdf5 ) {
+    } else if ( datafile.format == 'HDF5' ) {
         
         mapname <- resolveMapNameHDF5(datafile, mapname)
         
@@ -43,7 +43,7 @@ run_pullmap <- function(datafile=NA_character_, mapfile=NA_character_,
         
     } else {
         
-        stop("cannot pull map - unknown extension on file '", datafile, "'")
+        stop("cannot pull map from ", datafile.format, " format file")
     }
     
     # Create output temp file.

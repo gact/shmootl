@@ -22,18 +22,21 @@ run_report <- function(h5file=NA_character_, report=NA_character_,
     
     analyses <- if ( ! identical(analyses, character()) ) { analyses } else { NULL }
     
-    # Get digest file extension.
+    # Get report file extension.
     report.ext <- tools::file_ext(report)
+    
+    # Infer report file format.
+    report.format <- inferFormatFromFilename(report)
     
     # Create temp report file, ensure will be removed.
     tmp <- tempfile()
     on.exit( file.remove(tmp), add=TRUE )
     
     # Write report to temp file.
-    if ( report.ext %in% const$ext$pdf ) {
+    if ( report.format == 'PDF' ) {
         writeReportPDF(h5file, tmp, analyses=analyses)
     } else {
-        stop("cannot write report - unknown extension on file '", report, "'")
+        stop("report output not supported for ", report.format, " format")
     }
     
     # If report written without error, move temp file to final report file.

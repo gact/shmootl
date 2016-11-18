@@ -31,17 +31,20 @@ run_digest <- function(h5list=character(), digest=NA_character_,
     # Get digest file extension.
     digest.ext <- tools::file_ext(digest)
     
+    # Infer digest file format.
+    digest.format <- inferFormatFromFilename(digest)
+    
     # Create temp digest file, ensure will be removed.
     # NB: must have correct extension so that Excel format can be set automatically.
     tmp <- tempfile( fileext=paste0('.', digest.ext) ) 
     on.exit( file.remove(tmp), add=TRUE )
     
     # Write digest to temp file.
-    if ( digest.ext %in% const$ext$excel ) {
+    if ( digest.format == 'Excel' ) {
         writeDigestExcel(h5list, tmp, analyses=analyses,
             scanfile.pattern=scanfile.pattern)
     } else {
-        stop("cannot create digest - unknown extension on file '", digest, "'")
+        stop("digest output not supported for ", digest.format, " format")
     }
     
     # If digest written without error, move temp file to final digest file.

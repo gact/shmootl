@@ -1124,6 +1124,35 @@ hasRownames <- function(x) {
     return(rowname.status) 
 }
 
+# inferFormatFromFilename ------------------------------------------------------
+#' Infer format from filename.
+#' 
+#' @param filename A file name.
+#' 
+#' @return File format inferred from extension of file name.
+#' Returns \code{unknown} if format could not be inferred.
+#' 
+#' @keywords internal
+#' @rdname inferFormatFromFilename
+inferFormatFromFilename <- function(filename) {
+    
+    stopifnot( isSingleString(filename) )
+    
+    fmt <- 'unknown'
+    
+    ext <- tolower( tools::file_ext(filename) )
+    
+    indices <- which( sapply(const$ext, function(fmt.exts) ext %in% fmt.exts) )
+    
+    if ( length(indices) == 1 ) {
+        fmt <- names(const$ext)[indices]
+    } else {
+        stop("ambiguous extension on file - '", filename, "'")
+    }
+    
+    return(fmt)
+}
+
 # inferStepSize ----------------------------------------------------------------
 #' Infer step size from step values.
 #' 
