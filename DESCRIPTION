@@ -51,6 +51,7 @@ Collate:
     'excel.R'
     'geno.R'
     'genome.R'
+    'getLODMatrix.R'
     'getLODProfile.R'
     'getLODValues.R'
     'getQTLFeatures.R'
