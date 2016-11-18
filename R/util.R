@@ -951,9 +951,7 @@ getXInfoFromFilenames <- function(filenames, pattern) {
         }
         
         # Remove empty columns.
-        nonempty <- sapply( getColIndices(parsed),
-            function(i) ! allNA(parsed[, i]) )
-        parsed <- parsed[, nonempty, drop=FALSE]
+        parsed <- removeColsNA(parsed)
         
         if ( ncol(parsed) > 0 ) {
             xinfo <- parsed

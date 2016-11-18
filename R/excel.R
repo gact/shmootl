@@ -147,9 +147,7 @@ writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
     }
     
     # Remove unused results overview columns.
-    nonempty <- sapply( getColIndices(tables[['Overview']]),
-        function(i) ! allNA(tables[['Overview']][, i]) )
-    tables[['Overview']] <- tables[['Overview']][, nonempty]
+    tables[['Overview']] <- removeColsNA(tables[['Overview']])
     
     # Setup 'Scanone QTL Intervals' worksheet, if relevant ---------------------
     
@@ -261,9 +259,7 @@ writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
         }
         
         # Remove empty columns.
-        nonempty <- sapply( getColIndices(tab),
-            function(i) ! allNA(tab[, i]) )
-        tab <- tab[, nonempty, drop=FALSE]
+        tab <- removeColsNA(tab)
         
         # Add experiment info, if available.
         if ( ! is.null(xinfo) ) {

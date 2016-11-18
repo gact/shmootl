@@ -40,9 +40,7 @@ getQTLFeatures <- function(qtl.intervals, features) {
     features <- features[ ! ( unidentified | irrelevant ), ]
     
     # Remove empty feature columns.
-    nonempty <- sapply( getColIndices(features),
-        function(i) ! allNA(features[, i]) )
-    features <- features[, nonempty]
+    features <- removeColsNA(features)
     
     unfound <- req.hdgs[ ! req.hdgs %in% colnames(features) ]
     if ( length(unfound) > 0 ) {

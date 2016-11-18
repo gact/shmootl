@@ -78,9 +78,7 @@ readFeaturesGFF <- function(annofile) {
     features$Note <- S4Vectors::unstrsplit(anno$Note, '...')
     
     # Remove empty columns.
-    nonempty <- sapply( getColIndices(features),
-        function(i) ! allNA(features[, i]) )
-    features <- features[, nonempty]
+    features <- removeColsNA(features)
     
     unfound <- req.hdgs[ ! req.hdgs %in% colnames(features) ]
     if ( length(unfound) > 0 ) {
