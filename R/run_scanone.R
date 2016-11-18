@@ -241,14 +241,16 @@ run_scanone <- function(infile=NA_character_, h5file=NA_character_,
         # Get significant QTL intervals.
         qtl.intervals <- getQTLIntervals(pheno.result, ci.function=ci.function,
             drop=drop, prob=prob, threshold=scanone.threshold)
+        num.qtls <- length(qtl.intervals)
         
         # Output any significant QTL intervals.
-        if ( length(qtl.intervals) > 0 ) {
+        if ( num.qtls > 0 ) {
             writeResultHDF5(qtl.intervals, tmp, phenotypes[i], analysis, 'QTL Intervals')
         }
         
         # Set results overview info for this phenotype.
-        scanone.overview[i] <- paste(length(qtl.intervals), 'QTLs')
+        suffix <- if ( num.qtls == 1 ) {'QTL Interval'} else {'QTL Intervals'}
+        scanone.overview[i] <- paste(num.qtls, suffix)
         
         # If updating HDF5 file, add scanone results to updated objects.
         if (updating.h5file) {
