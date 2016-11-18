@@ -1565,6 +1565,35 @@ makeMapFromDefaultQTLNames <- function(qtl.names) {
     return( as.map( parseDefaultQTLNames(qtl.names) ) )
 }
 
+# makeMapFromLocusIDs ----------------------------------------------------------
+#' Make map from locus IDs.
+#' 
+#' @param ids Vector of default marker IDs,
+#' default QTL names, or pseudomarker IDs.
+#' 
+#' @return An \pkg{R/qtl} \code{map} object. The returned object is a genetic
+#' map if the input \code{ids} are default QTL names or pseudomarkers. A
+#' physical map is returned if the input \code{ids} are default marker IDs.
+#' 
+#' @template section-map
+#' 
+#' @export
+#' @rdname makeMapFromLocusIDs
+makeMapFromLocusIDs <- function(ids) {
+    
+    if ( all( isDefaultMarkerID(ids) ) ) {
+        m <- makeMapFromDefaultMarkerIDs(ids)
+    } else if ( all( isDefaultQTLName(ids) ) ) {
+        m <- makeMapFromDefaultQTLNames(ids)
+    } else if ( all( isPseudomarkerID(ids) ) ) {
+        m <- makeMapFromPseudomarkerIDs(ids)
+    } else {
+        stop("cannot make map from IDs of unknown type")
+    }
+    
+    return(m)
+}
+
 # makeMapFromPseudomarkerIDs ---------------------------------------------------
 #' Make map from pseudomarker IDs.
 #' 
