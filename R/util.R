@@ -1543,6 +1543,19 @@ isMarkerID <- function(loc.ids) {
     return( isValidID(loc.ids) & ! grepl(const$pattern$pseudomarker.id, loc.ids) )
 }
 
+# isNegativeNumber -------------------------------------------------------------
+#' Test for negative numbers.
+#' 
+#' @param n Test vector.
+#' 
+#' @return Logical vector indicating which elements are less than zero.
+#' 
+#' @keywords internal
+#' @rdname isNegativeNumber
+isNegativeNumber <- function(n) {
+    return( is.numeric(n) & is.finite(n) & n < 0 )
+}
+
 # isNonNegativeNumber ----------------------------------------------------------
 #' Test for non-negative numbers.
 #' 
