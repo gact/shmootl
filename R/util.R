@@ -3077,6 +3077,63 @@ requestPkgDataPath <- function(...) {
     return(result)
 }
 
+# resolveScantwoLodtypes -------------------------------------------------------
+#' Resolve \code{scantwo} LOD types.
+#' 
+#' @param lodtypes Vector of \code{scantwo} LOD types. If this parameter is not
+#' specified, or is \code{NULL}, a vector of all \code{scantwo} LOD types is
+#' returned.
+#' @param from One or more forms from which LOD types may be resolved.
+#' @param to Form to which LOD types should be resolved.
+#' 
+#' @return Character vector with \code{scantwo} LOD types
+#' resolved to the form specified by the \code{to} parameter.
+#' 
+#' @keywords internal
+#' @rdname resolveScantwoLodtypes
+resolveScantwoLodtypes <- function(lodtypes=NULL,
+    from=c('scantwoperm', 'plot.scantwo', 'summary.scantwo', 'title'),
+    to=c('scantwoperm', 'plot.scantwo', 'summary.scantwo', 'title') ) {
+    
+    from <- match.arg(from, several.ok=TRUE)
+    to <- match.arg(to)
+    
+    if ( ! is.null(lodtypes) ) {
+        
+        stopifnot( is.character(lodtypes) )
+        stopifnot( length(lodtypes) > 0 )
+        
+        # Get indices of rows containing a match for each specified LOD type.
+        row.indices <- getRowIndices(const$scantwo.lodtypes)
+        row.index.list <- lapply( lodtypes, function(lodtype)
+            which( sapply( row.indices, function(row.index)
+            lodtype %in% const$scantwo.lodtypes[row.index, from] ) ) )
+        
+        # Get number of rows matched by each specified LOD type.
+        match.counts <- lengths(row.index.list)
+        
+        unresolved <- lodtypes[ match.counts == 0 ]
+        if ( length(unresolved) > 0 ) {
+            stop("cannot resolve '", to, "' form of LOD types - '",
+                toString(unresolved), "'")
+        }
+        
+        ambiguous <- lodtypes[ match.counts > 1 ]
+        if ( length(ambiguous) > 0 ) {
+            stop("cannot unambiguously resolve '", to, "' form of LOD types - '",
+                toString(ambiguous), "'")
+        }
+        
+        lodtypes <- const$scantwo.lodtypes[unlist(row.index.list), to]
+        
+    } else {
+        
+        lodtypes <- const$scantwo.lodtypes
+    }
+    
+    return(lodtypes)
+}
+
 # rstripBlankCols --------------------------------------------------------------
 #' Strip blank columns from right of \code{data.frame}.
 #'

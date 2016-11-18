@@ -2024,7 +2024,8 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name,
     
     # The scantwoperm object should be a list of six matrices, each 
     # with one column of length equal to number of permutations.
-    lod.types <- c('full', 'fv1', 'int', 'add', 'av1', 'one')
+    lod.types <- names(dataset)
+    stopifnot( identical(lod.types, const$scantwo.lodtypes$scantwoperm) )
     
     num.perms <- unique( sapply(dataset, nrow) )
     
@@ -2033,8 +2034,6 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name,
     }
     
     perm.indices <- 1:num.perms
-    
-    lod.types <- names(dataset)
     
     scantwoperm.dataset <- data.frame(perm=perm.indices)
     

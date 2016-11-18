@@ -350,7 +350,7 @@ with(const, {
         required.headings = c('chr', 'start', 'end', 'ID')
     )
     
-    # Scan function arguments --------------------------------------------------
+    # Scan function information ------------------------------------------------
     
     # Set documented scan function arguments.
     scan.args <- list(
@@ -373,6 +373,19 @@ with(const, {
         'scantwo' = c('method', 'type', 'fullmap', 'phenotypes'),
         'scantwoperm' = c('method')
     )
+    
+    # Scantwo LOD types.
+    scantwo.lodtypes <- data.frame( matrix( nrow=6, byrow=TRUE,
+    dimnames=list( NULL, c(
+    'scantwoperm', 'plot.scantwo', 'summary.scantwo', 'title') ),
+    data=c(
+    'full',        'full',         'lod.full',        'Full LOD',
+    'fv1',         'cond-int',     'lod.fv1',         'Conditional-Interactive LOD',
+    'int',         'int',          'lod.int',         'Interactive LOD',
+    'add',         'add',          'lod.add',         'Additive LOD',
+    'av1',         'cond-add',     'lod.av1',         'Conditional-Additive LOD',
+    'one',         'one',          'lod.one',         'Single-QTL LOD'
+    ) ), stringsAsFactors=FALSE)
     
     # R/argparser settings -----------------------------------------------------
     
