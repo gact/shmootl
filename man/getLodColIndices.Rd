@@ -6,8 +6,11 @@
 \alias{getLodColIndices.scanone}
 \alias{getLodColIndices.scanonebins}
 \alias{getLodColIndices.scanoneperm}
+\alias{getLodColIndices.scantwo}
+\alias{getLodColIndices.scantwoperm}
 \alias{getLodColIndices.summary.scanonebins}
 \alias{getLodColIndices.summary.scanoneperm}
+\alias{getLodColIndices.summary.scantwoperm}
 \title{Get LOD column indices.}
 \usage{
 getLodColIndices(x, lodcolumns = NULL, strict = FALSE)
@@ -20,10 +23,17 @@ getLodColIndices(x, lodcolumns = NULL, strict = FALSE)
 
 \method{getLodColIndices}{scanoneperm}(x, lodcolumns = NULL, strict = FALSE)
 
+\method{getLodColIndices}{scantwo}(x, lodcolumns = NULL, strict = FALSE)
+
+\method{getLodColIndices}{scantwoperm}(x, lodcolumns = NULL, strict = FALSE)
+
 \method{getLodColIndices}{summary.scanoneperm}(x, lodcolumns = NULL,
   strict = FALSE)
 
 \method{getLodColIndices}{summary.scanonebins}(x, lodcolumns = NULL,
+  strict = FALSE)
+
+\method{getLodColIndices}{summary.scantwoperm}(x, lodcolumns = NULL,
   strict = FALSE)
 }
 \arguments{

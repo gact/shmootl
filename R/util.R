@@ -669,6 +669,28 @@ getLodColIndices.scanoneperm <- function(x, lodcolumns=NULL, strict=FALSE) {
     return(indices)
 }
 
+# getLodColIndices.scantwo -----------------------------------------------------
+#' @rdname getLodColIndices
+getLodColIndices.scantwo <- function(x, lodcolumns=NULL, strict=FALSE) {
+    available <- if ( is.matrix(x$lod) ) { 1L } else { seq( dim(x$lod)[[3]] ) }
+    names(available) <- attr(x, 'phenotypes')
+    resolved <- getIndices(available, requested=lodcolumns, strict=strict)
+    indices <- unname(available[resolved])
+    return(indices)
+}
+
+# getLodColIndices.scantwoperm -------------------------------------------------
+#' @rdname getLodColIndices
+getLodColIndices.scantwoperm <- function(x, lodcolumns=NULL, strict=FALSE) {
+    phenames.vectors <- lapply(unname(x), colnames)
+    stopifnot( length( unique(phenames.vectors) ) == 1 )
+    pheno.names <- phenames.vectors[[1]]
+    available <- structure(seq_along(pheno.names), names=pheno.names)
+    resolved <- getIndices(available, requested=lodcolumns, strict=strict)
+    indices <- unname(available[resolved])
+    return(indices)
+}
+
 # getLodColIndices.summary.scanoneperm -----------------------------------------
 #' @export
 #' @method getLodColIndices summary.scanoneperm
@@ -692,6 +714,28 @@ getLodColIndices.summary.scanonebins <- function(x, lodcolumns=NULL,
     names(available) <- colnames(x)
     resolved <- getIndices(available, requested=lodcolumns, strict=strict)
     indices <- unname(available[resolved])
+    return(indices)
+}
+
+# getLodColIndices.summary.scantwoperm -----------------------------------------
+#' @export
+#' @method getLodColIndices summary.scantwoperm
+#' @rdname getLodColIndices
+getLodColIndices.summary.scantwoperm <- function(x, lodcolumns=NULL,
+    strict=FALSE) {
+    
+    # Get available LOD column indices.
+    lodcolumn.counts <- lapply(unname(x), ncol)
+    stopifnot( length( unique(lodcolumn.counts) ) == 1 )
+    available <- seq(lodcolumn.counts[[1]])
+    
+    # Set LOD column names from phenotypes, if available.
+    names(available) <-  getPhenotypes.summary.scantwoperm(x) # TODO: implement generic.
+    
+    # Resolve LOD column indices.
+    resolved <- getIndices(available, requested=lodcolumns, strict=strict)
+    indices <- unname(available[resolved])
+    
     return(indices)
 }
 
