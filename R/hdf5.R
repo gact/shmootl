@@ -745,7 +745,7 @@ readDatasetHDF5 <- function(infile, h5name, ...) {
 #' @export
 #' @rdname readDatasetHDF5
 readDatasetHDF5.array <- function(infile, h5name, ...) {
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     dataset <- readDatasetHDF5.default(infile, h5name)
     dataset <- aperm(dataset) # NB: R is column-major, HDF5 is row-major
     return(dataset)
@@ -756,7 +756,7 @@ readDatasetHDF5.array <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.cross <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     cross.attrs <- readObjectAttributesHDF5(infile, h5name)
     
@@ -869,7 +869,7 @@ readDatasetHDF5.cross <- function(infile, h5name, ...) {
 readDatasetHDF5.data.frame <- function(infile, h5name,
     rownames.column='rownames', ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     dataset <- readDatasetHDF5.default(infile, h5name)
     
@@ -891,7 +891,7 @@ readDatasetHDF5.data.frame <- function(infile, h5name,
 #' @rdname readDatasetHDF5
 readDatasetHDF5.default <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     h5name <- resolveH5ObjectName(h5name)
@@ -985,7 +985,7 @@ readDatasetHDF5.list <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.map <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     h5attrs <- readObjectAttributesHDF5(infile, h5name)
     
@@ -1013,7 +1013,7 @@ readDatasetHDF5.map <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.mapframe <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     dataset <- readDatasetHDF5.data.frame(infile, h5name, rownames.column='id')
     
@@ -1029,7 +1029,7 @@ readDatasetHDF5.mapframe <- function(infile, h5name, ...) {
 #' @export
 #' @rdname readDatasetHDF5
 readDatasetHDF5.matrix <- function(infile, h5name, ...) {
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     dataset <- readDatasetHDF5.default(infile, h5name)
     dataset <- t(dataset) # NB: R is column-major, HDF5 is row-major
     return(dataset)
@@ -1040,7 +1040,7 @@ readDatasetHDF5.matrix <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.qtlintervals <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     dataset <- readDatasetHDF5.list(infile, h5name, rownames.column='id')
     
@@ -1063,7 +1063,7 @@ readDatasetHDF5.scanone <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.scanonebins  <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     dataset.attrs <- readObjectAttributesHDF5(infile, h5name)
     
@@ -1101,7 +1101,7 @@ readDatasetHDF5.scanonebins  <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.scanoneperm  <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     dataset.attrs <- readObjectAttributesHDF5(infile, h5name)
     
@@ -1133,7 +1133,7 @@ readDatasetHDF5.scanoneperm  <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.scantwo <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     dataset <- readDatasetHDF5.list(infile, h5name)
     
@@ -1159,7 +1159,7 @@ readDatasetHDF5.scantwo <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     dataset.attrs <- readObjectAttributesHDF5(infile, h5name)
     
@@ -1200,7 +1200,7 @@ readDatasetHDF5.scantwoperm <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.summary.scanonebins <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     dataset <- readDatasetHDF5.data.frame(infile, h5name)
     
@@ -1234,7 +1234,7 @@ readDatasetHDF5.summary.scanonebins <- function(infile, h5name, ...) {
 #' @rdname readDatasetHDF5
 readDatasetHDF5.summary.scanoneperm <- function(infile, h5name, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     dataset <- readDatasetHDF5.data.frame(infile, h5name)
     
@@ -1539,7 +1539,7 @@ writeDatasetHDF5 <- function(dataset, outfile, h5name,
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5.array <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     dataset <- aperm(dataset) # NB: R is column-major, HDF5 is row-major
     writeDatasetHDF5.default(dataset, outfile, h5name, overwrite=overwrite)
     return( invisible() )
@@ -1551,7 +1551,7 @@ writeDatasetHDF5.array <- function(dataset, outfile, h5name,
 writeDatasetHDF5.cross <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     stopifnot( isSingleString(outfile) )
     stopifnot( isBOOL(overwrite) )
     
@@ -1689,7 +1689,7 @@ writeDatasetHDF5.data.frame <- function(dataset, outfile, h5name,
 writeDatasetHDF5.default <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     stopifnot( isSingleString(outfile) )
     stopifnot( isBOOL(overwrite) )
     h5name <- resolveH5ObjectName(h5name)
@@ -1808,7 +1808,7 @@ writeDatasetHDF5.list <- function(dataset, outfile, h5name,
 writeDatasetHDF5.map <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
@@ -1830,7 +1830,7 @@ writeDatasetHDF5.map <- function(dataset, outfile, h5name,
 writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
@@ -1849,7 +1849,7 @@ writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name,
 #' @rdname writeDatasetHDF5
 writeDatasetHDF5.matrix <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     dataset <- t(dataset) # NB: R is column-major, HDF5 is row-major
     writeDatasetHDF5.default(dataset, outfile, h5name, overwrite=overwrite)
     return( invisible() )
@@ -1861,7 +1861,7 @@ writeDatasetHDF5.matrix <- function(dataset, outfile, h5name,
 writeDatasetHDF5.qtlintervals <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     
     qtl.names <- names(dataset)
     stopifnot( all( isValidID(qtl.names) ) )
@@ -1899,7 +1899,7 @@ writeDatasetHDF5.scanone <- function(dataset, outfile, h5name,
 writeDatasetHDF5.scanonebins <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     num.phenotypes <- dim(dataset)[3]
@@ -1937,7 +1937,7 @@ writeDatasetHDF5.scanonebins <- function(dataset, outfile, h5name,
 writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     num.phenotypes <- ncol(dataset)
@@ -1973,7 +1973,7 @@ writeDatasetHDF5.scanoneperm <- function(dataset, outfile, h5name,
 writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     stopifnot( is.null(dataset$scanoneX) )
@@ -2008,7 +2008,7 @@ writeDatasetHDF5.scantwo <- function(dataset, outfile, h5name,
 writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     phenames.vectors <- lapply(unname(dataset), colnames)
@@ -2064,7 +2064,7 @@ writeDatasetHDF5.scantwoperm <- function(dataset, outfile, h5name,
 writeDatasetHDF5.summary.scanonebins <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     num.lodcolumns <- ncol(dataset)
     stopifnot( num.lodcolumns == 1 )
@@ -2099,7 +2099,7 @@ writeDatasetHDF5.summary.scanonebins <- function(dataset, outfile, h5name,
 writeDatasetHDF5.summary.scanoneperm <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
-    stopifnot( length( list(...) ) == 0 )
+    stopifnot( emptyArgs(...) )
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     num.lodcolumns <- ncol(dataset)
     stopifnot( num.lodcolumns == 1 )
