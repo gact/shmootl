@@ -37,6 +37,11 @@ all permutations.
 \description{
 Run \code{qtl::scantwo} on a batch of permuted \code{cross} objects.
 }
+\author{
+Thomas Walsh <tw164@le.ac.uk>
+
+Yue Hu
+}
 \references{
 Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
 in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.

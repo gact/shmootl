@@ -16,6 +16,8 @@
 #' @return A \code{scantwoperm} list containing the results of the QTL scan for 
 #' all permutations.
 #' 
+#' @template author-thomas-walsh
+#' @template author-yue-hu
 #' @template ref-broman-2003
 #' 
 #' @export
@@ -46,6 +48,7 @@ batchPermScantwo <- function(cross, pheno.col=NULL, n.cluster=1, iseed=NULL,
     for ( perm.model in perm.models ) {
         model.perms <- lapply(scantwo.perms, function(x) x[[perm.model]])
         combined.result[[perm.model]] <- do.call(rbind, model.perms)
+        rownames(combined.result[[perm.model]]) <- NULL
     }
     
     # Set class of combined result.
