@@ -9,7 +9,7 @@
 #' to \code{'l'}) or as a Manhattan plot (with \code{type} set to
 #' \code{'p'}). If no plot type is specified, this is set automatically
 #' based on marker density.
-#'
+#' 
 #' @param x An \pkg{R/qtl} \code{scanone} object.
 #' @param chr Vector indicating which sequences to plot. If no sequences are
 #' specified, all are plotted.
@@ -188,7 +188,8 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     }
     
     # Set y-axis plotting parameters.
-    ylim <- c( 0.0, ceiling(max.lod + yinch(0.5)) )
+    headspace <- 0.2
+    ylim <- c( 0.0, max.lod / (1.0 - headspace) )
     ylab <- 'LOD'
     
     # Set fixed plotting arguments.
@@ -264,8 +265,9 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
                 interval.seqs <- sapply(qtl.intervals,
                     function(obj) unique(obj[, 'chr']))
                 
-                # Set vertical offset of 1.5-LOD interval from LOD peak.
-                y.offset <- yinch(0.25)
+                # Set vertical offset of 1.5-LOD interval from
+                # LOD peak in terms of the overall plot height.
+                y.offset <- 0.1 * diff(ylim)
                 
                 # Display each QTL interval, remember the plot regions it occupies.
                 for ( i in seq_along(qtl.intervals) ) {
@@ -286,7 +288,11 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
                     iline <- peak.lod + y.offset
                     
                     # Get vertical positions of QTL interval parts.
-                    interval.ypos <- c(iline - 0.5 * y.offset, iline, iline + 0.5 * y.offset)
+                    interval.ypos <- c(
+                        iline - 0.25 * y.offset,
+                        iline,
+                        iline + 0.25 * y.offset
+                    )
                     
                     # Get QTL interval line segment endpoints.
                     x0 <- interval.xpos[c(1,1,3)]
