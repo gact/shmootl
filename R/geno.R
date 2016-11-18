@@ -201,8 +201,8 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     # Get individual locus IDs.
     locus.ids <- pullLocusIDs(geno.map)
     
-    #Get sequences corresponding to individual map loci.
-    locus.seqs <- pullLocusSeq(geno.map)
+    # Get normalised sequences corresponding to individual map loci.
+    locus.seqs <- normSeq( pullLocusSeq(geno.map) )
     
     # Get map sequences.
     geno.seqs <- unique(locus.seqs)

@@ -1611,6 +1611,9 @@ writeDatasetHDF5.cross <- function(dataset, outfile, h5name,
         stop("shmootl cross geno elements must be of class 'A'")
     }
     
+    # Normalise cross geno object sequences.
+    names(dataset$geno) <- normSeq( names(dataset$geno) )
+    
     # Output cross geno object sequence-by-sequence.
     for ( geno.seq in names(dataset$geno) ) {
         

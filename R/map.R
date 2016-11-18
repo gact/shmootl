@@ -568,8 +568,8 @@ findFlankingRowIndices <- function(x, loc, expandtomarkers=FALSE) {
         stop("cannot find flanking row indices in mapframe with zero rows")
     }
     
-    # Get sequences corresponding to individual map loci.
-    x.seqs <- pullLocusSeq(x)
+    # Get normalised sequences corresponding to individual map loci.
+    x.seqs <- normSeq( pullLocusSeq(x) )
     
     # Get locus mapframe sequence.
     loc.seq <- pull.chr(loc)
@@ -1970,8 +1970,8 @@ matchLocusRowIndices <- function(x, loc) {
         stop("locus mapframe must have at least one row")
     }
     
-    # Get sequences and positions of individual map loci.
-    x.seqs <- pullLocusSeq(x)
+    # Get normalised sequences and positions of individual map loci.
+    x.seqs <- normSeq( pullLocusSeq(x) )
     x.pos <- pullLocusPos(x)
     
     # Get sequences and positions of specified loci.
@@ -2026,7 +2026,7 @@ matchSeqRowIndices <- function(x, sequences, simplify=FALSE) {
         
         norm.seqs <- normSeq(sequences)
         
-        x.seqs <- pullLocusSeq(x)
+        x.seqs <- normSeq( pullLocusSeq(x) )
         
         index.list <- vector('list', length(sequences))
         for ( i in seq_along(sequences) ) {
@@ -2103,7 +2103,7 @@ orderMap.map <- function(x) {
 #' @rdname pullLoci
 pullLoci <- function(x) {
     
-    x.seqs <- pullLocusSeq(x)
+    x.seqs <- normSeq( pullLocusSeq(x) )
     
     x.pos <- pullLocusPos(x)
     
