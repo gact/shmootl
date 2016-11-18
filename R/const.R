@@ -116,7 +116,7 @@ with(const, {
     
     default = list(
         
-        genome = 'SGD_S288C_R64-1-1',
+        genome = 'SGD_S288C_R64-2-1',
         
         pipeline.group = 'misc'
     )
