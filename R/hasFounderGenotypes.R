@@ -11,25 +11,7 @@
 #' @keywords internal
 #' @rdname hasFounderGenotypes
 hasFounderGenotypes <- function(x) {
-    UseMethod('hasFounderGenotypes', x)
-}
-
-# hasFounderGenotypes.cross ----------------------------------------------------
-#' @export
-#' @rdname hasFounderGenotypes
-hasFounderGenotypes.cross <- function(x) {
-    crosstype <- pull.crosstype(x)
-    alleles <- pull.alleles(x)
-    genotypes <- makeGenotypeSet(alleles, crosstype)
-    return( all( isFounderGenotype(genotypes) ) )
-}
-
-# hasFounderGenotypes.geno -----------------------------------------------------
-#' @export
-#' @rdname hasFounderGenotypes
-hasFounderGenotypes.geno <- function(x) {
-    alleles <- pull.alleles(x)
-    return( all( isFounderAllele(alleles) ) )
+    return( all( isFounderAllele( pull.alleles(x) ) ) )
 }
 
 # End of hasFounderGenotypes.R #################################################

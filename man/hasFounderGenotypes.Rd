@@ -2,15 +2,9 @@
 % Please edit documentation in R/hasFounderGenotypes.R
 \name{hasFounderGenotypes}
 \alias{hasFounderGenotypes}
-\alias{hasFounderGenotypes.cross}
-\alias{hasFounderGenotypes.geno}
 \title{Test if object contains founder genotypes.}
 \usage{
 hasFounderGenotypes(x)
-
-\method{hasFounderGenotypes}{cross}(x)
-
-\method{hasFounderGenotypes}{geno}(x)
 }
 \arguments{
 \item{x}{Object containing genotype data.}

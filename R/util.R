@@ -15,22 +15,6 @@ allKwargs <- function(...) {
     return( length(args) == 0 || hasNames(args) )
 }
 
-# anyKwargs --------------------------------------------------------------------
-#' Test if any ellipsis arguments are keyword arguments.
-#' 
-#' @param ... Ellipsis arguments.
-#' 
-#' @return \code{TRUE} if any ellipsis arguments are keyword arguments;
-#' \code{FALSE} otherwise.
-#' 
-#' @keywords internal
-#' @rdname anyKwargs
-anyKwargs <- function(...) {
-    args <- list(...)
-    return( length(args) > 0 && ! is.null( names(args) ) &&
-        any( ! is.na(names(args)) & names(args) != '' ) )
-}
-
 # allNA ------------------------------------------------------------------------
 #' Test if all elements are \code{NA} values.
 #' 
@@ -59,6 +43,22 @@ allNA <- function(x) {
 allWhite <- function(x) {
     stopifnot( is.character(x) )
     return( all( grepl( "^[[:space:]]*$", x)  ) )
+}
+
+# anyKwargs --------------------------------------------------------------------
+#' Test if any ellipsis arguments are keyword arguments.
+#' 
+#' @param ... Ellipsis arguments.
+#' 
+#' @return \code{TRUE} if any ellipsis arguments are keyword arguments;
+#' \code{FALSE} otherwise.
+#' 
+#' @keywords internal
+#' @rdname anyKwargs
+anyKwargs <- function(...) {
+    args <- list(...)
+    return( length(args) > 0 && ! is.null( names(args) ) &&
+        any( ! is.na(names(args)) & names(args) != '' ) )
 }
 
 # bstripBlankRows --------------------------------------------------------------
@@ -2539,6 +2539,217 @@ parsePseudomarkerIDs <- function(loc.ids) {
     loc.pos <- sapply(regmatch.list, function(x) as.numeric(x[3]))
     
     return( gmapframe(chr=loc.seqs, pos=loc.pos, row.names=loc.ids) )
+}
+
+# pull.alleles -----------------------------------------------------------------
+#' Pull alleles from the given object.
+#' 
+#' @param x An \pkg{R/qtl} \code{cross} object,
+#' or other object with alleles.
+#' 
+#' @return Vector of alleles in the given object.
+#' 
+#' @export
+#' @family cross object functions
+#' @rdname pull.alleles
+pull.alleles <- function(x) {
+    UseMethod('pull.alleles', x)
+}
+
+# pull.alleles.cross -----------------------------------------------------------
+#' @export
+#' @method pull.alleles cross
+#' @rdname pull.alleles
+pull.alleles.cross <- function(x) {
+    return( attr(x, 'alleles') )
+}
+
+# pull.alleles.geno ------------------------------------------------------------
+#' @export
+#' @method pull.alleles geno
+#' @rdname pull.alleles
+pull.alleles.geno <- function(x) {
+    return( attr(x, 'alleles') )
+}
+
+# pull.chr ---------------------------------------------------------------------
+#' Pull chromosomes/sequences from the given object.
+#' 
+#' @param x An \pkg{R/qtl} \code{cross} object,
+#' or other object with chromosomes/sequences.
+#' 
+#' @return Vector of chromosomes/sequences in the given object.
+#' 
+#' @export
+#' @family cross object functions
+#' @rdname pull.chr
+pull.chr <- function(x) {
+    UseMethod('pull.chr', x)
+}
+
+# pull.chr.cross ---------------------------------------------------------------
+#' @export
+#' @method pull.chr cross
+#' @rdname pull.chr
+pull.chr.cross <- function(x) {
+    return( names(x$geno) )
+}
+
+# pull.chr.data.frame ----------------------------------------------------------
+#' @export
+#' @method pull.chr data.frame
+#' @rdname pull.chr
+pull.chr.data.frame <- function(x) {
+    return( unique( pullLocusSeq(x) ) )
+}
+
+# pull.chr.geno ----------------------------------------------------------------
+#' @export
+#' @method pull.chr geno
+#' @rdname pull.chr
+pull.chr.geno <- function(x) {
+    return( names(x) )
+}
+
+# pull.chr.list ----------------------------------------------------------------
+#' @export
+#' @method pull.chr list
+#' @rdname pull.chr
+pull.chr.list <- function(x) {
+    return( unique( pullLocusSeq(x) ) )
+}
+
+# pull.chr.map -----------------------------------------------------------------
+#' @export
+#' @method pull.chr map
+#' @rdname pull.chr
+pull.chr.map <- function(x) {
+    return( names(x) )
+}
+
+# pull.crosstype ---------------------------------------------------------------
+#' Pull cross type from the given object.
+#' 
+#' @param x An \pkg{R/qtl} \code{cross} object,
+#' or other object with cross type information.
+#' 
+#' @return Cross type of the given object.
+#' 
+#' @export
+#' @family cross object functions
+#' @rdname pull.crosstype
+pull.crosstype <- function(x) {
+    UseMethod('pull.crosstype', x)
+}
+
+# pull.crosstype.cross ---------------------------------------------------------
+#' @export
+#' @method pull.crosstype cross
+#' @rdname pull.crosstype
+pull.crosstype.cross <- function(x) {
+    return( class(x)[1] )
+}
+
+# pull.crosstype.geno ----------------------------------------------------------
+#' @export
+#' @method pull.crosstype geno
+#' @rdname pull.crosstype
+pull.crosstype.geno <- function(x) {
+    
+    cross.info <- attr(x, 'info')
+    
+    if ( ! is.null(cross.info) ) {
+        crosstype <- cross.info@crosstype
+    } else {
+        crosstype <- NULL
+    }
+    
+    return(crosstype)
+}
+
+# pull.ind ---------------------------------------------------------------------
+#' Pull individual sample IDs from the given object.
+#' 
+#' @param x An \pkg{R/qtl} \code{cross} object,
+#' or other object with sample ID information.
+#' 
+#' @return Vector of individual sample IDs in the given object.
+#' Returns \code{NULL} if no sample IDs are found.
+#' 
+#' @export
+#' @family cross object functions
+#' @rdname pull.ind
+pull.ind <- function(x) {
+    UseMethod('pull.ind', x)
+}
+
+# pull.ind.cross ---------------------------------------------------------------
+#' @export
+#' @method pull.ind cross
+#' @rdname pull.ind
+pull.ind.cross <- function(x) {
+    
+    cross.info <- attr(x, 'info')
+    
+    if ( ! is.null(cross.info) && hasSampleIDs(cross.info) ) {
+        
+        ind <- getSamples(cross.info)
+        
+    } else {
+        
+        id.col <- getIdColIndex(x)
+        
+        if ( ! is.null(id.col) ) {
+            ind <- as.character(x$pheno[[id.col]])
+        } else {
+            ind <- NULL
+        }
+    }
+    
+    return(ind)
+}
+
+# pull.ind.geno ----------------------------------------------------------------
+#' @export
+#' @method pull.ind geno
+#' @rdname pull.ind
+pull.ind.geno <- function(x) {
+    
+    cross.info <- attr(x, 'info')
+    
+    if ( ! is.null(cross.info) && hasSampleIDs(cross.info) ) {
+        ind <- getSamples(cross.info)
+    } else {
+        ind <- NULL
+    }
+    
+    return(ind)
+}
+
+# pull.ind.pheno ---------------------------------------------------------------
+#' @export
+#' @method pull.ind pheno
+#' @rdname pull.ind
+pull.ind.pheno <- function(x) {
+    
+    cross.info <- attr(x, 'info')
+    
+    if ( ! is.null(cross.info) && hasSampleIDs(cross.info) ) {
+        
+        ind <- getSamples(cross.info)
+        
+    } else {
+        
+        id.col <- getIdColIndex(x)
+        
+        if ( ! is.null(id.col) ) {
+            ind <- as.character(x[[id.col]])
+        } else {
+            ind <- NULL
+        }
+    }
+    
+    return(ind)
 }
 
 # removeColsNA -----------------------------------------------------------------

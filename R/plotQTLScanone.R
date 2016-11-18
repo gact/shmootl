@@ -94,8 +94,8 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     x <- normSeq(x)
     
     # Get specified sequences.
-    lodprof.seqs <- unique( pullLocusSeq(x) )
-    chr <- lodprof.seqs <- subsetBySeq(lodprof.seqs, chr)
+    x.seqs <- pull.chr(x)
+    chr <- x.seqs <- subsetBySeq(x.seqs, chr)
     stopifnot( length(chr) > 0 )
     
     # Subset scanone result by specified sequences.

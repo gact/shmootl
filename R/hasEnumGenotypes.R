@@ -11,25 +11,7 @@
 #' @keywords internal
 #' @rdname hasEnumGenotypes
 hasEnumGenotypes <- function(x) {
-    UseMethod('hasEnumGenotypes', x)
-}
-
-# hasEnumGenotypes.cross -------------------------------------------------------
-#' @export
-#' @rdname hasEnumGenotypes
-hasEnumGenotypes.cross <- function(x) {
-    crosstype <- pull.crosstype(x)
-    alleles <- pull.alleles(x)
-    genotypes <- makeGenotypeSet(alleles, crosstype)
-    return( all( isEnumGenotype(genotypes) ) )
-}
-
-# hasEnumGenotypes.geno --------------------------------------------------------
-#' @export
-#' @rdname hasEnumGenotypes
-hasEnumGenotypes.geno <- function(x) {
-    alleles <- pull.alleles(x)
-    return( all( isEnumAllele(alleles) ) )
+    return( all( isEnumAllele( pull.alleles(x) ) ) )
 }
 
 # End of hasEnumGenotypes.R ####################################################

@@ -459,7 +459,7 @@ findFlanking.map <- function(x, loc, expandtomarkers=FALSE) {
     }
     
     # Get locus mapframe sequence.
-    loc.seq <- unique( pullLocusSeq(loc) )
+    loc.seq <- pull.chr(loc)
     
     # Check that locus mapframe refers to one sequence.
     # NB: implicitly checks that loc has one or more rows.
@@ -572,7 +572,7 @@ findFlankingRowIndices <- function(x, loc, expandtomarkers=FALSE) {
     x.seqs <- pullLocusSeq(x)
     
     # Get locus mapframe sequence.
-    loc.seq <- unique( pullLocusSeq(loc) )
+    loc.seq <- pull.chr(loc)
     
     # Check that loc mapframe refers to one sequence.
     # NB: implicitly checks that loc has one or more rows.
@@ -3234,7 +3234,7 @@ validateMapframe.data.frame <- function(x) {
         }
 
         tryCatch({
-            norm.map.seqs <- normSeq( unique( pullLocusSeq(x) ) ) # NB: validates sequence labels.
+            norm.map.seqs <- normSeq( pull.chr(x) ) # NB: validates sequence labels.
         }, error=function(e) {
             stop("mapframe-like object has invalid sequence labels")
         })
@@ -3294,7 +3294,7 @@ validateMapframe.mapframe <- function(x) {
             }
         }
         
-        map.seqs <- unique( pullLocusSeq(x) )
+        map.seqs <- pull.chr(x)
         invalid <- map.seqs[ ! isNormSeq(map.seqs) ]
         if ( length(invalid) > 0 ) {
             stop("mapframe has invalid sequence labels - '",

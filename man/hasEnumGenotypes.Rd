@@ -2,15 +2,9 @@
 % Please edit documentation in R/hasEnumGenotypes.R
 \name{hasEnumGenotypes}
 \alias{hasEnumGenotypes}
-\alias{hasEnumGenotypes.cross}
-\alias{hasEnumGenotypes.geno}
 \title{Test if object contains enumerated genotypes.}
 \usage{
 hasEnumGenotypes(x)
-
-\method{hasEnumGenotypes}{cross}(x)
-
-\method{hasEnumGenotypes}{geno}(x)
 }
 \arguments{
 \item{x}{Object containing genotype data.}
