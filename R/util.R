@@ -903,6 +903,55 @@ getPhenoColIndices.data.frame <- function(x, pheno.col=NULL) {
     return(indices)
 }
 
+# getPhenotypes.summary.scantwoperm --------------------------------------------
+#' Get phenotype names.
+#' 
+#' @param x Object that may contain phenotype names.
+#' 
+#' @return Character vector of phenotype names. Returns
+#' \code{NULL} if the object does not contain phenotype names.
+#' 
+#' @export
+#' @keywords internal
+#' @rdname getPhenotypes.summary.scantwoperm
+getPhenotypes.summary.scantwoperm <- function(x) {
+    
+    stopifnot( 'summary.scantwoperm' %in% class(x) ) # TODO: implement generic.
+    
+    # Assume consistent phenotype names.
+    inconsistent <- FALSE
+    
+    # Get column names of each scantwo threshold matrix.
+    phenames.vectors <- lapply(unname(x), colnames)
+    
+    # Get names of thresholds for which threshold matrix has no column names.
+    unnamed.columns <- names(x)[ sapply(phenames.vectors, is.null) ]
+    
+    # If all threshold matrices have column names..
+    if ( length(unnamed.columns) == 0 ) {
+        
+        # ..and if those column names are consistent, take as phenotype names..
+        if ( length( unique(phenames.vectors) ) == 1 ) {
+            phenotypes <- phenames.vectors[[1]]
+        } else {
+            inconsistent <- TRUE
+        }
+        
+    # ..otherwise check that phenotype names are at least
+    # consistently absent from all threshold matrices.
+    } else if ( length(unnamed.columns) == length(x) ) {
+        phenotypes <- NULL
+    } else {
+        inconsistent <- TRUE
+    }
+    
+    if (inconsistent) {
+        stop("inconsistent phenotype names in 'summary.scantwoperm' object")
+    }
+    
+    return(phenotypes)
+}
+
 # getRowIndices ----------------------------------------------------------------
 #' Get row indices of object.
 #' 
