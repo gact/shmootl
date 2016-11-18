@@ -3004,7 +3004,6 @@ validateResultsOverview <- function(overview) {
     }
     
     if ( is.unsorted(phenotypes, strictly=TRUE) ) { # NB: also ensures no duplicates
-        print(phenotypes)
         stop("results overview phenotypes are out of order")
     }
     
