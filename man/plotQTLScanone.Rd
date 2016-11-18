@@ -37,7 +37,7 @@ recycled to match the number of sequences being plotted. As in the package
 
 \item{gap}{Gap (in cM) between chromosomes in multi-chromosome plots.}
 
-\item{phenotype}{Name of the phenotype, to be used in plot title.}
+\item{phenotype}{Name of the phenotype, to be shown in plot information.}
 
 \item{type}{Type of plot. Set to \code{'l'} to output a stanard LOD curve, or
 to \code{'p'} for a Manhattan plot of individual LOD scores.}

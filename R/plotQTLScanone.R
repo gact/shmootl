@@ -25,7 +25,7 @@
 #' recycled to match the number of sequences being plotted. As in the package
 #' \pkg{qqman}, this defaults to two alternating monochrome shades.
 #' @param gap Gap (in cM) between chromosomes in multi-chromosome plots.
-#' @param phenotype Name of the phenotype, to be used in plot title.
+#' @param phenotype Name of the phenotype, to be shown in plot information.
 #' @param type Type of plot. Set to \code{'l'} to output a stanard LOD curve, or
 #' to \code{'p'} for a Manhattan plot of individual LOD scores.
 #' @param ... Unused arguments.
@@ -56,6 +56,9 @@
 plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     threshold=NULL, col=c('gray10', 'gray60'), gap=25, phenotype=NULL,
     type=NULL, ...) {
+    
+    opar <- graphics::par(no.readonly=TRUE)
+    on.exit( graphics::par(opar) )
     
     stopifnot( 'scanone' %in% class(x) )
     stopifnot( isSinglePositiveWholeNumber(gap) )
@@ -104,33 +107,6 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     # Get sequences and positions of individual scanone result loci.
     locus.seqs <- pullLocusSeq(x)
     
-    # If phenotype specified, add it to plot title..
-    if ( ! is.null(phenotype) ) {
-        
-        stopifnot( isSingleString(phenotype) )
-        plot.title <- paste0("LOD Plot (", phenotype, ")")
-        
-    } else {
-        
-        # ..otherwise get the name of the given LOD column.
-        profile.phename <- colnames(x)[lodcol.index]
-        
-        # If LOD column name is a phenotype, add it to plot title..
-        if ( profile.phename != 'lod' ) {
-            
-            plot.title <- paste0("LOD Plot (", profile.phename, ")")
-            
-        } else { # ..otherwise set default plot title.
-            
-            plot.title <- "LOD Plot"
-        }
-    }
-    
-    # For single-sequence plots, add sequence label to plot title.
-    if ( length(chr) == 1 ) {
-        plot.title <- paste('Chromosome', chr, plot.title)
-    }
-    
     # Replace any NA values with zero.
     # TODO: consider removing these
     x[ is.na(x[, lodcol.index]), lodcol.index] <- 0
@@ -142,6 +118,8 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     # Set maximum y-value, ensure greater than or equal to one.
     max.lod <- max( x[, lodcol.index], tinfo[['threshold']], 1.0, na.rm=TRUE )
     
+    # Assemble sequence plotting info ------------------------------------------
+    
     # Set width of gaps between sequences.
     gap.width <- ifelse(length(chr) > 1, gap, 0)
     
@@ -152,7 +130,6 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     seq.par <- matrix( NA_real_, nrow=length(chr), ncol=3,
         dimnames=list(chr, c('offset', 'midpoint', 'length') ) )
     
-    # Assemble sequence plotting info.
     for ( i in seq_along(chr) ) {
         
         if ( length(chr) > 1 ) {
@@ -176,6 +153,36 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
         }
     }
     
+    # Assemble general plot info -----------------------------------------------
+    
+    plot.info <- mapping()
+    
+    # Get phenotype from argument or LOD column, if possible.
+    if ( ! is.null(phenotype) ) {
+        stopifnot( isSingleString(phenotype) )
+        plot.info['Phenotype'] <- phenotype
+    } else {
+        profile.phename <- colnames(x)[lodcol.index]
+        if ( profile.phename != 'lod' ) {
+            plot.info['Phenotype'] <- profile.phename
+        }
+    }
+    
+    # For single-sequence plots, add sequence label to plot info.
+    if ( length(chr) == 1 ) {
+        plot.info['Chromosome'] <- chr
+    }
+    
+    # --------------------------------------------------------------------------
+    
+    # Set top margin line counts, accounting for any plot info lines.
+    adj.top.mar <- length(plot.info) + 4 # NB: minimum 4 margin lines
+    graphics::par( mar=(c(5, 4, adj.top.mar, 2) + 0.1) )
+    
+    # Set plot info margin indices.
+    plot.info.indices <- rev( seq_along(plot.info) )
+    plot.title.index <- adj.top.mar - 2
+    
     # Set x-axis plotting parameters; values taken from R/qtl.
     if ( length(chr) > 1 ) {
         xlim <- c(-(0.5 * gap.width), cum.plot.width + (0.5 * gap.width))
@@ -196,7 +203,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     fixed.args <- list(family='sans', xaxs='i', xpd=FALSE, yaxs='i')
     
     # Set default plotting arguments; defaults taken from R/qtl and R/qqman.
-    default.args <- list(bg='white', cex=1, las=1, lty=1, main=plot.title,
+    default.args <- list(bg='white', cex=1, las=1, lty=1,
         xaxt=xaxt, xlab=xlab, xlim=xlim, ylab=ylab, ylim=ylim)
     
     # Set args from fixed and default values.
@@ -356,7 +363,23 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
         }
     }
     
+    # Plot box around graph.
     box(lwd=3)
+    
+    # Write plot title.
+    title(main='Scanone', line=plot.title.index, cex=1.2, col='black', family='sans')
+    
+    # If any plot info, add to top margin.
+    if ( length(plot.info) > 0 ) {
+        
+        plot.info.lines <- sapply( mappingKeys(plot.info), function(k)
+            paste0(k, ': ', plot.info[k]) )
+        
+        for ( i in seq_along(plot.info.lines) ) {
+            mtext(plot.info.lines[i], line=plot.info.indices[i], side=3, adj=0,
+                cex=1.0, col='black', family='sans', font=1)
+        }
+    }
     
     return( invisible() )
 }
