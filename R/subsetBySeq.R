@@ -79,4 +79,28 @@ subsetBySeq.qtlintervals <- function(x, sequences=NULL) {
     return(x)
 }
 
+# subsetBySeq.scantwo ----------------------------------------------------------
+#' @rdname subsetBySeq
+subsetBySeq.scantwo <- function(x, sequences=NULL) {
+    
+    if ( ! is.null(sequences) ) {
+        
+        stopifnot( is.null(x$scanoneX) )
+        
+        indices <- matchSeqRowIndices(x$map, sequences, simplify=TRUE)
+        
+        x$map <- x$map[indices, ]
+        
+        if ( ! is.matrix(x$lod) ) {
+            x$lod <- x$lod[indices, indices, ]
+        } else {
+            x$lod <- x$lod[indices, indices]
+        }
+        
+        attr(x, 'fullmap') <- subsetBySeq(attr(x, 'fullmap'), sequences)
+    }
+    
+    return(x)
+}
+
 # End of subsetBySeq.R #########################################################
