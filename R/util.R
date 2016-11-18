@@ -1,5 +1,49 @@
 # Start of util.R ##############################################################
 
+# addXInfo ---------------------------------------------------------------------
+#' Add experiment info to the given matrix.
+#' 
+#' @param tab A \code{matrix} to which experiment info will be added.
+#' @param col.index Index of the column in \code{tab} at which experiment
+#' info will be inserted. Columns in the original \code{tab} matrix that
+#' have an index equal to or greater than \code{col.index} will be moved
+#' to the right of the inserted experiment info in the returned matrix.
+#' @param xinfo A \code{matrix} of experiment info.
+#' 
+#' @return The input matrix with experiment info added at the specified column.
+#' 
+#' @keywords internal
+#' @rdname addXInfo
+addXInfo <- function(x, xinfo) {
+    
+    stopifnot( is.matrix(x) )
+    stopifnot( all( dim(x) > 0 ) )
+    stopifnot( typeof(x) == 'character' )
+    stopifnot( colnames(x)[1] == 'File' )
+    stopifnot( is.matrix(xinfo) )
+    stopifnot( all( dim(xinfo) > 0 ) )
+    stopifnot( typeof(x) == 'character' )
+    stopif( anyDuplicated( rownames(xinfo) ) )
+    stopif( any( colnames(xinfo) %in% colnames(x) ) )
+    
+    scanfiles <- as.character(x[, 'File'])
+    
+    index.list <- lapply( seq_along(scanfiles), function(i)
+        which( rownames(xinfo) == scanfiles[i] ) )
+    
+    mxinfo <- matrix(NA_character_, nrow=nrow(x), ncol=ncol(xinfo),
+        dimnames=list(NULL, colnames(xinfo)))
+    for ( i in seq_along(index.list) ) {
+        if ( length(index.list[[i]]) == 1 ) {
+            mxinfo[i, ] <- xinfo[ index.list[[i]], ]
+        }
+    }
+    
+    x <- cbind(x[, 1, drop=FALSE], mxinfo, x[, -1, drop=FALSE])
+    
+    return(x)
+}
+
 # allKwargs --------------------------------------------------------------------
 #' Test if ellipsis arguments are all keyword arguments.
 #' 

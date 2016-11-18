@@ -263,15 +263,7 @@ writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
         
         # Add experiment info, if available.
         if ( ! is.null(xinfo) ) {
-            
-            row.indices <- sapply( getRowIndices(tab), function(i)
-                which( rownames(xinfo) == tab[i, 'File'] ) )
-            
-            scanfile.table <- xinfo[row.indices, ]
-            rownames(scanfile.table) <- NULL
-            
-            tab <- cbind(tab[, 1, drop=FALSE], scanfile.table,
-                tab[, -1, drop=FALSE])
+            tab <- addXInfo(tab, xinfo)
         }
         
         # Set QTL intervals table.
