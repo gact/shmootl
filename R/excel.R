@@ -114,6 +114,36 @@ writeDigestExcel <- function(scanfiles, digest, phenotypes=NULL,
     return( invisible() )
 }
 
+# writeReportExcel -------------------------------------------------------------
+#' Write an Excel report of QTL scan results.
+#' 
+#' @param scanfile A QTL scan result HDF5 file.
+#' @param report Path of output report Excel file.
+#' @inheritParams writeWorkbookExcel
+#' 
+#' @template author-yue-hu
+#' @template author-thomas-walsh
+#' 
+#' @export
+#' @family report functions
+#' @family Excel functions
+#' @rdname writeReportExcel
+writeReportExcel <- function(scanfile, report, phenotypes=NULL,
+    analyses=NULL, worksheets=NULL, scanfile.pattern=NULL) {
+    
+    stopifnot( isSingleString(scanfile) )
+    
+    if ( is.null(worksheets) ) {
+        worksheets <- const$default.worksheets[['report']]
+    }
+    
+    writeWorkbookExcel(scanfile, report, phenotypes=phenotypes,
+        analyses=analyses, worksheets=worksheets,
+        scanfile.pattern=scanfile.pattern)
+    
+    return( invisible() )
+}
+
 # writeWorkbookExcel -----------------------------------------------------------
 #' Write an Excel workbook of QTL analysis results.
 #' 

@@ -16,6 +16,7 @@ as these are included in every output spreadsheet file.
 List available output worksheets.
 }
 \seealso{
-Other Excel functions: \code{\link{writeDigestExcel}}
+Other Excel functions: \code{\link{writeDigestExcel}},
+  \code{\link{writeReportExcel}}
 }
 

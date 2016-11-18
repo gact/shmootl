@@ -5,7 +5,8 @@
 \title{Create report of QTL analysis results.}
 \usage{
 run_report(h5file = NA_character_, report = NA_character_,
-  pheno = character(), scans = character())
+  pheno = character(), scans = character(), sheets = character(),
+  scanfile.pattern = NA_character_)
 }
 \arguments{
 \item{h5file}{HDF5 scan file [required]}
@@ -15,12 +16,17 @@ run_report(h5file = NA_character_, report = NA_character_,
 \item{pheno}{phenotypes to output [default: all]}
 
 \item{scans}{analyses to output [default: all]}
+
+\item{sheets}{worksheets to output (Excel only)}
+
+\item{scanfile.pattern}{scan file name pattern (Excel only)}
 }
 \description{
 Given a scan result HDF5 file, create a report of the results of the QTL
-analysis. Results can be output for specific phenotypes and analyses.
-These output constraints are applied with parameters \code{pheno} and
-\code{scans}, respectively.
+analysis. Results can be output for specific phenotypes, analyses, and,
+in the case of Excel output, worksheets. These output constraints are
+applied with parameters \code{pheno}, \code{scans}, and \code{sheets},
+respectively.
 }
 \seealso{
 Other pipeline functions: \code{\link{run_annoqtl}},
