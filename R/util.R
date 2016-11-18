@@ -239,6 +239,88 @@ dispatchFromClassS3 <- function(generic, class.vector, package) {
     return( get(func.name) )
 }
 
+# ellipt -----------------------------------------------------------------------
+#' Ellipt string to the given length.
+#' 
+#' @param s String to ellipt.
+#' @param n Maximum number of characters in the output string. If the string is
+#' ellipted, this includes the number of characters in the ellipses themselves.
+#' @param left Indicates if the string should be
+#' ellipted at the start ('left') of the string.
+#' @param right Indicates if the string should be
+#' ellipted at the end ('right') of the string.
+#' 
+#' @return Input string ellipted to the specified length.
+#' 
+#' @keywords internal
+#' @rdname ellipt
+ellipt <- function(s, n, left=FALSE, right=FALSE) {
+    
+    stopifnot( isSingleString(s) )
+    stopifnot( isSinglePositiveNumber(n) )
+    stopifnot( isBOOL(left) )
+    stopifnot( isBOOL(right) )
+    
+    ellipsis = '...'
+    
+    if ( left && right ) {
+        ellipses.nchar <- 2 * nchar(ellipsis)
+    } else {
+        ellipses.nchar <- nchar(ellipsis)
+    }
+    
+    # Get length of input string that will
+    # remain after it has been ellipted.
+    ellipted.nchar <- n - ellipses.nchar
+    
+    stopifnot( ellipted.nchar > 0 )
+    
+    # Ellipt input string if longer than specified number of characters.
+    if ( nchar(s) > n ) {
+        
+        if ( left && right ) {
+            
+            m <- nchar(s) %/% 2
+            rm <- nchar(s) %% 2
+            h <- ellipted.nchar %/% 2
+            rh <- ellipted.nchar %% 2
+            
+            i <- (m + rm) - (h + rh) + 1
+            j <- i + ellipted.nchar - 1
+            
+            s <- paste0(ellipsis, substr(s, i, j), ellipsis)
+            
+        } else if (left) {
+            
+            j <- nchar(s)
+            i <- j - ellipted.nchar + 1
+            
+            s <- paste0(ellipsis, substr(s, i, j))
+            
+        } else if (right) {
+            
+            i <- 1
+            j <- ellipted.nchar
+            
+            s <- paste0(substr(s, i, j), ellipsis)
+            
+        } else {
+            
+            h <- ellipted.nchar %/% 2
+            rh <- ellipted.nchar %% 2
+            
+            i1 <- 1
+            j1 <- h + rh
+            j2 <- nchar(s)
+            i2 <- j2 - h + 1
+            
+            s <- paste0(substr(s, i1, j1), ellipsis, substr(s, i2, j2))
+        }
+    }
+    
+    return(s)
+}
+
 # emptyArgs --------------------------------------------------------------------
 #' Test if ellipsis arguments are empty.
 #' 

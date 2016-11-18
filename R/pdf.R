@@ -1,5 +1,61 @@
 # Start of pdf.R ###############################################################
 
+# plotReportTitlePagePDF -------------------------------------------------------
+#' Plot a QTL analysis report title page.
+#' 
+#' @param scanfile File path of HDF5 scan file
+#' from which the report is being generated.
+#' 
+#' @keywords internal
+#' @rdname plotReportTitlePagePDF
+plotReportTitlePagePDF <- function(scanfile) {
+    
+    opar <- graphics::par(no.readonly=TRUE)
+    on.exit( graphics::par(opar), add=TRUE )
+    
+    stopifnot( isSingleString(scanfile) )
+    stopifnot( file.exists(scanfile) )
+    
+    graphics::par( mar=rep(4.1, 4) )
+    
+    xlim <- ylim <- c(0.0, 1.0)
+    
+    plot(NA, bg='white', bty='n', fg='black', type='n', xaxt='n', xlab='',
+        xlim=xlim, yaxt='n', ylab='', ylim=0:1)
+    
+    text(0.5, 0.75, 'QTL Analysis Report', adj=0.5,
+        cex=2.0, family='sans', font=2)
+    
+    ipar <- list(cex=1, family='mono', font=1)
+    
+    line.spacing <- 2 * strheight(' ', cex=ipar$cex,
+        family=ipar$family, font=ipar$font)
+    
+    midline <- 0.5
+    
+    usr <- graphics::par('usr')
+    rect(usr[1], midline - 4*line.spacing, usr[2],
+        midline + 1*line.spacing, lty=1, lwd=3)
+    
+    plot.width <- diff(xlim)
+    char.width <- strwidth(' ', cex=ipar$cex, family=ipar$family, font=ipar$font)
+    max.nchar <- floor( plot.width / char.width )
+    
+    max.file.nchar <- max.nchar - nchar('File: ')
+    scanfile <- ellipt(scanfile, max.file.nchar, left=FALSE, right=FALSE)
+    
+    file.line <- paste0('File: ', scanfile)
+    text(0.0, midline - 1*line.spacing, file.line, adj=0,
+        cex=ipar$cex, family=ipar$family, font=ipar$font)
+    
+    date.line <- paste('Date:', Sys.Date())
+    text(0.0, midline - 2*line.spacing, date.line, adj=0,
+        cex=ipar$cex, family=ipar$family, font=ipar$font)
+    
+    return( invisible() )
+}
+
+
 # writeReportPDF ---------------------------------------------------------------
 #' Write a PDF report of QTL scan results.
 #'  
@@ -112,6 +168,9 @@ writeReportPDF <- function(scanfile, report, analyses=NULL) {
         plot.device <- NULL
         stop("failed to load graphics device")
     }
+    
+    # Output report title page.
+    plotReportTitlePagePDF(scanfile)
     
     # Write output for each phenotype.
     for ( i in seq_along(result.info) ) {
