@@ -67,10 +67,13 @@ allKwargs <- function(...) {
 #' @return \code{TRUE} if vector is of length zero or
 #' contains only \code{NA} values; \code{FALSE} otherwise.
 #' 
+#' @template author-thomas-walsh
+#' @template author-yue-hu
+#'
 #' @keywords internal
 #' @rdname allNA
 allNA <- function(x) {
-    stopifnot( is.vector(x) )
+    stopifnot( is.vector(x) || is.factor(x) )
     return( all( is.na(x) ) )
 }
 

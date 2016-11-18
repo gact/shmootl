@@ -16,5 +16,10 @@ contains only \code{NA} values; \code{FALSE} otherwise.
 \description{
 Test if all elements are \code{NA} values.
 }
+\author{
+Thomas Walsh <tw164@le.ac.uk>
+
+Yue Hu
+}
 \keyword{internal}
 
