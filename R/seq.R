@@ -160,6 +160,24 @@ normSeq.numeric <- function(x) {
     return( normSeq( as.character(x) ) )
 }
 
+# normSeq.scantwo --------------------------------------------------------------
+#' @export
+#' @rdname normSeq
+normSeq.scantwo <- function(x) {
+    
+    stopifnot( is.null(x$scanoneX) )
+    
+    # Normalise sequences in scantwo fullmap attribute.
+    attr(x, 'fullmap') <- normSeq( attr(x, 'fullmap') )
+    
+    # Normalise sequences in scantwo map, leaving column classes unchanged.
+    colClasses <- sapply(x$map, class)
+    x$map <- normSeq(x$map)
+    x$map <- coerceDataFrame(x$map, colClasses)
+    
+    return(x)
+}
+
 # orderSeq ---------------------------------------------------------------------
 #' Order sequence labels. 
 #'  

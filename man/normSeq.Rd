@@ -8,6 +8,7 @@
 \alias{normSeq.integer}
 \alias{normSeq.map}
 \alias{normSeq.numeric}
+\alias{normSeq.scantwo}
 \title{Normalise sequence labels.}
 \usage{
 normSeq(x)
@@ -23,6 +24,8 @@ normSeq(x)
 \method{normSeq}{map}(x)
 
 \method{normSeq}{numeric}(x)
+
+\method{normSeq}{scantwo}(x)
 }
 \arguments{
 \item{x}{Object containing sequence labels.}
