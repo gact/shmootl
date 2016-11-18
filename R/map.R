@@ -2012,6 +2012,7 @@ matchLocusRowIndices <- function(x, loc) {
 #' 
 #' @param x A \code{mapframe} object.
 #' @param sequences Sequences for which row indices should be returned.
+#' @param simplify Simplify list return value to a vector.
 #' 
 #' @return Vector of row indices corresponding to the specified sequences. An
 #' empty vector is returned if no sequences match the input \code{mapframe}.

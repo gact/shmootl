@@ -10,6 +10,8 @@ matchSeqRowIndices(x, sequences, simplify = FALSE)
 \item{x}{A \code{mapframe} object.}
 
 \item{sequences}{Sequences for which row indices should be returned.}
+
+\item{simplify}{Simplify list return value to a vector.}
 }
 \value{
 Vector of row indices corresponding to the specified sequences. An
