@@ -28,6 +28,8 @@ run_recode <- function(datafile=NA_character_, geno=mapping(),
     
     stopifnot( isSingleString(datafile) )
     
+    geno <- if ( ! identical(geno, NA_character_) ) { geno } else { NULL }
+    
     tmp <- tempfile()
     on.exit( file.remove(tmp) )
     
