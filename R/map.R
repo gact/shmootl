@@ -2986,7 +2986,7 @@ setupDefaultMapkeys <- function() {
 subsetMap <- function(x, ...) {
     stopifnot( 'map' %in% class(x) )
     others <- otherattributes(x)
-    x <- subset(x, subset)
+    x <- subset(x, ...)
     otherattributes(x) <- others
     return(x)
 }
