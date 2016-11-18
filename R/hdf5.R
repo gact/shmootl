@@ -350,6 +350,91 @@ getResultAnalysesHDF5 <- function(infile, phenotype) {
     return(analyses)
 }
 
+# getResultInfoHDF5 ------------------------------------------------------------
+#' Get result info for the given HDF5 scan files.
+#' 
+#' @param infile Vector of input HDF5 scan file paths.
+#' @param phenotypes Phenotypes (or equivalent analysis units) for which result
+#' info should be obtained. If none are specified, result info is returned for
+#' all available phenotypes.
+#' @param analyses Analyses for which result info should be obtained. If none
+#' are specified, result info is returned for all available analyses.
+#' 
+#' @return Hierarchical list containing result info for each of the input HDF5
+#' scan files. Each element of the returned list is named for a specific HDF5
+#' scan file, and contains a sub-list of result info for the given scan file.
+#' Each element of the sub-list is named for a specific phenotype, and contains
+#' a sub-sub-list of result info for the given scan file and phenotype. Every
+#' element of that sub-sub-list is named for a specific analysis, and is a
+#' character vector of results for the given scan file, phenotype, and analysis.
+#' 
+#' @keywords internal
+#' @rdname getResultInfoHDF5
+getResultInfoHDF5 <- function(infiles, phenotypes=NULL, analyses=NULL) {
+    
+    stopifnot( is.character(infiles) )
+    
+    rinfo <- list()
+    
+    for ( infile in infiles ) {
+        
+        if ( ! file.exists(infile) ) {
+            stop("file not found - '", infile, "'")
+        }
+        
+        if ( ! hasObjectHDF5(infile, 'Results') ) {
+            stop("results not found in file '", infile, "'")
+        }
+        
+        finfo <- list()
+        
+        phenotypes.found <- getResultPhenotypesHDF5(infile)
+        
+        if ( ! is.null(phenotypes) ) {
+            relevant.phenotypes <- unique(phenotypes)
+        } else {
+            relevant.phenotypes <- phenotypes.found
+        }
+        
+        if ( ! is.null(analyses) ) {
+            relevant.analyses <- unique( resolveAnalysisTitle(analyses) )
+        }
+        
+        for ( phenotype in relevant.phenotypes ) {
+            
+            if ( phenotype %in% phenotypes.found ) {
+                
+                results <- list()
+                
+                analyses.found <- getResultAnalysesHDF5(infile, phenotype)
+                
+                if ( is.null(analyses) ) {
+                    relevant.analyses <- analyses.found
+                }
+                
+                for ( analysis in relevant.analyses ) {
+                    
+                    if ( analysis %in% analyses.found ) {
+                        
+                        results[[analysis]] <- getResultNamesHDF5(
+                            infile, phenotype, analysis)
+                    }
+                }
+                
+                if ( length(results) > 0 ) {
+                    finfo[[phenotype]] <- results
+                }
+            }
+        }
+        
+        if ( length(finfo) > 0 ) {
+            rinfo[[infile]] <- finfo
+        }
+    }
+    
+    return(rinfo)
+}
+
 # getResultNamesHDF5 -----------------------------------------------------------
 #' Get names of results for a given phenotype and analysis.
 #' 
