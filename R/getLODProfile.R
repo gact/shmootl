@@ -7,15 +7,15 @@
 #' ## Generic method.
 #' getLODProfile(x, ...)
 #'
-#' @param x Object containing LOD profile data.
+#' @param x Object containing single-QTL LOD profile data.
 #' @param ... Further arguments (see below).
 #' @template param-lodcolumn
 #' @param qtl.index In a \code{qtl} object, this indicates
 #' the QTL for which a LOD profile should be returned.
-#'   
+#' 
 #' @return A \code{scanone} object containing
 #' a LOD profile for a single phenotype.
-#'   
+#' 
 #' @export
 #' @rdname getLODProfile
 getLODProfile <- function(x, ...) {
@@ -67,6 +67,35 @@ getLODProfile.qtl <- function(x, qtl.index=NULL, ...) {
         
     # Get LOD profile for given QTL.
     lod.profile <- lod.profiles[[qtl.index]]
+    
+    return(lod.profile)
+}
+
+# getLODProfile.scantwo --------------------------------------------------------
+#' @export
+#' @rdname getLODProfile
+getLODProfile.scantwo <- function(x, lodcolumn=NULL, ...) {
+    
+    lodcol.index <- getLodColIndex(x, lodcolumn=lodcolumn)
+    
+    if ( ! is.matrix(x$lod) ) {
+        scantwo.matrix <- x$lod[,, lodcol.index]
+    } else {
+        scantwo.matrix <- x$lod
+    }
+    
+    locus.ids <- pullLocusIDs(x$map)
+    locus.seqs <- pullLocusSeq(x$map)
+    locus.pos <- pullLocusPos(x$map)
+    locus.lods <- diag(scantwo.matrix)
+    
+    lod.profile <- data.frame(
+        row.names=locus.ids,
+        chr=locus.seqs,
+        pos=locus.pos,
+        lod=locus.lods,
+    stringsAsFactors = default.stringsAsFactors() )
+    class(lod.profile) <- c('scanone', 'data.frame')
     
     return(lod.profile)
 }

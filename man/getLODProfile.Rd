@@ -4,6 +4,7 @@
 \alias{getLODProfile}
 \alias{getLODProfile.data.frame}
 \alias{getLODProfile.qtl}
+\alias{getLODProfile.scantwo}
 \title{Get LOD profile.}
 \usage{
 ## Generic method.
@@ -12,9 +13,11 @@ getLODProfile(x, ...)
 \method{getLODProfile}{data.frame}(x, lodcolumn = NULL, ...)
 
 \method{getLODProfile}{qtl}(x, qtl.index = NULL, ...)
+
+\method{getLODProfile}{scantwo}(x, lodcolumn = NULL, ...)
 }
 \arguments{
-\item{x}{Object containing LOD profile data.}
+\item{x}{Object containing single-QTL LOD profile data.}
 
 \item{...}{Further arguments (see below).}
 
