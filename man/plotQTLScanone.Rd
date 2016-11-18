@@ -62,6 +62,8 @@ using Q-Q and manhattan plots.
 (\href{http://dx.doi.org/10.1101/005165}{bioRXiv})
 }
 \seealso{
+Other plot functions: \code{\link{plotQTLScantwo}}
+
 Other QTL functions: \code{\link{estPhysicalPositions}},
   \code{\link{getQTLFeatures}},
   \code{\link{getQTLIntervals}}, \code{\link{getQTLPeaks}}

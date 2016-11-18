@@ -8,7 +8,6 @@ environment. Utility functions are available from within R.
 
 This package depends on the following:
 
-- [abind](https://cran.r-project.org/web/packages/abind/index.html)
 - [argparser](https://cran.r-project.org/web/packages/argparser/index.html)
 - [Bioconductor](http://www.bioconductor.org/)
 - [Biostrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html)
@@ -18,8 +17,13 @@ This package depends on the following:
 - [rhdf5](http://bioconductor.org/packages/release/bioc/html/rhdf5.html)
 - [rtracklayer](http://bioconductor.org/packages/devel/bioc/html/rtracklayer.html)
 - [VariantAnnotation](https://bioconductor.org/packages/release/bioc/html/VariantAnnotation.html)
-- [xlsx](https://cran.r-project.org/web/packages/xlsx/index.html)
 - [yaml](https://cran.r-project.org/web/packages/yaml/index.html)
+
+In addition, the following suggested packages are each needed for a specific use:
+
+- [abind](https://cran.r-project.org/web/packages/abind/index.html): estimating FDR in single-QTL analysis
+- [viridis](https://cran.r-project.org/web/packages/viridis/index.html): plotting with the Viridis palette
+- [xlsx](https://cran.r-project.org/web/packages/xlsx/index.html): writing Excel output
 
 ## Installation 
 
@@ -35,10 +39,11 @@ install.packages('qtl')
 install.packages('yaml')
 ```
 
-Optional packages `abind` and `xlsx` can also be installed in this way:
+Suggested packages `abind`, `viridis` and `xlsx` can also be installed in this way:
 
 ```
 install.packages('abind')
+install.packages('viridis')
 install.packages('xlsx')
 ```
 
