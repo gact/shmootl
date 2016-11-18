@@ -5,7 +5,7 @@
 #' 
 #' This function returns the current value of the \pkg{shmootl} genome option.
 #' If a genome is specified, the \pkg{shmootl} genome option is updated with the
-#' given value. Call the function \code{\link{getGenomes}} to see available
+#' given value. Call the function \code{\link{listGenomes}} to see available
 #' genomes.
 #' 
 #' @param value New value of genome option.
@@ -36,15 +36,16 @@ genomeOpt <- function(value) {
     return(result)
 }
 
-# getGenomes -------------------------------------------------------------------
-#' Get \pkg{shmootl} genome names.
+# listGenomes ----------------------------------------------------------
+#' List available genomes.
 #' 
-#' @return Character vector of \pkg{shmootl} genome names.
+#' @return Character vector containing the names
+#' of genomes that are available in \pkg{shmootl}.
 #' 
 #' @export
 #' @family genome functions
-#' @rdname getGenomes
-getGenomes <- function() {
+#' @rdname listGenomes
+listGenomes <- function() {
     return( names(const$seqtab) )
 }
 

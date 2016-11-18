@@ -15,11 +15,11 @@ Current value of genome option.
 \description{
 This function returns the current value of the \pkg{shmootl} genome option.
 If a genome is specified, the \pkg{shmootl} genome option is updated with the
-given value. Call the function \code{\link{getGenomes}} to see available
+given value. Call the function \code{\link{listGenomes}} to see available
 genomes.
 }
 \seealso{
-Other genome functions: \code{\link{getGenomes}}
+Other genome functions: \code{\link{listGenomes}}
 
 Other package option functions: \code{\link{mapkeyOpt}}
 }
