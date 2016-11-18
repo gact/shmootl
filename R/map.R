@@ -2248,6 +2248,13 @@ pullMap <- function(x) {
     UseMethod('pullMap', x)
 }
 
+# pullMap.cross ----------------------------------------------------------------
+#' @method pullMap cross
+#' @rdname pullMap
+pullMap.cross <- function(x) {
+    return( qtl::pull.map(x) )
+}
+
 # pullMap.geno -----------------------------------------------------------------
 #' @method pullMap geno
 #' @rdname pullMap

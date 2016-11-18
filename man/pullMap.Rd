@@ -2,10 +2,13 @@
 % Please edit documentation in R/map.R
 \name{pullMap}
 \alias{pullMap}
+\alias{pullMap.cross}
 \alias{pullMap.geno}
 \title{Pull map from object.}
 \usage{
 pullMap(x)
+
+\method{pullMap}{cross}(x)
 
 \method{pullMap}{geno}(x)
 }
