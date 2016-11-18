@@ -18,6 +18,8 @@
 \alias{writeDatasetHDF5.scantwoperm}
 \alias{writeDatasetHDF5.summary.scanonebins}
 \alias{writeDatasetHDF5.summary.scanoneperm}
+\alias{writeDatasetHDF5.summary.scantwo}
+\alias{writeDatasetHDF5.summary.scantwoperm}
 \title{Write R object to an output HDF5 dataset.}
 \usage{
 writeDatasetHDF5(dataset, outfile, h5name, overwrite = FALSE, ...)
@@ -69,6 +71,12 @@ writeDatasetHDF5(dataset, outfile, h5name, overwrite = FALSE, ...)
 
 \method{writeDatasetHDF5}{summary.scanoneperm}(dataset, outfile, h5name,
   overwrite = FALSE, ...)
+
+\method{writeDatasetHDF5}{summary.scantwo}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
+
+\method{writeDatasetHDF5}{summary.scantwoperm}(dataset, outfile, h5name,
+  overwrite = FALSE, ...)
 }
 \arguments{
 \item{dataset}{R object.}
@@ -90,6 +98,11 @@ with its column name taken from this parameter.}
 The given R object is written to the named HDF5 dataset using
 the method for the given dataset type, as determined by the class of the R
 object.
+}
+\author{
+Thomas Walsh <tw164@le.ac.uk>
+
+Yue Hu
 }
 \keyword{internal}
 

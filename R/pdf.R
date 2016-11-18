@@ -79,7 +79,8 @@ writeReportPDF <- function(scanfile, report, phenotypes=NULL, analyses=NULL) {
     
     # Set possible results to be sought in scan file.
     results.sought <- supported.results <- list(
-        'Scanone' = c('Result')
+        'Scanone' = c('Result'),
+        'Scantwo' = c('Result')
     )
     
     # If analyses specified, filter results sought by given analyses.
@@ -213,6 +214,40 @@ writeReportPDF <- function(scanfile, report, phenotypes=NULL, analyses=NULL) {
                             threshold=scanone.threshold, chr=interval.seq,
                             phenotype=phenotype)
                     }
+                }
+            }
+        }
+        
+        if ( 'Scantwo' %in% names(roi) ) {
+            
+            if ( 'Scantwo' %in% names(rinfo[[scanfile]][[phenotype]]) &&
+                'Result' %in% rinfo[[scanfile]][[phenotype]][['Scantwo']] ) {
+                
+                lower <- 'cond-int'
+                upper <- 'int'
+                
+                scantwo.result <- readResultHDF5(scanfile,
+                    phenotype, 'Scantwo', 'Result')
+                
+                # Plot (zero or more) QTL pairs across all sequences.
+                plotQTLScantwo(scantwo.result, lower=lower,
+                    upper=upper, phenotype=phenotype)
+                
+                # Get sequences of significant QTL pairs.
+                qtl.pairs <- readResultHDF5(scanfile,
+                    phenotype, 'Scantwo', 'QTL Pairs')
+                
+                # If significant QTL pairs found, output
+                # a scantwo plot of the set of sequences
+                # with at least one significant QTL pair.
+                if ( ! is.null(qtl.pairs) ) {
+                    
+                    seq1 <- as.character( unique(qtl.pairs$chr1) )
+                    seq2 <- as.character( unique(qtl.pairs$chr2) )
+                    seqs <- sortSeq( unique( c(seq1, seq2) ) )
+                    
+                    plotQTLScantwo(scantwo.result, chr=seqs, lower=lower,
+                        upper=upper, phenotype=phenotype)
                 }
             }
         }

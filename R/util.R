@@ -69,7 +69,7 @@ allKwargs <- function(...) {
 #' 
 #' @template author-thomas-walsh
 #' @template author-yue-hu
-#'
+#' 
 #' @keywords internal
 #' @rdname allNA
 allNA <- function(x) {
@@ -2604,6 +2604,83 @@ makeScanoneThresholdObject <- function(threshold, lodcolnames='lod', alpha=NULL,
     x <- matrix( rep(threshold, length(lodcolnames)), nrow=length(level),
         ncol=length(lodcolnames), dimnames=list(level, lodcolnames))
     class(x) <- threshold.class
+    attr(x, 'n.perm') <- 0
+    
+    return(x)
+}
+
+# makeScantwoThresholdObject ---------------------------------------------------
+#' Make \code{scantwo} threshold object.
+#' 
+#' @param thresholds Mapping or vector of \code{scantwo} LOD threshold values.
+#' If a mapping or named vector, threshold values are accessed by name,
+#' regardless of order. If an unnamed vector, threshold values are accessed
+#' by position, and are assumed to be in the same order as those of a
+#' \code{summary.scantwoperm} object.
+#' @param phenotypes Character vector of phenotypes for which
+#' the \code{scantwo} threshold object is being created.
+#' @param alpha Significance level (alpha) associated
+#' with the specified \code{scantwo} LOD thresholds.
+#' 
+#' @return A \code{summary.scantwoperm} object with the given \code{scantwo}
+#' thresholds at the specified significance level (\code{alpha}) for each LOD
+#' column. Because no permutations are used in generating the \code{scantwo}
+#' thresholds object, the returned object has attribute \code{'n.perm'}
+#' containing the value \code{0}.
+#' 
+#' Note that phenotype names are not included in the \code{summary.scantwoperm}
+#' object. This is a feature, not a bug, and is intended to match the behaviour
+#' of \pkg{R/qtl} in the case of a single significance level (\code{alpha}).
+#' 
+#' @keywords internal
+#' @rdname makeScantwoThresholdObject
+makeScantwoThresholdObject <- function(thresholds, phenotypes, alpha) {
+    
+    lodtypes <- const$scantwo.lodtypes$scantwoperm
+    
+    stopifnot( all( isValidID(phenotypes) ) )
+    stopifnot( length(phenotypes) > 0 )
+    stopifnot( isSingleProbability(alpha) )
+    
+    if ( ! is.mapping(thresholds) ) {
+        if ( hasNames(thresholds) ) {
+            thresholds <- as.mapping(thresholds)
+        } else {
+            thresholds <- mapping(values=thresholds, keys=lodtypes)
+        }
+    }
+    
+    invalid.names <- setdiff(names(thresholds), lodtypes)
+    if ( length(invalid.names) > 0 ) {
+        stop("invalid scantwo LOD threshold names - '", toString(invalid.names), "'")
+    }
+    
+    missing.names <- setdiff(lodtypes, names(thresholds))
+    if ( length(missing.names) > 0 ) {
+        stop("missing scantwo LOD thresholds - '", toString(missing.names), "'")
+    }
+    
+    non.numeric <- unlist( thresholds[ ! sapply(thresholds, is.numeric) ] )
+    if ( length(non.numeric) > 0 ) {
+        stop("non-numeric scantwo thresholds - '", toString(non.numeric), "'")
+    }
+    
+    invalid.values <- unlist( thresholds[ ! sapply(thresholds, isNonNegativeNumber) ] )
+    if ( length(invalid.values) > 0 ) {
+        stop("invalid scantwo thresholds - '", toString(invalid.values), "'")
+    }
+    
+    thresholds <- sapply(lodtypes, function(k) thresholds[[k]])
+    
+    level <- paste0(as.character(100 * alpha), '%')
+    
+    x <- lapply(lodtypes, function(k) matrix(
+        rep(thresholds[k], length(phenotypes)), nrow=length(level),
+        ncol=length(phenotypes), dimnames=list(level, NULL) ) )
+    names(x) <- lodtypes
+    
+    class(x) <- c('summary.scantwoperm', 'list')
+    
     attr(x, 'n.perm') <- 0
     
     return(x)

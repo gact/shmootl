@@ -321,8 +321,6 @@ getObjectNamesHDF5 <- function(infile, h5name=NULL, relative=FALSE,
     return(object.h5names)
 }
 
-
-
 # getResultAnalysesHDF5 --------------------------------------------------------
 #' Get names of result analyses for a given phenotype.
 #' 
@@ -810,6 +808,9 @@ readCrossHDF5 <- function(infile) {
 #' and the rownames are set from its contents.
 #' 
 #' @return R object corresponding to the named HDF5 object.
+#' 
+#' @template author-thomas-walsh
+#' @template author-yue-hu
 #' 
 #' @export
 #' @importFrom rhdf5 h5read
@@ -1347,6 +1348,66 @@ readDatasetHDF5.summary.scanoneperm <- function(infile, h5name, ...) {
     return(dataset)
 }
 
+# readDatasetHDF5.summary.scantwo ----------------------------------------------
+#' @export
+#' @method readDatasetHDF5 summary.scantwo
+#' @rdname readDatasetHDF5
+readDatasetHDF5.summary.scantwo <- function(infile, h5name, ...) {
+    
+    stopifnot( emptyArgs(...) )
+    
+    dataset <- readDatasetHDF5.data.frame(infile, h5name)
+    
+    stopifnot( 'R.class' %in% names( attributes(dataset) ) )
+    class(dataset) <- attr(dataset, 'R.class')
+    attr(dataset, 'R.class') <- NULL
+    
+    return(dataset)
+}
+
+# readDatasetHDF5.summary.scantwoperm ------------------------------------------
+#' @export
+#' @rdname readDatasetHDF5
+readDatasetHDF5.summary.scantwoperm <- function(infile, h5name, ...) {
+    
+    stopifnot( emptyArgs(...) )
+    
+    dataset.attrs <- readObjectAttributesHDF5(infile, h5name)
+    
+    dataset <- readDatasetHDF5.data.frame(infile, h5name)
+    
+    attr.names <- names(dataset.attrs)
+    
+    stopifnot( 'R.class' %in% attr.names )
+    
+    trans.attrs <- dataset.attrs[ ! attr.names %in% c('class', 'names', 'row.names') ]
+    
+    alphas <- paste0(as.character(100 * dataset[, 'alpha']), '%')
+    dataset <- deleteColumn(dataset, col.name='alpha')
+    
+    lod.types <- colnames(dataset)
+    
+    dataset <- lapply(dataset, matrix)
+    
+    for ( attr.name in names(trans.attrs) ) {
+        attr(dataset, attr.name) <- trans.attrs[[attr.name]]
+    }
+    
+    class(dataset) <- attr(dataset, 'R.class')
+    attr(dataset, 'R.colClasses') <- NULL # currently unused
+    attr(dataset, 'R.class') <- NULL
+    
+    phenotypes <- attr(dataset, 'phenotypes')
+    attr(dataset, 'phenotypes') <- NULL
+    
+    for ( i in seq_along(dataset) ) {
+        colnames(dataset[[i]]) <- phenotypes
+        rownames(dataset[[i]]) <- alphas
+    }
+    
+    return(dataset)
+}
+
 # readMapHDF5 ------------------------------------------------------------------
 #' Read \code{map} from an input HDF5 file.
 #'   
@@ -1599,6 +1660,9 @@ writeCrossHDF5 <- function(cross, outfile, overwrite=FALSE) {
 #' @param rownames.column For a \code{data.frame} or equivalent object, any
 #' rownames are removed, and then inserted into a column of the main table,
 #' with its column name taken from this parameter.
+#' 
+#' @template author-thomas-walsh
+#' @template author-yue-hu
 #' 
 #' @export
 #' @importFrom methods new
@@ -1894,7 +1958,6 @@ writeDatasetHDF5.map <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
     stopifnot( emptyArgs(...) )
-    
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     dataset.Rclass <- class(dataset)
@@ -1916,7 +1979,6 @@ writeDatasetHDF5.mapframe <- function(dataset, outfile, h5name,
     overwrite=FALSE, ...) {
     
     stopifnot( emptyArgs(...) )
-    
     stopif( 'R.class' %in% names( attributes(dataset) ) )
     
     attr(dataset, 'R.class') <- class(dataset)
@@ -2199,6 +2261,77 @@ writeDatasetHDF5.summary.scanoneperm <- function(dataset, outfile, h5name,
     dataset <- data.frame(unclass(dataset), check.names=FALSE)
     
     dataset <- setColumnFromRownames(dataset, col.name='alpha')
+    
+    dataset[, 'alpha'] <- 0.01 * as.numeric( sub('%', '', dataset[, 'alpha']) )
+    
+    for ( attr.name in names(trans.attrs) ) {
+        attr(dataset, attr.name) <- trans.attrs[[attr.name]]
+    }
+    
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name, overwrite=overwrite)
+    
+    return( invisible() )
+}
+
+# writeDatasetHDF5.summary.scantwo ---------------------------------------------
+#' @export
+#' @method writeDatasetHDF5 summary.scantwo
+#' @rdname writeDatasetHDF5
+writeDatasetHDF5.summary.scantwo <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
+    
+    stopifnot( emptyArgs(...) )
+    stopif( 'R.class' %in% names( attributes(dataset) ) )
+    attr(dataset, 'R.class') <- class(dataset)
+    
+    dataset <- as.data.frame(dataset)
+    
+    rownames(dataset) <- NULL
+    
+    writeDatasetHDF5.data.frame(dataset, outfile, h5name, overwrite=overwrite)
+    
+    return( invisible() )
+}
+
+# writeDatasetHDF5.summary.scantwoperm -----------------------------------------
+#' @export
+#' @method writeDatasetHDF5 summary.scantwoperm
+#' @rdname writeDatasetHDF5
+writeDatasetHDF5.summary.scantwoperm <- function(dataset, outfile, h5name,
+    overwrite=FALSE, ...) {
+    
+    stopifnot( emptyArgs(...) )
+    stopif( 'R.class' %in% names( attributes(dataset) ) )
+    
+    num.phenotypes <- unique( sapply(unname(dataset), ncol) )
+    stopifnot( length(num.phenotypes) == 1 )
+    stopifnot( num.phenotypes == 1 )
+    
+    # Get phenotype names of dataset.
+    pheno.names <- getPhenotypes.summary.scantwoperm(dataset) # TODO: implement generic.
+    
+    # Set phenotype names attribute, if available.
+    if ( ! is.null(pheno.names) ) {
+        attr(dataset, 'phenotypes') <- pheno.names
+    }
+    
+    alpha.vectors <- lapply(unname(dataset), rownames)
+    stopifnot( length( unique(alpha.vectors) ) == 1 )
+    alphas <- alpha.vectors[[1]]
+    
+    attr(dataset, 'R.class') <- class(dataset)
+    
+    dataset.attrs <- attributes(dataset)
+    
+    attr.keys <- names(dataset.attrs)
+    
+    trans.attrs <- dataset.attrs[ ! attr.keys %in% c('class', 'names') ]
+    
+    stopifnot( identical(names(dataset), const$scantwo.lodtypes$scantwoperm) )
+    
+    dataset <- as.data.frame( lapply( dataset, function(x) unname(x[,1]) ) )
+    
+    dataset <- insertColumn(dataset, col.index=1, col.name='alpha', alphas)
     
     dataset[, 'alpha'] <- 0.01 * as.numeric( sub('%', '', dataset[, 'alpha']) )
     

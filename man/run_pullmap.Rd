@@ -30,7 +30,7 @@ Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_makecross}}, \code{\link{run_makegeno}},
   \code{\link{run_prep}}, \code{\link{run_pushmap}},
   \code{\link{run_recode}}, \code{\link{run_report}},
-  \code{\link{run_scanone}}
+  \code{\link{run_scanone}}, \code{\link{run_scantwo}}
 }
 \concept{
 shmootl:utilities

@@ -169,7 +169,8 @@ writeWorkbookExcel <- function(scanfiles, workbook, phenotypes=NULL,
     
     # Set possible results to be sought in scan file.
     results.sought <- supported.results <- list(
-        'Scanone' = c('QTL Intervals')
+        'Scanone' = c('QTL Intervals'),
+        'Scantwo' = c('QTL Pairs')
     )
     
     # If analyses specified, filter results sought by given analyses.
@@ -401,6 +402,57 @@ writeWorkbookExcel <- function(scanfiles, workbook, phenotypes=NULL,
         
         # Set QTL intervals table.
         tables[['Scanone QTL Intervals']] <- data.frame(tab, check.names=FALSE,
+            stringsAsFactors=FALSE)
+    }
+    
+    # Setup 'Scantwo QTL Pairs’ worksheet, if relevant -------------------------
+    
+    if ( 'Scantwo QTL Pairs' %in% sheet.names ) {
+        
+        headings <- const$excel[['Scantwo QTL Pairs']]$headings
+        
+        # Init table with all headings; empty columns will be deleted later.
+        tab <- matrix(NA_character_, nrow=0, ncol=length(headings),
+            dimnames=list(NULL, headings) )
+        
+        for ( scanfile in scanfiles ) {
+            
+            for ( phenotype in names(rinfo[[scanfile]]) ) {
+                
+                if ( 'Scantwo' %in% names(rinfo[[scanfile]][[phenotype]]) &&
+                    'QTL Pairs' %in% rinfo[[scanfile]][[phenotype]][['Scantwo']] ) {
+                    
+                    qtl.pairs <- readResultHDF5(scanfile,
+                        phenotype, 'Scantwo', 'QTL Pairs')
+                    num.pairs <- nrow(qtl.pairs)
+                    
+                    if ( num.pairs == 0 ) {
+                        next
+                    }
+                    
+                    qtl.pairs <- as.matrix(qtl.pairs, rownames.force=FALSE)
+                    qtl.pairs <- insertColumn(qtl.pairs, col.index=1,
+                        col.name='File', data=scanfile)
+                    qtl.pairs <- insertColumn(qtl.pairs, col.index=2,
+                        col.name='Phenotype', data=phenotype)
+                    colnames(qtl.pairs) <- headings
+                    
+                    # Add row to table.
+                    tab <- rbind(tab, qtl.pairs)
+                }
+            }
+        }
+        
+        # Remove empty columns.
+        tab <- removeColsNA(tab)
+        
+        # Add experiment info, if available.
+        if ( ! is.null(xinfo) ) {
+            tab <- addXInfo(tab, xinfo)
+        }
+        
+        # Set QTL Pairs table.
+        tables[['Scantwo QTL Pairs']] <- data.frame(tab, check.names=FALSE,
             stringsAsFactors=FALSE)
     }
     

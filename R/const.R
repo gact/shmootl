@@ -50,7 +50,8 @@ with(const, {
     
     # Analyses handled by shmootl.
     supported.analyses <- c(
-        'Scanone' = 'scanone'
+        'Scanone' = 'scanone',
+        'Scantwo' = 'scantwo'
     )
     
     # Fixed missing value in cross data files.
