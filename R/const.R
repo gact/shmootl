@@ -189,7 +189,11 @@ with(const, {
             alphanumeric = paste0('.*?([[:digit:]]+)([', 
                 paste(tetrad.sample.labels, collapse=''), '])'),
             numeric = '^.+?([[:digit:]]+)$'
-        )
+        ),
+        
+        # Output worksheet name.
+        worksheet = paste0('^(', paste(names(supported.analyses),
+            collapse='|'), ') (.+)$')
     )
     
     # Chromosome/sequence info -------------------------------------------------
@@ -256,46 +260,72 @@ with(const, {
     
     # Excel settings -----------------------------------------------------------
     
+    excel.otypes <- c('digest', 'report')
+    
     excel <- list(
         
-        digest = list(
+        `README` = list(
             
-            `README` = list(
-                
-                description = 'This describes the contents of every worksheet in this workbook.',
-                
-                headings = c('Worksheet', 'Description')
+            description = 'This describes the contents of every worksheet in this workbook.',
+            
+            headings = c('Worksheet', 'Description')
+        ),
+        
+        `Overview` = list(
+            
+            description = 'Results overview from input scan file(s).',
+            
+            headings = c('File', 'Phenotype', names(supported.analyses))
+        ),
+        
+        `Scanone QTL Intervals` = list(
+            
+            defaults = c('digest', 'report'),
+            
+            description = paste(
+                'Table of QTL intervals as obtained by a single-QTL scan.',
+                'Genomic features within the QTL interval are included, if available.'
             ),
             
-            `Overview` = list(
-                
-                description = 'Results overview from across the set of scan files.',
-                
-                headings = c('File', 'Phenotype', names(supported.analyses))
-            ),
+            headings = c('File', 'Phenotype', 'QTL Name', 'Chromosome',
+                'Peak LOD', 'LOD Threshold', 'alpha', 'FDR',
+                'Interval Type', 'Start (cM)', 'Peak (cM)', 'End (cM)',
+                'Start (bp)', 'Peak (bp)', 'End (bp)', 'Scanone QTL Features')
+        ),
+        
+        `Scantwo QTL Pairs` = list(
             
-            `Scanone QTL Intervals` = list(
-                
-                description = paste(
-                    'Table of QTL intervals as obtained by a single-QTL scan.',
-                    'Genomic features within the QTL interval are included, if available.'
-                ),
-                
-                headings = c('File', 'Phenotype', 'QTL Name', 'Chromosome',
-                    'Peak LOD', 'LOD Threshold', 'alpha', 'FDR',
-                    'Interval Type', 'Start (cM)', 'Peak (cM)', 'End (cM)',
-                    'Start (bp)', 'Peak (bp)', 'End (bp)', 'Scanone QTL Features')
-            )
+            defaults = c('digest', 'report'),
+            
+            description = 'Table of QTL pairs as obtained by a 2-QTL scan.',
+            
+            headings = c('File', 'Phenotype', 'Chromosome 1', 'Chromosome 2',
+                'Full LOD Peak 1 (cM)', 'Full LOD Peak 2 (cM)', 'Full LOD',
+                'Conditional-Interactive LOD', 'Interactive LOD',
+                'Additive LOD Peak 1 (cM)', 'Additive LOD Peak 2 (cM)',
+                'Additive LOD', 'Conditional-Additive LOD')
         )
     )
+    
+    # Set vector of summary worksheets.
+    summary.worksheets <- c('README', 'Overview')
+    
+    # Set vector of available non-summary Excel worksheets.
+    result.worksheets <- names(excel)[ ! names(excel) %in% summary.worksheets ]
+    
+    # Set list of default Excel worksheets for each Excel output type.
+    default.worksheets <- lapply( excel.otypes, function(excel.otype)
+        result.worksheets[ sapply(result.worksheets, function(k)
+        excel.otype %in% excel[[k]]$defaults ) ] )
+    names(default.worksheets) <- excel.otypes
     
     # XInfo settings -----------------------------------------------------------
     
     # Set experiment info tags that are disallowed so as to prevent clashes
     # with other names that might be used alongside the extracted info.
-    disallowed.xinfotags <- sort( unique( unlist( lapply(excel,
-        function(x) lapply(which( ! names(x) %in% c('README', 'Overview') ),
-        function(i) x[[i]]$headings) ) ) ) )
+    disallowed.xinfotags <- sort( unique( unlist( lapply(
+        which( ! names(excel) %in% c('README', 'Overview') ),
+        function(k) excel[[k]]$headings) ) ) )
     
     # Annotation settings ------------------------------------------------------
     

@@ -9,55 +9,46 @@
 #' the same reference genome as was used in QTL analysis. In addition, physical
 #' positions of QTL intervals must be present, either directly in the QTL
 #' intervals themselves, or indirectly by pairing coordinates in the cross
-#' genetic map to a corresponding physical map.
+#' genetic map to a corresponding physical map. QTL intervals can be annotated
+#' for specific phenotypes and analyses with the \code{pheno} and \code{scans}
+#' parameters, respectively.
 #' 
 #' @param infile input HDF5 scan file [required]
 #' @param annofile GFF annotation file [required]
 #' @param outfile annotated HDF5 scan file [required]
+#' @param pheno phenotypes [default: all]
+#' @param scans analyses [default: all]
 #' 
 #' @concept shmootl:processing
 #' @export
 #' @family pipeline functions
 #' @rdname run_annoqtl
 run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
-    outfile=NA_character_) {
+    outfile=NA_character_, pheno=character(), scans=character()) {
     
     stopifnot( isSingleString(infile) )
     stopifnot( file.exists(infile) )
     stopifnot( isSingleString(annofile) )
     stopifnot( isSingleString(outfile) )
     
-    results.sought <- list(
-        'Scanone' = c('QTL Intervals')
-    )
+    pheno <- if ( ! identical(pheno, character()) ) { pheno } else { NULL }
+    scans <- if ( ! identical(scans, character()) ) { scans } else { NULL }
     
-    result.info <- list()
-    roi <- list()
+    # Get result info.
+    rinfo <- getResultInfoHDF5(infile, phenotypes=pheno, analyses=scans)
     
-    if ( hasObjectHDF5(infile, 'Results') ) {
-        
-        # Get result info for HDF5 scan file.
-        for ( phenotype in getResultPhenotypesHDF5(infile) ) {
-            analyses <- getResultAnalysesHDF5(infile, phenotype)
-            result.info[[phenotype]] <- lapply( analyses, function(analysis)
-                getResultNamesHDF5(infile, phenotype, analysis) )
-            names(result.info[[phenotype]]) <- analyses
-        }
-        
-        # Get results of interest.
-        for ( phenotype in names(result.info) ) {
-            for ( analysis in names(result.info[[phenotype]]) ) {
-                for ( result in result.info[[phenotype]][[analysis]] ) {
-                    if ( analysis %in% names(results.sought) &&
-                         result %in% results.sought[[analysis]] ) {
-                        roi[[analysis]] <- union(roi[[analysis]], result)
-                    }
-                }
+    # Get analyses of interest.
+    analyses <- character()
+    for ( phenotype in names(rinfo[[infile]]) ) {
+        for ( analysis in names(rinfo[[infile]][[phenotype]]) ) {
+            if ( 'QTL Intervals' %in% rinfo[[infile]][[phenotype]][[analysis]] ) {
+                analyses <- union(analyses, analysis)
             }
         }
     }
     
-    if ( length(roi) == 0 ) {
+    if ( length(analyses) == 0 ) {
+        warning("no relevant results found for annotation in file '", infile, "'")
         return( invisible() )
     }
     
@@ -74,70 +65,74 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
     # Init HDF5 object names of updated objects.
     updated.objects <- character()
     
-    # Annotated QTL intervals for each phenotype.
-    for ( phenotype in names(result.info) ) {
+    # Annotate QTL intervals for each analysis..
+    for ( analysis in analyses ) {
         
-        # If Scanone QTL intervals present for this phenotype,
-        # get any corresponding QTL features.
-        if ( 'Scanone' %in% names(result.info[[phenotype]]) &&
-            'QTL Intervals' %in% result.info[[phenotype]][['Scanone']] ) {
+        # ..and phenotype.
+        for ( phenotype in names(rinfo[[infile]]) ) {
             
-            # Read QTL intervals from input HDF5 scan file.
-            qtl.intervals <- readResultHDF5(infile, phenotype,
-                'Scanone', 'QTL Intervals')
-            
-            # Ensure that Scanone QTL intervals have (estimated) physical map positions.
-            if ( ! hasPhysicalPositions(qtl.intervals) ) {
+            # If QTL intervals present for this phenotype and
+            # analysis, get any corresponding QTL features.
+            if ( analysis %in% names(rinfo[[infile]][[phenotype]]) &&
+                'QTL Intervals' %in% rinfo[[infile]][[phenotype]][[analysis]] ) {
                 
-                # Ensure mapkey option has been set 
-                # from map data of HDF5 scan file.
-                if ( is.null(map.key) ) {
+                # Read QTL intervals from input HDF5 scan file.
+                qtl.intervals <- readResultHDF5(infile, phenotype,
+                    analysis, 'QTL Intervals')
+                
+                # Ensure that Scanone QTL intervals have (estimated) physical map positions.
+                if ( ! hasPhysicalPositions(qtl.intervals) ) {
                     
-                    if ( ! hasCrossHDF5(infile) ) {
-                        stop("cannot annotate scan results -",
-                            " no cross data in file '", infile, "'")
+                    # Ensure mapkey option has been set
+                    # from map data of HDF5 scan file.
+                    if ( is.null(map.key) ) {
+                        
+                        if ( ! hasCrossHDF5(infile) ) {
+                            stop("cannot annotate scan results -",
+                                " no cross data in file '", infile, "'")
+                        }
+                        
+                        if ( ! hasMapHDF5(infile, 'Physical Map') ) {
+                            stop("cannot annotate scan results -",
+                                " no physical map data in file '", infile, "'")
+                        }
+                        
+                        # Get genetic and physical map data.
+                        gmap <- qtl::pull.map( readCrossHDF5(infile) )
+                        pmap <- readMapHDF5(infile, 'Physical Map')
+                        
+                        # Create mapkey for converting between
+                        # genetic and physical map positions.
+                        map.key <- mapkey(gmap, pmap)
+                        
+                        # Set mapkey option.
+                        prev.mapkey <- mapkeyOpt(map.key)
+                        on.exit( mapkeyOpt(prev.mapkey), add=TRUE )
                     }
                     
-                    if ( ! hasMapHDF5(infile, 'Physical Map') ) {
-                        stop("cannot annotate scan results -",
-                            " no physical map data in file '", infile, "'")
-                    }
+                    # Estimate physical map positions of QTL intervals.
+                    qtl.intervals <- estPhysicalPositions(qtl.intervals)
                     
-                    # Get genetic and physical map data.
-                    gmap <- qtl::pull.map( readCrossHDF5(infile) )
-                    pmap <- readMapHDF5(infile, 'Physical Map')
-                    
-                    # Create mapkey for converting between
-                    # genetic and physical map positions.
-                    map.key <- mapkey(gmap, pmap)
-                    
-                    # Set mapkey option.
-                    prev.mapkey <- mapkeyOpt(map.key)
-                    on.exit( mapkeyOpt(prev.mapkey), add=TRUE )
+                    # Write updated QTL intervals to temp file.
+                    h5name <- joinH5ObjectNameParts( c('Results',
+                        phenotype, analysis, 'QTL Intervals') )
+                    writeDatasetHDF5(qtl.intervals, tmp, h5name)
+                    updated.objects <- c(updated.objects, h5name)
                 }
                 
-                # Estimate physical map positions of QTL intervals.
-                qtl.intervals <- estPhysicalPositions(qtl.intervals)
+                # Get annotated features in QTL intervals.
+                qtl.features <- getQTLFeatures(qtl.intervals, features)
                 
-                # Write updated QTL intervals to temp file.
-                h5name <- joinH5ObjectNameParts(
-                    c('Results', phenotype, 'Scanone', 'QTL Intervals') )
-                writeDatasetHDF5(qtl.intervals, tmp, h5name)
+                # Remove empty QTL feature data-frames.
+                qtl.features <- qtl.features[ sapply(qtl.features,
+                    function(x) nrow(x) > 0) ]
+                
+                # Write Scanone QTL features to temp file.
+                h5name <- joinH5ObjectNameParts( c('Results',
+                    phenotype, analysis, 'QTL Features') )
+                writeDatasetHDF5(qtl.features, tmp, h5name)
                 updated.objects <- c(updated.objects, h5name)
             }
-            
-            # Get annotated features in QTL intervals.
-            qtl.features <- getQTLFeatures(qtl.intervals, features)
-            
-            # Remove empty QTL feature data-frames.
-            qtl.features <- qtl.features[ sapply(qtl.features,
-                function(x) nrow(x) > 0) ]
-            
-            # Write Scanone QTL features to temp file.
-            h5name <- joinH5ObjectNameParts(
-                c('Results', phenotype, 'Scanone', 'QTL Features') )
-            writeDatasetHDF5(qtl.features, tmp, h5name)
-            updated.objects <- c(updated.objects, h5name)
         }
     }
     

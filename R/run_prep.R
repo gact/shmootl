@@ -137,9 +137,7 @@ run_prep <- function(datafile=NA_character_, normseq=FALSE, estimap=FALSE,
             if ( hasFounderGenotypes(geno) ) {
                 
                 # Create placeholder phenotype object.
-                cross.info <- attr(geno, 'info')
-                samples <- getSamples(cross.info)
-                pheno <- makePlaceholderPheno(samples=samples)
+                pheno <- makePlaceholderPheno(samples=pull.ind(geno))
                 
                 # Create temporary cross object.
                 cross <- makeCross(geno, pheno)

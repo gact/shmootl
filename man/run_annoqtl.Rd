@@ -5,7 +5,7 @@
 \title{Annotate QTL intervals.}
 \usage{
 run_annoqtl(infile = NA_character_, annofile = NA_character_,
-  outfile = NA_character_)
+  outfile = NA_character_, pheno = character(), scans = character())
 }
 \arguments{
 \item{infile}{input HDF5 scan file [required]}
@@ -13,6 +13,10 @@ run_annoqtl(infile = NA_character_, annofile = NA_character_,
 \item{annofile}{GFF annotation file [required]}
 
 \item{outfile}{annotated HDF5 scan file [required]}
+
+\item{pheno}{phenotypes [default: all]}
+
+\item{scans}{analyses [default: all]}
 }
 \description{
 QTL intervals in a HDF5 scan file are annotated with features from the GFF
@@ -21,7 +25,9 @@ feature annotation has been added. The GFF annotation file must relate to
 the same reference genome as was used in QTL analysis. In addition, physical
 positions of QTL intervals must be present, either directly in the QTL
 intervals themselves, or indirectly by pairing coordinates in the cross
-genetic map to a corresponding physical map.
+genetic map to a corresponding physical map. QTL intervals can be annotated
+for specific phenotypes and analyses with the \code{pheno} and \code{scans}
+parameters, respectively.
 }
 \seealso{
 Other pipeline functions: \code{\link{run_digest}},

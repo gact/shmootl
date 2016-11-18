@@ -55,12 +55,13 @@ plotReportTitlePagePDF <- function(scanfile) {
     return( invisible() )
 }
 
-
 # writeReportPDF ---------------------------------------------------------------
 #' Write a PDF report of QTL scan results.
 #'  
 #' @param scanfile A scan result HDF5 file.
 #' @param report Path of output report PDF file.
+#' @param phenotypes Phenotypes for which results should be included in the
+#' report file. If none are specified, results are output for all phenotypes.
 #' @param analyses Analyses for which results should be included in the report
 #' file. If none are specified, results are output for all available analyses.
 #' 
@@ -70,52 +71,50 @@ plotReportTitlePagePDF <- function(scanfile) {
 #' @importFrom grDevices dev.off
 #' @importFrom grDevices pdf
 #' @rdname writeReportPDF
-writeReportPDF <- function(scanfile, report, analyses=NULL) {
+writeReportPDF <- function(scanfile, report, phenotypes=NULL, analyses=NULL) {
     
     stopifnot( isSingleString(scanfile) )
     stopifnot( file.exists(scanfile) )
     stopifnot( isSingleString(report) )
     
     # Set possible results to be sought in scan file.
-    results.sought <- list(
+    results.sought <- supported.results <- list(
         'Scanone' = c('Result')
     )
     
-    # Resolve relevant analyses.
-    analyses.sought <- unique( resolveAnalysisTitle(analyses) )
-    
-    # Set actual results sought for relevant analyses.
-    results.sought <- results.sought[ names(results.sought) %in% analyses.sought ]
-    
-    result.info <- list()
-    roi <- list()
-    
-    if ( hasObjectHDF5(scanfile, 'Results') ) {
+    # If analyses specified, filter results sought by given analyses.
+    if ( ! is.null(analyses) ) {
         
-        # Get result info for HDF5 scan file.
-        for ( phenotype in getResultPhenotypesHDF5(scanfile) ) {
-            analyses <- getResultAnalysesHDF5(scanfile, phenotype)
-            result.info[[phenotype]] <- lapply( analyses, function(analysis)
-                getResultNamesHDF5(scanfile, phenotype, analysis) )
-            names(result.info[[phenotype]]) <- analyses
+        analyses <- unique( resolveAnalysisTitle(analyses) )
+        
+        unsupported <- analyses[ ! analyses %in% names(supported.results) ]
+        if ( length(unsupported) > 0 ) {
+            stop("PDF output not supported for analyses - '",
+                toString(unsupported), "'")
         }
         
-        # Get results of interest.
-        for ( phenotype in names(result.info) ) {
-            for ( analysis in names(result.info[[phenotype]]) ) {
-                for ( result in result.info[[phenotype]][[analysis]] ) {
-                    if ( analysis %in% names(results.sought) &&
-                        result %in% results.sought[[analysis]] ) {
-                        roi[[analysis]] <- union(roi[[analysis]], result)
-                    }
+        results.sought <- results.sought[ names(results.sought) %in% analyses ]
+    }
+    
+    # Get result info.
+    rinfo <- getResultInfoHDF5(scanfile, phenotypes=phenotypes,
+        analyses=names(results.sought))
+    
+    # Get results of interest.
+    roi <- list()
+    for ( phenotype in names(rinfo[[scanfile]]) ) {
+        for ( analysis in names(rinfo[[scanfile]][[phenotype]]) ) {
+            for ( result in rinfo[[scanfile]][[phenotype]][[analysis]] ) {
+                if ( analysis %in% names(results.sought) &&
+                    result %in% results.sought[[analysis]] ) {
+                    roi[[analysis]] <- union(roi[[analysis]], result)
                 }
             }
         }
     }
     
     if ( length(roi) == 0 ) {
-        stop("cannot output report - no relevant results found in file '",
-            scanfile, "'")
+        stop("no relevant results found in file '", scanfile, "'")
     }
     
     # Introduce plot device.
@@ -166,21 +165,21 @@ writeReportPDF <- function(scanfile, report, analyses=NULL) {
     # Check graphics device loaded successfully.
     if ( names(plot.device) == 'null device' ) {
         plot.device <- NULL
-        stop("failed to load graphics device")
+        stop("failed to load PDF graphics device")
     }
     
     # Output report title page.
     plotReportTitlePagePDF(scanfile)
     
     # Write output for each phenotype.
-    for ( i in seq_along(result.info) ) {
+    for ( i in seq_along(rinfo[[scanfile]]) ) {
         
-        phenotype <- names(result.info)[i]
+        phenotype <- names(rinfo[[scanfile]])[i]
         
         if ( 'Scanone' %in% names(roi) ) {
             
-            if ( 'Scanone' %in% names(result.info[[phenotype]]) &&
-                'Result' %in% result.info[[phenotype]][['Scanone']] ) {
+            if ( 'Scanone' %in% names(rinfo[[scanfile]][[phenotype]]) &&
+                'Result' %in% rinfo[[scanfile]][[phenotype]][['Scanone']] ) {
                 
                 scanone.result <- readResultHDF5(scanfile,
                     phenotype, 'Scanone', 'Result')

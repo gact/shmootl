@@ -3,12 +3,16 @@
 # run_digest -------------------------------------------------------------------
 #' Create digest of QTL analysis results.
 #' 
-#' Given one or more scan result HDF5 files, create
-#' a digest of the results of the QTL analyses.
+#' Given one or more scan result HDF5 files, create a digest of the results of
+#' the QTL analyses. Results can be output for specific phenotypes, analyses,
+#' and worksheets. These output constraints are applied with parameters
+#' \code{pheno}, \code{scans}, and \code{sheets}, respectively.
 #' 
 #' @param h5list list of HDF5 scan files [required]
 #' @param digest scan digest file [required]
-#' @param analyses analyses to output [default: all]
+#' @param pheno phenotypes to output [default: all]
+#' @param scans analyses to output [default: all]
+#' @param sheets worksheets to output
 #' @param scanfile.pattern scan file name pattern
 #' 
 #' @concept shmootl:processing
@@ -17,14 +21,17 @@
 #' @importFrom tools file_ext
 #' @rdname run_digest
 run_digest <- function(h5list=character(), digest=NA_character_,
-    analyses=character(), scanfile.pattern=NA_character_) {
+    pheno=character(), scans=character(), sheets=character(),
+    scanfile.pattern=NA_character_) {
     
     stopifnot( is.character(h5list) )
     stopifnot( length(h5list) > 0 )
     stopifnot( all( file.exists(h5list) ) )
     stopifnot( isSingleString(digest) )
     
-    analyses <- if ( ! identical(analyses, character()) ) { analyses } else { NULL }
+    pheno <- if ( ! identical(pheno, character()) ) { pheno } else { NULL }
+    scans <- if ( ! identical(scans, character()) ) { scans } else { NULL }
+    sheets <- if ( ! identical(sheets, character()) ) { sheets } else { NULL }
     scanfile.pattern <- if ( ! identical(scanfile.pattern, NA_character_) ) {
         scanfile.pattern } else { NULL }
     
@@ -41,8 +48,8 @@ run_digest <- function(h5list=character(), digest=NA_character_,
     
     # Write digest to temp file.
     if ( digest.format == 'Excel' ) {
-        writeDigestExcel(h5list, tmp, analyses=analyses,
-            scanfile.pattern=scanfile.pattern)
+        writeDigestExcel(h5list, tmp, phenotypes=pheno, analyses=scans,
+            worksheets=sheets, scanfile.pattern=scanfile.pattern)
     } else {
         stop("digest output not supported for ", digest.format, " format")
     }

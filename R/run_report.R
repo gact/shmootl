@@ -3,24 +3,28 @@
 # run_report -------------------------------------------------------------------
 #' Create report of QTL analysis results.
 #' 
-#' Given a scan result HDF5 file, create a
-#' report of the results of the QTL analysis.
+#' Given a scan result HDF5 file, create a report of the results of the QTL
+#' analysis. Results can be output for specific phenotypes and analyses.
+#' These output constraints are applied with parameters \code{pheno} and
+#' \code{scans}, respectively.
 #' 
 #' @param h5file HDF5 scan file [required]
 #' @param report scan report file [required]
-#' @param analyses analyses to output [default: all]
+#' @param pheno phenotypes to output [default: all]
+#' @param scans analyses to output [default: all]
 #' 
 #' @concept shmootl:processing
 #' @export
 #' @family pipeline functions
 #' @rdname run_report
 run_report <- function(h5file=NA_character_, report=NA_character_,
-    analyses=character()) {
+    pheno=character(), scans=character()) {
     
     stopifnot( isSingleString(h5file) )
     stopifnot( isSingleString(report) )
     
-    analyses <- if ( ! identical(analyses, character()) ) { analyses } else { NULL }
+    pheno <- if ( ! identical(pheno, character()) ) { pheno } else { NULL }
+    scans <- if ( ! identical(scans, character()) ) { scans } else { NULL }
     
     # Get report file extension.
     report.ext <- tools::file_ext(report)
@@ -34,7 +38,7 @@ run_report <- function(h5file=NA_character_, report=NA_character_,
     
     # Write report to temp file.
     if ( report.format == 'PDF' ) {
-        writeReportPDF(h5file, tmp, analyses=analyses)
+        writeReportPDF(h5file, tmp, phenotypes=pheno, analyses=scans)
     } else {
         stop("report output not supported for ", report.format, " format")
     }

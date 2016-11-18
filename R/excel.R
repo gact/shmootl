@@ -1,18 +1,97 @@
 # Start of excel.R #############################################################
 
+# listWorksheets ---------------------------------------------------------------
+#' List available output worksheets.
+#' 
+#' @return Character vector containing the names of worksheets that can be set
+#' as output to a spreadsheet file in \pkg{shmootl} spreadsheet functions. This
+#' excludes summary worksheets such as \code{'README'} and \code{'Overview'},
+#' as these are included in every output spreadsheet file.
+#' 
+#' @export
+#' @family Excel functions
+#' @rdname listWorksheets
+listWorksheets <- function() {
+    return( const$result.worksheets )
+}
+
+# makeWorksheetNames -----------------------------------------------------------
+#' Make \pkg{shmootl} output worksheet names.
+#' 
+#' @param x A list of character vectors in which the names of the list are
+#' analyses, and the elements of each character vector are results for the
+#' given analysis.
+#' 
+#' @return Vector of \pkg{shmootl} output worksheet names.
+#' 
+#' @keywords internal
+#' @rdname makeWorksheetNames
+makeWorksheetNames <- function(x) {
+    
+    stopifnot( is.list(x) )
+    
+    worksheets <- character()
+    
+    if ( length(x) > 0 ) {
+        
+        stopifnot( length(x) > 0 )
+        stopifnot( all( sapply(x, is.character) ) )
+        stopifnot( all( lengths(x) > 0 ) )
+        stopifnot( all( names(x) %in% names(const$supported.analyses) ) )
+        
+        worksheets <- unname( unlist( lapply( names(x), function(analysis)
+            sapply( x[[analysis]], function(result) paste(analysis, result) ) ) ) )
+        
+        stopifnot( all( worksheets %in% const$result.worksheets ) )
+    }
+    
+    return(worksheets)
+}
+
+# parseWorksheetNames ----------------------------------------------------------
+#' Parse \pkg{shmootl} output worksheet names.
+#' 
+#' @param worksheets Vector of \pkg{shmootl} output worksheet names.
+#' 
+#' @return A list of character vectors in which the names of the list are
+#' analyses, and the elements of each character vector are results for the
+#' given analysis.
+#' 
+#' @keywords internal
+#' @rdname parseWorksheetNames
+parseWorksheetNames <- function(worksheets) {
+    
+    stopifnot( is.character(worksheets) )
+    
+    parsed <- list()
+    
+    if ( length(worksheets) > 0 ) {
+        
+        stopifnot( all( isValidID(worksheets) ) )
+        stopifnot( all( worksheets %in% const$result.worksheets ) )
+        
+        m <- regexec(const$pattern$worksheet, worksheets)
+        regmatch.list <- regmatches(worksheets, m)
+        
+        analyses <- sapply(regmatch.list, getElement, 2)
+        results <- sapply(regmatch.list, getElement, 3)
+        
+        aset <- names(const$supported.analyses)[
+            names(const$supported.analyses) %in% analyses ]
+        
+        for ( analysis in aset ) {
+            parsed[[analysis]] <- results[ analyses == analysis ]
+        }
+    }
+    
+    return(parsed)
+}
+
 # writeDigestExcel -------------------------------------------------------------
 #' Write an Excel digest of QTL scan results.
 #' 
-#' @param scanfiles One or more QTL scan result HDF5 files.
 #' @param digest Path of output digest Excel file.
-#' @param analyses Analyses for which results should be included in the digest
-#' file. If none are specified, results are output for all available analyses.
-#' @param scanfile.pattern Optional pattern for extracting experiment info from
-#' scan file names. This must be a valid Perl regex with named capture groups.
-#' Neither the capture groups nor the pattern itself are required to match any
-#' given scan file, but all capture groups must have a name. Each such name is
-#' used in the digest file, as a heading for a column that contains matches to
-#' that capture group in the scan file names.
+#' @inheritParams writeWorkbookExcel
 #' 
 #' @template author-thomas-walsh
 #' @template author-yue-hu
@@ -20,21 +99,56 @@
 #' @export
 #' @family digest functions
 #' @family Excel functions
-#' @importFrom utils installed.packages
 #' @rdname writeDigestExcel
-writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
-    scanfile.pattern=NULL) {
+writeDigestExcel <- function(scanfiles, digest, phenotypes=NULL,
+    analyses=NULL, worksheets=NULL, scanfile.pattern=NULL) {
+    
+    if ( is.null(worksheets) ) {
+        worksheets <- const$default.worksheets[['digest']]
+    }
+    
+    writeWorkbookExcel(scanfiles, digest, phenotypes=phenotypes,
+        analyses=analyses, worksheets=worksheets,
+        scanfile.pattern=scanfile.pattern)
+    
+    return( invisible() )
+}
+
+# writeWorkbookExcel -----------------------------------------------------------
+#' Write an Excel workbook of QTL analysis results.
+#' 
+#' @param scanfiles One or more QTL scan result HDF5 files.
+#' @param workbook Path of output Excel file.
+#' @param phenotypes Phenotypes for which results should be included in the
+#' output file. If none are specified, results are output for all phenotypes.
+#' @param analyses Analyses for which results should be included in the output
+#' file. If none are specified, results are output for all available analyses.
+#' @param worksheets Worksheets to include in the output file. If none are
+#' specified, default worksheets are output. To view available worksheets,
+#' call the function \code{\link{listWorksheets}}.
+#' @param scanfile.pattern Pattern for extracting experiment info from scan file
+#' names. This must be a valid Perl regex with named capture groups. Neither the
+#' capture groups nor the pattern itself are required to match any given scan
+#' file, but all capture groups must have a name, and that name cannot clash
+#' with other names that might be used alongside the extracted information.
+#' 
+#' @importFrom utils installed.packages
+#' @keywords internal
+#' @rdname writeWorkbookExcel
+writeWorkbookExcel <- function(scanfiles, workbook, phenotypes=NULL,
+    analyses=NULL, worksheets=NULL, scanfile.pattern=NULL) {
     
     if ( ! 'xlsx' %in% rownames(utils::installed.packages()) ) {
-        stop("cannot write Excel digest without R package 'xlsx'")
+        stop("cannot write Excel workbook without R package 'xlsx'")
     }
     
     stopifnot( is.character(scanfiles) )
     stopifnot( length(scanfiles) > 0 )
     stopif( anyDuplicated(scanfiles) )
     stopifnot( all( file.exists(scanfiles) ) )
-    stopifnot( isSingleString(digest) )
-    stopifnot( tools::file_ext(digest) %in% const$ext$excel )
+    stopifnot( isSingleString(workbook) )
+    workbook.format <- inferFormatFromFilename(workbook)
+    stopifnot( workbook.format == 'Excel' )
     
     # If scanfile pattern specified, get experiment info from scan file names.
     if ( ! is.null(scanfile.pattern) ) {
@@ -54,39 +168,59 @@ writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
     # Check scan files for results of interest ---------------------------------
     
     # Set possible results to be sought in scan file.
-    results.sought <- list(
+    results.sought <- supported.results <- list(
         'Scanone' = c('QTL Intervals')
     )
     
-    # Resolve relevant analyses.
-    analyses.sought <- unique( resolveAnalysisTitle(analyses) )
+    # If analyses specified, filter results sought by given analyses.
+    if ( ! is.null(analyses) ) {
+        
+        analyses <- unique( resolveAnalysisTitle(analyses) )
+        
+        unsupported <- analyses[ ! analyses %in% names(supported.results) ]
+        if ( length(unsupported) > 0 ) {
+            stop("Excel output not supported for analyses - '",
+                toString(unsupported), "'")
+        }
+        
+        results.sought <- results.sought[ names(results.sought) %in% analyses ]
+    }
     
-    # Set actual results sought for relevant analyses.
-    results.sought <- results.sought[ names(results.sought) %in% analyses.sought ]
+    # If worksheets specified, filter results sought for given worksheets.
+    if ( ! is.null(worksheets) ) {
+        
+        unknown <- worksheets[ ! worksheets %in% const$result.worksheets ]
+        if ( length(unknown) > 0 ) {
+            stop("cannot output unknown Excel worksheets - '",
+                toString(unknown), "'")
+        }
+        
+        supported.worksheets <- makeWorksheetNames(supported.results)
+        unsupported <- worksheets[ ! worksheets %in% supported.worksheets ]
+        if ( length(unsupported) > 0 ) {
+            stop("Excel output not supported for worksheets - '",
+                toString(unsupported), "'")
+        }
+        
+        sheets.sought <- makeWorksheetNames(results.sought)
+        sheets.sought <- sheets.sought[ sheets.sought %in% worksheets ]
+        results.sought <- parseWorksheetNames(sheets.sought)
+    }
     
-    result.info <- list()
+    if ( length(results.sought) == 0 ) {
+        stop("cannot search for results with the given search parameters")
+    }
+    
+    # Get result info.
+    rinfo <- getResultInfoHDF5(scanfiles, phenotypes=phenotypes,
+        analyses=names(results.sought))
+    
+    # Get results of interest.
     roi <- list()
-    
     for ( scanfile in scanfiles ) {
-        
-        if ( ! hasResultsOverviewHDF5(scanfile) ) {
-            stop("cannot create digest - result overview not found in file '",
-                scanfile, "'")
-        }
-        
-        # Get result info for this HDF5 scan file.
-        result.info[[scanfile]] <- list()
-        for ( phenotype in getResultPhenotypesHDF5(scanfile) ) {
-            analyses <- getResultAnalysesHDF5(scanfile, phenotype)
-            result.info[[scanfile]][[phenotype]] <- lapply( analyses,
-                function(analysis) getResultNamesHDF5(scanfile, phenotype, analysis) )
-            names(result.info[[scanfile]][[phenotype]]) <- analyses
-        }
-        
-        # Get results of interest.
-        for ( phenotype in names(result.info[[scanfile]]) ) {
-            for ( analysis in names(result.info[[scanfile]][[phenotype]]) ) {
-                for ( result in result.info[[scanfile]][[phenotype]][[analysis]] ) {
+        for ( phenotype in names(rinfo[[scanfile]]) ) {
+            for ( analysis in names(rinfo[[scanfile]][[phenotype]]) ) {
+                for ( result in rinfo[[scanfile]][[phenotype]][[analysis]] ) {
                     if ( analysis %in% names(results.sought) &&
                         result %in% results.sought[[analysis]] ) {
                         roi[[analysis]] <- union(roi[[analysis]], result)
@@ -96,15 +230,13 @@ writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
         }
     }
     
+    if ( length(roi) == 0 ) {
+        stop("no relevant results found with the given search parameters")
+    }
+    
     # Set worksheet names ------------------------------------------------------
     
-    sheet.names <- c('README', 'Overview')
-    
-    for ( analysis in sort( names(roi) ) ) {
-        for ( result in roi[[analysis]] ) {
-            sheet.names <- c(sheet.names, paste(analysis, result))
-        }
-    }
+    sheet.names <- c(const$summary.worksheets, makeWorksheetNames(roi))
     
     # Init worksheet tables ----------------------------------------------------
     
@@ -114,14 +246,14 @@ writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
     # Setup 'README' worksheet -------------------------------------------------
     
     descriptions <- unlist( lapply(sheet.names, function(k)
-        const$excel$digest[[k]]$description) )
+        const$excel[[k]]$description) )
     
     tables[['README']] <- data.frame(Worksheet=sheet.names,
         Description=descriptions, stringsAsFactors=FALSE)
     
     # Setup 'Overview' worksheet -----------------------------------------------
     
-    headings <- const$excel$digest[['Overview']]$headings
+    headings <- const$excel[['Overview']]$headings
     
     # Init exhaustive results overview (i.e. including all possible columns).
     tables[['Overview']] <- as.data.frame( matrix(nrow=0,
@@ -153,7 +285,7 @@ writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
     
     if ( 'Scanone QTL Intervals' %in% sheet.names ) {
         
-        headings <- const$excel$digest[['Scanone QTL Intervals']]$headings
+        headings <- const$excel[['Scanone QTL Intervals']]$headings
         
         # Init table with all headings; empty columns will be deleted later.
         tab <- matrix(NA_character_, nrow=0, ncol=length(headings),
@@ -161,15 +293,16 @@ writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
         
         for ( scanfile in scanfiles ) {
             
-            for ( phenotype in names(result.info[[scanfile]]) ) {
+            for ( phenotype in names(rinfo[[scanfile]]) ) {
                 
-                if ( 'Scanone' %in% names(result.info[[scanfile]][[phenotype]]) &&
-                    'QTL Intervals' %in% result.info[[scanfile]][[phenotype]][['Scanone']] ) {
+                if ( 'Scanone' %in% names(rinfo[[scanfile]][[phenotype]]) &&
+                    'QTL Intervals' %in% rinfo[[scanfile]][[phenotype]][['Scanone']] ) {
                     
                     qtl.intervals <- readResultHDF5(scanfile,
                         phenotype, 'Scanone', 'QTL Intervals')
+                    num.qtls <- length(qtl.intervals)
                     
-                    if ( length(qtl.intervals) == 0 ) {
+                    if ( num.qtls == 0 ) {
                         next
                     }
                     
@@ -274,23 +407,24 @@ writeDigestExcel <- function(scanfiles, digest, analyses=NULL,
     # Output Excel workbook ----------------------------------------------------
     
     # Create workbook, setting format from file extension.
-    workbook <- xlsx::createWorkbook( type=tools::file_ext(digest) )
+    wb <- xlsx::createWorkbook( type=tools::file_ext(workbook) )
     
     # Setup table heading style.
-    heading.style <- xlsx::CellStyle(workbook) + xlsx::Alignment(horizontal='ALIGN_CENTER') +
-        xlsx::Font(workbook, isBold=TRUE)
+    heading.style <- xlsx::CellStyle(wb) +
+        xlsx::Alignment(horizontal='ALIGN_CENTER') +
+        xlsx::Font(wb, isBold=TRUE)
     
     # Add each worksheet to workbook.
     for ( i in seq_along(tables) ) {
-        worksheet <- xlsx::createSheet(workbook, sheetName=sheet.names[i])
+        ws <- xlsx::createSheet(wb, sheetName=sheet.names[i])
         stopifnot( is.data.frame(tables[[i]]) )
-        xlsx::addDataFrame(tables[[i]], worksheet, col.names=TRUE,
+        xlsx::addDataFrame(tables[[i]], ws, col.names=TRUE,
             row.names=FALSE, colnamesStyle=heading.style, showNA=FALSE)
-        xlsx::autoSizeColumn(worksheet, getColIndices(tables[[i]]))
+        xlsx::autoSizeColumn(ws, getColIndices(tables[[i]]))
     }
     
     # Save workbook to file.
-    xlsx::saveWorkbook(workbook, digest)
+    xlsx::saveWorkbook(wb, workbook)
     
     return( invisible() )
 }

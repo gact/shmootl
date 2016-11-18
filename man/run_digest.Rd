@@ -5,20 +5,27 @@
 \title{Create digest of QTL analysis results.}
 \usage{
 run_digest(h5list = character(), digest = NA_character_,
-  analyses = character(), scanfile.pattern = NA_character_)
+  pheno = character(), scans = character(), sheets = character(),
+  scanfile.pattern = NA_character_)
 }
 \arguments{
 \item{h5list}{list of HDF5 scan files [required]}
 
 \item{digest}{scan digest file [required]}
 
-\item{analyses}{analyses to output [default: all]}
+\item{pheno}{phenotypes to output [default: all]}
+
+\item{scans}{analyses to output [default: all]}
+
+\item{sheets}{worksheets to output}
 
 \item{scanfile.pattern}{scan file name pattern}
 }
 \description{
-Given one or more scan result HDF5 files, create
-a digest of the results of the QTL analyses.
+Given one or more scan result HDF5 files, create a digest of the results of
+the QTL analyses. Results can be output for specific phenotypes, analyses,
+and worksheets. These output constraints are applied with parameters
+\code{pheno}, \code{scans}, and \code{sheets}, respectively.
 }
 \seealso{
 Other pipeline functions: \code{\link{run_annoqtl}},
