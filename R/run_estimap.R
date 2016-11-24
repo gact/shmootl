@@ -42,8 +42,15 @@ run_estimap <- function(datafile=NA_character_, mapfile=NA_character_,
         geno <- readGenoCSV(datafile, require.mapunit=FALSE)
         
         cross.info <- attr(geno, 'info')
-        samples <- getSamples(cross.info)
-        pheno <- makePlaceholderPheno(samples=samples)
+        
+        # Get sample IDs or indices.
+        if ( hasSampleIDs(cross.info) ) {
+            sample.ids <- getSamples(cross.info)
+        } else {
+            sample.ids <- seq( getNumSamples(cross.info) )
+        }
+        
+        pheno <- makePlaceholderPheno(samples=sample.ids)
         
         cross <- makeCross(geno, pheno)
         

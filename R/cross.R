@@ -191,8 +191,6 @@ inferStrainIndices.cross <- function(x) {
         sample.ids <- pull.ind(x)
     }
     
-    stopifnot( length(sample.ids) > 0 )
-    
     # If cross has sample IDs, infer strain indices from these, then 
     # check genotypes are identical in the inferred strain replicates..
     if ( ! is.null(sample.ids) ) {
@@ -827,8 +825,6 @@ padTimeSeries <- function(cross, tol=1e-5) {
         sample.ids <- pull.ind(cross)
     }
     
-    stopifnot( length(sample.ids) > 0 )
-    
     # Time step is the mode of time differences.
     time.step <- inferTimeStep(cross, tol=tol)
     
@@ -896,6 +892,8 @@ padTimeSeries <- function(cross, tol=1e-5) {
         # If phenotype has ID column, reinsert ID column 
         # as close as possible to its original position.
         if ( ! is.null(id.col) ) {
+            
+            stopifnot( length(sample.ids) > 0 )
             
             if ( ! is.na(flanking.phenames[1]) ) {
                 i <- which( colnames(padded.pheno) == flanking.phenames[1] ) + 1

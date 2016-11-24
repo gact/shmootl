@@ -125,9 +125,8 @@ run_prep <- function(datafile=NA_character_, normseq=FALSE, estimap=FALSE,
             # Insert placeholder 'id' column in genotype data-frame.
             num.samples <- length(params$dat.rows)
             digits <- ceiling( log10(num.samples) )
-            suffixes <- formatC(1:num.samples, width=digits, flag=0)
-            placeholder.column <- c( 'id', rep_len('', length(head.rows) - 1 ),
-                paste0('S', suffixes) )
+            sample.ids <- paste0('S', formatC(1:num.samples, width=digits, flag=0))
+            placeholder.column <- c('id', rep_len('', length(head.rows) - 1 ), sample.ids)
             geno.frame <- insertColumn(geno.frame, 1, data=placeholder.column)
             
             # Convert genotype data-frame to genotype object.
@@ -137,7 +136,7 @@ run_prep <- function(datafile=NA_character_, normseq=FALSE, estimap=FALSE,
             if ( hasFounderGenotypes(geno) ) {
                 
                 # Create placeholder phenotype object.
-                pheno <- makePlaceholderPheno(samples=pull.ind(geno))
+                pheno <- makePlaceholderPheno(samples=sample.ids)
                 
                 # Create temporary cross object.
                 cross <- makeCross(geno, pheno)
