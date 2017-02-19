@@ -367,7 +367,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
     box(lwd=3)
     
     # Write plot title.
-    title(main='Scanone', line=plot.title.index, cex=1.2, col='black', family='sans')
+    graphics::title(main='Scanone', line=plot.title.index, cex=1.2, col='black', family='sans')
     
     # If any plot info, add to top margin.
     if ( length(plot.info) > 0 ) {
@@ -376,7 +376,7 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
             paste0(k, ': ', plot.info[k]) )
         
         for ( i in seq_along(plot.info.lines) ) {
-            mtext(plot.info.lines[i], line=plot.info.indices[i], side=3, adj=0,
+            graphics::mtext(plot.info.lines[i], line=plot.info.indices[i], side=3, adj=0,
                 cex=1.0, col='black', family='sans', font=1)
         }
     }

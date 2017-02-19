@@ -28,13 +28,13 @@ plotReportTitlePagePDF <- function(scanfile) {
     
     ipar <- list(cex=1, family='mono', font=1)
     
-    line.spacing <- 2 * strheight(' ', cex=ipar$cex,
+    line.spacing <- 2 * graphics::strheight(' ', cex=ipar$cex,
         family=ipar$family, font=ipar$font)
     
     midline <- 0.5
     
     usr <- graphics::par('usr')
-    rect(usr[1], midline - 4*line.spacing, usr[2],
+    graphics::rect(usr[1], midline - 4*line.spacing, usr[2],
         midline + 1*line.spacing, lty=1, lwd=3)
     
     plot.width <- diff(xlim)
