@@ -74,59 +74,6 @@ makeLODBinLabels <- function(bin.starts) {
     return(bin.labels)
 }
 
-# parseLODBinLabels ------------------------------------------------------------
-#' Parse bin starts from LOD bin labels.
-#'
-#' @param bin.labels Character vector of LOD bin labels to a set of LOD bins.
-#' 
-#' @return Numeric vector of bin starts.
-#' 
-#' @keywords internal
-#' @rdname parseLODBinLabels
-parseLODBinLabels <- function(bin.labels) {
-    
-    if ( length(bin.labels) > 0 ) {
-        
-        stopifnot( is.character(bin.labels) )
-        
-        lod.bin.regex <- '^LOD\\[([0-9]+(?:[.][0-9]+)?),([0-9]+(?:[.][0-9]+)?)\\)$'
-        
-        m <- regexec(lod.bin.regex, bin.labels)
-        regmatch.list <- regmatches(bin.labels, m)
-        
-        invalid.labels <- bin.labels[ lengths(regmatch.list) == 0 ]
-        if ( length(invalid.labels) > 0 ) {
-            stop("invalid LOD bin labels - '", toString(invalid.labels), "'")
-        }
-        
-        bin.starts <- as.numeric( sapply(regmatch.list, function(x) x[2]) )
-        bin.ends <- as.numeric( sapply(regmatch.list, function(x) x[3]) )
-        
-        if ( bin.starts[1] != const$lod.bin$min.start ) {
-            stop("invalid LOD bins start ", bin.starts[1])
-        }
-        
-        bin.sizes <- bin.ends - bin.starts
-        
-        neg.bin.sizes <- bin.sizes[ bin.sizes < 0 ]
-        if ( length(neg.bin.sizes) > 0 ) {
-            stop("negative LOD bin sizes - '", toString(neg.bin.sizes), "'")
-        }
-        
-        bin.delta <- abs(bin.sizes - const$lod.bin$size)
-        err.bin.sizes <- bin.sizes[ bin.delta > .Machine$double.eps^0.5 ]
-        if ( length(err.bin.sizes) > 0 ) {
-            stop("invalid LOD bin sizes - '", toString(err.bin.sizes), "'")
-        }
-    
-    } else {
-        
-        bin.starts <- numeric()
-    }
-    
-    return(bin.starts)
-}
-
 # mergeLODBinLabels ------------------------------------------------------------
 #' Merge multiple vectors of LOD bin labels.
 #'
@@ -232,6 +179,59 @@ padBins <- function(x, num.bins) {
     return(x)
 }
 
+# parseLODBinLabels ------------------------------------------------------------
+#' Parse bin starts from LOD bin labels.
+#'
+#' @param bin.labels Character vector of LOD bin labels to a set of LOD bins.
+#' 
+#' @return Numeric vector of bin starts.
+#' 
+#' @keywords internal
+#' @rdname parseLODBinLabels
+parseLODBinLabels <- function(bin.labels) {
+    
+    if ( length(bin.labels) > 0 ) {
+        
+        stopifnot( is.character(bin.labels) )
+        
+        lod.bin.regex <- '^LOD\\[([0-9]+(?:[.][0-9]+)?),([0-9]+(?:[.][0-9]+)?)\\)$'
+        
+        m <- regexec(lod.bin.regex, bin.labels)
+        regmatch.list <- regmatches(bin.labels, m)
+        
+        invalid.labels <- bin.labels[ lengths(regmatch.list) == 0 ]
+        if ( length(invalid.labels) > 0 ) {
+            stop("invalid LOD bin labels - '", toString(invalid.labels), "'")
+        }
+        
+        bin.starts <- as.numeric( sapply(regmatch.list, function(x) x[2]) )
+        bin.ends <- as.numeric( sapply(regmatch.list, function(x) x[3]) )
+        
+        if ( bin.starts[1] != const$lod.bin$min.start ) {
+            stop("invalid LOD bins start ", bin.starts[1])
+        }
+        
+        bin.sizes <- bin.ends - bin.starts
+        
+        neg.bin.sizes <- bin.sizes[ bin.sizes < 0 ]
+        if ( length(neg.bin.sizes) > 0 ) {
+            stop("negative LOD bin sizes - '", toString(neg.bin.sizes), "'")
+        }
+        
+        bin.delta <- abs(bin.sizes - const$lod.bin$size)
+        err.bin.sizes <- bin.sizes[ bin.delta > .Machine$double.eps^0.5 ]
+        if ( length(err.bin.sizes) > 0 ) {
+            stop("invalid LOD bin sizes - '", toString(err.bin.sizes), "'")
+        }
+        
+    } else {
+        
+        bin.starts <- numeric()
+    }
+    
+    return(bin.starts)
+}
+
 # print.summary.scanonebins ----------------------------------------------------
 #' Print \code{summary.scanonebins} object.
 #'
@@ -244,8 +244,9 @@ padBins <- function(x, num.bins) {
 #' @rdname print.summary.scanonebins
 print.summary.scanonebins <- function(x, ...) {
     num.perms <- attr(x, 'n.perm')
-    cat("FDR LOD thresholds (", num.perms, " permutations)\n", sep='')
+    cat('FDR LOD thresholds (', num.perms, ' permutations)\n', sep='')
     print( matrix(x, dimnames=dimnames(x)) )
+    return( invisible() )
 }
 
 # subset.summary.scanonebins ---------------------------------------------------
@@ -268,7 +269,7 @@ subset.summary.scanonebins <- function(x, fdrs=NULL, ...) {
     
     others <- otherattributes(x)
     
-    x <- x[fdr.mask, , drop=FALSE]
+    x <- x[fdr.mask,, drop=FALSE]
     
     class(x) <- 'summary.scanonebins'
     

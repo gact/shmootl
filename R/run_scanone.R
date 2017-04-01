@@ -60,11 +60,11 @@
 #' @family pipeline functions
 #' @rdname run_scanone
 run_scanone <- function(infile=NA_character_, h5file=NA_character_,
-    chr=character(), pheno=character(), model=c('normal','binary','2part','np'),
-    method=c('em','imp','hk','ehk','mr','mr-imp','mr-argmax'), n.perm=1000L,
-    n.cluster=1L, alpha=NA_real_, fdr=NA_real_, threshold=NA_real_, step=0,
-    map.function=c('haldane','kosambi','c-f','morgan'), error.prob=0.0001,
-    ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
+    chr=character(), pheno=character(), model=c('normal', 'binary', '2part', 'np'),
+    method=c('em', 'imp', 'hk', 'ehk', 'mr', 'mr-imp', 'mr-argmax'),
+    n.perm=1000L, n.cluster=1L, alpha=NA_real_, fdr=NA_real_,
+    threshold=NA_real_, step=0, map.function=c('haldane', 'kosambi', 'c-f', 'morgan'),
+    error.prob=0.0001, ci.function=c('lodint', 'bayesint'), drop=1.5, prob=0.95,
     acovfile=NA_character_, icovfile=NA_character_) {
     
     pipeline <- getPipelineName( as.character(match.call()[[1]]) )

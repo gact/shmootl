@@ -47,7 +47,7 @@
 #' @importFrom utils write.table
 #' @rdname run_prep
 run_prep <- function(datafile=NA_character_, normseq=FALSE, estimap=FALSE,
-    error.prob=0.0001, map.function=c('haldane','kosambi','c-f','morgan'),
+    error.prob=0.0001, map.function=c('haldane', 'kosambi', 'c-f', 'morgan'),
     jittermap=FALSE, amount=1e-6, replace.missing=FALSE, require.mapunit=FALSE,
     include.mapunit=TRUE) {
     

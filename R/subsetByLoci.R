@@ -14,18 +14,6 @@ subsetByLoci <- function(x, loc=NULL) {
     UseMethod('subsetByLoci', x)
 }
 
-# subsetByLoci.data.frame ------------------------------------------------------
-#' @rdname subsetByLoci
-subsetByLoci.mapframe <- function(x, loc=NULL) {
-    
-    if ( ! is.null(loc) ) {
-        indices <- matchLocusRowIndices(x, loc)
-        x <- x[indices, ]
-    }
-    
-    return(x)
-}
-
 # subsetByLoci.map -------------------------------------------------------------
 #' @rdname subsetByLoci
 subsetByLoci.map <- function(x, loc=NULL) {
@@ -89,6 +77,18 @@ subsetByLoci.map <- function(x, loc=NULL) {
         if ( length(x) < const$min.spm ) {
             stop("subsetted map has too few sequences (min=", const$min.spm, ")")
         }
+    }
+    
+    return(x)
+}
+
+# subsetByLoci.data.frame ------------------------------------------------------
+#' @rdname subsetByLoci
+subsetByLoci.mapframe <- function(x, loc=NULL) {
+    
+    if ( ! is.null(loc) ) {
+        indices <- matchLocusRowIndices(x, loc)
+        x <- x[indices, ]
     }
     
     return(x)

@@ -1254,7 +1254,7 @@ setMethod('setMarkerSeqs', signature='CrossInfo', definition =
       
     if ( length(norm.seqs) != length(marker.indices) ) {
         stop("cannot assign ", length(norm.seqs), " sequences to ", 
-            length(marker.indices)," markers")
+            length(marker.indices), " markers")
     }
       
     if ( ! hasMarkerSeqs(cross.info) ) {
@@ -1420,7 +1420,7 @@ setMethod('setStrainIndices', signature='CrossInfo', definition = function(cross
     
     if ( length(strains) != length(sample.indices) ) {
         stop("cannot assign ", length(strains), " strain indices to ", 
-            length(sample.indices)," samples")
+            length(sample.indices), " samples")
     }
     
     if ( ! hasStrainIndices(cross.info) ) {
@@ -1463,7 +1463,7 @@ setMethod('setTetradIndices', signature='CrossInfo', definition =
     
     if ( length(tetrads) != length(sample.indices) ) {
         stop("cannot assign ", length(tetrads), " tetrad indices to ", 
-            length(sample.indices)," samples")
+            length(sample.indices), " samples")
     }
     
     if ( ! hasTetradIndices(cross.info) ) {

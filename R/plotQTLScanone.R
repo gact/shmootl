@@ -302,10 +302,10 @@ plotQTLScanone <- function(x, chr=NULL, lodcolumn=NULL, qtl.intervals=NULL,
                     )
                     
                     # Get QTL interval line segment endpoints.
-                    x0 <- interval.xpos[c(1,1,3)]
-                    x1 <- interval.xpos[c(1,3,3)]
-                    y0 <- interval.ypos[c(1,2,1)]
-                    y1 <- interval.ypos[c(3,2,3)]
+                    x0 <- interval.xpos[c(1, 1, 3)]
+                    x1 <- interval.xpos[c(1, 3, 3)]
+                    y0 <- interval.ypos[c(1, 2, 1)]
+                    y1 <- interval.ypos[c(3, 2, 3)]
                     
                     # Draw QTL interval line segments.
                     segments(x0, y0, x1, y1, col='black', lwd=0.5, lty='solid')

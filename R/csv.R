@@ -641,7 +641,7 @@ readMapCSV <- function(infile, require.mapunit=TRUE) {
     params <- getMetadataCSV(infile)
     
     if ( ! params$map.present ) {
-        stop("no map data found in file - '", infile,"'")
+        stop("no map data found in file - '", infile, "'")
     }
     
     if ( params$class == 'cross' ) {
@@ -661,7 +661,7 @@ readMapCSV <- function(infile, require.mapunit=TRUE) {
         
     } else {
         
-        stop("cannot read map from ", params$class, " data file - '", infile,"'")
+        stop("cannot read map from ", params$class, " data file - '", infile, "'")
     }
     
     return(cross.map)
@@ -702,7 +702,7 @@ readMapframeCSV <- function(infile, require.mapunit=TRUE) {
     params <- getMetadataCSV(infile)
     
     if ( ! params$map.present ) {
-        stop("no map data found in file - '", infile,"'")
+        stop("no map data found in file - '", infile, "'")
     }
     
     if ( params$class %in% c('cross', 'geno') ) {
@@ -742,7 +742,7 @@ readMapframeCSV <- function(infile, require.mapunit=TRUE) {
         
     } else {
         
-        stop("cannot read mapframe from ", params$class, " data file - '", infile,"'")
+        stop("cannot read mapframe from ", params$class, " data file - '", infile, "'")
     }
     
     return(cross.map)
@@ -932,6 +932,8 @@ recodeCSV <- function(infile, outfile, geno=NULL, enum.geno=FALSE) {
     # Write recoded data to file.
     utils::write.table(x, file=outfile, na=const$missing.value, sep=',',
         quote=FALSE, row.names=FALSE, col.names=FALSE)
+    
+    return( invisible() )
 }
 
 # sniffCSV ---------------------------------------------------------------------
@@ -1174,7 +1176,7 @@ writeMapCSV <- function(map, outfile, include.mapunit=TRUE) {
         if ( guess %in% c('cross', 'geno') ) {
             pushing <- TRUE
         } else if ( guess != 'map' ) {
-            stop("cannot write map to existing file with ", guess, " data - '", outfile,"'")
+            stop("cannot write map to existing file with ", guess, " data - '", outfile, "'")
         }
     }
     
@@ -1247,7 +1249,7 @@ writeMapframeCSV <- function(x, outfile, include.mapunit=TRUE) {
         if ( guess %in% c('cross', 'geno') ) {
             pushing <- TRUE
         } else if ( guess != 'map' ) {
-            stop("cannot write map to existing file with ", guess, " data - '", outfile,"'")
+            stop("cannot write map to existing file with ", guess, " data - '", outfile, "'")
         }
     }
     

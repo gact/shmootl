@@ -89,7 +89,7 @@ allNA <- function(x) {
 #' @rdname allWhite
 allWhite <- function(x) {
     stopifnot( is.character(x) )
-    return( all( grepl( "^[[:space:]]*$", x)  ) )
+    return( all( grepl( '^[[:space:]]*$', x)  ) )
 }
 
 # anyKwargs --------------------------------------------------------------------
@@ -122,7 +122,7 @@ bstripBlankRows <- function(x) {
     stopifnot( is.data.frame(x) )
     stopifnot( all( sapply(x, class) == 'character' ) )
     while( allWhite( as.character( x[nrow(x), ]) ) ) {
-        x <- x[-nrow(x), , drop=FALSE]
+        x <- x[-nrow(x),, drop=FALSE]
     }
     return(x)
 }
@@ -738,11 +738,11 @@ getLodColIndices.scantwoperm <- function(x, lodcolumns=NULL, strict=FALSE) {
     return(indices)
 }
 
-# getLodColIndices.summary.scanoneperm -----------------------------------------
+# getLodColIndices.summary.scanonebins -----------------------------------------
 #' @export
-#' @method getLodColIndices summary.scanoneperm
+#' @method getLodColIndices summary.scanonebins
 #' @rdname getLodColIndices
-getLodColIndices.summary.scanoneperm <- function(x, lodcolumns=NULL,
+getLodColIndices.summary.scanonebins <- function(x, lodcolumns=NULL,
     strict=FALSE) {
     available <- getColIndices(x)
     names(available) <- colnames(x)
@@ -751,11 +751,11 @@ getLodColIndices.summary.scanoneperm <- function(x, lodcolumns=NULL,
     return(indices)
 }
 
-# getLodColIndices.summary.scanonebins -----------------------------------------
+# getLodColIndices.summary.scanoneperm -----------------------------------------
 #' @export
-#' @method getLodColIndices summary.scanonebins
+#' @method getLodColIndices summary.scanoneperm
 #' @rdname getLodColIndices
-getLodColIndices.summary.scanonebins <- function(x, lodcolumns=NULL,
+getLodColIndices.summary.scanoneperm <- function(x, lodcolumns=NULL,
     strict=FALSE) {
     available <- getColIndices(x)
     names(available) <- colnames(x)
@@ -2362,7 +2362,7 @@ makeDefaultMarkerIDs <- function(loc, sep=c(':', '-')) {
     # Format locus positions.
     loc.pos <- sprintf('%07d', loc.pos)
 
-    return( paste0("c", loc.seqs, sep, loc.pos) )
+    return( paste0('c', loc.seqs, sep, loc.pos) )
 }
 
 # makeDefaultQTLNames ----------------------------------------------------------
@@ -3121,7 +3121,7 @@ removeRowsNA <- function(x) {
     stopifnot( is.data.frame(x) || is.matrix(x) )
     stopifnot( nrow(x) > 0 )
     mask <- ! apply( x, 1, function(row) allNA( as.vector(row) ) )
-    x <- x[mask, , drop=FALSE]
+    x <- x[mask,, drop=FALSE]
     return(x)
 }
 
@@ -3139,13 +3139,13 @@ requestNodes <- function(n.cluster=1) {
     stopifnot( isSinglePositiveWholeNumber(n.cluster) )
     
     # Get the PBS node file, or NA value if not found.
-    node.file <- Sys.getenv("PBS_NODEFILE", NA)
+    node.file <- Sys.getenv('PBS_NODEFILE', NA)
 
     # If PBS node file specified, create node list from node file..
     if ( ! is.na(node.file) && file.info(node.file)$size > 0 ) {
       
         # Read lines from node file.
-        f <- file(node.file, "r")
+        f <- file(node.file, 'r')
         node.lines <- readLines(f)
         close(f)
       
@@ -3370,7 +3370,7 @@ stopif <- function(expression) {
 #' @rdname stripWhite
 stripWhite <- function(x) {
     stopifnot( is.character(x) )
-    return( gsub( "^[[:space:]]+|[[:space:]]+$", "", x) )
+    return( gsub( '^[[:space:]]+|[[:space:]]+$', '', x) )
 }
 
 # updateResultsOverview --------------------------------------------------------

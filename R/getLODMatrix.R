@@ -117,7 +117,7 @@ getLODMatrix <- function(x, chr=NULL, incl.markers=FALSE, lodcolumn=NULL,
                     
                     rows <- matchSeqRowIndices(x$map, x.seqs[j], simplify=TRUE)
                     
-                    seq.matrix <- lod.matrix[rows, cols] - max(max.lod.one[c(i,j)])
+                    seq.matrix <- lod.matrix[rows, cols] - max(max.lod.one[c(i, j)])
                     seq.matrix[ isNegativeNumber(seq.matrix) ] <- 0
                     
                     if ( i == j ) {
@@ -159,7 +159,7 @@ getLODMatrix <- function(x, chr=NULL, incl.markers=FALSE, lodcolumn=NULL,
                     
                     cols <- matchSeqRowIndices(x$map, x.seqs[j], simplify=TRUE)
                     
-                    seq.matrix <- lod.matrix[rows, cols] - max(max.lod.one[c(i,j)])
+                    seq.matrix <- lod.matrix[rows, cols] - max(max.lod.one[c(i, j)])
                     seq.matrix[ isNegativeNumber(seq.matrix) ] <- 0
                     
                     if ( i == j ) {

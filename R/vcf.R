@@ -34,6 +34,69 @@ hasGenoQualVCF <- function(file) {
     return( 'GQ' %in% rownames( VariantAnnotation::geno(header) ) )
 }
 
+# readGenoVCF ------------------------------------------------------------------
+#' Read genotype data from a VCF file.
+#' 
+#' This function reads SNP genotype data from one or more VCF files, and
+#' returns these as an \pkg{R/qtl} \code{cross} \code{geno} object.
+#' 
+#' If no founder samples are specified, this function assigns enumerated
+#' genotypes at each locus according to the observed raw SNP genotype. So
+#' for example, if the raw SNP alleles at a given locus are \code{'A'} and
+#' \code{'C'}, samples are assigned the genotypes \code{'1'} and \code{'2'},
+#' respectively.
+#' 
+#' If founder samples are specified, this function assigns to each marker a
+#' genotype symbol consisting of alleles that each correspond to a specific
+#' founder.
+#' 
+#' If the \code{alleles} parameter is specified, this must be a mapping of
+#' founder sample IDs to allele symbols (e.g.
+#' \code{mapping( c(DBVPG6044 = 'W', Y12 = 'S') )}). If the \code{alleles}
+#' parameter is not specified, allele symbols are taken from the letters of the
+#' alphabet (i.e. \code{'A'}, \code{'B'} etc.).
+#' 
+#' @param ... Input VCF file paths.
+#' @param samples Cross sample IDs.
+#' @param founders Founder sample IDs.
+#' @param alleles Mapping of founder sample IDs to founder allele symbols.
+#' 
+#' @return An \pkg{R/qtl} \code{cross} \code{geno} object.
+#' 
+#' @template section-geno-raw
+#' @template section-geno-enum
+#' @template section-geno-founder
+#' 
+#' @export
+#' @family VCF functions
+#' @rdname readGenoVCF
+readGenoVCF <- function(..., samples, founders=NULL, alleles=NULL) {
+    
+    # TODO: optimise.
+    
+    sample.data <- readSnpsVCF(..., samples=samples, require.any=TRUE,
+        require.polymorphic=TRUE)
+    
+    if ( ! is.null(founders) ) {
+        
+        clashing <- intersect(samples, founders)
+        if ( length(clashing) > 0 ) {
+            stop("clashing sample IDs - ", toString(clashing), "'")
+        }
+        
+        founder.data <- readSnpsVCF(..., samples=founders,
+            require.all=TRUE, require.polymorphic=TRUE)
+        
+    } else {
+        
+        founder.data <- NULL
+    }
+    
+    geno <- makeGeno(sample.data, founder.data, alleles=alleles)
+    
+    return(geno)
+}
+
 # readSnpsVCF ------------------------------------------------------------------
 #' Read raw SNP genotypes from VCF files.
 #' 
@@ -289,7 +352,7 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
             variant.error.probs <- 10 ^ ( -0.1 * var.qual[snp.indices] )
             
             # Set matrix of genotype error probabilities.
-            genotype.error.probs <- 10 ^ ( -0.1 * var.geno$GQ[snp.indices, , drop=FALSE] )
+            genotype.error.probs <- 10 ^ ( -0.1 * var.geno$GQ[snp.indices,, drop=FALSE] )
             
             # Calculate error probability for each sample genotype
             # from converted variant/genotype quality scores.
@@ -388,73 +451,10 @@ readSnpsVCF <- function(..., samples=NULL, require.all=FALSE, require.any=FALSE,
         }
         
         # Apply filter mask.
-        result <- result[, mask, , drop=FALSE]
+        result <- result[, mask,, drop=FALSE]
     }
     
     return(result)
-}
-
-# readGenoVCF ------------------------------------------------------------------
-#' Read genotype data from a VCF file.
-#' 
-#' This function reads SNP genotype data from one or more VCF files, and
-#' returns these as an \pkg{R/qtl} \code{cross} \code{geno} object.
-#' 
-#' If no founder samples are specified, this function assigns enumerated
-#' genotypes at each locus according to the observed raw SNP genotype. So
-#' for example, if the raw SNP alleles at a given locus are \code{'A'} and
-#' \code{'C'}, samples are assigned the genotypes \code{'1'} and \code{'2'},
-#' respectively.
-#' 
-#' If founder samples are specified, this function assigns to each marker a
-#' genotype symbol consisting of alleles that each correspond to a specific
-#' founder.
-#' 
-#' If the \code{alleles} parameter is specified, this must be a mapping of
-#' founder sample IDs to allele symbols (e.g.
-#' \code{mapping( c(DBVPG6044 = 'W', Y12 = 'S') )}). If the \code{alleles}
-#' parameter is not specified, allele symbols are taken from the letters of the
-#' alphabet (i.e. \code{'A'}, \code{'B'} etc.).
-#' 
-#' @param ... Input VCF file paths.
-#' @param samples Cross sample IDs.
-#' @param founders Founder sample IDs.
-#' @param alleles Mapping of founder sample IDs to founder allele symbols.
-#' 
-#' @return An \pkg{R/qtl} \code{cross} \code{geno} object.
-#' 
-#' @template section-geno-raw
-#' @template section-geno-enum
-#' @template section-geno-founder
-#' 
-#' @export
-#' @family VCF functions
-#' @rdname readGenoVCF
-readGenoVCF <- function(..., samples, founders=NULL, alleles=NULL) {
-    
-    # TODO: optimise.
-    
-    sample.data <- readSnpsVCF(..., samples=samples, require.any=TRUE,
-        require.polymorphic=TRUE)
-    
-    if ( ! is.null(founders) ) {
-        
-        clashing <- intersect(samples, founders)
-        if ( length(clashing) > 0 ) {
-            stop("clashing sample IDs - ", toString(clashing), "'")
-        }
-        
-        founder.data <- readSnpsVCF(..., samples=founders,
-            require.all=TRUE, require.polymorphic=TRUE)
-    
-    } else {
-        
-        founder.data <- NULL
-    }
-    
-    geno <- makeGeno(sample.data, founder.data, alleles=alleles)
-    
-    return(geno)
 }
 
 # End of vcf.R #################################################################

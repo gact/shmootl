@@ -1,5 +1,100 @@
 # Start of mapping.R ###########################################################
 
+# `$<-.mapping` ----------------------------------------------------------------
+#' @export
+#' @keywords internal
+`$<-.mapping` <- function(x, i, value) {
+    x <- unclass(x)
+    x[[i]] <- value
+    class(x) <- c('mapping', 'list')
+    validateMapping(x)
+    return(x)
+}
+
+# `[<-.mapping` ----------------------------------------------------------------
+#' @export
+#' @keywords internal
+`[<-.mapping` <- function(x, i, value) {
+    x <- unclass(x)
+    x[i] <- value
+    class(x) <- c('mapping', 'list')
+    validateMapping(x)
+    return(x)
+}
+
+# `[[<-.mapping` ---------------------------------------------------------------
+#' @export
+#' @keywords internal
+`[[<-.mapping` <- function(x, i, value) {
+    x <- unclass(x)
+    x[[i]] <- value
+    class(x) <- c('mapping', 'list')
+    validateMapping(x)
+    return(x)
+}
+
+# `names<-.mapping` ------------------------------------------------------------
+#' @export
+#' @keywords internal
+`names<-.mapping` <- function(x, value) {
+    
+    if ( ! is.null(value) ) {
+        
+        if ( ! is.character(value) ) {
+            stop("mapping cannot have keys of class '",
+                toString(class(value)), "'")
+        }
+        
+        if ( length(value) != length(x) ) {
+            stop("mapping cannot have ", length(value), " keys and ",
+                length(x), " values")
+        }
+    }
+    
+    x <- unclass(x)
+    names(x) <- value
+    class(x) <- c('mapping', 'list')
+    validateMapping(x)
+    
+    return(x)
+}
+
+# as.mapping -------------------------------------------------------------------
+#' Convert to a \code{mapping} object.
+#' 
+#' @param x Named vector.
+#' 
+#' @return A \code{mapping} corresponding to the input object.
+#' 
+#' @export
+#' @family mapping object functions
+#' @rdname as.mapping
+as.mapping <- function(x) {
+    return( mapping(values=x, keys=names(x)) )
+}
+
+# is.mapping -------------------------------------------------------------------
+#' Test if object is a \code{mapping}.
+#' 
+#' @param x Test object.
+#' 
+#' @return \code{TRUE} if object is a \code{mapping};
+#' \code{FALSE} otherwise.
+#' 
+#' @export
+#' @family mapping object functions
+#' @rdname is.mapping
+is.mapping <- function(x) {
+    
+    status <- tryCatch({
+        result <- validateMapping(x)
+    }, error=function(e) {
+        result <- FALSE
+    })
+    
+    return(status)
+}
+
 # mapping ----------------------------------------------------------------------
 #' Create a \code{mapping} object.
 #' 
@@ -57,42 +152,6 @@ mapping <- function(values=NULL, keys=NULL) {
     return(object)
 }
 
-# as.mapping -------------------------------------------------------------------
-#' Convert to a \code{mapping} object.
-#' 
-#' @param x Named vector.
-#' 
-#' @return A \code{mapping} corresponding to the input object.
-#' 
-#' @export
-#' @family mapping object functions
-#' @rdname as.mapping
-as.mapping <- function(x) {
-    return( mapping(values=x, keys=names(x)) )
-}
-
-# is.mapping -------------------------------------------------------------------
-#' Test if object is a \code{mapping}.
-#' 
-#' @param x Test object.
-#' 
-#' @return \code{TRUE} if object is a \code{mapping};
-#' \code{FALSE} otherwise.
-#' 
-#' @export
-#' @family mapping object functions
-#' @rdname is.mapping
-is.mapping <- function(x) {
-    
-    status <- tryCatch({
-        result <- validateMapping(x)
-    }, error=function(e) {
-        result <- FALSE
-    })
-    
-    return(status)
-}
-
 # mappingKeys ------------------------------------------------------------------
 #' Get keys of a \code{mapping} object.
 #' 
@@ -123,32 +182,6 @@ mappingKeys <- function(x) {
 mappingValues <- function(x) {
     stopifnot( 'mapping' %in% class(x) )
     return( unname( unclass(x) ) )
-}
-
-# `names<-.mapping` ------------------------------------------------------------
-#' @export
-#' @keywords internal
-`names<-.mapping` <- function(x, value) {
-    
-    if ( ! is.null(value) ) {
-        
-        if ( ! is.character(value) ) {
-            stop("mapping cannot have keys of class '",
-                toString(class(value)), "'")
-        }
-        
-        if ( length(value) != length(x) ) {
-            stop("mapping cannot have ", length(value), " keys and ",
-                length(x), " values")
-        }
-    }
-    
-    x <- unclass(x)
-    names(x) <- value
-    class(x) <- c('mapping', 'list')
-    validateMapping(x)
-    
-    return(x)
 }
 
 # validateMapping --------------------------------------------------------------
@@ -182,39 +215,6 @@ validateMapping <- function(x) {
     }
     
     return(TRUE)
-}
-
-# `$<-.mapping` ----------------------------------------------------------------
-#' @export
-#' @keywords internal
-`$<-.mapping` <- function(x, i, value) {
-    x <- unclass(x)
-    x[[i]] <- value
-    class(x) <- c('mapping', 'list')
-    validateMapping(x)
-    return(x)
-}
-
-# `[<-.mapping` ----------------------------------------------------------------
-#' @export
-#' @keywords internal
-`[<-.mapping` <- function(x, i, value) {
-    x <- unclass(x)
-    x[i] <- value
-    class(x) <- c('mapping', 'list')
-    validateMapping(x)
-    return(x)
-}
-
-# `[[<-.mapping` ---------------------------------------------------------------
-#' @export
-#' @keywords internal
-`[[<-.mapping` <- function(x, i, value) {
-    x <- unclass(x)
-    x[[i]] <- value
-    class(x) <- c('mapping', 'list')
-    validateMapping(x)
-    return(x)
 }
 
 # End of mapping.R #############################################################

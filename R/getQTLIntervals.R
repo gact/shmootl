@@ -323,7 +323,7 @@ getQTLIntervals.mapframe <- function(x, chr=NULL, ci.function=c('lodint',
 # getQTLIntervals.qtl ----------------------------------------------------------
 #' @export
 #' @rdname getQTLIntervals
-getQTLIntervals.qtl <- function(x, chr=NULL, ci.function=c('lodint','bayesint'),
+getQTLIntervals.qtl <- function(x, chr=NULL, ci.function=c('lodint', 'bayesint'),
     drop=1.5, prob=0.95, expandtomarkers=FALSE, qtl.indices=NULL, ...) {
     
     ci.function <- match.arg(ci.function)

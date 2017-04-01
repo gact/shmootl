@@ -662,9 +662,9 @@ getPkgPipelineUsage <- function() {
     pipeline.listings <- structure(character( length(groups) ), names=groups)
     for ( group in groups ) {
         indices <- which( pipe.groups == group )
-        group.head <- paste0("\n", group, ":\n")
-        group.body <- paste0("  ", pipelines[indices], paddings[indices],
-            pipeline.titles[indices], "\n", collapse='')
+        group.head <- paste0('\n', group, ':\n')
+        group.body <- paste0('  ', pipelines[indices], paddings[indices],
+            pipeline.titles[indices], '\n', collapse='')
         pipeline.listings[group] <- paste0(group.head, group.body)
     }
     

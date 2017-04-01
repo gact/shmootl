@@ -19,6 +19,20 @@ decodeGenotypes <- function(x, genotypes, missing.value=NA_character_) {
     UseMethod('decodeGenotypes', x)
 }
 
+# decodeGenotypes.data.frame ---------------------------------------------------
+#' @export
+#' @method decodeGenotypes data.frame
+#' @rdname decodeGenotypes
+decodeGenotypes.data.frame <- function(x, genotypes,
+    missing.value=NA_character_) {
+    stopifnot( all( sapply(x, class) == 'integer' ) )
+    for ( i in getColIndices(x) ) {
+        x[, i] <- decodeGenotypes(x[, i], genotypes,
+            missing.value=missing.value)
+    }
+    return(x)
+}
+
 # decodeGenotypes.integer ------------------------------------------------------
 #' @export
 #' @method decodeGenotypes integer
@@ -40,20 +54,6 @@ decodeGenotypes.integer <- function(x, genotypes, missing.value=NA_character_) {
         x[ is.na(x) ] <- missing.value
     }
     
-    return(x)
-}
-
-# decodeGenotypes.data.frame ---------------------------------------------------
-#' @export
-#' @method decodeGenotypes data.frame
-#' @rdname decodeGenotypes
-decodeGenotypes.data.frame <- function(x, genotypes,
-    missing.value=NA_character_) {
-    stopifnot( all( sapply(x, class) == 'integer' ) )
-    for ( i in getColIndices(x) ) {
-        x[, i] <- decodeGenotypes(x[, i], genotypes,
-            missing.value=missing.value)
-    }
     return(x)
 }
 

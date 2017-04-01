@@ -486,6 +486,80 @@ getResultPhenotypesHDF5 <- function(infile) {
     return(phenotypes)
 }
 
+# h5writeAttributes ------------------------------------------------------------
+#' Write attributes to HDF5 object.
+#' 
+#' @param h5obj HDF5 object to which attributes will be assigned.
+#' @param object An R object whose attributes will be written.
+#' @param attrs List of attributes to be written.
+#' 
+#' @importFrom rhdf5 h5writeAttribute
+#' @importFrom rhdf5 h5writeAttribute.array
+#' @importFrom rhdf5 h5writeAttribute.character
+#' @importFrom rhdf5 h5writeAttribute.double
+#' @importFrom rhdf5 h5writeAttribute.integer
+#' @importFrom rhdf5 h5writeAttribute.logical
+#' @importFrom rhdf5 h5writeAttribute.matrix
+#' @keywords internal
+#' @rdname h5writeAttributes
+h5writeAttributes <- function(h5obj, object=NULL, attrs=NULL) {
+    
+    if ( ! is.null(object) && ! is.null(attrs) ) {
+        stop("cannot specify both object and attribute list")
+    } else if ( ! is.null(object) ) {
+        attrs <- attributes(object)
+    } else if ( ! is.list(attrs) ) {
+        stop("must specify either object or attribute list")
+    }
+    
+    if ( is.list(attrs) && length(attrs) > 0 ) {
+        
+        # If 'dimnames' attribute present, split into one attribute
+        # per dimension, then store dimension names separately.
+        if ( 'dimnames' %in% names(attrs) ) {
+            
+            stopifnot( 'dim' %in% names(attrs) )
+            
+            exp.keys <- paste0( 'dimnames.', c('names', seq_along(attrs[['dim']]) ) )
+            
+            if ( any( exp.keys %in% names(attrs) ) ) {
+                stop("cannot split 'dimnames' without overwriting existing attributes")
+            }
+            
+            object.dimnames <- attrs[['dimnames']]
+            
+            if ( ! is.null(object.dimnames) ) {
+                
+                if ( ! is.null( names(object.dimnames) ) ) {
+                    attrs[['dimnames.names']] <- names(object.dimnames)
+                }
+                
+                indices <- which( ! sapply(object.dimnames, is.null) )
+                
+                for ( i in indices ) {
+                    key <- paste0('dimnames.', i)
+                    attrs[[key]] <- object.dimnames[[i]]
+                }
+                
+                attrs[['dimnames']] <- NULL
+            }
+        }
+        
+        # If attributes include row names, remove these.
+        if ( 'row.names' %in% names(attrs) ) {
+            attrs[['row.names']] <- NULL
+        }
+        
+        # Write attributes.
+        for ( i in seq_along(attrs) ) {
+            rhdf5::h5writeAttribute(h5obj=h5obj, name=names(attrs)[i],
+                                    attr=attrs[[i]])
+        }
+    }
+    
+    return( invisible() )
+}
+
 # hasCrossHDF5 -----------------------------------------------------------------
 #' Test if HDF5 file contains an \pkg{R/qtl} \code{cross} object.
 #' 
@@ -554,80 +628,6 @@ hasResultsOverviewHDF5 <- function(infile) {
     return( hasObjectHDF5(infile, 'Results/Overview') )
 }
 
-# h5writeAttributes ------------------------------------------------------------
-#' Write attributes to HDF5 object.
-#' 
-#' @param h5obj HDF5 object to which attributes will be assigned.
-#' @param object An R object whose attributes will be written.
-#' @param attrs List of attributes to be written.
-#' 
-#' @importFrom rhdf5 h5writeAttribute
-#' @importFrom rhdf5 h5writeAttribute.array
-#' @importFrom rhdf5 h5writeAttribute.character
-#' @importFrom rhdf5 h5writeAttribute.double
-#' @importFrom rhdf5 h5writeAttribute.integer
-#' @importFrom rhdf5 h5writeAttribute.logical
-#' @importFrom rhdf5 h5writeAttribute.matrix
-#' @keywords internal
-#' @rdname h5writeAttributes
-h5writeAttributes <- function(h5obj, object=NULL, attrs=NULL) {
-    
-    if ( ! is.null(object) && ! is.null(attrs) ) {
-        stop("cannot specify both object and attribute list")
-    } else if ( ! is.null(object) ) {
-        attrs <- attributes(object)
-    } else if ( ! is.list(attrs) ) {
-        stop("must specify either object or attribute list")
-    }
-    
-    if ( is.list(attrs) && length(attrs) > 0 ) {
-        
-        # If 'dimnames' attribute present, split into one attribute
-        # per dimension, then store dimension names separately.
-        if ( 'dimnames' %in% names(attrs) ) {
-            
-            stopifnot( 'dim' %in% names(attrs) )
-            
-            exp.keys <- paste0( 'dimnames.', c('names', seq_along(attrs[['dim']]) ) )
-         
-            if ( any( exp.keys %in% names(attrs) ) ) {
-                stop("cannot split 'dimnames' without overwriting existing attributes")
-            }
-            
-            object.dimnames <- attrs[['dimnames']]
-            
-            if ( ! is.null(object.dimnames) ) {
-                
-                if ( ! is.null( names(object.dimnames) ) ) {
-                    attrs[['dimnames.names']] <- names(object.dimnames)
-                }
-                
-                indices <- which( ! sapply(object.dimnames, is.null) )
-                
-                for ( i in indices ) {
-                    key <- paste0('dimnames.', i)
-                    attrs[[key]] <- object.dimnames[[i]]
-                }
-                
-                attrs[['dimnames']] <- NULL
-            }
-        }
-        
-        # If attributes include row names, remove these.
-        if ( 'row.names' %in% names(attrs) ) {
-            attrs[['row.names']] <- NULL
-        }
-        
-        # Write attributes.
-        for ( i in seq_along(attrs) ) {
-            rhdf5::h5writeAttribute(h5obj=h5obj, name=names(attrs)[i],
-                attr=attrs[[i]])
-        }
-    }
-    
-    return( invisible() )
-}
-
 # joinH5ObjectNameParts --------------------------------------------------------
 #' Join components of HDF5 object name.
 #'  
@@ -688,7 +688,7 @@ joinH5ObjectNameParts <- function(components, relative=FALSE) {
 #' @rdname makeDefaultElementNames
 makeDefaultElementNames <- function(n) {
     stopifnot( isSinglePositiveWholeNumber(n) )
-    return( sprintf(paste0("ELT%0", ceiling( log10(n + 1) ), "d"), 1:n) )
+    return( sprintf(paste0('ELT%0', ceiling( log10(n + 1) ), 'd'), 1:n) )
 }
 
 # makeDefaultMapName -----------------------------------------------------------
@@ -2329,7 +2329,7 @@ writeDatasetHDF5.summary.scantwoperm <- function(dataset, outfile, h5name,
     
     stopifnot( identical(names(dataset), const$scantwo.lodtypes$scantwoperm) )
     
-    dataset <- as.data.frame( lapply( dataset, function(x) unname(x[,1]) ) )
+    dataset <- as.data.frame( lapply( dataset, function(x) unname(x[, 1]) ) )
     
     dataset <- insertColumn(dataset, col.index=1, col.name='alpha', alphas)
     

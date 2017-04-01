@@ -1019,16 +1019,16 @@ getPosColDataMapUnit <- function(x) {
     UseMethod('getPosColDataMapUnit', x)
 }
 
-# getPosColDataMapUnit.data.frame ----------------------------------------------
-#' @rdname getPosColDataMapUnit
-getPosColDataMapUnit.data.frame <- function(x) {
-    return( getMapUnitSuffix( as.character(x[, getPosColIndex(x)]) ) )
-}
-
 # getPosColDataMapUnit.character -----------------------------------------------
 #' @rdname getPosColDataMapUnit
 getPosColDataMapUnit.character <- function(x) {
     return( getMapUnitSuffix(x) )
+}
+
+# getPosColDataMapUnit.data.frame ----------------------------------------------
+#' @rdname getPosColDataMapUnit
+getPosColDataMapUnit.data.frame <- function(x) {
+    return( getMapUnitSuffix( as.character(x[, getPosColIndex(x)]) ) )
 }
 
 # getPosColDataMapUnit.numeric -------------------------------------------------
@@ -1098,12 +1098,6 @@ getPosColNameMapUnit <- function(x) {
     UseMethod('getPosColNameMapUnit', x)
 }
 
-# getPosColNameMapUnit.data.frame ----------------------------------------------
-#' @rdname getPosColNameMapUnit
-getPosColNameMapUnit.data.frame <- function(x) {
-    return( getPosColNameMapUnit(colnames(x)[ getPosColIndex(x) ]) )
-}
-
 # getPosColNameMapUnit.character -----------------------------------------------
 #' @rdname getPosColNameMapUnit
 getPosColNameMapUnit.character <- function(x) {
@@ -1126,6 +1120,12 @@ getPosColNameMapUnit.character <- function(x) {
     } 
     
     return(map.unit)
+}
+
+# getPosColNameMapUnit.data.frame ----------------------------------------------
+#' @rdname getPosColNameMapUnit
+getPosColNameMapUnit.data.frame <- function(x) {
+    return( getPosColNameMapUnit(colnames(x)[ getPosColIndex(x) ]) )
 }
 
 # gmapframe --------------------------------------------------------------------
@@ -1398,6 +1398,83 @@ isValidMapUnit <- function(x) {
     return(status)
 }
 
+# makeMapFromDefaultMarkerIDs --------------------------------------------------
+#' Make map from default marker IDs.
+#' 
+#' @param marker.ids Vector of default marker IDs.
+#' 
+#' @return An \pkg{R/qtl} \code{map} object.
+#' 
+#' @template section-map
+#' 
+#' @export
+#' @keywords internal
+#' @rdname makeMapFromDefaultMarkerIDs
+makeMapFromDefaultMarkerIDs <- function(marker.ids) {
+    return( as.map( parseDefaultMarkerIDs(marker.ids) ) )
+}
+
+# makeMapFromDefaultQTLNames ---------------------------------------------------
+#' Make map from default QTL names.
+#' 
+#' @param qtl.names Vector of default QTL names.
+#' 
+#' @return An \pkg{R/qtl} \code{map} object.
+#' 
+#' @template section-map
+#' 
+#' @export
+#' @keywords internal
+#' @rdname makeMapFromDefaultQTLNames
+makeMapFromDefaultQTLNames <- function(qtl.names) {
+    return( as.map( parseDefaultQTLNames(qtl.names) ) )
+}
+
+# makeMapFromLocusIDs ----------------------------------------------------------
+#' Make map from locus IDs.
+#' 
+#' @param ids Vector of default marker IDs,
+#' default QTL names, or pseudomarker IDs.
+#' 
+#' @return An \pkg{R/qtl} \code{map} object. The returned object is a genetic
+#' map if the input \code{ids} are default QTL names or pseudomarkers. A
+#' physical map is returned if the input \code{ids} are default marker IDs.
+#' 
+#' @template section-map
+#' 
+#' @export
+#' @rdname makeMapFromLocusIDs
+makeMapFromLocusIDs <- function(ids) {
+    
+    if ( all( isDefaultMarkerID(ids) ) ) {
+        m <- makeMapFromDefaultMarkerIDs(ids)
+    } else if ( all( isDefaultQTLName(ids) ) ) {
+        m <- makeMapFromDefaultQTLNames(ids)
+    } else if ( all( isPseudomarkerID(ids) ) ) {
+        m <- makeMapFromPseudomarkerIDs(ids)
+    } else {
+        stop("cannot make map from IDs of unknown type")
+    }
+    
+    return(m)
+}
+
+# makeMapFromPseudomarkerIDs ---------------------------------------------------
+#' Make map from pseudomarker IDs.
+#' 
+#' @template section-map
+#' 
+#' @param loc.ids Vector of pseudomarker IDs.
+#' 
+#' @return An \pkg{R/qtl} \code{map} object.
+#' 
+#' @export
+#' @keywords internal
+#' @rdname makeMapFromPseudomarkerIDs
+makeMapFromPseudomarkerIDs <- function(loc.ids) {
+    return( as.map( parsePseudomarkerIDs(loc.ids) ) )
+}
+
 # makePlaceholderMap -----------------------------------------------------------
 #' Make a placeholder map.
 #' 
@@ -1531,83 +1608,6 @@ makePlaceholderMap <- function(locus.seqs, locus.ids=NULL, map.unit='cM',
     }
     
     return( as.map(placeholder) )
-}
-
-# makeMapFromDefaultMarkerIDs --------------------------------------------------
-#' Make map from default marker IDs.
-#' 
-#' @param marker.ids Vector of default marker IDs.
-#' 
-#' @return An \pkg{R/qtl} \code{map} object.
-#' 
-#' @template section-map
-#' 
-#' @export
-#' @keywords internal
-#' @rdname makeMapFromDefaultMarkerIDs
-makeMapFromDefaultMarkerIDs <- function(marker.ids) {
-    return( as.map( parseDefaultMarkerIDs(marker.ids) ) )
-}
-
-# makeMapFromDefaultQTLNames ---------------------------------------------------
-#' Make map from default QTL names.
-#' 
-#' @param qtl.names Vector of default QTL names.
-#' 
-#' @return An \pkg{R/qtl} \code{map} object.
-#' 
-#' @template section-map
-#' 
-#' @export
-#' @keywords internal
-#' @rdname makeMapFromDefaultQTLNames
-makeMapFromDefaultQTLNames <- function(qtl.names) {
-    return( as.map( parseDefaultQTLNames(qtl.names) ) )
-}
-
-# makeMapFromLocusIDs ----------------------------------------------------------
-#' Make map from locus IDs.
-#' 
-#' @param ids Vector of default marker IDs,
-#' default QTL names, or pseudomarker IDs.
-#' 
-#' @return An \pkg{R/qtl} \code{map} object. The returned object is a genetic
-#' map if the input \code{ids} are default QTL names or pseudomarkers. A
-#' physical map is returned if the input \code{ids} are default marker IDs.
-#' 
-#' @template section-map
-#' 
-#' @export
-#' @rdname makeMapFromLocusIDs
-makeMapFromLocusIDs <- function(ids) {
-    
-    if ( all( isDefaultMarkerID(ids) ) ) {
-        m <- makeMapFromDefaultMarkerIDs(ids)
-    } else if ( all( isDefaultQTLName(ids) ) ) {
-        m <- makeMapFromDefaultQTLNames(ids)
-    } else if ( all( isPseudomarkerID(ids) ) ) {
-        m <- makeMapFromPseudomarkerIDs(ids)
-    } else {
-        stop("cannot make map from IDs of unknown type")
-    }
-    
-    return(m)
-}
-
-# makeMapFromPseudomarkerIDs ---------------------------------------------------
-#' Make map from pseudomarker IDs.
-#' 
-#' @template section-map
-#' 
-#' @param loc.ids Vector of pseudomarker IDs.
-#' 
-#' @return An \pkg{R/qtl} \code{map} object.
-#' 
-#' @export
-#' @keywords internal
-#' @rdname makeMapFromPseudomarkerIDs
-makeMapFromPseudomarkerIDs <- function(loc.ids) {
-    return( as.map( parsePseudomarkerIDs(loc.ids) ) )
 }
 
 # mapframe ---------------------------------------------------------------------
@@ -2146,41 +2146,6 @@ pullLoci <- function(x) {
     return(loc)
 }
 
-# pullLocusSeq -----------------------------------------------------------------
-#' Pull sequence labels for individual loci.
-#' 
-#' @param x Object containing map data.
-#' 
-#' @return Character vector of sequence labels associated with individual loci.
-#' 
-#' @keywords internal
-#' @rdname pullLocusSeq
-pullLocusSeq <- function(x) {
-    UseMethod('pullLocusSeq', x)
-}
-
-# pullLocusSeq.data.frame ------------------------------------------------------
-#' @method pullLocusSeq data.frame
-#' @rdname pullLocusSeq
-pullLocusSeq.data.frame <- function(x) {
-    return( as.character(x[, getSeqColIndex(x)]) )
-}
-
-# pullLocusSeq.list ------------------------------------------------------------
-#' @method pullLocusSeq list
-#' @rdname pullLocusSeq
-pullLocusSeq.list <- function(x) {
-    return( pullLocusSeq.map(x) )
-}
-
-# pullLocusSeq.map -------------------------------------------------------------
-#' @method pullLocusSeq map
-#' @rdname pullLocusSeq
-pullLocusSeq.map <- function(x) {
-    return( unlist( lapply( seq_along(x), function(i)
-        rep_len(names(x)[i], length(x[[i]])) ) ) )
-}
-
 # pullLocusIDs -----------------------------------------------------------------
 #' Pull individual locus IDs.
 #' 
@@ -2265,6 +2230,41 @@ pullLocusPos.mapframe <- function(x) {
     return( x[, getPosColIndex(x)] )
 }
 
+# pullLocusSeq -----------------------------------------------------------------
+#' Pull sequence labels for individual loci.
+#' 
+#' @param x Object containing map data.
+#' 
+#' @return Character vector of sequence labels associated with individual loci.
+#' 
+#' @keywords internal
+#' @rdname pullLocusSeq
+pullLocusSeq <- function(x) {
+    UseMethod('pullLocusSeq', x)
+}
+
+# pullLocusSeq.data.frame ------------------------------------------------------
+#' @method pullLocusSeq data.frame
+#' @rdname pullLocusSeq
+pullLocusSeq.data.frame <- function(x) {
+    return( as.character(x[, getSeqColIndex(x)]) )
+}
+
+# pullLocusSeq.list ------------------------------------------------------------
+#' @method pullLocusSeq list
+#' @rdname pullLocusSeq
+pullLocusSeq.list <- function(x) {
+    return( pullLocusSeq.map(x) )
+}
+
+# pullLocusSeq.map -------------------------------------------------------------
+#' @method pullLocusSeq map
+#' @rdname pullLocusSeq
+pullLocusSeq.map <- function(x) {
+    return( unlist( lapply( seq_along(x), function(i)
+        rep_len(names(x)[i], length(x[[i]])) ) ) )
+}
+
 # pullMap ----------------------------------------------------------------------
 #' Pull map from object.
 #' 
@@ -2321,85 +2321,6 @@ pushLoci <- function(x, loc) {
     if ( is.na(object.mapunit) ) {
         attr(x, 'map.unit') <- loc.mapunit
     }
-    
-    return(x)
-}
-
-# pushLocusSeq -----------------------------------------------------------------
-#' Replace sequence labels of individual loci.
-#' 
-#' @param x Object containing map data.
-#' @param value Character vector of sequence labels for individual loci.
-#' 
-#' @return Input object with individual locus sequence labels replaced.
-#' 
-#' @keywords internal
-#' @rdname pushLocusSeq
-pushLocusSeq <- function(x, value) {
-    stopifnot( all( isValidID(value) ) )
-    UseMethod('pushLocusSeq', x)
-}
-
-# pushLocusSeq.data.frame ------------------------------------------------------
-#' @method pushLocusSeq data.frame
-#' @rdname pushLocusSeq
-pushLocusSeq.data.frame <- function(x, value) {
-    
-    seqcol.index <- getSeqColIndex(x)
-    
-    # Get key info about object.
-    x.runs <- rle( as.character(x[, seqcol.index]) ) # run-length encoding
-    x.nmar <- x.runs$lengths         # number of markers by sequence
-    x.totmar <- nrow(x)              # total number of markers
-    
-    # Get key info about value.
-    value.runs <- rle(value)         # run-length encoding
-    value.nmar <- value.runs$lengths # number of markers by sequence
-    value.totmar <- length(value)    # total number of markers
-    
-    if ( value.totmar != x.totmar ) {
-        stop("cannot push ", value.totmar, " locus sequences into ", x.totmar, " loci")
-    }
-    
-    if ( ! identical(value.nmar, x.nmar) ) { # NB: checks equal number of sequences
-        stop("cannot push locus sequences - sequence boundaries not preserved")
-    }
-    
-    x[, seqcol.index] <- value
-    
-    return(x)
-}
-
-# pushLocusSeq.list ------------------------------------------------------------
-#' @method pushLocusSeq list
-#' @rdname pushLocusSeq
-pushLocusSeq.list <- function(x, value) {
-    return( pushLocusSeq.map(x, value) )
-}
-
-# pushLocusSeq.map -------------------------------------------------------------
-#' @method pushLocusSeq map
-#' @rdname pushLocusSeq
-pushLocusSeq.map <- function(x, value) {
-    
-    # Get key info about object.
-    x.nmar <- unname( lengths(x) )   # number of markers by sequence
-    x.totmar <- sum(x.nmar)          # total number of markers
-    
-    # Get key info about value.
-    value.runs <- rle(value)         # run-length encoding
-    value.nmar <- value.runs$lengths # number of markers by sequence
-    value.totmar <- length(value)    # total number of markers
-    
-    if ( value.totmar != x.totmar ) {
-        stop("cannot push ", value.totmar, " locus sequences into ", x.totmar, " loci")
-    }
-    
-    if ( ! identical(value.nmar, x.nmar) ) { # NB: checks equal number of sequences
-        stop("cannot push locus sequences - sequence boundaries not preserved")
-    }
-    
-    names(x) <- value.runs$values
     
     return(x)
 }
@@ -2585,6 +2506,85 @@ pushLocusPos.map <- function(x, value) {
     return(x)
 }
 
+# pushLocusSeq -----------------------------------------------------------------
+#' Replace sequence labels of individual loci.
+#' 
+#' @param x Object containing map data.
+#' @param value Character vector of sequence labels for individual loci.
+#' 
+#' @return Input object with individual locus sequence labels replaced.
+#' 
+#' @keywords internal
+#' @rdname pushLocusSeq
+pushLocusSeq <- function(x, value) {
+    stopifnot( all( isValidID(value) ) )
+    UseMethod('pushLocusSeq', x)
+}
+
+# pushLocusSeq.data.frame ------------------------------------------------------
+#' @method pushLocusSeq data.frame
+#' @rdname pushLocusSeq
+pushLocusSeq.data.frame <- function(x, value) {
+    
+    seqcol.index <- getSeqColIndex(x)
+    
+    # Get key info about object.
+    x.runs <- rle( as.character(x[, seqcol.index]) ) # run-length encoding
+    x.nmar <- x.runs$lengths         # number of markers by sequence
+    x.totmar <- nrow(x)              # total number of markers
+    
+    # Get key info about value.
+    value.runs <- rle(value)         # run-length encoding
+    value.nmar <- value.runs$lengths # number of markers by sequence
+    value.totmar <- length(value)    # total number of markers
+    
+    if ( value.totmar != x.totmar ) {
+        stop("cannot push ", value.totmar, " locus sequences into ", x.totmar, " loci")
+    }
+    
+    if ( ! identical(value.nmar, x.nmar) ) { # NB: checks equal number of sequences
+        stop("cannot push locus sequences - sequence boundaries not preserved")
+    }
+    
+    x[, seqcol.index] <- value
+    
+    return(x)
+}
+
+# pushLocusSeq.list ------------------------------------------------------------
+#' @method pushLocusSeq list
+#' @rdname pushLocusSeq
+pushLocusSeq.list <- function(x, value) {
+    return( pushLocusSeq.map(x, value) )
+}
+
+# pushLocusSeq.map -------------------------------------------------------------
+#' @method pushLocusSeq map
+#' @rdname pushLocusSeq
+pushLocusSeq.map <- function(x, value) {
+    
+    # Get key info about object.
+    x.nmar <- unname( lengths(x) )   # number of markers by sequence
+    x.totmar <- sum(x.nmar)          # total number of markers
+    
+    # Get key info about value.
+    value.runs <- rle(value)         # run-length encoding
+    value.nmar <- value.runs$lengths # number of markers by sequence
+    value.totmar <- length(value)    # total number of markers
+    
+    if ( value.totmar != x.totmar ) {
+        stop("cannot push ", value.totmar, " locus sequences into ", x.totmar, " loci")
+    }
+    
+    if ( ! identical(value.nmar, x.nmar) ) { # NB: checks equal number of sequences
+        stop("cannot push locus sequences - sequence boundaries not preserved")
+    }
+    
+    names(x) <- value.runs$values
+    
+    return(x)
+}
+
 # pushMap ----------------------------------------------------------------------
 #' Push map into object.
 #' 
@@ -2664,30 +2664,6 @@ setMapUnit <- function(x, map.unit) {
     UseMethod('setMapUnit', x)
 }
 
-# setMapUnit.list --------------------------------------------------------------
-#' @export
-#' @rdname setMapUnit
-setMapUnit.list <- function(x, map.unit) {
-    attr(x, 'map.unit') <- map.unit
-    return(x)
-}
-
-# setMapUnit.map ---------------------------------------------------------------
-#' @export
-#' @rdname setMapUnit
-setMapUnit.map <- function(x, map.unit) {
-    
-    existing.mapunit <- getMapUnit(x)
-    
-    if ( ! is.na(existing.mapunit) ) {
-        x <- convertMapUnit(x, map.unit)
-    } else {
-        attr(x, 'map.unit') <- map.unit
-    }
-    
-    return(x)
-}
-
 # setMapUnit.data.frame --------------------------------------------------------
 #' @export
 #' @rdname setMapUnit
@@ -2722,6 +2698,30 @@ setMapUnit.data.frame <- function(x, map.unit) {
     
     if ( ! is.na(positions.mapunit) ) {
         x <- setPosColDataMapUnit(x, map.unit)
+    }
+    
+    return(x)
+}
+
+# setMapUnit.list --------------------------------------------------------------
+#' @export
+#' @rdname setMapUnit
+setMapUnit.list <- function(x, map.unit) {
+    attr(x, 'map.unit') <- map.unit
+    return(x)
+}
+
+# setMapUnit.map ---------------------------------------------------------------
+#' @export
+#' @rdname setMapUnit
+setMapUnit.map <- function(x, map.unit) {
+    
+    existing.mapunit <- getMapUnit(x)
+    
+    if ( ! is.na(existing.mapunit) ) {
+        x <- convertMapUnit(x, map.unit)
+    } else {
+        attr(x, 'map.unit') <- map.unit
     }
     
     return(x)
@@ -2769,24 +2769,6 @@ setPosColDataMapUnit <- function(x, map.unit) {
     UseMethod('setPosColDataMapUnit', x)
 }
 
-# setPosColDataMapUnit.data.frame ----------------------------------------------
-#' @rdname setPosColDataMapUnit
-setPosColDataMapUnit.data.frame <- function(x, map.unit) {
-    
-    existing.mapunit <- getMapUnit(x)
-    
-    if ( ! is.null(map.unit) && ! is.na(existing.mapunit) &&
-        map.unit != existing.mapunit ) {
-        stop("pos column data map-unit mismatch")
-    }
-    
-    poscol.index <- getPosColIndex(x)
-    
-    x[, poscol.index] <- setPosColDataMapUnit(x[, poscol.index], map.unit)
-    
-    return(x)
-}
-
 # setPosColDataMapUnit.character -----------------------------------------------
 #' @rdname setPosColDataMapUnit
 setPosColDataMapUnit.character <- function(x, map.unit) {
@@ -2814,6 +2796,24 @@ setPosColDataMapUnit.character <- function(x, map.unit) {
     }
     
     return(res)
+}
+
+# setPosColDataMapUnit.data.frame ----------------------------------------------
+#' @rdname setPosColDataMapUnit
+setPosColDataMapUnit.data.frame <- function(x, map.unit) {
+    
+    existing.mapunit <- getMapUnit(x)
+    
+    if ( ! is.null(map.unit) && ! is.na(existing.mapunit) &&
+        map.unit != existing.mapunit ) {
+        stop("pos column data map-unit mismatch")
+    }
+    
+    poscol.index <- getPosColIndex(x)
+    
+    x[, poscol.index] <- setPosColDataMapUnit(x[, poscol.index], map.unit)
+    
+    return(x)
 }
 
 # setPosColDataMapUnit.numeric -------------------------------------------------
@@ -2844,25 +2844,6 @@ setPosColNameMapUnit <- function(x, map.unit) {
     }
     
     UseMethod('setPosColNameMapUnit', x)
-}
-
-# setPosColNameMapUnit.data.frame ----------------------------------------------
-#' @rdname setPosColNameMapUnit
-setPosColNameMapUnit.data.frame <- function(x, map.unit) {
-
-    existing.mapunit <- getMapUnit(x)
-    
-    if ( ! is.null(map.unit) && ! is.na(existing.mapunit) &&
-         map.unit != existing.mapunit ) {
-        stop("pos column heading map unit mismatch")
-    }
-    
-    poscol.index <- getPosColIndex(x)
-    
-    colnames(x)[poscol.index] <- setPosColNameMapUnit(
-        colnames(x)[poscol.index], map.unit)
-    
-    return(x)
 }
 
 # setPosColNameMapUnit.character -----------------------------------------------
@@ -2902,6 +2883,25 @@ setPosColNameMapUnit.character <- function(x, map.unit) {
         # Merge parts of pos column heading.
         x <- paste(flank.text, collapse=' ')
     }
+    
+    return(x)
+}
+
+# setPosColNameMapUnit.data.frame ----------------------------------------------
+#' @rdname setPosColNameMapUnit
+setPosColNameMapUnit.data.frame <- function(x, map.unit) {
+    
+    existing.mapunit <- getMapUnit(x)
+    
+    if ( ! is.null(map.unit) && ! is.na(existing.mapunit) &&
+        map.unit != existing.mapunit ) {
+        stop("pos column heading map unit mismatch")
+    }
+    
+    poscol.index <- getPosColIndex(x)
+    
+    colnames(x)[poscol.index] <- setPosColNameMapUnit(
+        colnames(x)[poscol.index], map.unit)
     
     return(x)
 }
@@ -3026,6 +3026,22 @@ subsetMap <- function(x, ...) {
     x <- subset(x, ...)
     otherattributes(x) <- others
     return(x)
+}
+
+# validateGeneticMapUnit -------------------------------------------------------
+#' Validate genetic map unit.
+#' 
+#' @param x Map unit, or object with a \code{'map.unit'} attribute.
+#' 
+#' @return \code{TRUE} if map unit is a valid genetic map unit;
+#' otherwise, returns error.
+#' 
+#' @template section-mapunits
+#' 
+#' @keywords internal
+#' @rdname validateGeneticMapUnit
+validateGeneticMapUnit <- function(x) {
+    return( validateMapUnit(x, map.type='gmap') )
 }
 
 # validateMap ------------------------------------------------------------------
@@ -3425,22 +3441,6 @@ validateMapUnit.default <- function(x, map.type=NULL) {
     validateMapUnit(map.unit, map.type=map.type)
     
     return(TRUE)
-}
-
-# validateGeneticMapUnit -------------------------------------------------------
-#' Validate genetic map unit.
-#' 
-#' @param x Map unit, or object with a \code{'map.unit'} attribute.
-#' 
-#' @return \code{TRUE} if map unit is a valid genetic map unit;
-#' otherwise, returns error.
-#' 
-#' @template section-mapunits
-#' 
-#' @keywords internal
-#' @rdname validateGeneticMapUnit
-validateGeneticMapUnit <- function(x) {
-    return( validateMapUnit(x, map.type='gmap') )
 }
 
 # validatePhysicalMapUnit ------------------------------------------------------

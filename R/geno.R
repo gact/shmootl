@@ -253,6 +253,64 @@ as.geno.data.frame <- function(from, require.mapunit=TRUE) {
     return(cross.geno)
 }
 
+# makeEnumGenoMatrix -----------------------------------------------------------
+#' Make enumerated genotype matrix from genotype data.
+#' 
+#' Given input sample genotype data, this function creates an enumerated genotype
+#' matrix, in which each the genotype data at each locus are coded as numbers
+#' in order of occurrence. So for example, if the first sample at a locus has
+#' raw genotype \code{'A'}, and the second sample has raw genotype \code{'C'},
+#' these will be assigned genotypes \code{'1'} and \code{'2'}, respectively.
+#' The enumeration of genotypes is performed independently for each locus,
+#' so a given enumerated genotype does not have the same meaning across loci.
+#' 
+#' @param x Raw sample genotype \code{array}.
+#'   
+#' @return An enumerated genotype matrix, with genotypes encoded as integers and
+#' their corresponding genotype symbols in the attribute \code{'genotypes'}.
+#' 
+#' @keywords internal
+#' @rdname makeEnumGenoMatrix
+makeEnumGenoMatrix <- function(x) {
+    
+    validateRawGenoArray(x)
+    
+    # Extract raw genotype data as matrix.
+    x.geno <- as.matrix(x[,, 'geno'])
+    
+    # Init enumerated genotype matrix.
+    geno.matrix <- matrix(NA_integer_, nrow=nrow(x.geno), ncol=ncol(x.geno),
+        dimnames=dimnames(x.geno) )
+    
+    for ( i in getColIndices(geno.matrix) ) {
+        
+        # Get sample symbols and genotypes for this locus.
+        x.symbols <- x.geno[, i]
+        x.levels <- unique(x.symbols)
+        x.genotypes <- x.levels[ x.levels != const$missing.value ]
+        
+        # Skip loci with more genotypes than can be represented.
+        if ( length(x.genotypes) > length(const$enum.geno.charset) ) {
+            next
+        }
+        
+        # Set genotype numbers for this locus.
+        geno.matrix[, i] <- match(x.symbols, x.genotypes)
+    }
+    
+    # Remove null loci.
+    geno.matrix <- removeColsNA(geno.matrix)
+    
+    if ( ncol(geno.matrix) == 0 ) {
+        stop("cannot make enumerated genotype matrix - no diallelic loci found")
+    }
+    
+    # Set genotype symbols.
+    attr(geno.matrix, 'genotypes') <- as.character( 1:max(geno.matrix, na.rm=TRUE) )
+    
+    return(geno.matrix)
+}
+
 # makeFounderGenoMatrix --------------------------------------------------------
 #' Make founder genotype matrix from genotype data.
 #' 
@@ -298,7 +356,7 @@ makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
         unfound <- y.samples[ ! y.samples %in% founder.samples ]
         if ( length(unfound) > 0 ) {
             stop("allele symbols not specified for founder samples - '",
-                toString(unfound), "'")
+                 toString(unfound), "'")
         }
         
         dup.alleles <- founder.symbols[ duplicated(founder.symbols) ]
@@ -332,17 +390,17 @@ makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
     common.snps <- intersect(x.snps, y.snps)
     
     # Keep only common loci.
-    x <- x[, common.snps, , drop=FALSE]
-    y <- y[, common.snps, , drop=FALSE]
+    x <- x[, common.snps,, drop=FALSE]
+    y <- y[, common.snps,, drop=FALSE]
     
     # Extract raw genotype data.
-    x.geno <- as.matrix(x[, , 'geno'])
-    y.geno <- as.matrix(y[, , 'geno'])
+    x.geno <- as.matrix(x[,, 'geno'])
+    y.geno <- as.matrix(y[,, 'geno'])
     
     # TODO: use genotype error probabilities
-    # x.prob <- as.matrix(x[, , 'prob'])
+    # x.prob <- as.matrix(x[,, 'prob'])
     # mode(x.prob) <- 'numeric'
-    # y.prob <- as.matrix(y[, , 'prob'])
+    # y.prob <- as.matrix(y[,, 'prob'])
     # mode(y.prob) <- 'numeric'
     
     # Check no samples are marked as both founder and segregant.
@@ -381,7 +439,7 @@ makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
     
     # Init founder genotype matrix.
     geno.matrix <- matrix( NA_integer_, nrow=nrow(x.geno), ncol=ncol(x.geno),
-        dimnames=dimnames(x.geno) )
+                           dimnames=dimnames(x.geno) )
     
     for ( j in getColIndices(geno.matrix) ) {
         
@@ -419,65 +477,7 @@ makeFounderGenoMatrix <- function(x, y, alleles=NULL) {
     # Set genotype symbols for founders.
     # TODO: handle other segregant ploidies.
     attr(geno.matrix, 'genotypes') <- makeGenotypeSet(allele.symbols,
-        crosstype='haploid') # TODO: handle other cross types.
-    
-    return(geno.matrix)
-}
-
-# makeEnumGenoMatrix -----------------------------------------------------------
-#' Make enumerated genotype matrix from genotype data.
-#' 
-#' Given input sample genotype data, this function creates an enumerated genotype
-#' matrix, in which each the genotype data at each locus are coded as numbers
-#' in order of occurrence. So for example, if the first sample at a locus has
-#' raw genotype \code{'A'}, and the second sample has raw genotype \code{'C'},
-#' these will be assigned genotypes \code{'1'} and \code{'2'}, respectively.
-#' The enumeration of genotypes is performed independently for each locus,
-#' so a given enumerated genotype does not have the same meaning across loci.
-#' 
-#' @param x Raw sample genotype \code{array}.
-#'   
-#' @return An enumerated genotype matrix, with genotypes encoded as integers and
-#' their corresponding genotype symbols in the attribute \code{'genotypes'}.
-#' 
-#' @keywords internal
-#' @rdname makeEnumGenoMatrix
-makeEnumGenoMatrix <- function(x) {
-    
-    validateRawGenoArray(x)
-    
-    # Extract raw genotype data as matrix.
-    x.geno <- as.matrix(x[, , 'geno'])
-    
-    # Init enumerated genotype matrix.
-    geno.matrix <- matrix(NA_integer_, nrow=nrow(x.geno), ncol=ncol(x.geno),
-        dimnames=dimnames(x.geno) )
-    
-    for ( i in getColIndices(geno.matrix) ) {
-        
-        # Get sample symbols and genotypes for this locus.
-        x.symbols <- x.geno[, i]
-        x.levels <- unique(x.symbols)
-        x.genotypes <- x.levels[ x.levels != const$missing.value ]
-        
-        # Skip loci with more genotypes than can be represented.
-        if ( length(x.genotypes) > length(const$enum.geno.charset) ) {
-            next
-        }
-        
-        # Set genotype numbers for this locus.
-        geno.matrix[, i] <- match(x.symbols, x.genotypes)
-    }
-    
-    # Remove null loci.
-    geno.matrix <- removeColsNA(geno.matrix)
-    
-    if ( ncol(geno.matrix) == 0 ) {
-        stop("cannot make enumerated genotype matrix - no diallelic loci found")
-    }
-    
-    # Set genotype symbols.
-    attr(geno.matrix, 'genotypes') <- as.character( 1:max(geno.matrix, na.rm=TRUE) )
+                                                      crosstype='haploid') # TODO: handle other cross types.
     
     return(geno.matrix)
 }
@@ -642,7 +642,7 @@ validateRawGenoArray <- function(x) {
     }
     
     # Get symbols from genotype matrix.
-    g.symbols <- unique( as.character(x[, , 'geno']) )
+    g.symbols <- unique( as.character(x[,, 'geno']) )
     
     # Get genotype symbols.
     genotypes <- g.symbols[ g.symbols != const$missing.value ]
@@ -665,11 +665,13 @@ validateRawGenoArray <- function(x) {
     }
     
     if ( 'prob' %in% slices ) {
-        prob <- as.numeric(x[, , 'prob'])
+        prob <- as.numeric(x[,, 'prob'])
         if ( ! all( isProbability(prob) ) ) {
             stop("raw genotype array data contains invalid error probabilities")
         }
     }
+    
+    return(TRUE)
 }
 
 # End of geno.R ################################################################
