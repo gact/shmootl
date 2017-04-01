@@ -151,7 +151,7 @@ function, input a command such as the following:
 help(readCrossCSV)
 ```
 
-...where the first argument --- in this case `readCrossCSV` --- is the name
+...where the first argument (in this case `readCrossCSV`) is the name
 of the function for which help is being sought.
 
 If package vignettes were built when
