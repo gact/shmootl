@@ -4,9 +4,10 @@ This package contains pipelines and utilities for QTL analysis of yeast cross
 data. Pipelines can be run from the command line or from within the R
 environment. Utility functions are available from within R.
 
-For more information on using this package, see the user guide vignette.
+To find more information on using **ShmooTL**, see the [Usage](#usage) and 
+[Documentation](#documentation) sections.
 
-## Dependencies 
+## Dependencies
 
 This package depends on the following:
 
@@ -27,9 +28,10 @@ In addition, the following suggested packages are each needed for a specific use
 - [viridis](https://cran.r-project.org/web/packages/viridis/index.html): plotting with the Viridis palette
 - [xlsx](https://cran.r-project.org/web/packages/xlsx/index.html): writing Excel output
 
-## Installation 
+## Installation
 
-Before installing ShmooTL from GitHub, you will first need to install its dependency packages.
+Before installing **ShmooTL** from GitHub, you will first need to install its
+dependency packages.
 
 ### Installing packages from R
 
@@ -51,7 +53,8 @@ install.packages('xlsx')
 
 ### Installing Bioconductor packages
 
-To install required Bioconductor packages, first source the `biocLite.R` install script as follows:
+To install required Bioconductor packages, first source the `biocLite.R` install
+script as follows:
 
 ```
 source('https://bioconductor.org/biocLite.R')
@@ -64,11 +67,14 @@ biocLite('VariantAnnotation')
 biocLite('rhdf5')
 ```
 
-It may be necessary to install additional Bioconductor packages in a similar manner (e.g. `biocLite('rtracklayer')`).
+It may be necessary to install additional Bioconductor packages in a similar
+manner (e.g. `biocLite('rtracklayer')`).
 
 ### Installing packages from GitHub
 
-Packages `funqtl` and `qtlcharts` can be installed directly from the GitHub website, but you must first install the `devtools` package, which can be installed from within R:
+Packages `funqtl` and `qtlcharts` can be installed directly from the GitHub
+website, but you must first install the `devtools` package, which can be
+installed from within R:
 
 ```
 install.packages('devtools')
@@ -81,7 +87,8 @@ library(devtools)
 install_github('ikwak2/funqtl')
 ```
 
-To install `qtlcharts` from GitHub, install the package `hmtlwidgets` as follows:
+To install `qtlcharts` from GitHub, install the package `hmtlwidgets` as
+follows:
 
 ```
 install.packages('htmlwidgets')
@@ -96,14 +103,26 @@ install_github('kbroman/qtlcharts')
 
 ### Installing ShmooTL from GitHub
 
-With the `devtools` package and other dependencies installed, ShmooTL can be installed from GitHub as follows:
+With the `devtools` package and other dependencies installed,
+**ShmooTL** can be installed from GitHub as follows:
 
 ```
 library(devtools)
 install_github('gact/shmootl')
 ```
 
-## Usage 
+If you want to access vignettes for the installed package,
+set the `build_vignettes` option to `TRUE`, as follows: 
+
+```
+library(devtools)
+install_github('gact/shmootl', build_vignettes=TRUE)
+```
+
+**ShmooTL** vignettes can then be accessed as described in the
+[Documentation](#documentation) section.
+
+## Usage
 
 Package pipelines can be run from the command line using Rscript as follows:
 
@@ -111,10 +130,39 @@ Package pipelines can be run from the command line using Rscript as follows:
 Rscript -e 'library(shmootl)' -e 'run()' <pipeline> [-h] [<args>]
 ```
 
-...where `run` is the general ShmooTL pipeline-running function, `<pipeline>`
-is the name of the pipeline to run, and `<args>` represents any arguments to be
-passed to the given pipeline. To see the available options for a pipeline, input
-the help flag (`-h`) after the name of the pipeline.
+...where `run` is the general **ShmooTL** pipeline-running function,
+`<pipeline>` is the name of the pipeline to run, and `<args>` represents
+any arguments to be passed to the given pipeline. To see the available
+options for a pipeline, input the help flag (`-h`) after the name of the
+pipeline.
+
+## Documentation
+
+To view the **ShmooTL** help pages within R, input the following command:
+
+```
+help(package=shmootl)
+```
+
+To view the help page for a specific **ShmooTL**
+function, input a command such as the following:
+
+```
+help(readCrossCSV)
+```
+
+...where the first argument --- in this case `readCrossCSV` --- is the name
+of the function for which help is being sought.
+
+If package vignettes were built when
+[installing **ShmooTL**](#installing-shmootl-from-github), the
+**ShmooTL** user guide can be viewed with the following R command:
+
+```
+vignette('shmootl-guide')
+```
+
+Passing the string `'shmootl-devnotes'` to the same function displays the **ShmooTL** developer notes.
 
 ## Contact
 
