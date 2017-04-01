@@ -99,7 +99,7 @@ Other QTL functions: \code{\link{estPhysicalPositions}},
   \code{\link{plotQTLScanone}}
 }
 \author{
-Thomas Walsh <tw164@le.ac.uk>
+Thomas Walsh <tw164@protonmail.com>
 
 Yue Hu
 }

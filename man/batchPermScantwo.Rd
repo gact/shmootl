@@ -56,7 +56,7 @@ Other scan utility functions: \code{\link{batchPermScanoneF}},
   \code{\link{nodePhenoScantwo}}
 }
 \author{
-Thomas Walsh <tw164@le.ac.uk>
+Thomas Walsh <tw164@protonmail.com>
 
 Yue Hu
 }

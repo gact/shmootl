@@ -38,5 +38,5 @@ Other Excel functions: \code{\link{listWorksheets}},
 \author{
 Yue Hu
 
-Thomas Walsh <tw164@le.ac.uk>
+Thomas Walsh <tw164@protonmail.com>
 }

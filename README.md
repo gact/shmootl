@@ -166,5 +166,5 @@ Passing the string `'shmootl-devnotes'` to the same function displays the **Shmo
 
 ## Contact
 
-For information or issues email tw164 (-a-) le.ac.uk
+For information or issues email tw164 (-a-) protonmail.com
 

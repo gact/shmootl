@@ -100,7 +100,7 @@ the method for the given dataset type, as determined by the class of the R
 object.
 }
 \author{
-Thomas Walsh <tw164@le.ac.uk>
+Thomas Walsh <tw164@protonmail.com>
 
 Yue Hu
 }

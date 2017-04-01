@@ -4,7 +4,7 @@ Date: 2016-03-08
 Title: QTL Analysis Utilities for Yeast
 Authors@R: c(person('Thomas', 'Walsh', role=c('aut', 'cre'), email='tw164@le.ac.uk'), person('Yue', 'Hu', role=c('aut')))
 Author: Thomas Walsh
-Maintainer: Thomas Walsh <tw164@le.ac.uk>
+Maintainer: Thomas Walsh <tw164@protonmail.com>
 Depends:
     R (>= 3.0.2)
 Description: This package contains pipelines and utilities for QTL analysis of

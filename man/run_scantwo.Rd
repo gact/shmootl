@@ -86,7 +86,7 @@ Other pipeline functions: \code{\link{run_annoqtl}},
 \author{
 Yue Hu
 
-Thomas Walsh <tw164@le.ac.uk>
+Thomas Walsh <tw164@protonmail.com>
 }
 \concept{
 shmootl:analysis

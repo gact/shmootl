@@ -86,7 +86,7 @@ method for the dataset type, as determined from the \code{'R.class'}
 or \code{'class'} attribute of the HDF5 object.
 }
 \author{
-Thomas Walsh <tw164@le.ac.uk>
+Thomas Walsh <tw164@protonmail.com>
 
 Yue Hu
 }

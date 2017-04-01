@@ -36,7 +36,7 @@ Other Excel functions: \code{\link{listWorksheets}},
   \code{\link{writeReportExcel}}
 }
 \author{
-Thomas Walsh <tw164@le.ac.uk>
+Thomas Walsh <tw164@protonmail.com>
 
 Yue Hu
 }

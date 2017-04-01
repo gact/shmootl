@@ -17,7 +17,7 @@ contains only \code{NA} values; \code{FALSE} otherwise.
 Test if all elements are \code{NA} values.
 }
 \author{
-Thomas Walsh <tw164@le.ac.uk>
+Thomas Walsh <tw164@protonmail.com>
 
 Yue Hu
 }

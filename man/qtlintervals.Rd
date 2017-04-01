@@ -29,7 +29,7 @@ This function creates a \code{qtlintervals} object. Currently it
 can only create a \code{qtlintervals} object of length zero.
 }
 \author{
-Thomas Walsh <tw164@le.ac.uk>
+Thomas Walsh <tw164@protonmail.com>
 
 Yue Hu
 }

@@ -100,7 +100,7 @@ Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_report}}, \code{\link{run_scantwo}}
 }
 \author{
-Thomas Walsh <tw164@le.ac.uk>
+Thomas Walsh <tw164@protonmail.com>
 
 Yue Hu
 }
