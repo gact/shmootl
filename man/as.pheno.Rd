@@ -19,4 +19,3 @@ A \code{pheno} object corresponding to the input object.
 Convert to \code{pheno} object.
 }
 \keyword{internal}
-

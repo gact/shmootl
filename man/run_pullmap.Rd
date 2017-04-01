@@ -35,4 +35,3 @@ Other pipeline functions: \code{\link{run_annoqtl}},
 \concept{
 shmootl:utilities
 }
-

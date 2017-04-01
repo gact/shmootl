@@ -14,4 +14,3 @@ from which the report is being generated.}
 Plot a QTL analysis report title page.
 }
 \keyword{internal}
-

@@ -94,18 +94,13 @@ hasPhysicalPositions <- function(qtl.intervals) {
 }
 
 # print.qtlintervals -----------------------------------------------------------
-#' Print a \code{qtlintervals} object.
-#' 
-#' @param qtl.intervals A \code{qtlintervals} object.
-#' 
 #' @export
-#' @rdname print.qtlintervals
-print.qtlintervals <- function(qtl.intervals) {
+print.qtlintervals <- function(x, ...) {
     
-    others <- otherattributes(qtl.intervals)
+    others <- otherattributes(x)
     
     for ( other.attr in names(others) ) {
-        attr(qtl.intervals, other.attr) <- NULL
+        attr(x, other.attr) <- NULL
     }
     
     attr.strings <- character()
@@ -136,7 +131,7 @@ print.qtlintervals <- function(qtl.intervals) {
     }
     
     cat(title.string)
-    print( unclass(qtl.intervals) )
+    print( unclass(x) )
     
     return( invisible() )
 }

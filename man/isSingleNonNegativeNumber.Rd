@@ -17,4 +17,3 @@ isSingleNonNegativeNumber(n)
 Test for a single non-negative number.
 }
 \keyword{internal}
-

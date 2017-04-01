@@ -27,6 +27,16 @@ Phenotype, genotype, and sample IDs are taken from the \code{'info'}
 attribute of the \code{cross}, if present.
 }
 \seealso{
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},
+  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
+  \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeGenoCSV}},
+  \code{\link{writeMapCSV}},
+  \code{\link{writeMapframeCSV}},
+  \code{\link{writePhenoCSV}}
+
 Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
@@ -40,15 +50,4 @@ Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
   \code{\link{pull.ind}}, \code{\link{readCrossCSV}},
   \code{\link{readCrossHDF5}}, \code{\link{writeCrossHDF5}}
-
-Other CSV functions: \code{\link{hasMapCSV}},
-  \code{\link{readCovarCSV}}, \code{\link{readCrossCSV}},
-  \code{\link{readGenoCSV}}, \code{\link{readMapCSV}},
-  \code{\link{readMapframeCSV}},
-  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
-  \code{\link{sniffCSV}}, \code{\link{writeGenoCSV}},
-  \code{\link{writeMapCSV}},
-  \code{\link{writeMapframeCSV}},
-  \code{\link{writePhenoCSV}}
 }
-

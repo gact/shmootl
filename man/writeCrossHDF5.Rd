@@ -39,4 +39,3 @@ Other HDF5 functions: \code{\link{readCrossHDF5}},
   \code{\link{writeResultHDF5}},
   \code{\link{writeResultsOverviewHDF5}}
 }
-

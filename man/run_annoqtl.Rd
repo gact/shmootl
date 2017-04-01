@@ -41,4 +41,3 @@ Other pipeline functions: \code{\link{run_digest}},
 \concept{
 shmootl:processing
 }
-

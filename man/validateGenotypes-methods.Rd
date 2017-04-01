@@ -20,4 +20,3 @@ validateGenotypes(cross.info)
 Validate genotype information.
 }
 \keyword{internal}
-

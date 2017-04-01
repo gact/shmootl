@@ -35,7 +35,7 @@ founder.
 
 If the \code{alleles} parameter is specified, this must be a mapping of
 founder sample IDs to allele symbols (e.g.
-\code{mapping( c(DBVPG6044 = 'W', YPS128 = 'S') )}). If the \code{alleles}
+\code{mapping( c(DBVPG6044 = 'W', Y12 = 'S') )}). If the \code{alleles}
 parameter is not specified, allele symbols are taken from the letters of the
 alphabet (i.e. \code{'A'}, \code{'B'} etc.).
 }
@@ -76,7 +76,7 @@ For a given ploidy \code{N}, a founder genotype is the concatenation of the
 set of \code{N} founder alleles. For example, given one founder allele
 \code{'W'} and another \code{'S'}, the founder genotype is \code{'WS'}.
 }
+
 \seealso{
 Other VCF functions: \code{\link{getSamplesVCF}}
 }
-

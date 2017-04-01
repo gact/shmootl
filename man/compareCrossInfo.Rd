@@ -33,4 +33,3 @@ object is specified, it will be extracted from the test object.
 \code{\linkS4class{CrossInfo}}
 }
 \keyword{internal}
-

@@ -23,4 +23,3 @@ Other genome functions: \code{\link{listGenomes}}
 
 Other package option functions: \code{\link{mapkeyOpt}}
 }
-

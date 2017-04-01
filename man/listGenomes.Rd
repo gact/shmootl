@@ -16,4 +16,3 @@ List available genomes.
 \seealso{
 Other genome functions: \code{\link{genomeOpt}}
 }
-

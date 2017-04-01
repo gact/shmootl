@@ -8,9 +8,9 @@
 \usage{
 subsetByLoci(x, loc = NULL)
 
-\method{subsetByLoci}{mapframe}(x, loc = NULL)
-
 \method{subsetByLoci}{map}(x, loc = NULL)
+
+\method{subsetByLoci}{mapframe}(x, loc = NULL)
 }
 \arguments{
 \item{x}{Object subsettable by loci.}
@@ -24,4 +24,3 @@ Input object subsetted by the specified loci.
 Subset object by the specified loci.
 }
 \keyword{internal}
-

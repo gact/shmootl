@@ -23,4 +23,3 @@ strains, this function assigns a genotype symbol to each locus according
 to the inferred combination of founder alleles.
 }
 \keyword{internal}
-

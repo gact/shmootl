@@ -17,4 +17,3 @@ genotype quality (GQ) scores; \code{FALSE} otherwise.
 Test if VCF file contains GQ scores.
 }
 \keyword{internal}
-

@@ -30,4 +30,3 @@ are replaced with the character \code{NA} value.
 Encode genotype strings as genotype integers.
 }
 \keyword{internal}
-

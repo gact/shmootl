@@ -23,4 +23,3 @@ Get logical mask of the elements of an object, as constrained by the
 constraints, consider using the command \code{rep(TRUE, length(x))} instead.
 }
 \keyword{internal}
-

@@ -17,4 +17,3 @@ HDF5 name components.
 Split HDF5 object name into component parts.
 }
 \keyword{internal}
-

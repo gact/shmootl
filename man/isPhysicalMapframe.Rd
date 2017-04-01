@@ -17,4 +17,3 @@ physical map positions; \code{FALSE} otherwise.
 Test if object is a physical \code{mapframe}.
 }
 \keyword{internal}
-

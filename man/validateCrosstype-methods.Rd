@@ -20,4 +20,3 @@ validateCrosstype(cross.info)
 Validate cross type information.
 }
 \keyword{internal}
-

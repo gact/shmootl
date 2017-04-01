@@ -25,4 +25,3 @@ resolved to the form specified by the \code{to} parameter.
 Resolve \code{scantwo} LOD types.
 }
 \keyword{internal}
-

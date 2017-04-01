@@ -17,4 +17,3 @@ isPhysicalMap(x)
 Test if object is a physical \code{map}.
 }
 \keyword{internal}
-

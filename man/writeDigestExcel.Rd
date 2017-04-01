@@ -31,13 +31,12 @@ with other names that might be used alongside the extracted information.}
 \description{
 Write an Excel digest of QTL scan results.
 }
+\seealso{
+Other Excel functions: \code{\link{listWorksheets}},
+  \code{\link{writeReportExcel}}
+}
 \author{
 Thomas Walsh <tw164@le.ac.uk>
 
 Yue Hu
 }
-\seealso{
-Other Excel functions: \code{\link{listWorksheets}},
-  \code{\link{writeReportExcel}}
-}
-

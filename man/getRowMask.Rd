@@ -23,4 +23,3 @@ Get logical mask of the rows of an object, as constrained by the
 constraints, consider using the command \code{rep(TRUE, nrow(x))} instead.
 }
 \keyword{internal}
-

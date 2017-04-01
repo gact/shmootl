@@ -28,4 +28,3 @@ this function tests which peaks are significant with respect to the specified
 LOD threshold.
 }
 \keyword{internal}
-

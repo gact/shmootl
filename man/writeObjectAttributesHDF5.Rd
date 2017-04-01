@@ -19,4 +19,3 @@ writeObjectAttributesHDF5(outfile, h5name, object = NULL, attrs = NULL)
 Write attributes to a HDF5 object.
 }
 \keyword{internal}
-

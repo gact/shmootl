@@ -16,4 +16,3 @@ Vector of special attribute names.
 Get special attributes for the given object.
 }
 \keyword{internal}
-

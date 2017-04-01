@@ -57,4 +57,3 @@ Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{writeMapHDF5}},
   \code{\link{writeMapframeCSV}}
 }
-

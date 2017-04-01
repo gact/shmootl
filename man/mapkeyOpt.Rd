@@ -22,4 +22,3 @@ Other mapkey functions: \code{\link{mapkey}}
 
 Other package option functions: \code{\link{genomeOpt}}
 }
-

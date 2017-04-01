@@ -19,4 +19,3 @@ input vector is of length zero.
 Get index list of successive runs in a vector.
 }
 \keyword{internal}
-

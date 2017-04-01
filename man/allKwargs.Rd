@@ -17,4 +17,3 @@ allKwargs(...)
 Test if ellipsis arguments are all keyword arguments.
 }
 \keyword{internal}
-

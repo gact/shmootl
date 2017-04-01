@@ -20,4 +20,3 @@ specified in the corresponding row of the locus \code{mapframe}.
 Find row index of closest \code{mapframe} locus.
 }
 \keyword{internal}
-

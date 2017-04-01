@@ -21,4 +21,3 @@ otherwise, returns first error.
 Validate sample information.
 }
 \keyword{internal}
-

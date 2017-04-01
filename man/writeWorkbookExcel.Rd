@@ -32,4 +32,3 @@ with other names that might be used alongside the extracted information.}
 Write an Excel workbook of QTL analysis results.
 }
 \keyword{internal}
-

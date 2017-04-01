@@ -20,4 +20,3 @@ A \code{geno} object.
 Make an \pkg{R/qtl} \code{cross} \code{geno} object.
 }
 \keyword{internal}
-

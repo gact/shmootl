@@ -19,4 +19,3 @@ isRawGenotype(x, strict = FALSE)
 Test if symbol is a valid raw SNP genotype.
 }
 \keyword{internal}
-

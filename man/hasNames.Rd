@@ -17,4 +17,3 @@ hasNames(x)
 Test if object has names.
 }
 \keyword{internal}
-

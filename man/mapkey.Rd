@@ -32,4 +32,3 @@ in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
 \seealso{
 Other mapkey functions: \code{\link{mapkeyOpt}}
 }
-

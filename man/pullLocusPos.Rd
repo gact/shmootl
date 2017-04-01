@@ -28,4 +28,3 @@ Numeric vector of individual locus positions.
 Pull individual locus positions.
 }
 \keyword{internal}
-

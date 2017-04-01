@@ -17,4 +17,3 @@ character vector if there are no maps present.
 Get names of maps in HDF5 file.
 }
 \keyword{internal}
-

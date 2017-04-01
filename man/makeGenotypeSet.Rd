@@ -21,4 +21,3 @@ given alleles in a way determined by the specified cross type.
 Make genotype set from the given alleles and cross type.
 }
 \keyword{internal}
-

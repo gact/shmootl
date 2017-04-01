@@ -9,10 +9,10 @@
 \usage{
 decodeGenotypes(x, genotypes, missing.value = NA_character_)
 
-\method{decodeGenotypes}{integer}(x, genotypes, missing.value = NA_character_)
-
 \method{decodeGenotypes}{data.frame}(x, genotypes,
   missing.value = NA_character_)
+
+\method{decodeGenotypes}{integer}(x, genotypes, missing.value = NA_character_)
 
 \method{decodeGenotypes}{matrix}(x, genotypes, missing.value = NA_character_)
 }
@@ -33,4 +33,3 @@ but with genotype integers decoded to genotype strings.
 Decode genotype integers to genotype strings.
 }
 \keyword{internal}
-

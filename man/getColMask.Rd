@@ -23,4 +23,3 @@ Get logical mask of the columns of an object, as constrained by the
 constraints, consider using the command \code{rep(TRUE, ncol(x))} instead.
 }
 \keyword{internal}
-

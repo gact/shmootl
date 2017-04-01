@@ -17,4 +17,3 @@ otherwise raises first error.
 Validate a QTL analysis results overview.
 }
 \keyword{internal}
-

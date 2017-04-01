@@ -16,4 +16,3 @@ Missing value.
 Get missing value for the given class.
 }
 \keyword{internal}
-

@@ -34,4 +34,3 @@ As with R base function \code{mostattributes}, this provides access
 to non-reserved attributes.
 }
 \keyword{internal}
-

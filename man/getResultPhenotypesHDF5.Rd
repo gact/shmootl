@@ -17,4 +17,3 @@ character vector if there are no result phenotypes present.
 Get names of result phenotypes in HDF5 file.
 }
 \keyword{internal}
-

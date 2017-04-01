@@ -19,4 +19,3 @@ Returns an empty character vector if no result analyses are found.
 Get names of result analyses for a given phenotype.
 }
 \keyword{internal}
-

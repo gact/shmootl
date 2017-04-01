@@ -17,4 +17,3 @@ isValidMapUnit(x)
 Test if object is a known map unit.
 }
 \keyword{internal}
-

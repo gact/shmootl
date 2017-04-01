@@ -38,6 +38,15 @@ are not required and not found, map positions are assumed to be
 in centiMorgans.
 }
 \seealso{
+Other CSV functions: \code{\link{hasMapCSV}},
+  \code{\link{readCovarCSV}}, \code{\link{readGenoCSV}},
+  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
+  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
+  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
+  \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
+  \code{\link{writeMapframeCSV}},
+  \code{\link{writePhenoCSV}}
+
 Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{getIdColIndex}},
   \code{\link{getPhenoColIndices}},
@@ -51,14 +60,4 @@ Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{pull.chr}}, \code{\link{pull.crosstype}},
   \code{\link{pull.ind}}, \code{\link{readCrossHDF5}},
   \code{\link{writeCrossCSV}}, \code{\link{writeCrossHDF5}}
-
-Other CSV functions: \code{\link{hasMapCSV}},
-  \code{\link{readCovarCSV}}, \code{\link{readGenoCSV}},
-  \code{\link{readMapCSV}}, \code{\link{readMapframeCSV}},
-  \code{\link{readPhenoCSV}}, \code{\link{recodeCSV}},
-  \code{\link{sniffCSV}}, \code{\link{writeCrossCSV}},
-  \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
-  \code{\link{writeMapframeCSV}},
-  \code{\link{writePhenoCSV}}
 }
-

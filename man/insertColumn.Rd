@@ -28,4 +28,3 @@ Input object with column inserted.
 Insert column in an object.
 }
 \keyword{internal}
-

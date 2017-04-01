@@ -19,4 +19,3 @@ Given a specified line of text or filename, the input text is loaded
 as a YAML mapping, and returned as a simple \code{mapping} object.
 }
 \keyword{internal}
-

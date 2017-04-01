@@ -19,4 +19,3 @@ List available output worksheets.
 Other Excel functions: \code{\link{writeDigestExcel}},
   \code{\link{writeReportExcel}}
 }
-

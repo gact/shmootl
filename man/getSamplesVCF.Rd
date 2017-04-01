@@ -18,4 +18,3 @@ Get sample IDs from VCF file.
 \seealso{
 Other VCF functions: \code{\link{readGenoVCF}}
 }
-

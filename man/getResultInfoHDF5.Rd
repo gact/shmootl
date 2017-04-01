@@ -29,4 +29,3 @@ character vector of results for the given scan file, phenotype, and analysis.
 Get result info for the given HDF5 scan files.
 }
 \keyword{internal}
-

@@ -2,8 +2,8 @@
 % Please edit documentation in R/map.R
 \name{getMapSteps}
 \alias{getMapSteps}
-\alias{getMapSteps.map}
 \alias{getMapSteps.mapframe}
+\alias{getMapSteps.map}
 \alias{getMapSteps.scanone}
 \title{Get steps between loci.}
 \usage{
@@ -42,4 +42,3 @@ Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{writeMapHDF5}},
   \code{\link{writeMapframeCSV}}
 }
-

@@ -18,4 +18,3 @@ is defined only for the simple case of a single expression. It should be used
 to avoid confusing double negatives.
 }
 \keyword{internal}
-

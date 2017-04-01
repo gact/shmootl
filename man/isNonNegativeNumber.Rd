@@ -17,4 +17,3 @@ zero.
 Test for non-negative numbers.
 }
 \keyword{internal}
-

@@ -23,4 +23,3 @@ frame that are flanking the specified index, excluding special columns such
 as the sample ID column.
 }
 \keyword{internal}
-

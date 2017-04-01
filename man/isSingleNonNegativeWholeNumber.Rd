@@ -19,4 +19,3 @@ isSingleNonNegativeWholeNumber(n, tol = .Machine$double.eps^0.5)
 Test for a single non-negative whole number.
 }
 \keyword{internal}
-

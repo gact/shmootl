@@ -62,4 +62,3 @@ Other scan utility functions: \code{\link{batchPermScanone}},
   \code{\link{nodePhenoScanone}},
   \code{\link{nodePhenoScantwo}}
 }
-

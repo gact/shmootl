@@ -16,4 +16,3 @@ Logical vector indicating which elements are valid probabilities.
 Test for valid probabilities.
 }
 \keyword{internal}
-

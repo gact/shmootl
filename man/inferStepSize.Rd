@@ -20,4 +20,3 @@ inferred.
 Infer step size from step values.
 }
 \keyword{internal}
-

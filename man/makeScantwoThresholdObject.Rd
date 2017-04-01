@@ -34,4 +34,3 @@ of \pkg{R/qtl} in the case of a single significance level (\code{alpha}).
 Make \code{scantwo} threshold object.
 }
 \keyword{internal}
-

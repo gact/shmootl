@@ -17,4 +17,3 @@ isPhysicalMapUnit(x)
 Test if object is a known physical map unit.
 }
 \keyword{internal}
-

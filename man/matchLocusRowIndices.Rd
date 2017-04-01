@@ -19,4 +19,3 @@ for which a matching locus exists in the locus mapframe.
 Find matching locus row indices.
 }
 \keyword{internal}
-

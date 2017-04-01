@@ -18,4 +18,3 @@ named in the corresponding element of the input vector.
 Get function name for the given \pkg{shmootl} pipeline.
 }
 \keyword{internal}
-

@@ -21,4 +21,3 @@ A \code{geno} object corresponding to the input object.
 Convert to \code{geno} object.
 }
 \keyword{internal}
-

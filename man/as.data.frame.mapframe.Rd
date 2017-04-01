@@ -33,4 +33,3 @@ Other map utility functions: \code{\link{as.data.frame.map}},
   \code{\link{writeMapCSV}}, \code{\link{writeMapHDF5}},
   \code{\link{writeMapframeCSV}}
 }
-

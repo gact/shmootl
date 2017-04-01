@@ -18,12 +18,13 @@ data(wasa)
 \description{
 Data from a QTL analysis of haploid tetrad spores from an F1
 cross between two strains of \emph{S. cerevisiae}: the West African (WA)
-strain \code{'DBVPG6044'} and the Sake (SA) strain \code{'YPS128'}
-(Cubillos \emph{et al.} 2011).
+strain \code{'DBVPG6044'} and the Sake (SA) strain \code{'Y12'} (Cubillos
+\emph{et al.} 2011).
 }
 \details{
 This \code{cross} object contains 96 segregants from the WAxSA F1
-cross, with 39 phenotypes, and 183 markers across 16 nuclear chromosomes.
+cross, with 39 phenotypes, and 183 markers across the 16 nuclear chromosomes
+of the S288C reference genome.
 
 Segregant strains were growth phenotyped in 13 different environmental
 conditions, and 3 growth variables were extracted from the growth curve
@@ -46,4 +47,3 @@ fingerprinting by analysis of cellular growth dynamics.
 (\href{http://www.ncbi.nlm.nih.gov/pubmed/18721464}{PubMed})
 }
 \keyword{data}
-

@@ -18,4 +18,3 @@ Input object with individual loci replaced.
 Replace loci of object.
 }
 \keyword{internal}
-

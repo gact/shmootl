@@ -15,4 +15,3 @@
 Print \code{summary.scanonebins} object.
 }
 \keyword{internal}
-

@@ -16,4 +16,3 @@ Logical vector indicating which elements are less than zero.
 Test for negative numbers.
 }
 \keyword{internal}
-

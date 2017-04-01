@@ -17,4 +17,3 @@ Character vector of \pkg{shmootl} pipeline function names.
 \description{
 Get \pkg{shmootl} pipeline function names.
 }
-

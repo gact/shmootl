@@ -19,4 +19,3 @@ whose heading is \code{'chr'}. An error is raised if there is not
 exactly one sequence column.
 }
 \keyword{internal}
-

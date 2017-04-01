@@ -25,4 +25,3 @@ Character vector of sequence labels associated with individual loci.
 Pull sequence labels for individual loci.
 }
 \keyword{internal}
-

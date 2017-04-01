@@ -16,4 +16,3 @@ Locus mapframe of individual loci.
 Pull loci from object.
 }
 \keyword{internal}
-

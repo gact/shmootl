@@ -26,4 +26,3 @@ true by the predicate function.
 Subset object by locus ID.
 }
 \keyword{internal}
-

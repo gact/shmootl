@@ -16,4 +16,3 @@ positions in terms of base-pair units; \code{FALSE} otherwise.
 \description{
 Test if QTL intervals contain physical positions.
 }
-

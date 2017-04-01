@@ -20,4 +20,3 @@ validateAlleles(cross.info)
 Validate allele information.
 }
 \keyword{internal}
-

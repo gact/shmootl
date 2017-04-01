@@ -17,4 +17,3 @@ containing no non-whitespace characters) have been stripped.
 Strip blank columns from right of \code{data.frame}.
 }
 \keyword{internal}
-

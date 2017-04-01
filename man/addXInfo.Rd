@@ -23,4 +23,3 @@ The input matrix with experiment info added at the specified column.
 Add experiment info to the given matrix.
 }
 \keyword{internal}
-

@@ -31,6 +31,7 @@ any unit, but must be non-negative, monotonically increasing, and have
 a consistent time step. If some time points are missing, the resulting
 gap in time must be a multiple of the time step.
 }
+
 \seealso{
 Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{getIdColIndex}},
@@ -50,4 +51,3 @@ Other time-series functions: \code{\link{hasTimeSeriesPhenotypes}},
   \code{\link{interpTimeSeries}},
   \code{\link{padTimeSeries}}
 }
-

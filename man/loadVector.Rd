@@ -19,4 +19,3 @@ Given a specified line of text or filename, the input text is loaded
 as a YAML list, and returned as an R \code{vector} object.
 }
 \keyword{internal}
-

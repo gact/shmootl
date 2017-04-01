@@ -19,4 +19,3 @@ original row names removed.
 Move object row names to the specified column.
 }
 \keyword{internal}
-

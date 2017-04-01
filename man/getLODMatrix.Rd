@@ -49,4 +49,3 @@ in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
 Function \code{plot.scantwo} in the
 \href{http://www.rqtl.org/manual/qtl-manual.pdf}{R/qtl manual}.
 }
-

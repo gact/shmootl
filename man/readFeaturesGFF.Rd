@@ -18,4 +18,3 @@ of a feature. Additional feature annotation is included, if available.
 \description{
 Read annotation from GFF file.
 }
-

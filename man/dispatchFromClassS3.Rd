@@ -20,4 +20,3 @@ Method suited to the specified class.
 Dispatch method with respect to the given class vector.
 }
 \keyword{internal}
-

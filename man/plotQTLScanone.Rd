@@ -68,4 +68,3 @@ Other QTL functions: \code{\link{estPhysicalPositions}},
   \code{\link{getQTLFeatures}},
   \code{\link{getQTLIntervals}}, \code{\link{getQTLPeaks}}
 }
-

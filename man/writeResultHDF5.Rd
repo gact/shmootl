@@ -30,4 +30,3 @@ Other HDF5 functions: \code{\link{readCrossHDF5}},
   \code{\link{writeCrossHDF5}}, \code{\link{writeMapHDF5}},
   \code{\link{writeResultsOverviewHDF5}}
 }
-

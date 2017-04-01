@@ -19,4 +19,3 @@ that were found in the target object.
 Get object loci matching those specified.
 }
 \keyword{internal}
-

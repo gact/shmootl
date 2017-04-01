@@ -16,4 +16,3 @@ Character vector of LOD bin labels corresponding to the input bins.
 Make LOD bin labels from bin starts.
 }
 \keyword{internal}
-

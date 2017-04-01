@@ -54,4 +54,3 @@ Other CrossInfo methods: \code{\link{getAlleles}},
   \code{\link{setTetradIndices}}
 }
 \keyword{internal}
-

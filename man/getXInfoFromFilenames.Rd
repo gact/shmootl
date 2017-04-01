@@ -25,4 +25,3 @@ capture group across filenames. Unmatched capture groups are represented by
 Get experiment info from filenames.
 }
 \keyword{internal}
-

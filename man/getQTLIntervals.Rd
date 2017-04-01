@@ -83,11 +83,6 @@ significance level \code{alpha} (or alternatively, false-discovery rate
 \code{scanone} object, or a \code{qtl} object with a \code{'lodprofile'}
 attribute (as output by \pkg{R/qtl} function \code{refineqtl}).
 }
-\author{
-Thomas Walsh <tw164@le.ac.uk>
-
-Yue Hu
-}
 \references{
 Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
 in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
@@ -103,4 +98,8 @@ Other QTL functions: \code{\link{estPhysicalPositions}},
   \code{\link{getQTLFeatures}}, \code{\link{getQTLPeaks}},
   \code{\link{plotQTLScanone}}
 }
+\author{
+Thomas Walsh <tw164@le.ac.uk>
 
+Yue Hu
+}

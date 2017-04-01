@@ -80,11 +80,6 @@ parameter). For more information on the QTL interval methods used, see
 functions \code{'lodint'} and \code{'bayesint'} in the \pkg{R/qtl} manual,
 as well as Section 4.5 of Broman and Sen (2009).
 }
-\author{
-Thomas Walsh <tw164@le.ac.uk>
-
-Yue Hu
-}
 \references{
 Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
 in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
@@ -104,7 +99,11 @@ Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_pushmap}}, \code{\link{run_recode}},
   \code{\link{run_report}}, \code{\link{run_scantwo}}
 }
+\author{
+Thomas Walsh <tw164@le.ac.uk>
+
+Yue Hu
+}
 \concept{
 shmootl:analysis
 }
-

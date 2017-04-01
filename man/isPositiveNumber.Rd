@@ -16,4 +16,3 @@ Logical vector indicating which elements are positive numbers.
 Test for positive numbers.
 }
 \keyword{internal}
-

@@ -22,4 +22,3 @@ analysis.
 Get names of results for a given phenotype and analysis.
 }
 \keyword{internal}
-

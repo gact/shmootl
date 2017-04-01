@@ -26,4 +26,3 @@ Other QTL functions: \code{\link{getQTLFeatures}},
   \code{\link{getQTLIntervals}}, \code{\link{getQTLPeaks}},
   \code{\link{plotQTLScanone}}
 }
-

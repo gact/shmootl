@@ -17,4 +17,3 @@ hasFounderGenotypes(x)
 Test if object contains founder genotypes.
 }
 \keyword{internal}
-

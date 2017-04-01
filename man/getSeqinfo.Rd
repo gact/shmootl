@@ -18,4 +18,3 @@ A \code{Seqinfo} object for the given genome.
 Get \pkg{GenomeInfoDb} \code{Seqinfo} object.
 }
 \keyword{internal}
-

@@ -30,4 +30,3 @@ info that was extracted from the input object.
 Get \code{scanone} threshold info from object.
 }
 \keyword{internal}
-

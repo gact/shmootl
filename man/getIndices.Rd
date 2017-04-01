@@ -31,4 +31,3 @@ parameter. If using this function without \code{requested} constraints,
 consider using the faster primitive R function \code{seq_along} instead.
 }
 \keyword{internal}
-

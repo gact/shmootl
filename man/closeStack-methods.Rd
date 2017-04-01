@@ -20,4 +20,3 @@ Empty \code{H5Stack} object.
 Close all HDF5 objects in \code{H5Stack}.
 }
 \keyword{internal}
-

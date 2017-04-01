@@ -17,4 +17,3 @@ isRawAllele(x)
 Test if symbol is a valid raw SNP allele.
 }
 \keyword{internal}
-

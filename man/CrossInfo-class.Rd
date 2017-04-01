@@ -2,8 +2,8 @@
 % Please edit documentation in R/CrossInfo-class.R
 \docType{class}
 \name{CrossInfo-class}
-\alias{CrossInfo}
 \alias{CrossInfo-class}
+\alias{CrossInfo}
 \title{An S4 class to hold yeast cross information.}
 \description{
 A CrossInfo object holds yeast cross information for a specific \code{cross}
@@ -44,6 +44,7 @@ See \code{setGenotypes} and \code{getGenotypes}.}
 
 \item{\code{crosstype}}{Cross type. See \code{setCrosstype} and \code{getCrosstype}.}
 }}
+
 \section{Chromosomes and Sequences}{
 
 

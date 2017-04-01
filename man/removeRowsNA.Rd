@@ -16,4 +16,3 @@ Input object without those rows that contain only \code{NA} values.
 Remove rows containing only \code{NA} values.
 }
 \keyword{internal}
-

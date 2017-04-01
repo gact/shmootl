@@ -21,4 +21,3 @@ otherwise, returns first error.
 Validate phenotype information.
 }
 \keyword{internal}
-

@@ -23,9 +23,16 @@ features in a given QTL interval.
 \description{
 Get annotation of features within QTL intervals.
 }
+\details{
+Overlaps between intervals are identified with the function
+\code{GenomicRanges::findOverlaps}, which regards two intervals as
+overlapping if they have at least one overlapping position. Because
+of this, features that do not lie completely within a given QTL
+interval may be included in the returned \code{qtlfeatures} object.
+Such partial overlaps should treated with caution.
+}
 \seealso{
 Other QTL functions: \code{\link{estPhysicalPositions}},
   \code{\link{getQTLIntervals}}, \code{\link{getQTLPeaks}},
   \code{\link{plotQTLScanone}}
 }
-

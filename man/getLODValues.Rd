@@ -28,4 +28,3 @@ LOD score is not available at a given position.
 Get the LOD value at each of the specified
 map positions in the given LOD profile.
 }
-

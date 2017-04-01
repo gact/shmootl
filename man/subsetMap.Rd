@@ -20,4 +20,3 @@ method strips some attributes from the \code{map} object. This function
 transfers any stripped attributes to the subsetted \code{map} object.
 }
 \keyword{internal}
-

@@ -19,4 +19,3 @@ isSinglePositiveWholeNumber(n, tol = .Machine$double.eps^0.5)
 Test for a single positive whole number.
 }
 \keyword{internal}
-

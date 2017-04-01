@@ -20,4 +20,3 @@ specified size.
 Pad \code{scanonebins} object to given number of bins.
 }
 \keyword{internal}
-

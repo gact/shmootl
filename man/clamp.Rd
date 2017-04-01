@@ -19,4 +19,3 @@ Input vector with values clamped within the specified range.
 Clamp numbers within a range.
 }
 \keyword{internal}
-

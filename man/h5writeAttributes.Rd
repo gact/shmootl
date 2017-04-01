@@ -17,4 +17,3 @@ h5writeAttributes(h5obj, object = NULL, attrs = NULL)
 Write attributes to HDF5 object.
 }
 \keyword{internal}
-

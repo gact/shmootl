@@ -17,4 +17,3 @@ Character vector of phenotype names. Returns
 Get phenotype names.
 }
 \keyword{internal}
-

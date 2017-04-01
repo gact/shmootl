@@ -9,9 +9,9 @@
 \usage{
 getPosColDataMapUnit(x)
 
-\method{getPosColDataMapUnit}{data.frame}(x)
-
 \method{getPosColDataMapUnit}{character}(x)
+
+\method{getPosColDataMapUnit}{data.frame}(x)
 
 \method{getPosColDataMapUnit}{numeric}(x)
 }
@@ -34,5 +34,5 @@ physical map units. Genetic map positions must be in centiMorgans (cM), while
 physical map positions must be in base pairs (bp), kilobases (kb), or
 Megabases (Mb).
 }
-\keyword{internal}
 
+\keyword{internal}

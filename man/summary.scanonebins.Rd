@@ -52,4 +52,3 @@ high-throughput multiple QTL mapping. Bioinformatics 26(23):2990-2.
 (\href{http://www.ncbi.nlm.nih.gov/pubmed/20966004}{PubMed})
 }
 \keyword{internal}
-

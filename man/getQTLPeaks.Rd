@@ -56,4 +56,3 @@ Other QTL functions: \code{\link{estPhysicalPositions}},
   \code{\link{getQTLIntervals}},
   \code{\link{plotQTLScanone}}
 }
-

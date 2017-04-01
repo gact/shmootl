@@ -39,4 +39,3 @@ a LOD profile for a single phenotype.
 \description{
 Get LOD profile.
 }
-

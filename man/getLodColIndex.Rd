@@ -25,4 +25,3 @@ LOD column index.
 Get LOD column index.
 }
 \keyword{internal}
-

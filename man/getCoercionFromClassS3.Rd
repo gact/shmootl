@@ -16,4 +16,3 @@ Coercion function.
 Get coercion function for the given class.
 }
 \keyword{internal}
-

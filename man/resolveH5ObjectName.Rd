@@ -17,4 +17,3 @@ Validates and (if necessary) corrects a HDF5 object name: ensuring
 that it has a leading slash and does not have a trailing slash.
 }
 \keyword{internal}
-

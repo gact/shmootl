@@ -4,6 +4,8 @@ This package contains pipelines and utilities for QTL analysis of yeast cross
 data. Pipelines can be run from the command line or from within the R
 environment. Utility functions are available from within R.
 
+For more information on using this package, see the user guide vignette.
+
 ## Dependencies 
 
 This package depends on the following:

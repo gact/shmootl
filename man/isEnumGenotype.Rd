@@ -26,5 +26,5 @@ and genotypes are identical, regardless of ploidy. The process of enumerating
 genotypes is done independently for each marker, so a given enumerated
 genotype does not have the same meaning across markers.
 }
-\keyword{internal}
 
+\keyword{internal}

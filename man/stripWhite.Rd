@@ -16,4 +16,3 @@ Whitespace-stripped copy of the input character vector.
 Strip leading/trailing whitespace from elements of a character vector.
 }
 \keyword{internal}
-

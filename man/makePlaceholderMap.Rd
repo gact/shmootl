@@ -41,5 +41,5 @@ Within \pkg{shmootl}, a \code{map} must represent either a genetic or a
 physical map. These are distinguished by the \code{'map.unit'} attribute
 of an object, which can contain either genetic or physical map units.
 }
-\keyword{internal}
 
+\keyword{internal}

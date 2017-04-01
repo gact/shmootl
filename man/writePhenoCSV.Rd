@@ -29,4 +29,3 @@ Other CSV functions: \code{\link{hasMapCSV}},
   \code{\link{writeGenoCSV}}, \code{\link{writeMapCSV}},
   \code{\link{writeMapframeCSV}}
 }
-

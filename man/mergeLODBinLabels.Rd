@@ -16,4 +16,3 @@ Merged bin label vector.
 Merge multiple vectors of LOD bin labels.
 }
 \keyword{internal}
-

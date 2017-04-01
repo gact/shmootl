@@ -24,4 +24,3 @@ or more additional columns, each summarising the results of a QTL analysis.
 Update QTL analysis results overview.
 }
 \keyword{internal}
-

@@ -16,4 +16,3 @@ Function for the given \pkg{shmootl} pipeline.
 Get \pkg{shmootl} pipeline function.
 }
 \keyword{internal}
-

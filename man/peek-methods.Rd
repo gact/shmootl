@@ -21,4 +21,3 @@ is empty.
 Get HDF5 object ID at top of \code{H5Stack}.
 }
 \keyword{internal}
-

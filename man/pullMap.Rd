@@ -22,4 +22,3 @@ An \pkg{R/qtl} \code{map} extracted from the input object.
 Pull map from object.
 }
 \keyword{internal}
-

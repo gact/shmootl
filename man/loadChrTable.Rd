@@ -13,4 +13,3 @@ A \code{data.frame} object containing chromosome info.
 This function loads standard chromosome info.
 }
 \keyword{internal}
-

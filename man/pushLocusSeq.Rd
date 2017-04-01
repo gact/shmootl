@@ -27,4 +27,3 @@ Input object with individual locus sequence labels replaced.
 Replace sequence labels of individual loci.
 }
 \keyword{internal}
-

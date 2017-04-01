@@ -4,6 +4,7 @@
 \name{setValidity}
 \alias{setValidity}
 \alias{setValidity,CrossInfo-method}
+\alias{setValidity}
 \alias{setValidity,H5Stack-method}
 \title{Validate \code{\linkS4class{CrossInfo}} object.}
 \arguments{
@@ -24,4 +25,3 @@ Validate \code{\linkS4class{CrossInfo}} object.
 Validate \code{H5Stack} object.
 }
 \keyword{internal}
-

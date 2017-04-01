@@ -17,4 +17,3 @@ isSingleString(x)
 Test for a single character string.
 }
 \keyword{internal}
-

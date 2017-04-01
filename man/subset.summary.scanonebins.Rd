@@ -21,4 +21,3 @@ subsetted with respect to the specified constraints.
 Subset a \code{summary.scanonebins} object.
 }
 \keyword{internal}
-

@@ -20,4 +20,3 @@ Vector of node names.
 \description{
 Request nodes for parallel execution.
 }
-

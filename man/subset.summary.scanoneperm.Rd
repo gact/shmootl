@@ -31,4 +31,3 @@ subsetted with respect to the specified constraints.
 Subset a \code{summary.scanoneperm} object.
 }
 \keyword{internal}
-

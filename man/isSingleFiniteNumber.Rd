@@ -17,4 +17,3 @@ isSingleFiniteNumber(n)
 Test for a single finite number.
 }
 \keyword{internal}
-

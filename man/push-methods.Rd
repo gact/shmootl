@@ -22,4 +22,3 @@ Input \code{H5Stack} object with new element added.
 Push HDF5 object ID onto top of \code{H5Stack}.
 }
 \keyword{internal}
-

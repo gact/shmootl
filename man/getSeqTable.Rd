@@ -19,4 +19,3 @@ This can be used to create, but is distinct from, a \pkg{GenomeInfoDb}
 Get genome sequence info table.
 }
 \keyword{internal}
-

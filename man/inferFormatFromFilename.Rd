@@ -17,4 +17,3 @@ Returns \code{unknown} if format could not be inferred.
 Infer format from filename.
 }
 \keyword{internal}
-

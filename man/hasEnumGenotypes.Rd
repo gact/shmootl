@@ -17,4 +17,3 @@ hasEnumGenotypes(x)
 Test if object contains enumerated genotypes.
 }
 \keyword{internal}
-

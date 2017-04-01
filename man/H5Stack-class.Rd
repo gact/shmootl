@@ -2,8 +2,8 @@
 % Please edit documentation in R/H5Stack-class.R
 \docType{class}
 \name{H5Stack-class}
-\alias{H5Stack}
 \alias{H5Stack-class}
+\alias{H5Stack}
 \title{An S4 class to manage a HDF5 object stack.}
 \description{
 An S4 class to manage a HDF5 object stack.
@@ -15,5 +15,5 @@ An S4 class to manage a HDF5 object stack.
 
 \item{\code{ids}}{List of HDF5 object IDs.}
 }}
-\keyword{internal}
 
+\keyword{internal}

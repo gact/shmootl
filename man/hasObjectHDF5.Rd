@@ -19,4 +19,3 @@ hasObjectHDF5(infile, h5name)
 Test if HDF5 file contains the named object.
 }
 \keyword{internal}
-

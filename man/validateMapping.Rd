@@ -17,4 +17,3 @@ otherwise, returns first error.
 Validate a \code{mapping} object.
 }
 \keyword{internal}
-

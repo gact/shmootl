@@ -17,13 +17,6 @@
 #' @rdname run
 run <- function() {
     
-    # Pipeline Notes -----------------------------------------------------------
-    # Pipeline and argument names should be simple and informative, while being 
-    # as consistent as possible with existing pipelines. For more well-formatted
-    # argparser help output, try to have 6-12 characters in positional argument 
-    # names, 6-9 characters in optional argument names, and up to 7 characters 
-    # in flag names.
-    
     if ( interactive() ) {
         stop("shmootl::run cannot be called interactively")
     }

@@ -17,4 +17,3 @@ hasCrossHDF5(infile)
 Test if HDF5 file contains an \pkg{R/qtl} \code{cross} object.
 }
 \keyword{internal}
-

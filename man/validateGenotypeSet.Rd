@@ -18,4 +18,3 @@ validateGenotypeSet(x, strict = FALSE)
 Validate a set of genotypes.
 }
 \keyword{internal}
-

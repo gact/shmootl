@@ -8,9 +8,9 @@
 \usage{
 setPosColNameMapUnit(x, map.unit)
 
-\method{setPosColNameMapUnit}{data.frame}(x, map.unit)
-
 \method{setPosColNameMapUnit}{character}(x, map.unit)
+
+\method{setPosColNameMapUnit}{data.frame}(x, map.unit)
 }
 \arguments{
 \item{x}{A \code{mapframe} or equivalent \code{data.frame},
@@ -34,5 +34,5 @@ physical map units. Genetic map positions must be in centiMorgans (cM), while
 physical map positions must be in base pairs (bp), kilobases (kb), or
 Megabases (Mb).
 }
-\keyword{internal}
 
+\keyword{internal}

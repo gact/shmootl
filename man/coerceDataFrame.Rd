@@ -20,4 +20,3 @@ Coerced \code{data.frame}.
 Coerce \code{data.frame} columns to the specified classes.
 }
 \keyword{internal}
-

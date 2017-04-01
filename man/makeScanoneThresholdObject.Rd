@@ -32,4 +32,3 @@ containing the value \code{0}.
 Make \code{scanone} threshold object.
 }
 \keyword{internal}
-

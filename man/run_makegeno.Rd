@@ -35,10 +35,10 @@ consisting of alleles that each correspond to a specific founder.
 If the \code{alleles} parameter is specified, this must be a mapping of
 founder sample IDs to allele symbols. If calling this function from within
 the \code{R} environment, this must be specified as a mapping object (e.g.
-\code{mapping( c(DBVPG6044 = 'W', YPS128 = 'S') )}). When called from the
+\code{mapping( c(DBVPG6044 = 'W', Y12 = 'S') )}). When called from the
 command line using \code{Rscript}, the \code{alleles} parameter must be
 specified as a YAML string (or YAML file) mapping founders to allele
-symbols (e.g. \code{"DBVPG6044: W, YPS128: S"}). If the \code{alleles}
+symbols (e.g. \code{"DBVPG6044: W, Y12: S"}). If the \code{alleles}
 parameter is not specified, allele symbols are taken from the letters
 of the alphabet (i.e. \code{'A'}, \code{'B'} etc.).
 }
@@ -54,4 +54,3 @@ Other pipeline functions: \code{\link{run_annoqtl}},
 \concept{
 shmootl:preparation
 }
-

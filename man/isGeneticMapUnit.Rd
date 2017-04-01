@@ -17,4 +17,3 @@ isGeneticMapUnit(x)
 Test if object is a known genetic map unit.
 }
 \keyword{internal}
-

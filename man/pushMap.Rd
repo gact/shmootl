@@ -21,4 +21,3 @@ Input object incorporating the given map data.
 Push map into object.
 }
 \keyword{internal}
-

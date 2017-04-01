@@ -25,4 +25,3 @@ word, such as \code{'position'}. An error is raised if a position column
 cannot be found.
 }
 \keyword{internal}
-

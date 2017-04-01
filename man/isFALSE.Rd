@@ -17,4 +17,3 @@ isFALSE(x)
 Test for a single \code{FALSE} value.
 }
 \keyword{internal}
-

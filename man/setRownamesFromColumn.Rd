@@ -19,4 +19,3 @@ from its contents.
 Move specified column to object row names.
 }
 \keyword{internal}
-

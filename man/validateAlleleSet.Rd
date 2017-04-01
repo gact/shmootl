@@ -16,4 +16,3 @@ validateAlleleSet(x)
 Validate a set of alleles.
 }
 \keyword{internal}
-

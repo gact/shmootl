@@ -25,4 +25,3 @@ Input string ellipted to the specified length.
 Ellipt string to the given length.
 }
 \keyword{internal}
-

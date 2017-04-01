@@ -18,4 +18,3 @@ List of attributes of the named HDF5 object.
 Read HDF5 object attributes.
 }
 \keyword{internal}
-

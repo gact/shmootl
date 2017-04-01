@@ -55,6 +55,7 @@ although imbalanced replicates can be permuted (with a warning), provided
 that no single sample has more replicates than all other samples in a
 permutation stratum, in which case there is no valid permutation.
 }
+
 \references{
 Churchill GA, Doerge RW (1994) Empirical threshold values for
 quantitative trait mapping. \emph{Genetics} \bold{138}(3):963-71.
@@ -94,4 +95,3 @@ Other cross object functions: \code{\link{crossesEqual}},
 
 Other permutation functions: \code{\link{permCross}}
 }
-

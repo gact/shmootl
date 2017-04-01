@@ -51,6 +51,7 @@ have an alphanumeric suffix (e.g. \code{'FS01A'}), where the numeric part is
 a tetrad number and the final letter (i.e. \code{'A'}, \code{'B'},
 \code{'C'}, or \code{'D'}) identifies the individual tetrad member.
 }
+
 \seealso{
 Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{getIdColIndex}},
@@ -66,4 +67,3 @@ Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{readCrossHDF5}}, \code{\link{writeCrossCSV}},
   \code{\link{writeCrossHDF5}}
 }
-

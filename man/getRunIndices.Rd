@@ -19,4 +19,3 @@ encoding has zero runs.
 Get indices of successive runs in a run-length encoding.
 }
 \keyword{internal}
-

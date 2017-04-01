@@ -17,4 +17,3 @@ This function loads the sequence info tables of genomes for which package
 data is available.
 }
 \keyword{internal}
-

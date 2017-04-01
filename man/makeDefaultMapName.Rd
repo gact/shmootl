@@ -16,4 +16,3 @@ Default map name.
 Get default map name.
 }
 \keyword{internal}
-

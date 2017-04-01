@@ -16,4 +16,3 @@ Character vector of joined sequence labels.
 Join sequence labels.
 }
 \keyword{internal}
-

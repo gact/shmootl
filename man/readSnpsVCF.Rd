@@ -40,4 +40,3 @@ values. In any case, the rows of each slice contain data for a given sample,
 while the columns of each slice contain data for a given SNP locus.
 }
 \keyword{internal}
-

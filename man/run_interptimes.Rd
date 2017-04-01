@@ -16,9 +16,6 @@ Read data in an \pkg{R/qtl} cross CSV file. If the input \code{cross} has
 time-series phenotypes, interpolate phenotype values in any gaps in the
 time series, then write the resulting \code{cross} to the output file.
 }
-\author{
-Yue Hu
-}
 \seealso{
 Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_digest}}, \code{\link{run_estimap}},
@@ -28,7 +25,9 @@ Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_report}}, \code{\link{run_scanone}},
   \code{\link{run_scantwo}}
 }
+\author{
+Yue Hu
+}
 \concept{
 shmootl:utilities
 }
-

@@ -33,4 +33,3 @@ Input object subsetted by the specified sequences.
 Subset object by the specified sequences.
 }
 \keyword{internal}
-

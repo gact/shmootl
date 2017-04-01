@@ -20,4 +20,3 @@ Input \code{H5Stack} object with top element removed.
 Remove HDF5 object ID at top of \code{H5Stack}.
 }
 \keyword{internal}
-

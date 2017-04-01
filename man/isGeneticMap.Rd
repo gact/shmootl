@@ -17,4 +17,3 @@ isGeneticMap(x)
 Test if object is a genetic \code{map}.
 }
 \keyword{internal}
-

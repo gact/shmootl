@@ -2,8 +2,8 @@
 % Please edit documentation in R/shmootl.R
 \docType{package}
 \name{shmootl-package}
-\alias{shmootl}
 \alias{shmootl-package}
+\alias{shmootl}
 \title{QTL Analysis Utilities for Yeast}
 \description{
 The \pkg{shmootl} package contains pipelines and functions for QTL analysis
@@ -64,6 +64,7 @@ help flag (\code{-h}) without a pipeline name. (See usage examples below.)
   \item{\href{http://www.rqtl.org/}{R/qtl}}
 }
 }
+
 \examples{
 \dontrun{
 # To list available pipelines from the command line.
@@ -92,4 +93,3 @@ regression-based method to map quantitative trait loci underlying
 function-valued phenotypes. \emph{Genetics} \bold{197}(4):1409-16.
 (\href{http://www.ncbi.nlm.nih.gov/pubmed/24931408}{PubMed})
 }
-

@@ -29,5 +29,5 @@ For a given ploidy \code{N}, a founder genotype is the concatenation of the
 set of \code{N} founder alleles. For example, given one founder allele
 \code{'W'} and another \code{'S'}, the founder genotype is \code{'WS'}.
 }
-\keyword{internal}
 
+\keyword{internal}

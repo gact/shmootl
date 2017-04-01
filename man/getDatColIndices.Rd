@@ -27,4 +27,3 @@ Data columns are taken to be any columns that aren't a sequence or position
 column.
 }
 \keyword{internal}
-

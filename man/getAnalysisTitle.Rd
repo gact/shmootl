@@ -18,4 +18,3 @@ vector.
 Get analysis title for the given \pkg{shmootl} analysis pipeline.
 }
 \keyword{internal}
-

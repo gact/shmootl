@@ -10,11 +10,11 @@
 \usage{
 setMapUnit(x, map.unit)
 
+\method{setMapUnit}{data.frame}(x, map.unit)
+
 \method{setMapUnit}{list}(x, map.unit)
 
 \method{setMapUnit}{map}(x, map.unit)
-
-\method{setMapUnit}{data.frame}(x, map.unit)
 
 \method{setMapUnit}{mapframe}(x, map.unit)
 }
@@ -40,6 +40,7 @@ physical map units. Genetic map positions must be in centiMorgans (cM), while
 physical map positions must be in base pairs (bp), kilobases (kb), or
 Megabases (Mb).
 }
+
 \seealso{
 Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{as.data.frame.map}},
@@ -57,4 +58,3 @@ Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{writeMapHDF5}},
   \code{\link{writeMapframeCSV}}
 }
-

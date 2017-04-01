@@ -25,4 +25,3 @@ Other mapping object functions: \code{\link{as.mapping}},
   \code{\link{is.mapping}}, \code{\link{mappingKeys}},
   \code{\link{mappingValues}}
 }
-

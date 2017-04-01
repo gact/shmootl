@@ -13,4 +13,3 @@ Character vector of \pkg{shmootl} analysis pipeline names.
 Get \pkg{shmootl} analysis pipeline names.
 }
 \keyword{internal}
-

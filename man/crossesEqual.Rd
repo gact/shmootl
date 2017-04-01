@@ -40,4 +40,3 @@ Other cross object functions: \code{\link{getIdColIndex}},
   \code{\link{readCrossHDF5}}, \code{\link{writeCrossCSV}},
   \code{\link{writeCrossHDF5}}
 }
-

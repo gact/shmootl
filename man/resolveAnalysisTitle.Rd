@@ -22,4 +22,3 @@ supported analysis titles.
 Resolve analysis title.
 }
 \keyword{internal}
-

@@ -36,6 +36,7 @@ permissible, but only if referring to replicate samples of the same strain.
 Different strains can have different numbers of replicates, but samples from
 a given strain must be in consecutive rows.
 }
+
 \seealso{
 Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{getIdColIndex}},
@@ -51,4 +52,3 @@ Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{readCrossHDF5}}, \code{\link{writeCrossCSV}},
   \code{\link{writeCrossHDF5}}
 }
-

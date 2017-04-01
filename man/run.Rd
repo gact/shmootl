@@ -30,6 +30,7 @@ To see the available options for a pipeline, input the help flag (\code{-h})
 after the name of the pipeline. To list all available pipelines, input the
 help flag (\code{-h}) without a pipeline name. (See usage examples below.)
 }
+
 \examples{
 \dontrun{
 # To list available pipelines from the command line.
@@ -43,4 +44,3 @@ Rscript -e 'library(shmootl)' -e 'run()' scanone \\
 run_scanone(infile='input.csv', h5file='output.hdf5')
 }
 }
-

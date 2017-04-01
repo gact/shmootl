@@ -20,4 +20,3 @@ Input object with column removed.
 Delete column from object.
 }
 \keyword{internal}
-

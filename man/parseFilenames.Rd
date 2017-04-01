@@ -24,4 +24,3 @@ capture group across files. Unmatched capture groups are represented by
 Parse filenames by pattern matching.
 }
 \keyword{internal}
-

@@ -17,4 +17,3 @@ isSinglePositiveNumber(n)
 Test for a single positive number.
 }
 \keyword{internal}
-

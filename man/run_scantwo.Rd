@@ -67,11 +67,6 @@ within the \code{R} environment, the \code{thresholds} parameter must be
 specified as a mapping object (e.g.
 \code{mapping( c(full=8, fv1=7, int=6, add=5, av1=4, one=3) )}).
 }
-\author{
-Yue Hu
-
-Thomas Walsh <tw164@le.ac.uk>
-}
 \references{
 Broman KW, Wu H, Sen S, Churchill GA (2003) R/qtl: QTL mapping
 in experimental crosses. \emph{Bioinformatics} \bold{19}:889-890.
@@ -88,7 +83,11 @@ Other pipeline functions: \code{\link{run_annoqtl}},
   \code{\link{run_pushmap}}, \code{\link{run_recode}},
   \code{\link{run_report}}, \code{\link{run_scanone}}
 }
+\author{
+Yue Hu
+
+Thomas Walsh <tw164@le.ac.uk>
+}
 \concept{
 shmootl:analysis
 }
-

@@ -26,4 +26,3 @@ input \code{pheno} object are preserved. Sample replicates in the input
 as needed to match the input phenotypes.
 }
 \keyword{internal}
-

@@ -16,4 +16,3 @@ Character vector of allele symbols generated from the given genotypes.
 Make allele set from the given genotypes.
 }
 \keyword{internal}
-

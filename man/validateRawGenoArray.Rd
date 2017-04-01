@@ -17,4 +17,3 @@ genotype data in expected form; otherwise, raises first error.
 Validate \code{array} as containing raw genotype data.
 }
 \keyword{internal}
-

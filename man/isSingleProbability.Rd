@@ -17,4 +17,3 @@ isSingleProbability(n)
 Test for a single valid probability.
 }
 \keyword{internal}
-

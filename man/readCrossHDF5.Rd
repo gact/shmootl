@@ -38,4 +38,3 @@ Other HDF5 functions: \code{\link{readMapHDF5}},
   \code{\link{writeResultHDF5}},
   \code{\link{writeResultsOverviewHDF5}}
 }
-

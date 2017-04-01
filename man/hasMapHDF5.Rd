@@ -19,4 +19,3 @@ hasMapHDF5(infile, name)
 Test if HDF5 file contains the named map.
 }
 \keyword{internal}
-

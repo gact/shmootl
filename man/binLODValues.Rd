@@ -30,4 +30,3 @@ less than 1.2).
 \description{
 Bin LOD values of \code{scanone} object.
 }
-

@@ -18,4 +18,3 @@ given analysis.
 Parse \pkg{shmootl} output worksheet names.
 }
 \keyword{internal}
-

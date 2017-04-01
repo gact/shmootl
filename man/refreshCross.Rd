@@ -20,4 +20,3 @@ Input \code{cross} object with derived data attributes refreshed.
 Refresh derived data attributes of \pkg{R/qtl} \code{cross}.
 }
 \keyword{internal}
-

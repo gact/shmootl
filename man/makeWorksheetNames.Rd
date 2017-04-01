@@ -18,4 +18,3 @@ Vector of \pkg{shmootl} output worksheet names.
 Make \pkg{shmootl} output worksheet names.
 }
 \keyword{internal}
-

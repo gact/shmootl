@@ -30,7 +30,9 @@ Imports:
 Suggests:
     abind,
     viridis,
-    xlsx
+    xlsx,
+    knitr,
+    rmarkdown
 RoxygenNote: 6.0.1
 Collate:
     'CrossInfo-class.R'
@@ -96,3 +98,4 @@ Collate:
     'vcf.R'
     'wasa-data.R'
     'zzz.R'
+VignetteBuilder: knitr

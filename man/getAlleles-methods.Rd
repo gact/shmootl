@@ -48,4 +48,3 @@ Other CrossInfo methods: \code{\link{getCrosstype}},
   \code{\link{setTetradIndices}}
 }
 \keyword{internal}
-

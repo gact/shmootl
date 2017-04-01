@@ -24,5 +24,5 @@ physical map units. Genetic map positions must be in centiMorgans (cM), while
 physical map positions must be in base pairs (bp), kilobases (kb), or
 Megabases (Mb).
 }
-\keyword{internal}
 
+\keyword{internal}

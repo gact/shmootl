@@ -14,4 +14,3 @@ from the \code{'maplengths'} column, and a physical map from the
 \code{mapkey} object for each genome.
 }
 \keyword{internal}
-

@@ -19,4 +19,3 @@ if available; otherwise they are taken from installed \pkg{shmootl} manual
 pages.
 }
 \keyword{internal}
-

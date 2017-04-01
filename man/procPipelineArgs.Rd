@@ -18,4 +18,3 @@ Processed pipeline arguments.
 Process arguments parsed by \pkg{argparser}.
 }
 \keyword{internal}
-

@@ -24,4 +24,3 @@ Opened \code{H5Stack} object.
 Open stack of HDF5 objects.
 }
 \keyword{internal}
-

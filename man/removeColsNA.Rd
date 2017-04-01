@@ -16,4 +16,3 @@ Input object without those columns that contain only \code{NA} values.
 Remove columns containing only \code{NA} values.
 }
 \keyword{internal}
-

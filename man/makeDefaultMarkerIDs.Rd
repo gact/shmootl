@@ -32,9 +32,9 @@ is a zero-padded seven-digit number giving the physical map position of the
 given locus (i.e. the nucleotide position of the locus in the reference
 sequence).
 }
+
 \author{
 Thomas Walsh <tw164@le.ac.uk>
 
 Yue Hu
 }
-

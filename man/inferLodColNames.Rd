@@ -25,4 +25,3 @@ Given a \code{cross} and set of phenotypes, get the expected the LOD column
 names of the corresponding scanone result.
 }
 \keyword{internal}
-

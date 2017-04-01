@@ -23,4 +23,3 @@ Other chromosome/sequence functions: \code{\link{formatChr}},
   \code{\link{rankChr}}, \code{\link{rankSeq}},
   \code{\link{sortChr}}, \code{\link{sortSeq}}
 }
-

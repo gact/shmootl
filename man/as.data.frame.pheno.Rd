@@ -21,4 +21,3 @@ A \code{data.frame} corresponding to the input \code{pheno} object.
 Convert \code{pheno} object to \code{data.frame}.
 }
 \keyword{internal}
-

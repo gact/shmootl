@@ -62,4 +62,3 @@ Function \code{plot.scantwo} in the
 
 Other plot functions: \code{\link{plotQTLScanone}}
 }
-

@@ -16,4 +16,3 @@ Numeric vector of bin starts.
 Parse bin starts from LOD bin labels.
 }
 \keyword{internal}
-

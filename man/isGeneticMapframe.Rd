@@ -17,4 +17,3 @@ genetic map positions; \code{FALSE} otherwise.
 Test if object is a genetic \code{mapframe}.
 }
 \keyword{internal}
-

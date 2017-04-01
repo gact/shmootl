@@ -24,4 +24,3 @@ Integer vector of column indices.
 Get column indices of object.
 }
 \keyword{internal}
-

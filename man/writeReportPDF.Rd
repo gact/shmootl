@@ -20,4 +20,3 @@ file. If none are specified, results are output for all available analyses.}
 \description{
 Write a PDF report of QTL scan results.
 }
-

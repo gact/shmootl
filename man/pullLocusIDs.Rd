@@ -25,4 +25,3 @@ Character vector of individual locus IDs.
 Pull individual locus IDs.
 }
 \keyword{internal}
-

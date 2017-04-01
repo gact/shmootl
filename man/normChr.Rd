@@ -73,6 +73,7 @@ label sequences in a genome lacking a one-to-one correspondence between
 sequences and chromosomes.
 }
 }
+
 \seealso{
 Other chromosome/sequence functions: \code{\link{formatChr}},
   \code{\link{formatSeq}}, \code{\link{isNormChr}},
@@ -81,4 +82,3 @@ Other chromosome/sequence functions: \code{\link{formatChr}},
   \code{\link{rankChr}}, \code{\link{rankSeq}},
   \code{\link{sortChr}}, \code{\link{sortSeq}}
 }
-

@@ -5,6 +5,7 @@
 \alias{length,H5Stack-method}
 \alias{show,H5Stack-method}
 \alias{show.H5Stack}
+\alias{show,H5Stack-method}
 \title{Get number of HDF5 objects in \code{H5Stack}.}
 \usage{
 \S4method{length}{H5Stack}(x)
@@ -25,4 +26,3 @@ Get number of HDF5 objects in \code{H5Stack}.
 Display contents of \code{H5Stack} object.
 }
 \keyword{internal}
-

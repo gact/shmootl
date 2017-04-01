@@ -47,4 +47,3 @@ Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{readMapframeCSV}}, \code{\link{setMapUnit}},
   \code{\link{writeMapCSV}}, \code{\link{writeMapframeCSV}}
 }
-

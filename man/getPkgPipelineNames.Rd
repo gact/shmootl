@@ -17,4 +17,3 @@ Character vector of \pkg{shmootl} pipeline names.
 Package pipeline names are taken from the loaded \pkg{shmootl} namespace, if
 available; otherwise they are taken from installed \pkg{shmootl} package.
 }
-

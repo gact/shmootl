@@ -27,10 +27,10 @@ getLodColIndices(x, lodcolumns = NULL, strict = FALSE)
 
 \method{getLodColIndices}{scantwoperm}(x, lodcolumns = NULL, strict = FALSE)
 
-\method{getLodColIndices}{summary.scanoneperm}(x, lodcolumns = NULL,
+\method{getLodColIndices}{summary.scanonebins}(x, lodcolumns = NULL,
   strict = FALSE)
 
-\method{getLodColIndices}{summary.scanonebins}(x, lodcolumns = NULL,
+\method{getLodColIndices}{summary.scanoneperm}(x, lodcolumns = NULL,
   strict = FALSE)
 
 \method{getLodColIndices}{summary.scantwoperm}(x, lodcolumns = NULL,
@@ -59,4 +59,3 @@ Vector of LOD column indices.
 Get LOD column indices.
 }
 \keyword{internal}
-

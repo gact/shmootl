@@ -21,4 +21,3 @@ Vector containing the row indices of flanking loci.
 Find row index of flanking \code{mapframe} loci.
 }
 \keyword{internal}
-

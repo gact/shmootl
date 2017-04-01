@@ -19,4 +19,3 @@ in the corresponding element of the input vector.
 Get \pkg{shmootl} pipeline name for the given function.
 }
 \keyword{internal}
-

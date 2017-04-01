@@ -16,4 +16,3 @@ Locus \code{mapframe} with loci common to all input objects.
 Find intersection set of loci.
 }
 \keyword{internal}
-

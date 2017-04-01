@@ -19,4 +19,3 @@ HDF5 object name.
 Join components of HDF5 object name.
 }
 \keyword{internal}
-

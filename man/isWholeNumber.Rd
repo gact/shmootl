@@ -18,4 +18,3 @@ Logical vector indicating which elements are whole numbers.
 Test for whole numbers.
 }
 \keyword{internal}
-

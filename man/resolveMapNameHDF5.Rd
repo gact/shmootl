@@ -21,4 +21,3 @@ specified and one map is found, the name of that map is returned by default;
 otherwise a map name must be given.
 }
 \keyword{internal}
-

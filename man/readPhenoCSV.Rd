@@ -27,4 +27,3 @@ Other CSV functions: \code{\link{hasMapCSV}},
   \code{\link{writeMapframeCSV}},
   \code{\link{writePhenoCSV}}
 }
-

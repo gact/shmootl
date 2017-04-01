@@ -16,4 +16,3 @@ Argument parser for the specified \pkg{shmootl} pipeline.
 Prep argument parser for \pkg{shmootl} pipeline.
 }
 \keyword{internal}
-

@@ -23,4 +23,3 @@ done; and a second column summarising the results of that analysis.
 Make QTL analysis results overview.
 }
 \keyword{internal}
-

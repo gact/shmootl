@@ -24,4 +24,3 @@ Integer vector of row indices.
 Get row indices of object.
 }
 \keyword{internal}
-

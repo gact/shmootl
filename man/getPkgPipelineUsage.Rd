@@ -14,4 +14,3 @@ string.
 Get default usage string for \pkg{shmootl} pipelines.
 }
 \keyword{internal}
-

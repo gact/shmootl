@@ -16,4 +16,3 @@ A \code{data.frame} representing split sequence labels.
 Split sequence labels.
 }
 \keyword{internal}
-

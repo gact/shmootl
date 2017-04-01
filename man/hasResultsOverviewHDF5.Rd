@@ -17,4 +17,3 @@ QTL analysis results overview; \code{FALSE} otherwise.
 Test if HDF5 file contains a QTL analysis results overview.
 }
 \keyword{internal}
-

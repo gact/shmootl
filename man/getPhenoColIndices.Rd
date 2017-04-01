@@ -47,4 +47,3 @@ Other cross object functions: \code{\link{crossesEqual}},
   \code{\link{readCrossHDF5}}, \code{\link{writeCrossCSV}},
   \code{\link{writeCrossHDF5}}
 }
-

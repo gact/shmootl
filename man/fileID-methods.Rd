@@ -20,4 +20,3 @@ HDF5 object ID of HDF5 file. Returns \code{NULL} if stack is empty.
 Get HDF5 object ID of HDF5 file.
 }
 \keyword{internal}
-

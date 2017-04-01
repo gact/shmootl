@@ -22,4 +22,3 @@ A prepared \code{H5Stack} object.
 Init \code{H5Stack} object.
 }
 \keyword{internal}
-

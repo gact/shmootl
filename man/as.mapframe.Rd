@@ -52,6 +52,7 @@ Any number of additional data columns can be included. If present, the row
 names indicate the locus IDs, which should be unique within the given
 \code{mapframe}.
 }
+
 \seealso{
 Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{as.data.frame.map}}, \code{\link{as.map}},
@@ -68,4 +69,3 @@ Other map utility functions: \code{\link{as.data.frame.mapframe}},
   \code{\link{writeMapCSV}}, \code{\link{writeMapHDF5}},
   \code{\link{writeMapframeCSV}}
 }
-

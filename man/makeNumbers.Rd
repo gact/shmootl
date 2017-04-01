@@ -16,4 +16,3 @@ Numeric vector of numbers corresponding to the input names.
 Make numbers from numeric names.
 }
 \keyword{internal}
-

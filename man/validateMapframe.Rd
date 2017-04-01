@@ -41,5 +41,5 @@ Any number of additional data columns can be included. If present, the row
 names indicate the locus IDs, which should be unique within the given
 \code{mapframe}.
 }
-\keyword{internal}
 
+\keyword{internal}

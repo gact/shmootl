@@ -21,4 +21,3 @@ Other mapping object functions: \code{\link{as.mapping}},
   \code{\link{mapping}}
 }
 \keyword{internal}
-

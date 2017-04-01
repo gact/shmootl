@@ -1,0 +1,893 @@
+---
+title: "ShmooTL developer notes"
+author: "Thomas A. Walsh"
+date: "`r Sys.Date()`"
+
+output:
+    rmarkdown::html_vignette:
+        toc: true
+vignette: >
+    %\VignetteIndexEntry{ShmooTL developer notes}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
+
+bibliography: references.bib
+---
+
+--------------------------------------------------------------------------------
+
+```{r, echo=FALSE}
+library(shmootl)
+```
+
+# Introduction
+
+These are developer notes for the **ShmooTL** package. When reading these
+developer notes, you may find it helpful to refer to the
+[**ShmooTL** User Guide](shmootl-guide.html). As this package depends on
+[**R/qtl**](https://CRAN.R-project.org/package=qtl) package
+[@Broman2003; @Arends2010], you will certainly find it useful to read over its
+documentation (available [here](http://rqtl.org)), especially the **R/qtl**
+manual (available [here](http://www.rqtl.org/manual/qtl-manual.pdf)) and the
+**R/qtl** guide book by Broman and Sen [-@Broman2009].
+
+For information about R package documentation, see the
+[**Roxygen2**](https://CRAN.R-project.org/package=roxygen2) package. For
+information about R package development in general, see the CRAN manual
+[**Writing R Extensions**](https://cran.r-project.org/doc/manuals/r-release/R-exts.html),
+the book [**R packages**](http://r-pkgs.had.co.nz/) by Hadley Wickham
+[-@Wickham2015], and the [R package primer](http://kbroman.org/pkg_primer)
+by Karl Broman [-@Broman2016].
+
+--------------------------------------------------------------------------------
+
+# Package coding style
+
+The coding style used in the **ShmooTL** package draws heavily from both the
+[Google R style guide](https://google.github.io/styleguide/Rguide.xml)
+[-@Google2013] and the [style guide](http://r-pkgs.had.co.nz/style.html)
+from Wickham [-@Wickham2015], but with some minor differences.
+
+You are advised to follow the key points below, as well as any conventions used
+in existing package code. In cases where neither of these provide useful
+guidance, it is recommended to consult either of the style guides mentioned
+above. If none of these resources are of use, you will have to resort to common
+sense.
+
+## R code filenames should be short but informative.
+
+Some R code files contain a single function; such files should have the same
+name as that function (e.g. the file `run.R` contains one function called
+`run`). Every package pipeline function should be stored in this way (e.g.
+the file `run_scanone.R` contains one function called `run_scanone`).
+
+Other R code files may contain multiple objects that form a natural grouping.
+For example, functions may be grouped into the same file because they all act on
+objects of the same class (e.g. functions acting on `cross` objects have been
+grouped together in `cross.R`); because they belong together (e.g.
+[package constants](#package-constants) are defined together in the file
+`const.R`); because they don't belong anywhere else (e.g. miscellaneous utility
+functions are in `util.csv`); or because they involve input/output to a given
+file format (e.g. functions that read or write CSV files are grouped in
+`csv.R`).
+    
+An S4 class and its methods should be stored in a file whose name is made up of
+the name of the class followed by the suffix `-class` (e.g. `H5Stack-class.R`
+contains the definition and methods of class `H5Stack`).
+
+Documentation for [package data](#package-data) should be kept in a file whose
+name is made up of the name of the dataset and the suffix `-data` (e.g. 
+`wasa-data.R` contains documentation for the
+[**wasa** dataset](shmootl-guide.html#dataset-wasa)).
+
+## R code files should follow a standard layout.
+    
+Each file should start with a comment line that looks like this:
+  
+```
+# Start of run.R ###############################################################
+```
+    
+Functions should then be defined in alphabetical order within the file.
+    
+Each function should be preceded by **Roxygen2** documentation (see 
+[Adding a package function](#adding-a-package-function) and
+[Adding a pipeline function](#adding-a-pipeline-function)).
+    
+This **Roxygen2** documentation should in turn be preceded by a comment line
+that shows the name of the function, like this:
+    
+```
+# run --------------------------------------------------------------------------
+```
+    
+Variables should not be defined outside of function definitions. If a constant
+variable is used in multiple functions, it should be defined in the environment
+`const`, which can be found in the file `const.R` (see
+[Package constants](#package-constants).
+    
+Each file should end with a comment line that looks like this:
+  
+```
+# End of run.R #################################################################
+```
+    
+These comment lines --- at the start and end of each file, as well as before
+each function --- help with navigation of R code files.
+
+## R object names should follow package naming conventions.
+
+In general, variable names should be syntactically valid, and consist of
+lowercase letters, with dots as word separators.
+
+Function names should generally be in lower camel case: the first letters of a
+function name are always lowercase, but in a compound function name containing
+multiple words, the initial letters of the second and each subsequent word are
+uppercase (e.g. `isValidID`). Dots should generally be avoided because of their
+special meaning in the S3 object-oriented framework. However, there are
+exceptions to this naming convention, such as the following:
+
+- S3 methods that are defined for an external generic must follow the form of
+    that generic. For example, the **ShmooTL** function `as.data.frame.map`
+    implements the generic R method `as.data.frame` for the `map` class.
+
+- S3 methods that are similar to existing external methods may follow the
+    naming convention of those external methods. For example, **ShmooTL**
+    functions `pull.alleles` and `pull.ind` perform similar tasks to **R/qtl**
+    functions `pull.map` and `pull.pheno`, so they are named similarly.
+ 
+- Pipeline functions have a special naming convention within **ShmooTL**, partly
+    to make it easier for them to be identified automatically. Pipeline function
+    names are of the form `run_<pipeline>`, where `<pipeline>` is replaced by the
+    pipeline name (see [Package pipelines](#package-pipelines)).
+
+S3 class names should follow the general convention for variable names:
+syntactically-valid names made up of lowercase letters and dots. S4 class names
+should consist entirely of letters in upper camel case, so that the initial
+letters of each word are in uppercase.
+
+When naming objects, avoid names that clash with existing objects within
+**ShmooTL**, any of its dependencies, or base R.
+
+## Try to keep lines within 80 characters, but not at all costs.
+
+Lines of 80 characters fit easily on a printed page and in a rendered vignette.
+They also display better in tools such as `diff` with default settings. However,
+this guideline should be ignored if doing so makes the code more readable.
+
+## Begin comments with a hash symbol (`#`) and a single space.
+
+Comments should answer questions that aren't (or can't be) addressed by
+**Roxygen2** documentation.
+
+## Raise appropriate and informative warnings and errors.
+
+If an issue arises that the user may need to know about, but that does not
+prevent successful execution of a function, this should be raised with the
+`warning` function and an informative warning message. For example, during
+permutation of `cross` data, if there are unequal numbers of sample replicates,
+so that permutations can be performed, but may be imbalanced to the extent that
+permutations may not be sufficiently random, the following warning is output:
+
+```
+warning("sample replicates are imbalanced")
+```
+
+If an error occurs, it should ideally be raised with a call to `stop` and an
+informative error message. For example, during permutation of `cross` data,
+if there are unequal numbers of sample replicates, to the extent that valid
+permutations cannot be performed, the following error is raised:
+
+```
+stop("cannot generate permutation indices - replicates too imbalanced")
+```
+
+For argument validation, or if an error is unlikely to occur for a package user,
+or if there is not enough time to compose an informative error message,
+error-checking should be done with the functions `stopif` and `stopifnot`. 
+
+The base R function `stopifnot` is usually the better option. It can be used,
+for example, to test statements that are assumed to be true. The example below
+tests that a function argument `cross` contains a `cross` object, as expected:
+
+```
+stopifnot( 'cross' %in% class(cross) )
+```
+
+The function `stopif` is a **ShmooTL** function --- based on `stopifnot` ---
+that was written to avoid the potentially confusing double negative that can
+happen when testing a negative expression, such as this example:
+
+```
+stopifnot( ! is.null(threshold) )
+```
+
+The example above can be rewritten more clearly as follows:
+
+```
+stopif( is.null(threshold) )
+```
+
+## Use double quotes for messages, single quotes otherwise.
+
+Enclose in double quotes any user message, such as an update, warning, or error.
+Otherwise, use single quotes, except when double quotes would be clearer (e.g.
+if the quoted string contains a single quote).
+
+## List all positional function parameters first.
+
+In a function definition, list all positional functional parameters first,
+before listing any keyword-value parameters (see
+[Adding a package function](#adding-a-package-function)). Package pipeline
+functions should only have keyword-value parameters (see
+[Adding a pipeline function](#adding-a-pipeline-function)).
+
+## Make an explicit call to `return` in every named function.
+
+A function without a return value should be terminated with the following
+command:
+
+```
+return( invisible() )
+```
+
+This excludes anonymous functions, as well as generic methods calling
+`UseMethod`.
+
+## Use the ‘One True Brace Style’.
+
+Use the 'One True Brace Style' variant of the K&R indent style [@Kernighan1978].
+Curly braces should be used to enclose functions and other code blocks, even
+those containing a single statement. An opening curly brace should terminate
+the line preceding the opening line of the enclosed code block, while its
+matching closing brace should be at the start of the line immediately after
+the last line of the enclosed code block. Unless followed by another code block,
+the closing brace should occupy a line by itself (see the example below). Always
+indent the enclosed code block.
+    
+```
+if ( is.na(lod) ) {
+    x <- 0
+} else if ( lod < 0 ) {
+    x <- 0
+} else {
+    x <- lod
+}
+```
+
+## Indent with four spaces; never use `Tab ↹` for indentation.
+
+In addition to code blocks, the second and subsequent lines of a multi-line
+function definition should be indented by four spaces, as in this example:
+
+```
+writeCrossCSV <- function(cross, outfile, chr=NULL, digits=NULL, 
+    include.mapunit=TRUE) {
+
+    stopifnot( isSingleString(outfile) )
+    stopifnot( isBOOL(include.mapunit) )
+    
+    map.unit <- 'cM'
+    ...
+}
+```
+
+## Use whitespace as clearly and consistently as possible.
+
+In the test clause of an `if` or `while` statement, place a space to the left
+of the opening parenthesis and to the right of the closing parenthesis. It is
+also acceptable to place a space to the right of the opening parenthesis and
+to the left of the closing parenthesis, except where the test clause is a
+single variable.
+
+A space should be placed either side of binary operators, except for certain
+operators in specific contexts. These include the double and triple colon
+operators (i.e. `::` and `:::`, respectively), as well as the equals sign (`=`)
+when used for passing parameters in a function definition, or passing arguments
+in a function call.
+
+A space should generally be placed after a comma and not before, except in cases
+where it is clearer to do otherwise, such as with consecutive commas in array
+indices.
+
+## Use the assignment operator `<-` for variable assignment.
+
+Be sure to use the `<-` operator, enclosed by spaces, for variable assignment,
+as in this example:
+    
+```
+map.unit <- 'cM'
+```
+
+## Use the equals sign (`=`) for passing function parameters.
+    
+Use the equals sign (`=`), without whitespace on either side, for passing
+parameters in a function definition, or passing arguments in a function call.
+This code block gives an example of each:
+    
+```
+as.mapframe.scanone <- function(from, map.unit=NULL) {     # function definition
+    return( as.mapframe.data.frame(from, map.unit='cM') )  # function call
+}
+```
+
+## Use the double colon operator (`::`) to call external functions.
+
+As the **ShmooTL** `DESCRIPTION` file does not list any external packages in its
+`Depends` field, every **ShmooTL** function should be written so that if it
+contains a call to a function from an external package, that external function
+can be called without first having to load the package in which it is defined.
+This can be achieved by prepending the name of the external package and the
+double colon operator to the name of the relevant function. For example, the
+**R/qtl** function `scanone` should be called as `qtl::scanone`.
+
+However, the double colon only allows access to exported functions, and some
+functions, such as the **R/qtl** function `subset.scanoneperm`, are not exported
+from their package namespace. Though these can be accessed using the triple
+colon operator (e.g. `qtl:::subset.scanoneperm`), it is not considered good
+practice to do so, and this will cause a warning during the package check
+process.
+    
+It is possible to circumvent this issue by adding code such as the following to
+the beginning of a function:
+    
+```
+if ( ! 'package:qtl' %in% search() ) {
+    attachNamespace('qtl')
+    on.exit( detach('package:qtl', character.only=TRUE) )
+}
+```
+    
+If **R/qtl** is not attached, this attaches its namespace for the duration of
+the given function, so that for example, the internal **R/qtl** function
+`subset.scanoneperm` is available to be dispatched from a call to `subset`.
+
+As with use of the `attach` function in general, this solution should be used
+sparingly.
+
+## Define S3 classes if possible, and S4 classes if necessary.
+
+The S3 class system is used in much base R code (e.g. `subset.data.frame`), in
+**R/qtl** (e.g. `subset.scanoneperm`), and in much of **ShmooTL** (e.g.
+`subset.summary.scanoneperm`). S3 classes and methods are generally preferable,
+but an S4 class or method should be defined if there is a compelling reason.
+
+## Don't reinvent the wheel.
+
+This is often said, but it bears repeating. If there is a function in
+**ShmooTL**, in **R/qtl**, or in base R that does the job, then use that
+function, and use it consistently. The package will behave more consistently,
+and will be easier to maintain.
+
+For example, if every validation of item IDs uses the **ShmooTL** function
+`isValidID`, a future change to what constitutes a valid ID need only be
+implemented once, in the definition of that function.
+    
+As another example, it can be useful to get the indices of a vector with the R
+command:
+    
+```{r, echo=FALSE}
+x <- vector()
+```
+
+```{r}
+indices <- 1:length(x)
+```
+    
+However, if `x` has length zero, the value of `indices` is not so useful:
+    
+```{r, echo=FALSE}
+print(indices)
+```
+
+For this reason, it is better to use the function `seq_along` in such cases:
+
+```{r}
+indices <- seq_along(x)
+```
+
+A more sensible result is returned when the input is an empty vector:
+
+```{r, echo=FALSE}
+print(indices)
+```
+
+This will help to ensure that your code will behave as expected, even when its
+input data doesn't.
+
+--------------------------------------------------------------------------------
+
+# Package functions
+
+**ShmooTL** package functions should follow the
+[package coding style](#package-coding-style) and be fully documented with
+**Roxygen2**.
+
+## Adding a package function
+
+Some functions form natural groupings, and it can be helpful to save these to
+a common R code file. Functions can be grouped together if they read or write
+files of a specific format (e.g. functions that read/write CSV files are in
+`csv.R`); if they act on the same class (e.g. functions acting on `cross`
+objects are in `cross.R`); or if they perform related actions (e.g. functions
+acting on chromosome IDs are in `chr.R`). Miscellaneous utility functions should
+be saved to `util.csv`.
+
+If a function is particularly important (e.g. a pipeline function such as
+`run_scanone`), or does not fall clearly into any one group (e.g. package
+function `run`), it should be saved to an R code file named for the given
+function.
+
+### Documenting a package function
+
+Every package function should be preceded by **Roxygen2** documentation. In
+the example below, the first line is a regular comment --- starting with a hash
+symbol and a single space --- containing the name of the function. This line is
+followed by **Roxygen2** comments --- each starting with a hash symbol and a
+single quote --- that make up the **Roxygen2** comment block for the function
+defined below.
+
+By default, the first line of the **Roxygen2** comment block is taken as the
+title of the R documentation entry for the given function, while the second
+and subsequent paragraphs are used as the **Description** and **Details**,
+respectively. This can be seen by comparing the comment block below to the
+**ShmooTL** manual entry for `recodeCSV`.
+
+```
+# recodeCSV --------------------------------------------------------------------
+#' Recode \pkg{R/qtl} data in CSV file.
+#' 
+#' This function recodes the data in an \pkg{R/qtl} cross or genotype CSV file.
+#' Genotypes can be recoded by passing to the \code{geno} parameter a simple
+#' \code{\link{mapping}} of old to new genotypes. Alternatively, genotype data
+#' can be converted to enumerated genotypes by setting parameter
+#' \code{enum.geno} to \code{TRUE}.
+#' 
+#' Any \code{\link{mapping}} of old to new symbols must be complete and
+#' unambiguous. All existing values must be mapped to a new value, and
+#' data with different input values cannot have the same output value.
+#' 
+#' @param infile Input CSV file path.
+#' @param outfile Output CSV file path.
+#' @param geno A simple \code{\link{mapping}} of old to new genotype symbols,
+#' with names containing existing genotype symbols, and elements containing
+#' their replacement values (incompatible with \code{enum.geno}).
+#' @param enum.geno Option indicating if genotype data should be recoded as
+#' enumerated genotypes (incompatible with \code{geno}).
+#'
+#' @export
+#' @family CSV functions
+#' @importFrom utils read.csv
+#' @importFrom utils write.table
+#' @rdname recodeCSV
+recodeCSV <- function(infile, outfile, geno=NULL, enum.geno=FALSE) {
+    ...
+}
+```
+
+After the description and details of the function, each function parameter
+should be documented with a corresponding `@param` tag. If there is a return
+value, this should be documented with a `@return` tag. Templated content, as
+referenced by `@template` tags, should follow the return value, if present.
+
+Remaining **Roxygen2** tags should be listed below this in alphabetical order.
+These can be used to indicate three main types of package function:
+
+- Exported package functions are available to the user and included in the
+    package manual. They are tagged as follows:
+
+    ```
+    @export
+    ```
+
+- Exported package internal functions are available to the user but not
+    included in the package manual. They are tagged like this:
+    
+    ```
+    @export
+    @keywords internal
+    ```
+
+- Package internal functions are intended for use only within the package, 
+    and are tagged like so:
+    
+    ```
+    @keywords internal
+    ```
+
+Function groupings can be indicated with the `@family` tag. In this example, the
+manual entry for `recodeCSV` contains cross references to other `CSV functions`,
+and vice versa.
+
+Finally, every function should have an `@rdname` tag indicating the name of the
+R documentation file for the given function.
+
+--------------------------------------------------------------------------------
+
+# Package pipelines
+
+A **ShmooTL** pipeline is a fully-documented and exported **ShmooTL** package
+function that follows specific conventions regarding function name and formal
+arguments. **ShmooTL** pipelines are intended to be run from the command line,
+but every pipeline function should be written so that it is possible to run it
+directly from within the R environment.
+
+## Adding a pipeline function
+
+Pipeline function names are of the form `run_<pipeline>` (where `<pipeline>` is
+replaced by the pipeline name). Each pipeline function should be saved to an R
+code file of the same name. Information about a given pipeline is taken
+automatically from that pipeline's function definition and documentation.
+
+When a pipeline function is called from the command line, its arguments are
+parsed by the [**argparser**](https://CRAN.R-project.org/package=argparser)
+package, and processed by **ShmooTL**, which groups them into five main types:
+
+- **positional argument**: an argument identified by its position
+    (e.g. `data.csv`). This is not as flexible as other argument
+    types, so it is not generally recommended.
+- **optional argument**: an argument in a keyword-value pair, where the argument
+    value follows the keyword (e.g. `--alpha 0.01`).
+- **multiple-choice argument**: a keyword-value argument that can take one of
+    several possible values (e.g. `--ci.function lodint`, where the possible
+    values are `lodint` and `bayesint`).
+- **compound argument**: a keyword-value argument for which the argument value
+    is a YAML string representing a compound object, or the path to a YAML file
+    containing compound object data (e.g. `--geno "A: W, B: S"`).
+- **flag**: a keyword-only argument, where the presence of the keyword toggles
+    a specific option (e.g. `--help`).
+
+If pipeline arguments are passed on the command line and processed successfully,
+each is then automatically assigned to one of these five groups, depending on
+its default value in the pipeline function definition.
+
+Parameters without a default value are taken to be positional.
+
+A parameter with a default of `FALSE` is assumed to be `logical` (i.e. either
+`TRUE` or `FALSE`), and when passed on the command line, is treated as a flag.
+
+A parameter for which the default is an `NA` value is a standard optional
+parameter, of the same type as the given `NA` value (e.g. a parameter with
+default value `NA_integer_` is processed as an integer).
+
+A parameter for which the default value is a vector of multiple elements is
+classed as a multiple-choice parameter, and the value passed to this parameter
+must be one of those listed in the default vector.
+
+Finally, a parameter with a default value of length zero is taken to be a
+compound argument that is loaded as YAML content from a quoted string or
+specified file. More specifically, a YAML list is loaded into R as a `vector`,
+while a YAML dictionary is loaded into R as a **ShmooTL** `mapping` object.
+
+### Documenting a pipeline function
+
+Below is an example of documentation for the `recode` pipeline function. It has
+three parameters, each processed in a different way.
+
+The `datafile` parameter has default value `NA_character_`. On the command line,
+it is processed as an optional argument with a single string value. When called
+from within R, this must be a `character` vector with one element.
+
+The default value of the `geno` parameter is a `mapping` of length zero. When
+processed from the command line, this is expected to be a YAML dictionary that
+can be loaded from a string or file. Within R, it must be passed as a `mapping`
+object.
+
+Because parameter `enum.geno` has a default value of `FALSE`, it is processed on
+the command line as a flag. Within R, it must be passed as a `logical` vector with
+one element (i.e. either `TRUE` or `FALSE`).
+
+```
+# run_recode -------------------------------------------------------------------
+#' Recode data in \pkg{R/qtl} CSV file.
+#' 
+#' Recode data in an \pkg{R/qtl} cross or genotype CSV file. Genotypes can be
+#' recoded by passing to the \code{geno} parameter a mapping of old to new
+#' genotypes. Alternatively, genotype data can be converted to enumerated
+#' genotypes with the \code{enum.geno} parameter.
+#' 
+#' When calling this function from within the \code{R} environment, the
+#' \code{geno} parameter must be specified as a mapping object (e.g.
+#' \code{mapping( c(A = 'W', B = 'S') )}). When called from the command line
+#' using \code{Rscript}, the \code{geno} parameter must be specified as a a
+#' YAML string (or YAML file) mapping old to new genotypes
+#' (e.g. \code{"A: W, B: S"}).
+#' 
+#' @param datafile cross/geno CSV file [required]
+#' @param geno recode genotypes from mapping
+#' @param enum.geno recode to enumerated genotypes
+#' 
+#' @concept shmootl:utilities
+#' @export
+#' @family pipeline functions
+#' @rdname run_recode
+run_recode <- function(datafile=NA_character_, geno=mapping(),
+    enum.geno=FALSE) {
+    ...
+}
+```
+
+As can be seen from this example, pipeline functions are documented in much
+the same way as other package functions, but with some key differences:
+
+- Pipeline function documentation must be written so as to be readable both on
+    the command line and within the R environment. Names and descriptions of
+    parameters must be as concise as possible, while also being as consistent
+    as possible with those of existing pipelines.
+    
+    Default values of some pipeline function parameters are automatically
+    propagated to the command line help output. However, if the parameter
+    default is an `NA` value, this is not included in the help output, and
+    the default value of that parameter must be explicitly given in the
+    parameter description (e.g. `[default: all]`). Similarly, required
+    parameters must be explicitly marked as such in their description
+    (e.g. `[required]`).
+    
+- A `@concept` tag should be used to assign each pipeline to a pipeline group.
+    These groupings are mainly used to organise the general pipeline help output
+    on the command line. There are currently four such groups: `preparation`,
+    `analysis`, `processing`, and `utilities`. A pipeline is assigned to one of
+    these groups by prepending the name of the **ShmooTL** package followed by
+    a colon (e.g. `shmootl:utilities`). If a pipeline function is not assigned
+    to a pipeline group using a `@concept` tag, it is included in the `misc`
+    group by default.
+
+- Documentation for every pipeline should include the following `@family` tag:
+    
+    ```
+    @family pipeline functions
+    ```
+    
+    This adds cross references between pipelines in the **ShmooTL** manual.
+
+--------------------------------------------------------------------------------
+
+# Package constants
+
+Package constants should be defined in the environment `const`,  which can be
+found in the file `const.R`. 
+
+For example, the CSV missing value symbol used in **ShmooTL** is defined in the
+`const` environment as follows:
+
+```
+missing.value <- '-'
+```
+
+This can then be accessed from almost any **ShmooTL** function as the variable
+`const$missing.value`, as in this example:
+
+```
+x[ is.na(x) ] <- const$missing.value
+```
+
+Constants are useful for any fixed data, and are strongly recommended for fixed
+data that are used in multiple functions within the package.
+
+--------------------------------------------------------------------------------
+
+# Package data
+
+For information on existing package datasets, see
+[Package data](shmootl-guide.html#package-data)
+in the [**ShmooTL** user guide](shmootl-guide.html).
+
+## Adding a package dataset
+
+A package dataset can be added to **ShmooTL** by saving the data to an RData
+file in the package `data` directory, then adding dataset documentation. This
+is described below using the [**wasa** dataset](shmootl-guide.html#dataset-wasa)
+as an example.
+
+> **NOTE**:
+> [CRAN package policies](https://cran.r-project.org/web/packages/policies.html)
+> require that packages be of the "minimum necessary size", and this is a good
+> practice for R packages in general. This should be borne in mind when adding
+> package datasets: each dataset should justify the extra space needed, and it
+> may be necessary to reduce the size of a dataset so that it does not take up
+> too much space.
+
+### Saving a package dataset
+
+The existing **wasa** dataset contains a `cross` object with data for an F1
+cross between *S. cerevisiae* strains `DBVPG6044` (`WA`) and `Y12` (`SA`).
+From within the **Shmootl** root directory, this `cross` object was saved
+to the package data directory with the following R command:
+
+```
+save(wasa, file="data/wasa.rda")
+```
+
+### Documenting a package dataset
+
+Comments and **Roxygen2** documentation were written for the **wasa** dataset in
+a manner similar to function documentation (see
+[Documenting a package function](#documenting-a-package-function)), but with the
+following additional **Roxygen2** tags:
+
+- a `@usage` tag showing how to load the dataset;
+- a `@format` tag describing the class of the dataset and its key features;
+- a `@name` tag giving the name of the dataset; and
+- a `@docType` tag indicating that this is a dataset.
+
+In addition, the origin of the dataset was indicated with a `@source` tag, as
+well as `@references` tags citing relevant studies.
+
+These comments and **Roxygen2** documentation were followed by a placeholder
+`NULL` value and saved to `shmootl/R/wasa-data.R`.
+
+--------------------------------------------------------------------------------
+
+# Reference genome data
+
+The **ShmooTL** genome option indicates the reference genome to be used by
+package functions that make use of genome-specific information, such as
+processing reference sequence IDs or converting and rescaling map units
+(see the [**genomeOpt** function](shmootl-guide.html#function-genomeopt)).
+For information about a reference genome to be available within **ShmooTL**, it
+is necessary to add [reference genome data files](#reference-genome-data-files)
+for the given genome.
+
+## Reference genome data files
+
+Information about each reference genome is taken from two CSV table files: a
+[chromosome table file](#chromosome-table-file), which contains chromosome
+information that is common to all supported *S. cerevisiae* genomes; and a
+[reference sequence table file](#reference-sequence-table-file), which contains
+reference sequence information that is specific to a given genome assembly.
+
+### Chromosome table file
+
+A CSV chromosome table file contains information that is common to all supported
+*S. cerevisiae* genomes, so it is stored in the following fixed location:
+
+```
+shmootl/inst/extdata/genomes/chrtab.csv
+```
+
+The current chromosome table is shown below:
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable( shmootl:::loadChrTable() )
+```
+
+The table below contains information about each of the columns in the chromosome table file:
+
+| Column         | Type        | Description                                                          |
+| -------------- | ----------- | -------------------------------------------------------------------- |
+| **seqids**     | `character` | Normalised chromosome identifier (e.g. `04`).                        |
+| **seqnames**   | `character` | Canonical chromosome name (e.g. `IV`).                               |
+| **aliases**    | `character` | Alternative chromosome identifiers (e.g. `mt` for the mitochondria). |
+| **isCircular** | `logical`   | `TRUE` if a chromosome is circular; `FALSE` otherwise.               |
+| **genome**     | `character` | Genome assembly that the given chromosome is part of.                |
+
+### Reference sequence table file
+
+```{r echo=FALSE}
+genome <- shmootl:::const$default$genome
+```
+
+A CSV reference sequence table file contains information about the reference
+sequences in a specific *S. cerevisiae* genome assembly, and must be stored
+in a specific location within **ShmooTL**. For example, the reference sequence
+table file for genome ```r genome``` is stored in the following location:
+
+```{r echo=FALSE, comment=NA} 
+cat('shmootl/inst/extdata/genomes/', genome, '/seqtab.csv', sep='')
+```
+
+Every reference sequence table should follow a consistent format, and should
+include the columns described in the table below:
+
+| Column         | Type        | Description                                                    |
+| -------------- | ----------- | -------------------------------------------------------------- |
+| **seqids**     | `character` | Normalised reference sequence identifier (e.g. `04_1D22`).     |
+| **seqnames**   | `character` | Canonical reference sequence name (e.g. `IV_1D22`).            |
+| **seqlengths** | `integer`   | Physical map length of reference sequence (in base pairs).     |
+| **maplengths** | `numeric`   | Genetic map length of reference sequence (in centiMorgans).    |
+| **isCircular** | `logical`   | `TRUE` if a reference sequence is circular; `FALSE` otherwise. |
+| **genome**     | `character` | Genome assembly that the given reference sequence is part of.  |
+
+For information on supported genomes, see [Reference genome datasets](#reference-genome-datasets).
+
+## Reference genome datasets
+
+```{r, echo=FALSE}
+seq.tabs <- shmootl:::loadSeqTables()
+```
+
+**ShmooTL** currently has information about two known *S. cerevisiae* reference
+genomes: [SGD_S288C_R64-1-1](#reference-genome-sgd_s288c_r64-1-1) and
+[SGD_S288C_R64-2-1](#reference-genome-sgd_s288c_r64-2-1).
+
+### Reference genome `SGD_S288C_R64-1-1`
+
+The reference sequence table for release `R64-1-1` of the S288C reference genome
+is stored as a CSV file within the **ShmooTL** package
+(see `shmootl/inst/extdata/genomes/SGD_S288C_R64-1-1/seqtab.csv`), and is shown
+below:
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(seq.tabs[['SGD_S288C_R64-1-1']])
+```
+
+Physical map lengths (see the `seqlengths` column) are taken directly from the
+reference FASTA file of the
+[SGD_S288C_R64-1-1 assembly](http://downloads.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-1-1_20110203.tgz) of the
+[Saccharomyes Genome Database (SGD)](http://www.yeastgenome.org) [@Cherry2012].
+
+Genetic map lengths (see the `maplengths` column) were obtained in one of two
+ways. Genetic map lengths for the nuclear chromosomes were calculated from the
+per-chromosome genetic/physical distance ratios for the combined physical and
+genetic maps of *Saccharomyces cerevisiae* as given in the 
+[SGD Wiki](http://wiki.yeastgenome.org/index.php/Combined_Physical_and_Genetic_Maps_of_S._cerevisiae).
+The genetic map length of the mitochondrial chromosome (`17`) was calculated
+from the genome-wide mean recombination rate of 0.333 cM/kb
+[@Petes1991; @Petes2001].
+
+### Reference genome `SGD_S288C_R64-2-1`
+
+The reference sequence table for release `R64-2-1` of the S288C reference genome
+is stored as a CSV file within the **ShmooTL** package
+(see `shmootl/inst/extdata/genomes/SGD_S288C_R64-2-1/seqtab.csv`), and is shown
+below:
+
+The reference sequence table for `SGD_S288C_R64-2-1` is shown below:
+
+```{r, echo=FALSE, results='asis'}
+knitr::kable(seq.tabs[['SGD_S288C_R64-2-1']])
+```
+
+Physical map lengths (see the `seqlengths` column) are taken directly from the
+reference FASTA file of the
+[SGD_S288C_R64-2-1 assembly](http://downloads.yeastgenome.org/sequence/S288C_reference/genome_releases/S288C_reference_genome_R64-2-1_20150113.tgz) of the
+[Saccharomyes Genome Database (SGD)](http://www.yeastgenome.org) [@Cherry2012].
+
+Genetic map lengths (see the `maplengths` column) were obtained in one of two
+ways. Genetic map lengths for the nuclear chromosomes were calculated from the
+per-chromosome genetic/physical distance ratios for the combined physical and
+genetic maps of *Saccharomyces cerevisiae* as given in the 
+[SGD Wiki](http://wiki.yeastgenome.org/index.php/Combined_Physical_and_Genetic_Maps_of_S._cerevisiae).
+The genetic map length of the mitochondrial chromosome (`17`) was calculated
+from the genome-wide mean recombination rate of 0.333 cM/kb
+[@Petes1991; @Petes2001].
+
+## Adding a reference genome
+
+The first step to add a *Saccharomyces cerevisiae* reference genome is to
+compose a genome ID. Reference genome IDs in **ShmooTL** are of the form:
+
+```
+<source>_<strain_id>_<assembly_id>
+```
+
+...where `<source>` is the name of the database or project from which the
+reference genome was obtained, `<strain_id>` is the strain represented by
+the reference genome, and `<assembly_id>` is a unique ID for the specific
+genome assembly.
+
+So for example, the reference genome `SGD_S288C_R64-1-1` is hosted by the
+[Saccharomyes Genome Database (SGD)](http://www.yeastgenome.org) [@Cherry2012],
+represents the *S. cerevisiae* type strain S288C, and can be uniquely identified
+by its genome assembly release number: R64-1-1.
+
+The second step in adding a new reference genome is to create a
+[reference sequence table file](#reference-sequence-table-file)
+for the given genome assembly, then save it to the following path
+within the **ShmooTL** package:
+
+```
+shmootl/inst/extdata/genomes/<genome_id>/seqtab.csv
+```
+
+...where `<genome_id>` is the genome ID of the new reference genome.
+
+With these two steps complete, **ShmooTL** can access the genome information
+that it needs, and the given reference genome will be available from within
+**ShmooTL**.
+
+--------------------------------------------------------------------------------
+
+# References
+
+<!-- EOF -->

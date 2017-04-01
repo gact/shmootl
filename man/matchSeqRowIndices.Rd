@@ -21,4 +21,3 @@ empty vector is returned if no sequences match the input \code{mapframe}.
 Find row indices of matching sequences.
 }
 \keyword{internal}
-

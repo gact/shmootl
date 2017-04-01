@@ -36,4 +36,3 @@ constraints.
 Get names of HDF5 objects from HDF5 file and name.
 }
 \keyword{internal}
-

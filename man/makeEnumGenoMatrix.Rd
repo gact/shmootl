@@ -23,4 +23,3 @@ The enumeration of genotypes is performed independently for each locus,
 so a given enumerated genotype does not have the same meaning across loci.
 }
 \keyword{internal}
-

@@ -19,4 +19,3 @@ An absolute path to the requested \pkg{shmootl} data file/directory.
 Request path of \pkg{shmootl} package data.
 }
 \keyword{internal}
-

@@ -17,4 +17,3 @@ hasRownames(x)
 Test if object has rownames.
 }
 \keyword{internal}
-

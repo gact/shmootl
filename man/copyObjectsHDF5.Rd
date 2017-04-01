@@ -18,4 +18,3 @@ every HDF5 object in the input file is copied to the output file.}
 Copy objects between HDF5 files.
 }
 \keyword{internal}
-

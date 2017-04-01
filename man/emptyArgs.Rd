@@ -17,4 +17,3 @@ emptyArgs(...)
 Test if ellipsis arguments are empty.
 }
 \keyword{internal}
-

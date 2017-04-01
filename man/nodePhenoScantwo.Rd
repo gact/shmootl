@@ -38,4 +38,3 @@ Other scan utility functions: \code{\link{batchPermScanoneF}},
   \code{\link{nodePermScantwo}},
   \code{\link{nodePhenoScanone}}
 }
-

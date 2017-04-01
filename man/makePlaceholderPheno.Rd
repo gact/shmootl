@@ -17,4 +17,3 @@ A placeholder \code{pheno} object with the given samples.
 Make a placeholder \code{pheno} object.
 }
 \keyword{internal}
-

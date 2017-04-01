@@ -17,4 +17,3 @@ contains only whitespace characters; \code{FALSE} otherwise.
 Test if vector is all whitespace.
 }
 \keyword{internal}
-

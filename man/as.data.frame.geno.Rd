@@ -28,4 +28,3 @@ A \code{data.frame} corresponding to the input \code{geno} object.
 Convert \code{geno} object to \code{data.frame}.
 }
 \keyword{internal}
-

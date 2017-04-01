@@ -27,4 +27,3 @@ Input object with individual locus positions replaced.
 Replace individual locus positions.
 }
 \keyword{internal}
-

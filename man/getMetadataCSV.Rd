@@ -37,4 +37,3 @@ The returned list includes information on the following parameters:
 This information can then guide further processing of the input data.
 }
 \keyword{internal}
-

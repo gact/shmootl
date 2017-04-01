@@ -17,4 +17,3 @@ isBOOL(x)
 Test for a single logical value.
 }
 \keyword{internal}
-

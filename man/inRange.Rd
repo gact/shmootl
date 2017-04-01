@@ -20,4 +20,3 @@ lie within the specified range.
 Test if numbers lie within a range.
 }
 \keyword{internal}
-
