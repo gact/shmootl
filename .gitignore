@@ -1,0 +1,11 @@
+
+.Rhistory
+.Rapp.history
+
+.RData
+
+inst/doc
+
+vignettes/*.html
+vignettes/*.pdf
+
