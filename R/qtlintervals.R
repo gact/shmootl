@@ -93,6 +93,54 @@ hasPhysicalPositions <- function(qtl.intervals) {
     return(status)
 }
 
+# print.qtlintervals -----------------------------------------------------------
+#' Print a \code{qtlintervals} object.
+#' 
+#' @param qtl.intervals A \code{qtlintervals} object.
+#' 
+#' @export
+#' @rdname print.qtlintervals
+print.qtlintervals <- function(qtl.intervals) {
+    
+    others <- otherattributes(qtl.intervals)
+    
+    for ( other.attr in names(others) ) {
+        attr(qtl.intervals, other.attr) <- NULL
+    }
+    
+    attr.strings <- character()
+    
+    if ( 'prob' %in% names(others) ) {
+        attr.strings <- c( attr.strings, paste0('prob=', others$prob * 100, '%') )
+    } else if ( 'drop' %in% names(others) ) {
+        attr.strings <- c( attr.strings, paste0('drop=', others$drop) )
+    } else {
+        stop("QTL intervals must have either LOD interval drop or Bayesian interval probability")
+    }
+    
+    if ( 'threshold' %in% names(others) ) {
+        attr.strings <- c(attr.strings, paste0('threshold=', others$threshold) )
+    }
+    
+    if ( 'alpha' %in% names(others) ) {
+        attr.strings <- c(attr.strings, paste0('alpha=', others$alpha) )
+    } else if ( 'fdr' %in% names(others) ) {
+        attr.strings <- c(attr.strings, paste0('FDR=', others$fdr) )
+    }
+    
+    title.string <- 'QTL intervals'
+    
+    if ( length(attr.strings) > 0 ) {
+        merged.attr.strings <- paste0(attr.strings, collapse=', ')
+        title.string <- paste0(title.string, ' (', merged.attr.strings, ')\n')
+    }
+    
+    cat(title.string)
+    print( unclass(qtl.intervals) )
+    
+    return( invisible() )
+}
+
 # qtlintervals -----------------------------------------------------------------
 #' Create a \code{qtlintervals} object.
 #' 
