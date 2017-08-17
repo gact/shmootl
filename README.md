@@ -4,7 +4,7 @@ This package contains pipelines and utilities for QTL analysis of yeast cross
 data. Pipelines can be run from the command line or from within the R
 environment. Utility functions are available from within R.
 
-To find more information on using **ShmooTL**, see the [Usage](#usage) and 
+To find more information on using **ShmooTL**, see the [Usage](#usage) and
 [Documentation](#documentation) sections.
 
 ## Dependencies
@@ -112,7 +112,7 @@ install_github('gact/shmootl')
 ```
 
 If you want to access vignettes for the installed package,
-set the `build_vignettes` option to `TRUE`, as follows: 
+set the `build_vignettes` option to `TRUE`, as follows:
 
 ```
 library(devtools)
@@ -166,5 +166,4 @@ Passing the string `'shmootl-devnotes'` to the same function displays the **Shmo
 
 ## Contact
 
-For information or issues email tw164 [AT] protonmail [DOT] com
-
+For information or issues contact [Tom Walsh](http://www.google.com/recaptcha/mailhide/d?k=01_ugVvOIRhVd93lEGyMY9ow==&c=q8ODo2H-hFb8N2RuLQZGmSmyKTrxwtyO7XzNeM53NnQ=).
