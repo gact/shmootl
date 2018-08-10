@@ -166,4 +166,5 @@ Passing the string `'shmootl-devnotes'` to the same function displays the **Shmo
 
 ## Contact
 
-For information or issues contact [Tom Walsh](http://www.google.com/recaptcha/mailhide/d?k=01_ugVvOIRhVd93lEGyMY9ow==&c=q8ODo2H-hFb8N2RuLQZGmSmyKTrxwtyO7XzNeM53NnQ=).
+For further information, contact the package maintainer listed in the package DESCRIPTION file.
+Please submit any issue on the [ShmooTL GitHub repository](https://github.com/gact/shmootl).
