@@ -114,10 +114,12 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
                     qtl.intervals <- estPhysicalPositions(qtl.intervals)
                     
                     # Write updated QTL intervals to temp file.
-                    h5name <- joinH5ObjectNameParts( c('Results',
-                        phenotype, analysis, 'QTL Intervals') )
-                    writeDatasetHDF5(qtl.intervals, tmp, h5name)
-                    updated.objects <- c(updated.objects, h5name)
+                    if (length(qtl.features) > 0)) {
+                        h5name <- joinH5ObjectNameParts( c('Results',
+                            phenotype, analysis, 'QTL Intervals') )
+                        writeDatasetHDF5(qtl.intervals, tmp, h5name)
+                        updated.objects <- c(updated.objects, h5name)
+                    }
                 }
                 
                 # Get annotated features in QTL intervals.
