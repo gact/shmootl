@@ -114,12 +114,11 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
                     qtl.intervals <- estPhysicalPositions(qtl.intervals)
                     
                     # Write updated QTL intervals to temp file.
-                    if (length(qtl.intervals) > 0) {
-                        h5name <- joinH5ObjectNameParts( c('Results',
-                            phenotype, analysis, 'QTL Intervals') )
-                        writeDatasetHDF5(qtl.intervals, tmp, h5name)
-                        updated.objects <- c(updated.objects, h5name)
-                    }
+                    h5name <- joinH5ObjectNameParts( c('Results',
+                        phenotype, analysis, 'QTL Intervals') )
+                    writeDatasetHDF5(qtl.intervals, tmp, h5name)
+                    updated.objects <- c(updated.objects, h5name)
+                 
                 }
                 
                 # Get annotated features in QTL intervals.
@@ -130,10 +129,14 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
                     function(x) nrow(x) > 0) ]
                 
                 # Write Scanone QTL features to temp file.
-                h5name <- joinH5ObjectNameParts( c('Results',
-                    phenotype, analysis, 'QTL Features') )
-                writeDatasetHDF5(qtl.features, tmp, h5name)
-                updated.objects <- c(updated.objects, h5name)
+                if (length(qtl.features) > 0) {
+
+                    h5name <- joinH5ObjectNameParts( c('Results',
+                        phenotype, analysis, 'QTL Features') )
+                    writeDatasetHDF5(qtl.features, tmp, h5name)
+                    updated.objects <- c(updated.objects, h5name)
+                
+                }
             }
         }
     }
