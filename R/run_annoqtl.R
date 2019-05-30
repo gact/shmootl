@@ -34,7 +34,9 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
     pheno <- if ( ! identical(pheno, character()) ) { pheno } else { NULL }
     scans <- if ( ! identical(scans, character()) ) { scans } else { NULL }
     
+    print('getResultInfo from')
     # Get result info.
+    print(infile)
     rinfo <- getResultInfoHDF5(infile, phenotypes=pheno, analyses=scans)
     
     # Get analyses of interest.
@@ -75,7 +77,9 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
             # analysis, get any corresponding QTL features.
             if ( analysis %in% names(rinfo[[infile]][[phenotype]]) &&
                 'QTL Intervals' %in% rinfo[[infile]][[phenotype]][[analysis]] ) {
-                
+                print('readResult from')
+                print(infile)
+                print(phenotype)
                 # Read QTL intervals from input HDF5 scan file.
                 qtl.intervals <- readResultHDF5(infile, phenotype,
                     analysis, 'QTL Intervals')
@@ -112,10 +116,11 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
                     
                     # Estimate physical map positions of QTL intervals.
                     qtl.intervals <- estPhysicalPositions(qtl.intervals)
-                    
+                    print('JoinH5Object')
                     # Write updated QTL intervals to temp file.
                     h5name <- joinH5ObjectNameParts( c('Results',
                         phenotype, analysis, 'QTL Intervals') )
+                    print(h5name)
                     writeDatasetHDF5(qtl.intervals, tmp, h5name)
                     updated.objects <- c(updated.objects, h5name)
                  
@@ -140,7 +145,7 @@ run_annoqtl <- function(infile=NA_character_, annofile=NA_character_,
             }
         }
     }
-    
+    print('Annotation finished')
     # Transfer all existing but unchanged objects
     # from existing HDF5 scan file to temp file.
     updated <- unique( unlist( lapply( updated.objects,
