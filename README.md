@@ -53,22 +53,7 @@ install.packages('xlsx')
 
 ### Installing Bioconductor packages
 
-To install required Bioconductor packages, first source the `biocLite.R` install
-script as follows:
-
-```
-source('https://bioconductor.org/biocLite.R')
-```
-
-Then input the following commands to install needed Bioconductor packages:
-
-```
-biocLite('VariantAnnotation')
-biocLite('rhdf5')
-```
-
-It may be necessary to install additional Bioconductor packages in a similar
-manner (e.g. `biocLite('rtracklayer')`).
+To install required Bioconductor packages (e.g. `VariantAnnotation`, `rhdf5`), see the [Bioconductor installation documentation page](https://www.bioconductor.org/install/).
 
 ### Installing packages from GitHub
 
